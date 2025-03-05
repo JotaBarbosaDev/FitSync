@@ -1,0 +1,7 @@
+{
+  "name": "FitSync",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular"
+}

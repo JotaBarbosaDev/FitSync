@@ -1,0 +1,62 @@
+# Node modules
+node_modules/
+npm-debug.log
+yarn-error.log
+package-lock.json
+yarn.lock
+
+# Ionic specific
+.platform/
+plugins/
+www/
+hooks/
+.idea/
+.vscode/
+.sass-cache/
+.tmp/
+dist/
+coverage/
+android/
+ios/
+node_modules/
+*.swp
+*.swo
+*.swn
+*.bak
+*.log
+
+# Angular specific
+.angular/
+.angular-cache/
+*.tsbuildinfo
+*.js
+*.map
+*.d.ts
+*.ngfactory.ts
+*.ngsummary.json
+*.scssc
+
+# Capacitor / Cordova
+capacitor.config.json
+capacitor.config.ts
+cordova/platforms/
+cordova/plugins/
+
+# IDEs and OS
+.DS_Store
+Thumbs.db
+*.iml
+*.sublime*
+*.sw?
+*.lock
+
+# Environment files
+src/environments/environment.prod.ts
+src/environments/environment.ts
+
+# Compiled output
+output/
+temp/
+*.apk
+*.ipa
+*.aab
