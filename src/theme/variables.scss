@@ -1,2 +1,72 @@
 // For information on how to create your own theme, please see:
 // http://ionicframework.com/docs/theming/
+
+// FitSync Custom Theme Variables
+:root {
+  // Cores principais da FitSync
+  --ion-color-primary: #E6FE58;
+  --ion-color-primary-rgb: 230, 254, 88;
+  --ion-color-primary-contrast: #141414;
+  --ion-color-primary-contrast-rgb: 20, 20, 20;
+  --ion-color-primary-shade: #CBE04D;
+  --ion-color-primary-tint: #E9FE69;
+
+  --ion-color-secondary: #141414;
+  --ion-color-secondary-rgb: 20, 20, 20;
+  --ion-color-secondary-contrast: #ffffff;
+  --ion-color-secondary-contrast-rgb: 255, 255, 255;
+  --ion-color-secondary-shade: #121212;
+  --ion-color-secondary-tint: #2c2c2c;
+
+  // Cores de estado
+  --ion-color-success: #28A745;
+  --ion-color-success-rgb: 40, 167, 69;
+  --ion-color-success-contrast: #ffffff;
+  --ion-color-success-contrast-rgb: 255, 255, 255;
+  --ion-color-success-shade: #239F3D;
+  --ion-color-success-tint: #3EAF58;
+
+  --ion-color-warning: #FFC107;
+  --ion-color-warning-rgb: 255, 193, 7;
+  --ion-color-warning-contrast: #141414;
+  --ion-color-warning-contrast-rgb: 20, 20, 20;
+  --ion-color-warning-shade: #E0A906;
+  --ion-color-warning-tint: #FFCA20;
+
+  --ion-color-danger: #DC3545;
+  --ion-color-danger-rgb: 220, 53, 69;
+  --ion-color-danger-contrast: #ffffff;
+  --ion-color-danger-contrast-rgb: 255, 255, 255;
+  --ion-color-danger-shade: #C12C3C;
+  --ion-color-danger-tint: #E04858;
+
+  // Cores personalizadas FitSync
+  --fitsync-muscle-chest: #FF6B6B;
+  --fitsync-muscle-back: #4ECDC4;
+  --fitsync-muscle-legs: #45B7D1;
+  --fitsync-muscle-shoulders: #96CEB4;
+  --fitsync-muscle-arms: #FFEAA7;
+  --fitsync-muscle-core: #DDA0DD;
+
+  // Cores de fundo e superfície
+  --ion-background-color: #ffffff;
+  --ion-background-color-rgb: 255, 255, 255;
+  --ion-surface-color: #F8F9FA;
+  --ion-surface-variant: #F1F3F4;
+
+  // Cores de texto
+  --ion-text-color: #141414;
+  --ion-text-color-rgb: 20, 20, 20;
+  --ion-text-color-secondary: #666666;
+  --ion-text-color-disabled: #CCCCCC;
+}
+
+// Dark theme (opcional para futuro)
+@media (prefers-color-scheme: dark) {
+  :root {
+    --ion-background-color: #121212;
+    --ion-background-color-rgb: 18, 18, 18;
+    --ion-text-color: #ffffff;
+    --ion-text-color-rgb: 255, 255, 255;
+  }
+}

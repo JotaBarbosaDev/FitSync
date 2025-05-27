@@ -1,3 +1,60 @@
 <ion-app>
-  <ion-router-outlet></ion-router-outlet>
+  <ion-menu side="start" menuId="main-menu" contentId="main">
+    <ion-header>
+      <ion-toolbar color="primary">
+        <ion-title>FitSync</ion-title>
+      </ion-toolbar>
+    </ion-header>    <ion-content>
+      <div class="menu-header" [hidden]="!currentUser">
+        <ion-avatar class="menu-avatar">
+          <img src="/assets/icon/favicon.png" alt="Avatar">
+        </ion-avatar>
+        <div class="menu-user-info">
+          <h3 [textContent]="currentUser?.name"></h3>
+          <p [textContent]="currentUser?.email"></p>
+        </div>
+      </div>
+      
+      <ion-list>
+        <ion-item button (click)="navigateTo('/dashboard')" lines="none">
+          <ion-icon name="home" slot="start"></ion-icon>
+          <ion-label>Dashboard</ion-label>
+        </ion-item>
+        
+        <ion-item button (click)="navigateTo('/plans')" lines="none">
+          <ion-icon name="library" slot="start"></ion-icon>
+          <ion-label>Meus Planos</ion-label>
+        </ion-item>
+        
+        <ion-item button (click)="navigateTo('/workout')" lines="none">
+          <ion-icon name="fitness" slot="start"></ion-icon>
+          <ion-label>Treinar</ion-label>
+        </ion-item>
+        
+        <ion-item button (click)="navigateTo('/progress')" lines="none">
+          <ion-icon name="trending-up" slot="start"></ion-icon>
+          <ion-label>Progresso</ion-label>
+        </ion-item>
+        
+        <ion-item button (click)="navigateTo('/profile')" lines="none">
+          <ion-icon name="person" slot="start"></ion-icon>
+          <ion-label>Perfil</ion-label>
+        </ion-item>
+        
+        <div class="menu-divider"></div>
+        
+        <ion-item button (click)="navigateTo('/settings')" lines="none">
+          <ion-icon name="settings" slot="start"></ion-icon>
+          <ion-label>Configurações</ion-label>
+        </ion-item>
+        
+        <ion-item button (click)="logout()" lines="none" class="logout-item">
+          <ion-icon name="log-out" slot="start"></ion-icon>
+          <ion-label>Sair</ion-label>
+        </ion-item>
+      </ion-list>
+    </ion-content>
+  </ion-menu>
+  
+  <ion-router-outlet id="main"></ion-router-outlet>
 </ion-app>

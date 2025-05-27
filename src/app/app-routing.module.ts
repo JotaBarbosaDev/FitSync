@@ -1,15 +1,36 @@
 import { NgModule } from '@angular/core';
 import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
+import { AuthGuard } from './guards/auth.guard';
+import { GuestGuard } from './guards/guest.guard';
 
 const routes: Routes = [
   {
-    path: 'home',
-    loadChildren: () => import('./home/home.module').then( m => m.HomePageModule)
+    path: '',
+    redirectTo: '/test',
+    pathMatch: 'full'
   },
   {
-    path: '',
-    redirectTo: 'home',
-    pathMatch: 'full'
+    path: 'test',
+    loadChildren: () => import('./test/test.module').then(m => m.TestPageModule)
+  },
+  {
+    path: 'auth/login',
+    loadChildren: () => import('./auth/login/login.module').then(m => m.LoginPageModule),
+    canActivate: [GuestGuard]
+  },
+  {
+    path: 'auth/register',
+    loadChildren: () => import('./auth/register/register.module').then(m => m.RegisterPageModule),
+    canActivate: [GuestGuard]
+  },
+  {
+    path: 'dashboard',
+    loadChildren: () => import('./dashboard/dashboard.module').then(m => m.DashboardPageModule),
+    canActivate: [AuthGuard]
+  },
+  {
+    path: 'home',
+    loadChildren: () => import('./home/home.module').then( m => m.HomePageModule)
   },
   {
     path: 'lista',

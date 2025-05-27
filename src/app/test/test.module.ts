@@ -1,22 +1,21 @@
 import { NgModule } from '@angular/core';
 import { IonicModule } from '@ionic/angular';
-import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
-import { HomePage } from './home.page';
+
+import { TestPage } from './test.page';
 
 const routes = [
   {
     path: '',
-    component: HomePage
+    component: TestPage
   }
 ];
 
 @NgModule({
   imports: [
-    FormsModule,
     IonicModule,
     RouterModule.forChild(routes)
   ],
-  declarations: [HomePage]
+  declarations: [TestPage]
 })
-export class HomePageModule {}
+export class TestPageModule {}

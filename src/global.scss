@@ -35,3 +35,93 @@
 /* @import "@ionic/angular/css/palettes/dark.always.css"; */
 /* @import "@ionic/angular/css/palettes/dark.class.css"; */
 @import "@ionic/angular/css/palettes/dark.system.css";
+
+/**
+ * FitSync Custom Global Styles
+ * -----------------------------------------------------
+ */
+
+// Tipografia personalizada
+.text-xs { font-size: 0.75rem; }
+.text-sm { font-size: 0.875rem; }
+.text-base { font-size: 1rem; }
+.text-lg { font-size: 1.125rem; }
+.text-xl { font-size: 1.25rem; }
+.text-2xl { font-size: 1.5rem; }
+.text-3xl { font-size: 1.875rem; }
+
+.font-light { font-weight: 300; }
+.font-normal { font-weight: 400; }
+.font-medium { font-weight: 500; }
+.font-semibold { font-weight: 600; }
+.font-bold { font-weight: 700; }
+
+// Estilos de botões personalizados
+.btn-primary {
+  --background: var(--ion-color-primary);
+  --color: var(--ion-color-primary-contrast);
+  --border-radius: 8px;
+  font-weight: 600;
+  height: 48px;
+}
+
+.btn-secondary {
+  --background: transparent;
+  --color: var(--ion-color-secondary);
+  --border-color: var(--ion-color-secondary);
+  --border-width: 2px;
+  --border-style: solid;
+  --border-radius: 8px;
+  font-weight: 600;
+  height: 48px;
+}
+
+// Cards personalizados
+.workout-card {
+  background: var(--ion-background-color);
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  padding: 16px;
+  margin: 8px 0;
+  border-left: 4px solid var(--ion-color-primary);
+}
+
+.exercise-card {
+  background: var(--ion-surface-color);
+  border-radius: 8px;
+  padding: 12px;
+  margin: 4px 0;
+  border-left: 3px solid var(--fitsync-muscle-chest);
+}
+
+.plan-card {
+  background: var(--ion-background-color);
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  padding: 20px;
+  margin: 12px 0;
+  border: 1px solid rgba(230, 254, 88, 0.2);
+}
+
+// Estados e cores dos músculos
+.muscle-chest { color: var(--fitsync-muscle-chest); }
+.muscle-back { color: var(--fitsync-muscle-back); }
+.muscle-legs { color: var(--fitsync-muscle-legs); }
+.muscle-shoulders { color: var(--fitsync-muscle-shoulders); }
+.muscle-arms { color: var(--fitsync-muscle-arms); }
+.muscle-core { color: var(--fitsync-muscle-core); }
+
+// Utilitários
+.center-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+}
+
+.loading-spinner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}

@@ -1,0 +1,218 @@
+<ion-content class="register-content">
+  <div class="register-container">
+    <!-- Header -->
+    <div class="header-section">
+      <ion-button fill="clear" class="back-btn" (click)="goToLogin()">
+        <ion-icon name="arrow-back" slot="icon-only"></ion-icon>
+      </ion-button>
+      <h1 class="page-title">Criar Conta</h1>
+      <p class="page-subtitle">Preencha seus dados para começar</p>
+    </div>
+
+    <!-- Formulário de registro -->
+    <form class="register-form" (ngSubmit)="onRegister()">
+      <!-- Dados pessoais -->
+      <div class="form-section">
+        <h2 class="section-title">Dados Pessoais</h2>
+        
+        <ion-item class="input-item">
+          <ion-label position="stacked">Nome Completo *</ion-label>
+          <ion-input
+            type="text"
+            [value]="registerData.name"
+            (ionInput)="updateField('name', $event)"
+            name="name"
+            placeholder="Digite seu nome completo"
+            required
+            clearInput="true">
+          </ion-input>
+        </ion-item>
+
+        <ion-item class="input-item">
+          <ion-label position="stacked">Email *</ion-label>
+          <ion-input
+            type="email"
+            [value]="registerData.email"
+            (ionInput)="updateField('email', $event)"
+            name="email"
+            placeholder="Digite seu email"
+            required
+            clearInput="true">
+          </ion-input>
+        </ion-item>
+
+        <ion-item class="input-item">
+          <ion-label position="stacked">Senha *</ion-label>
+          <ion-input
+            [type]="showPassword ? 'text' : 'password'"
+            [value]="registerData.password"
+            (ionInput)="updateField('password', $event)"
+            name="password"
+            placeholder="Digite sua senha (mín. 6 caracteres)"
+            required>
+          </ion-input>
+          <ion-button 
+            fill="clear" 
+            slot="end" 
+            (click)="togglePasswordVisibility()"
+            class="password-toggle">
+            <ion-icon 
+              [name]="showPassword ? 'eye-off' : 'eye'" 
+              slot="icon-only">
+            </ion-icon>
+          </ion-button>
+        </ion-item>
+
+        <ion-item class="input-item">
+          <ion-label position="stacked">Confirmar Senha *</ion-label>          <ion-input
+            [type]="showConfirmPassword ? 'text' : 'password'"
+            [value]="confirmPassword"
+            (ionInput)="updateField('confirmPassword', $event)"
+            name="confirmPassword"
+            placeholder="Confirme sua senha"
+            required>
+          </ion-input>
+          <ion-button 
+            fill="clear" 
+            slot="end" 
+            (click)="toggleConfirmPasswordVisibility()"
+            class="password-toggle">
+            <ion-icon 
+              [name]="showConfirmPassword ? 'eye-off' : 'eye'" 
+              slot="icon-only">
+            </ion-icon>
+          </ion-button>
+        </ion-item>
+      </div>
+
+      <!-- Dados físicos -->
+      <div class="form-section">
+        <h2 class="section-title">Dados Físicos (Opcional)</h2>
+        
+        <div class="row-inputs">
+          <ion-item class="input-item half-width">
+            <ion-label position="stacked">Altura (cm)</ion-label>            <ion-input
+              type="number"
+              [value]="registerData.height"
+              (ionInput)="updateField('height', $event)"
+              name="height"
+              placeholder="170"
+              min="100"
+              max="250">
+            </ion-input>
+          </ion-item>
+
+          <ion-item class="input-item half-width">
+            <ion-label position="stacked">Peso (kg)</ion-label>            <ion-input
+              type="number"
+              [value]="registerData.weight"
+              (ionInput)="updateField('weight', $event)"
+              name="weight"
+              placeholder="70"
+              min="30"
+              max="300">
+            </ion-input>
+          </ion-item>
+        </div>
+      </div>
+
+      <!-- Nível de condicionamento -->
+      <div class="form-section">
+        <h2 class="section-title">Nível de Condicionamento</h2>
+          <ion-radio-group [value]="registerData.fitnessLevel" (ionChange)="updateField('fitnessLevel', $event)" name="fitnessLevel">
+          <div class="radio-options">
+            <ion-item class="radio-item">
+              <ion-radio slot="start" value="beginner"></ion-radio>
+              <ion-label>Iniciante</ion-label>
+            </ion-item>
+            <ion-item class="radio-item">
+              <ion-radio slot="start" value="intermediate"></ion-radio>
+              <ion-label>Intermediário</ion-label>
+            </ion-item>
+            <ion-item class="radio-item">
+              <ion-radio slot="start" value="advanced"></ion-radio>
+              <ion-label>Avançado</ion-label>
+            </ion-item>
+          </div>
+        </ion-radio-group>
+      </div>
+
+      <!-- Objetivos -->
+      <div class="form-section">
+        <h2 class="section-title">Seus Objetivos</h2>
+        <p class="section-description">Selecione um ou mais objetivos</p>
+          <div class="goals-grid">
+          <ion-item class="goal-item">
+            <ion-checkbox 
+              slot="start" 
+              [checked]="isGoalSelected('lose_weight')"
+              (ionChange)="onGoalChange('lose_weight', $event)">
+            </ion-checkbox>
+            <ion-label>Perder Peso</ion-label>
+          </ion-item>
+          <ion-item class="goal-item">
+            <ion-checkbox 
+              slot="start" 
+              [checked]="isGoalSelected('gain_muscle')"
+              (ionChange)="onGoalChange('gain_muscle', $event)">
+            </ion-checkbox>
+            <ion-label>Ganhar Músculo</ion-label>
+          </ion-item>
+          <ion-item class="goal-item">
+            <ion-checkbox 
+              slot="start" 
+              [checked]="isGoalSelected('build_strength')"
+              (ionChange)="onGoalChange('build_strength', $event)">
+            </ion-checkbox>
+            <ion-label>Aumentar Força</ion-label>
+          </ion-item>
+          <ion-item class="goal-item">
+            <ion-checkbox 
+              slot="start" 
+              [checked]="isGoalSelected('improve_endurance')"
+              (ionChange)="onGoalChange('improve_endurance', $event)">
+            </ion-checkbox>
+            <ion-label>Melhorar Resistência</ion-label>
+          </ion-item>
+          <ion-item class="goal-item">
+            <ion-checkbox 
+              slot="start" 
+              [checked]="isGoalSelected('general_fitness')"
+              (ionChange)="onGoalChange('general_fitness', $event)">
+            </ion-checkbox>
+            <ion-label>Condicionamento Geral</ion-label>
+          </ion-item>
+          <ion-item class="goal-item">
+            <ion-checkbox 
+              slot="start" 
+              [checked]="isGoalSelected('tone_body')"
+              (ionChange)="onGoalChange('tone_body', $event)">
+            </ion-checkbox>
+            <ion-label>Tonificar o Corpo</ion-label>
+          </ion-item>
+        </div>
+      </div>
+
+      <!-- Botão de registro -->
+      <div class="action-section">
+        <ion-button 
+          expand="block" 
+          type="submit"
+          class="btn-primary register-btn"
+          [disabled]="isLoading">
+          <ion-spinner *ngIf="isLoading" name="crescent"></ion-spinner>
+          <span *ngIf="!isLoading">Criar Conta</span>
+        </ion-button>
+      </div>
+    </form>
+
+    <!-- Link para login -->
+    <div class="login-section">
+      <p>Já tem uma conta? 
+        <ion-button fill="clear" (click)="goToLogin()" class="login-link">
+          Faça login
+        </ion-button>
+      </p>
+    </div>
+  </div>
+</ion-content>

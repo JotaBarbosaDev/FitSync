@@ -1,0 +1,90 @@
+{
+  "version": "1.0.0",
+  "lastUpdated": "2025-05-27T10:00:00Z",
+  "users": [
+    {
+      "id": "user1",
+      "email": "demo@fitsync.app",
+      "name": "Utilizador Demo",
+      "height": 175,
+      "weight": 70,
+      "fitnessLevel": "intermediate",
+      "goals": ["gain_muscle", "lose_weight"],
+      "createdAt": "2025-05-27T10:00:00Z",
+      "updatedAt": "2025-05-27T10:00:00Z"
+    }
+  ],
+  "plans": [
+    {
+      "id": "plan1",
+      "userId": "user1",
+      "name": "Plano Iniciante",
+      "description": "Plano completo para iniciantes em musculação com foco em movimentos básicos",
+      "duration": 8,
+      "difficulty": "beginner",
+      "goals": ["gain_muscle", "build_strength"],
+      "isActive": true,
+      "createdAt": "2025-05-27T10:00:00Z",
+      "updatedAt": "2025-05-27T10:00:00Z"
+    }
+  ],
+  "days": [
+    {
+      "id": "day1",
+      "planId": "plan1",
+      "dayOfWeek": 1,
+      "name": "Segunda - Peito e Triceps",
+      "isRestDay": false,
+      "order": 1,
+      "notes": "Foco em movimentos básicos do peito"
+    }
+  ],
+  "workouts": [
+    {
+      "id": "workout1",
+      "dayId": "day1",
+      "name": "Treino de Peito",
+      "type": "strength",
+      "estimatedDuration": 60,
+      "restBetweenExercises": 120,
+      "order": 1,
+      "completed": false,
+      "notes": "Concentrar na forma correta dos movimentos"
+    }
+  ],
+  "exercises": [
+    {
+      "id": "exercise1",
+      "workoutId": "workout1",
+      "name": "Supino Reto",
+      "category": "chest",
+      "equipment": ["barbell", "bench"],
+      "muscleGroups": ["peitoral_maior", "triceps", "deltoides_anterior"],
+      "instructions": "Deitar no banco com os pés no chão. Pegar na barra com pegada ligeiramente mais larga que os ombros.",
+      "order": 1
+    }
+  ],
+  "sets": [
+    {
+      "id": "set1",
+      "exerciseId": "exercise1",
+      "type": "normal",
+      "reps": 12,
+      "weight": 60,
+      "restTime": 60,
+      "completed": false,
+      "targetRPE": 7
+    }
+  ],
+  "exerciseLibrary": [
+    {
+      "id": "lib1",
+      "name": "Supino Reto",
+      "category": "chest",
+      "equipment": ["barbell", "bench"],
+      "muscleGroups": ["peitoral_maior", "triceps", "deltoides_anterior"],
+      "instructions": "Exercício básico para desenvolvimento do peitoral maior.",
+      "difficulty": "beginner"
+    }
+  ]
+}

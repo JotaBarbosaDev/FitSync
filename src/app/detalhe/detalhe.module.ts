@@ -1,19 +1,22 @@
 import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-
 import { IonicModule } from '@ionic/angular';
-
-import { DetalhePageRoutingModule } from './detalhe-routing.module';
+import { RouterModule } from '@angular/router';
 
 import { DetalhePage } from './detalhe.page';
 
+const routes = [
+  {
+    path: '',
+    component: DetalhePage
+  }
+];
+
 @NgModule({
   imports: [
-    CommonModule,
     FormsModule,
     IonicModule,
-    DetalhePageRoutingModule
+    RouterModule.forChild(routes)
   ],
   declarations: [DetalhePage]
 })
