@@ -5,13 +5,13 @@
         <ion-title>FitSync</ion-title>
       </ion-toolbar>
     </ion-header>    <ion-content>
-      <div class="menu-header" [hidden]="!currentUser">
+      <div class="menu-header" *ngIf="currentUser">
         <ion-avatar class="menu-avatar">
           <img src="/assets/icon/favicon.png" alt="Avatar">
         </ion-avatar>
         <div class="menu-user-info">
-          <h3 [textContent]="currentUser?.name"></h3>
-          <p [textContent]="currentUser?.email"></p>
+          <h3>{{ currentUser.name }}</h3>
+          <p>{{ currentUser.email }}</p>
         </div>
       </div>
       

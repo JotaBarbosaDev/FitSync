@@ -19,7 +19,19 @@ export class DataService {
       if (!this.dataSubject.value) {        const initialData: AppData = {
           version: "1.0.0",
           lastUpdated: new Date().toISOString(),
-          users: [],
+          users: [
+            {
+              id: "user_001",
+              email: "demo@fitsync.app",
+              name: "João Silva",
+              height: 175,
+              weight: 70,
+              fitnessLevel: "beginner",
+              goals: ["weightLoss", "strength"],
+              createdAt: new Date(),
+              updatedAt: new Date()
+            }
+          ],
           plans: [],
           days: [],
           workouts: [],

@@ -11,6 +11,7 @@ import { User, Plan, WorkoutTimer } from '../models';
   selector: 'app-dashboard',
   templateUrl: './dashboard.page.html',
   styleUrls: ['./dashboard.page.scss'],
+  standalone: false,
 })
 export class DashboardPage implements OnInit, OnDestroy {
   currentUser: User | null = null;
@@ -143,8 +144,14 @@ export class DashboardPage implements OnInit, OnDestroy {
           }
         }
       ]
-    });
-    await alert.present();
+    });    await alert.present();
+  }
+
+  getUserFirstName(): string {
+    if (this.currentUser?.name) {
+      return this.currentUser.name.split(' ')[0];
+    }
+    return 'Usuário';
   }
 
   getGreeting(): string {
