@@ -1,0 +1,693 @@
+// Progress Page Styling
+.gradient-header {
+  --background: linear-gradient(135deg, var(--ion-color-primary), var(--ion-color-secondary));
+  
+  ion-toolbar {
+    --background: transparent;
+  }
+}
+
+.gradient-text {
+  background: linear-gradient(45deg, #fff, #f0f8ff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-weight: 600;
+}
+
+.progress-content {
+  --background: linear-gradient(180deg, #f8fafc 0%, #e2e8f0 100%);
+}
+
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 200px;
+  text-align: center;
+  
+  ion-spinner {
+    margin-bottom: 16px;
+    --color: var(--ion-color-primary);
+  }
+  
+  p {
+    color: var(--ion-color-medium);
+    font-size: 14px;
+  }
+}
+
+.progress-container {
+  padding: 16px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+// Section Headers
+.section-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--ion-color-dark);
+  margin-bottom: 16px;
+  
+  ion-icon {
+    font-size: 20px;
+    color: var(--ion-color-primary);
+  }
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+// Performance Overview
+.performance-overview {
+  margin-bottom: 32px;
+}
+
+.metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.metric-card {
+  background: white;
+  border-radius: 16px;
+  padding: 20px 16px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border-left: 4px solid var(--ion-color-light);
+  transition: all 0.3s ease;
+  
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
+  }
+  
+  &.primary {
+    border-left-color: var(--ion-color-primary);
+    
+    .metric-icon {
+      background: var(--ion-color-primary-tint);
+      color: var(--ion-color-primary);
+    }
+  }
+  
+  &.success {
+    border-left-color: var(--ion-color-success);
+    
+    .metric-icon {
+      background: var(--ion-color-success-tint);
+      color: var(--ion-color-success);
+    }
+  }
+  
+  &.warning {
+    border-left-color: var(--ion-color-warning);
+    
+    .metric-icon {
+      background: var(--ion-color-warning-tint);
+      color: var(--ion-color-warning);
+    }
+  }
+  
+  &.danger {
+    border-left-color: var(--ion-color-danger);
+    
+    .metric-icon {
+      background: var(--ion-color-danger-tint);
+      color: var(--ion-color-danger);
+    }
+  }
+}
+
+.metric-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--ion-color-light);
+  color: var(--ion-color-medium);
+  
+  ion-icon {
+    font-size: 20px;
+  }
+}
+
+.metric-info {
+  flex: 1;
+  
+  .metric-value {
+    display: block;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--ion-color-dark);
+    line-height: 1.2;
+  }
+  
+  .metric-label {
+    font-size: 12px;
+    color: var(--ion-color-medium);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+}
+
+.progress-description {
+  margin-top: 20px;
+}
+
+.description-card {
+  background: linear-gradient(135deg, var(--ion-color-primary-tint), var(--ion-color-secondary-tint));
+  border-radius: 16px;
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  
+  ion-icon {
+    font-size: 32px;
+    color: var(--ion-color-primary);
+  }
+  
+  h4 {
+    margin: 0 0 4px 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--ion-color-dark);
+  }
+  
+  p {
+    margin: 0;
+    font-size: 14px;
+    color: var(--ion-color-medium);
+  }
+}
+
+// Achievements Section
+.achievements-section {
+  margin-bottom: 32px;
+}
+
+.achievements-carousel {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  padding-bottom: 8px;
+  
+  &::-webkit-scrollbar {
+    height: 4px;
+  }
+  
+  &::-webkit-scrollbar-track {
+    background: var(--ion-color-light);
+    border-radius: 2px;
+  }
+  
+  &::-webkit-scrollbar-thumb {
+    background: var(--ion-color-medium);
+    border-radius: 2px;
+  }
+}
+
+.achievement-card {
+  background: white;
+  border-radius: 16px;
+  padding: 16px;
+  min-width: 280px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border-left: 4px solid var(--ion-color-warning);
+  
+  &.strength {
+    border-left-color: var(--ion-color-danger);
+    
+    .achievement-icon {
+      background: var(--ion-color-danger-tint);
+      color: var(--ion-color-danger);
+    }
+  }
+  
+  &.endurance {
+    border-left-color: var(--ion-color-success);
+    
+    .achievement-icon {
+      background: var(--ion-color-success-tint);
+      color: var(--ion-color-success);
+    }
+  }
+  
+  &.consistency {
+    border-left-color: var(--ion-color-primary);
+    
+    .achievement-icon {
+      background: var(--ion-color-primary-tint);
+      color: var(--ion-color-primary);
+    }
+  }
+  
+  &.milestone {
+    border-left-color: var(--ion-color-warning);
+    
+    .achievement-icon {
+      background: var(--ion-color-warning-tint);
+      color: var(--ion-color-warning);
+    }
+  }
+}
+
+.achievement-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--ion-color-warning-tint);
+  color: var(--ion-color-warning);
+  
+  ion-icon {
+    font-size: 24px;
+  }
+}
+
+.achievement-info {
+  flex: 1;
+  
+  h4 {
+    margin: 0 0 4px 0;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--ion-color-dark);
+  }
+  
+  p {
+    margin: 0 0 4px 0;
+    font-size: 12px;
+    color: var(--ion-color-medium);
+    line-height: 1.3;
+  }
+  
+  .achievement-date {
+    font-size: 10px;
+    color: var(--ion-color-step-400);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+}
+
+// Filters Section
+.filters-section {
+  margin-bottom: 24px;
+}
+
+.filter-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.filter-group {
+  .filter-label {
+    display: block;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--ion-color-dark);
+    margin-bottom: 8px;
+  }
+}
+
+.filter-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  
+  ion-chip {
+    --background: white;
+    --color: var(--ion-color-medium);
+    border: 1px solid var(--ion-color-light);
+    border-radius: 20px;
+    height: 36px;
+    font-size: 12px;
+    transition: all 0.2s ease;
+    
+    &.active,
+    &[color="primary"] {
+      --background: var(--ion-color-primary);
+      --color: white;
+      border-color: var(--ion-color-primary);
+      transform: scale(1.05);
+    }
+    
+    ion-icon {
+      margin-right: 4px;
+      font-size: 14px;
+    }
+  }
+}
+
+// Exercise Progress Section
+.exercise-progress-section {
+  margin-bottom: 32px;
+}
+
+.progress-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 16px;
+}
+
+.progress-card {
+  background: white;
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: 1px solid var(--ion-color-light);
+  
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    border-color: var(--ion-color-primary);
+  }
+}
+
+.exercise-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 16px;
+  
+  .exercise-info {
+    flex: 1;
+    
+    h3 {
+      margin: 0 0 8px 0;
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--ion-color-dark);
+    }
+  }
+  
+  .trend-indicator {
+    ion-icon {
+      font-size: 24px;
+    }
+  }
+}
+
+.muscle-badge {
+  background: var(--ion-color-light);
+  color: var(--ion-color-medium);
+  font-size: 10px;
+  font-weight: 500;
+  padding: 4px 8px;
+  border-radius: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  
+  &.chest { background: #fef3c7; color: #d97706; }
+  &.back { background: #d1fae5; color: #059669; }
+  &.shoulders { background: #ddd6fe; color: #7c3aed; }
+  &.arms { background: #fecaca; color: #dc2626; }
+  &.legs { background: #bfdbfe; color: #2563eb; }
+  &.core { background: #fed7d7; color: #e53e3e; }
+}
+
+.progress-stats {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.stat-item {
+  text-align: center;
+  padding: 8px;
+  background: var(--ion-color-light);
+  border-radius: 8px;
+  
+  .stat-value {
+    display: block;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--ion-color-dark);
+    line-height: 1.2;
+  }
+  
+  .stat-label {
+    font-size: 10px;
+    color: var(--ion-color-medium);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+}
+
+.mini-chart {
+  height: 60px;
+  background: linear-gradient(90deg, var(--ion-color-primary-tint), var(--ion-color-secondary-tint));
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+  .chart-placeholder {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--ion-color-primary);
+    font-size: 12px;
+    font-weight: 500;
+    
+    ion-icon {
+      font-size: 16px;
+    }
+  }
+}
+
+// Quick Actions
+.quick-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 32px;
+  padding-bottom: 32px;
+  
+  .action-btn {
+    --border-radius: 12px;
+    --padding-top: 16px;
+    --padding-bottom: 16px;
+    height: auto;
+    font-weight: 500;
+    
+    ion-icon {
+      margin-right: 8px;
+    }
+  }
+}
+
+// Responsive Design
+@media (max-width: 576px) {
+  .progress-container {
+    padding: 12px;
+  }
+  
+  .metrics-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+  
+  .metric-card {
+    padding: 16px 12px;
+    flex-direction: column;
+    text-align: center;
+    gap: 8px;
+  }
+  
+  .progress-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .achievement-card {
+    min-width: 260px;
+  }
+  
+  .filter-chips {
+    ion-chip {
+      font-size: 11px;
+      height: 32px;
+    }
+  }
+  
+  .progress-stats {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+  }
+  
+  .stat-item {
+    padding: 6px;
+    
+    .stat-value {
+      font-size: 14px;
+    }
+    
+    .stat-label {
+      font-size: 9px;
+    }
+  }
+  
+  .section-header {
+    padding: 0 8px;
+    
+    h2 {
+      font-size: 18px;
+    }
+    
+    ion-button {
+      font-size: 12px;
+    }
+  }
+  
+  .metric-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+  
+  .achievement-carousel {
+    .achievement-card {
+      min-width: 200px;
+    }
+  }
+  
+  .filter-chips {
+    flex-wrap: wrap;
+    gap: 4px;
+    
+    ion-chip {
+      font-size: 11px;
+    }
+  }
+  
+  .progress-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+// Charts Section
+.charts-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.chart-container {
+  background: var(--ion-color-light);
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+// Mini charts in exercise cards
+.mini-chart {
+  position: relative;
+  height: 100px;
+  margin-top: 12px;
+  background: var(--ion-color-light-shade);
+  border-radius: 8px;
+  padding: 8px;
+  
+  .sessions-count {
+    position: absolute;
+    bottom: 4px;
+    right: 8px;
+    font-size: 10px;
+    color: var(--ion-color-medium);
+    background: rgba(255, 255, 255, 0.8);
+    padding: 2px 6px;
+    border-radius: 4px;
+  }
+  
+  app-progress-chart {
+    height: 80px;
+  }
+}
+
+// Dark mode support for charts
+@media (prefers-color-scheme: dark) {
+  .chart-container {
+    background: var(--ion-color-dark);
+  }
+  
+  .mini-chart {
+    background: var(--ion-color-dark-shade);
+    
+    .sessions-count {
+      background: rgba(0, 0, 0, 0.8);
+      color: var(--ion-color-light);
+    }
+  }
+}
+
+// Animation Classes
+.fade-in {
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.slide-in {
+  animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(-20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+// Loading States
+.skeleton {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+  border-radius: 8px;
+}
+
+@keyframes loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}

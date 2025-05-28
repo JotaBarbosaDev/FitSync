@@ -1,0 +1,97 @@
+<div class="chart-container">
+  <div class="chart-header" *ngIf="title">
+    <h3>{{ title }}</h3>
+  </div>
+  
+  <div class="chart-wrapper" [style.height.px]="config.height">
+    <svg [attr.viewBox]="viewBox" class="progress-chart">
+      <!-- Grid lines -->
+      <g class="grid" *ngIf="config.showGrid">
+        <!-- Horizontal grid lines -->
+        <line 
+          *ngFor="let label of yLabels; let i = index"
+          x1="10" 
+          x2="290" 
+          [attr.y1]="190 - (i / (yLabels.length - 1)) * 180"
+          [attr.y2]="190 - (i / (yLabels.length - 1)) * 180"
+          class="grid-line"
+        />
+        <!-- Vertical grid lines -->
+        <line 
+          *ngFor="let point of data; let i = index"
+          [attr.x1]="getPointPosition(i).x"
+          [attr.x2]="getPointPosition(i).x"
+          y1="10" 
+          y2="190"
+          class="grid-line"
+        />
+      </g>
+
+      <!-- Chart area (for area charts) -->
+      <path 
+        *ngIf="config.type === 'area' && chartPath"
+        [attr.d]="chartPath"
+        class="chart-area"
+        [style.fill]="config.color + '20'"
+      />
+
+      <!-- Chart line -->
+      <path 
+        *ngIf="(config.type === 'line' || config.type === 'area') && chartPath"
+        [attr.d]="chartPath"
+        class="chart-line"
+        [style.stroke]="config.color"
+        fill="none"
+      />
+
+      <!-- Data points -->
+      <g class="data-points" *ngIf="config.showPoints">
+        <circle
+          *ngFor="let point of data; let i = index"
+          [attr.cx]="getPointPosition(i).x"
+          [attr.cy]="getPointPosition(i).y"
+          r="4"
+          class="data-point"
+          [style.fill]="config.color"
+          [attr.data-value]="point.value"
+          [attr.data-date]="point.date"
+        />
+      </g>
+
+      <!-- Bars (for bar charts) -->
+      <g class="bars" *ngIf="config.type === 'bar'">
+        <rect
+          *ngFor="let point of data; let i = index"
+          [attr.x]="getPointPosition(i).x - 8"
+          [attr.y]="getPointPosition(i).y"
+          width="16"
+          [attr.height]="190 - getPointPosition(i).y"
+          class="bar"
+          [style.fill]="config.color"
+        />
+      </g>
+    </svg>
+
+    <!-- Y-axis labels -->
+    <div class="y-labels">
+      <span 
+        *ngFor="let label of yLabels; let i = index"
+        class="y-label"
+        [style.bottom.%]="(i / (yLabels.length - 1)) * 90"
+      >
+        {{ label }}
+      </span>
+    </div>
+  </div>
+
+  <!-- X-axis labels -->
+  <div class="x-labels">
+    <span 
+      *ngFor="let label of xLabels; let i = index"
+      class="x-label"
+      [style.left.%]="(i / (xLabels.length - 1)) * 93.3 + 3.35"
+    >
+      {{ label }}
+    </span>
+  </div>
+</div>

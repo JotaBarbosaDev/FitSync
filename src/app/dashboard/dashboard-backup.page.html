@@ -1,0 +1,201 @@
+<ion-content class="dashboard-content">
+  <!-- Header com menu e perfil -->
+  <div class="dashboard-header">
+    <div class="header-top">
+      <ion-button fill="clear" (click)="openMenu()" class="menu-btn">
+        <ion-icon name="menu" slot="icon-only"></ion-icon>
+      </ion-button>
+      
+      <div class="user-info">
+        <div class="greeting">
+          <h1>{{ getGreeting() }}, {{ getUserFirstName() }}!</h1>
+          <p>{{ getMotivationalMessage() }}</p>
+        </div>
+        
+        <ion-avatar class="user-avatar" (click)="navigateToProfile()">
+          <img src="/assets/icon/favicon.png" alt="Avatar">
+        </ion-avatar>
+      </div>
+    </div>
+
+    <!-- Timer do workout ativo -->
+    <div class="workout-timer" *ngIf="workoutTimer.isRunning">
+      <ion-card class="timer-card">
+        <ion-card-content>
+          <div class="timer-content">
+            <ion-icon name="timer" class="timer-icon"></ion-icon>
+            <div class="timer-info">
+              <h3>Treino em Andamento</h3>
+              <p class="timer-display">{{ formatWorkoutTime() }}</p>
+            </div>
+            <ion-badge color="success" class="timer-status">
+              {{ workoutTimer.isPaused ? 'PAUSADO' : 'ATIVO' }}
+            </ion-badge>
+          </div>
+        </ion-card-content>
+      </ion-card>
+    </div>
+  </div>
+
+  <!-- Plano ativo -->
+  <div class="active-plan-section" *ngIf="activePlan">
+    <div class="section-header">
+      <h2>Plano Ativo</h2>
+      <ion-button fill="clear" (click)="navigateToPlans()">
+        <ion-icon name="settings" slot="icon-only"></ion-icon>
+      </ion-button>
+    </div>
+
+    <ion-card class="plan-card">
+      <ion-card-content>
+        <div class="plan-info">
+          <div class="plan-details">
+            <h3>{{ activePlan.name }}</h3>
+            <p>{{ activePlan.description }}</p>
+            <div class="plan-meta">
+              <ion-chip color="primary">
+                <ion-icon name="calendar"></ion-icon>
+                <ion-label>{{ activePlan.duration }} semanas</ion-label>
+              </ion-chip>
+              <ion-chip color="secondary">
+                <ion-icon name="fitness"></ion-icon>
+                <ion-label>{{ activePlan.difficulty }}</ion-label>
+              </ion-chip>
+            </div>
+          </div>
+          
+          <div class="plan-progress">
+            <div class="progress-circle">
+              <svg class="progress-ring" width="80" height="80">
+                <circle
+                  class="progress-ring-background"
+                  stroke="#e9ecef"
+                  stroke-width="6"
+                  fill="transparent"
+                  r="34"
+                  cx="40"
+                  cy="40"/>
+                <circle
+                  class="progress-ring-progress"
+                  stroke="var(--ion-color-primary)"
+                  stroke-width="6"
+                  fill="transparent"
+                  r="34"
+                  cx="40"
+                  cy="40"
+                  [attr.stroke-dasharray]="(getPlanProgress() / 100) * 213.6 + ' 213.6'"
+                  stroke-dashoffset="0"/>
+              </svg>
+              <div class="progress-text">{{ getPlanProgress() }}%</div>
+            </div>
+          </div>
+        </div>
+      </ion-card-content>
+    </ion-card>
+  </div>
+
+  <!-- Sem plano ativo -->
+  <div class="no-plan-section" *ngIf="!activePlan">
+    <ion-card class="no-plan-card">
+      <ion-card-content>
+        <div class="no-plan-content">
+          <ion-icon name="fitness" class="no-plan-icon"></ion-icon>
+          <h3>Nenhum Plano Ativo</h3>
+          <p>Crie ou ative um plano para começar a treinar</p>
+          <ion-button 
+            expand="block" 
+            class="btn-primary"
+            (click)="navigateToPlans()">
+            Gerenciar Planos
+          </ion-button>
+        </div>
+      </ion-card-content>
+    </ion-card>
+  </div>
+
+  <!-- Ações rápidas -->
+  <div class="quick-actions-section">
+    <div class="section-header">
+      <h2>Ações Rápidas</h2>
+    </div>
+
+    <div class="actions-grid">
+      <ion-card class="action-card" (click)="navigateToWorkout()">
+        <ion-card-content>
+          <ion-icon name="play" class="action-icon primary"></ion-icon>
+          <h3>Iniciar Treino</h3>
+          <p>Comece seu treino agora</p>
+        </ion-card-content>
+      </ion-card>
+
+      <ion-card class="action-card" (click)="navigateToPlans()">
+        <ion-card-content>
+          <ion-icon name="library" class="action-icon secondary"></ion-icon>
+          <h3>Meus Planos</h3>
+          <p>Gerencie seus planos</p>
+        </ion-card-content>
+      </ion-card>
+
+      <ion-card class="action-card" (click)="navigateToProgress()">
+        <ion-card-content>
+          <ion-icon name="trending-up" class="action-icon success"></ion-icon>
+          <h3>Progresso</h3>
+          <p>Veja sua evolução</p>
+        </ion-card-content>
+      </ion-card>
+
+      <ion-card class="action-card" (click)="createQuickPlan()">
+        <ion-card-content>
+          <ion-icon name="flash" class="action-icon warning"></ion-icon>
+          <h3>Plano Rápido</h3>
+          <p>Crie um treino instantâneo</p>
+        </ion-card-content>
+      </ion-card>
+    </div>
+  </div>
+
+  <!-- Estatísticas -->
+  <div class="stats-section">
+    <div class="section-header">
+      <h2>Suas Estatísticas</h2>
+    </div>
+
+    <div class="stats-grid">
+      <ion-card class="stat-card">
+        <ion-card-content>
+          <div class="stat-content">
+            <ion-icon name="calendar-outline" class="stat-icon"></ion-icon>
+            <div class="stat-info">
+              <h3>{{ getWeeklyWorkouts() }}</h3>
+              <p>Treinos esta semana</p>
+            </div>
+          </div>
+        </ion-card-content>
+      </ion-card>
+
+      <ion-card class="stat-card">
+        <ion-card-content>
+          <div class="stat-content">
+            <ion-icon name="trophy-outline" class="stat-icon"></ion-icon>
+            <div class="stat-info">
+              <h3>{{ getTotalWorkouts() }}</h3>
+              <p>Total de treinos</p>
+            </div>
+          </div>
+        </ion-card-content>
+      </ion-card>
+
+      <ion-card class="stat-card">
+        <ion-card-content>
+          <div class="stat-content">
+            <ion-icon name="flame-outline" class="stat-icon"></ion-icon>
+            <div class="stat-info">
+              <h3>7</h3>
+              <p>Sequência (dias)</p>
+            </div>
+          </div>
+        </ion-card-content>
+      </ion-card>
+    </div>
+  </div>
+</ion-content>

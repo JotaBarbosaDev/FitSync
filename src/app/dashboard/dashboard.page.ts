@@ -13,11 +13,11 @@ import { User, Plan, WorkoutTimer } from '../models';
   styleUrls: ['./dashboard.page.scss'],
   standalone: false,
 })
-export class DashboardPage implements OnInit, OnDestroy {
-  currentUser: User | null = null;
+export class DashboardPage implements OnInit, OnDestroy {  currentUser: User | null = null;
   activePlan: Plan | null = null;
   plans: Plan[] = [];
   workoutTimer: WorkoutTimer = { totalTime: 0, isRunning: false, isPaused: false };
+  recentWorkouts: any[] = [];
   
   private subscriptions: Subscription[] = [];
 
@@ -108,12 +108,7 @@ export class DashboardPage implements OnInit, OnDestroy {
       this.router.navigate(['/workout']);
     } else {
       this.showCreatePlanAlert();
-    }
-  }
-
-  navigateToProgress() {
-    this.router.navigate(['/progress']);
-  }
+    }  }
 
   navigateToProfile() {
     this.router.navigate(['/profile']);
@@ -154,46 +149,107 @@ export class DashboardPage implements OnInit, OnDestroy {
     return 'Usuário';
   }
 
+  // Novos métodos para o dashboard moderno
   getGreeting(): string {
     const hour = new Date().getHours();
-    if (hour < 12) {
-      return 'Bom dia';
-    } else if (hour < 18) {
-      return 'Boa tarde';
-    } else {
-      return 'Boa noite';
-    }
+    if (hour < 12) return 'Bom dia';
+    if (hour < 18) return 'Boa tarde';
+    return 'Boa noite';
   }
 
   getMotivationalMessage(): string {
     const messages = [
-      'Pronto para treinar hoje?',
-      'Vamos conquistar seus objetivos!',
-      'Cada treino te deixa mais forte!',
-      'Hora de superar seus limites!',
-      'Seu futuro eu agradece!',
-      'Consistência é a chave do sucesso!'
+      'Pronto para superar seus limites hoje?',
+      'Cada rep te deixa mais forte!',
+      'Seus objetivos estão cada vez mais próximos',
+      'Transforme suor em conquistas',
+      'O único treino ruim é aquele que não acontece',
+      'Seja a melhor versão de você mesmo'
     ];
     return messages[Math.floor(Math.random() * messages.length)];
   }
 
-  formatWorkoutTime(): string {
-    return this.timerService.formatTime(this.workoutTimer.totalTime);
+  getWeeklyWorkouts(): number {
+    // Simulação - em produção viria do serviço
+    return 4;
+  }
+
+  getTotalWorkouts(): number {
+    // Simulação - em produção viria do serviço
+    return 47;
+  }
+
+  getStreakDays(): number {
+    // Simulação - sequência de dias consecutivos
+    return 7;
+  }
+
+  getCaloriesBurned(): number {
+    // Simulação - calorias queimadas esta semana
+    return 1240;
   }
 
   getPlanProgress(): number {
     if (!this.activePlan) return 0;
-    // Implementar cálculo de progresso do plano
-    return 65; // Placeholder
+    // Simulação - progresso do plano atual
+    return 68;
   }
 
-  getWeeklyWorkouts(): number {
-    // Implementar cálculo de treinos da semana
-    return 3; // Placeholder
+  getMuscleGroupName(muscle: string): string {
+    const muscleNames: { [key: string]: string } = {
+      'chest': 'Peito',
+      'back': 'Costas',
+      'legs': 'Pernas',
+      'shoulders': 'Ombros',
+      'arms': 'Braços',
+      'core': 'Core',
+      'cardio': 'Cardio'
+    };
+    return muscleNames[muscle] || muscle;
   }
 
-  getTotalWorkouts(): number {
-    // Implementar cálculo total de treinos
-    return 24; // Placeholder
+  getDailyTip(): string {
+    const tips = [
+      'Hidrate-se bem antes, durante e após o treino',
+      'Aqueça sempre antes de iniciar os exercícios',
+      'Mantenha uma postura correta durante todos os movimentos',
+      'Descanse adequadamente entre as séries',
+      'Varie seus treinos para evitar adaptação muscular',
+      'A consistência é mais importante que a intensidade'
+    ];
+    return tips[Math.floor(Math.random() * tips.length)];
+  }
+
+  // Métodos de navegação
+  showProfile(): void {
+    this.router.navigate(['/profile']);
+  }
+
+  startWorkout(): void {
+    this.router.navigate(['/workout/start']);
+  }
+
+  quickStartWorkout(): void {
+    this.router.navigate(['/workout/quick']);
+  }
+
+  navigateToExercises(): void {
+    this.router.navigate(['/lista']);
+  }
+
+  navigateToProgress(): void {
+    this.router.navigate(['/progress']);
+  }
+
+  navigateToNutrition(): void {
+    this.router.navigate(['/nutrition']);
+  }
+
+  navigateToHistory(): void {
+    this.router.navigate(['/history']);
+  }
+
+  startFirstWorkout(): void {
+    this.router.navigate(['/workout/beginner']);
   }
 }

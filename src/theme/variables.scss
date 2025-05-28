@@ -1,22 +1,22 @@
 // For information on how to create your own theme, please see:
 // http://ionicframework.com/docs/theming/
 
-// FitSync Custom Theme Variables
+// FitSync Modern Professional Theme
 :root {
-  // Cores principais da FitSync
-  --ion-color-primary: #E6FE58;
-  --ion-color-primary-rgb: 230, 254, 88;
-  --ion-color-primary-contrast: #141414;
-  --ion-color-primary-contrast-rgb: 20, 20, 20;
-  --ion-color-primary-shade: #CBE04D;
-  --ion-color-primary-tint: #E9FE69;
+  // Cores principais - Gradient moderno azul/roxo
+  --ion-color-primary: #667eea;
+  --ion-color-primary-rgb: 102, 126, 234;
+  --ion-color-primary-contrast: #ffffff;
+  --ion-color-primary-contrast-rgb: 255, 255, 255;
+  --ion-color-primary-shade: #5a6fd8;
+  --ion-color-primary-tint: #758bec;
 
-  --ion-color-secondary: #141414;
-  --ion-color-secondary-rgb: 20, 20, 20;
+  --ion-color-secondary: #764ba2;
+  --ion-color-secondary-rgb: 118, 75, 162;
   --ion-color-secondary-contrast: #ffffff;
   --ion-color-secondary-contrast-rgb: 255, 255, 255;
-  --ion-color-secondary-shade: #121212;
-  --ion-color-secondary-tint: #2c2c2c;
+  --ion-color-secondary-shade: #68428f;
+  --ion-color-secondary-tint: #8459ab;
 
   // Cores de estado
   --ion-color-success: #28A745;
@@ -39,14 +39,20 @@
   --ion-color-danger-contrast-rgb: 255, 255, 255;
   --ion-color-danger-shade: #C12C3C;
   --ion-color-danger-tint: #E04858;
-
-  // Cores personalizadas FitSync
-  --fitsync-muscle-chest: #FF6B6B;
-  --fitsync-muscle-back: #4ECDC4;
-  --fitsync-muscle-legs: #45B7D1;
-  --fitsync-muscle-shoulders: #96CEB4;
-  --fitsync-muscle-arms: #FFEAA7;
-  --fitsync-muscle-core: #DDA0DD;
+  // Cores personalizadas FitSync - Paleta profissional
+  --fitsync-gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  --fitsync-gradient-success: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+  --fitsync-gradient-warning: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  --fitsync-gradient-danger: linear-gradient(135deg, #e53935 0%, #e35d5b 100%);
+  
+  // Cores para grupos musculares
+  --fitsync-muscle-chest: #e74c3c;
+  --fitsync-muscle-back: #3498db;
+  --fitsync-muscle-legs: #9b59b6;
+  --fitsync-muscle-shoulders: #f39c12;
+  --fitsync-muscle-arms: #2ecc71;
+  --fitsync-muscle-core: #e67e22;
+  --fitsync-muscle-cardio: #1abc9c;
 
   // Cores de fundo e superfície
   --ion-background-color: #ffffff;

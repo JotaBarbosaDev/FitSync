@@ -1,0 +1,101 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button (click)="goBack()"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Conquistas</ion-title>
+    <ion-buttons slot="end">
+      <ion-button fill="clear" (click)="onFilterToggle()">
+        <ion-icon [name]="showUnlockedOnly ? 'eye-outline' : 'eye-off-outline'"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="achievements-content">
+  <!-- Progress Header -->
+  <div class="progress-header">
+    <div class="progress-summary">
+      <div class="trophy-icon">
+        <ion-icon name="trophy" color="warning"></ion-icon>
+      </div>
+      <div class="progress-info">
+        <h2>{{ getUnlockedCount() }} / {{ getTotalCount() }}</h2>
+        <p>Conquistas Desbloqueadas</p>
+        <div class="progress-bar">
+          <div class="progress-fill" [style.width.%]="getProgressPercentage()"></div>
+        </div>
+        <span class="progress-text">{{ getProgressPercentage() }}% Completo</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Category Filters -->
+  <div class="filter-section">
+    <div class="filter-scroll">
+      <ion-chip 
+        *ngFor="let category of categories"
+        [class.active]="selectedCategory === category.id"
+        (click)="onCategoryChange(category.id)"
+        [color]="selectedCategory === category.id ? 'primary' : 'medium'">
+        <ion-icon [name]="category.icon"></ion-icon>
+        <ion-label>{{ category.name }}</ion-label>
+      </ion-chip>
+    </div>
+  </div>
+
+  <!-- Achievements Grid -->
+  <div class="achievements-grid">
+    <div 
+      class="achievement-card" 
+      *ngFor="let achievement of filteredAchievements"
+      [class.unlocked]="achievement.isUnlocked"
+      [class.locked]="!achievement.isUnlocked">
+      
+      <!-- Achievement Icon -->
+      <div class="achievement-icon">
+        <div class="icon-container" [attr.data-category]="achievement.category">
+          <ion-icon 
+            [name]="achievement.icon" 
+            [color]="achievement.isUnlocked ? getCategoryColor(achievement.category) : 'medium'">
+          </ion-icon>
+        </div>
+        <div class="status-badge" *ngIf="achievement.isUnlocked">
+          <ion-icon name="checkmark" color="success"></ion-icon>
+        </div>
+      </div>
+
+      <!-- Achievement Info -->
+      <div class="achievement-info">
+        <h3 [class.faded]="!achievement.isUnlocked">{{ achievement.title }}</h3>
+        <p [class.faded]="!achievement.isUnlocked">{{ achievement.description }}</p>
+        
+        <!-- Unlock Date -->
+        <div class="unlock-info" *ngIf="achievement.isUnlocked">
+          <div class="unlock-date">
+            <ion-icon name="calendar-outline"></ion-icon>
+            <span>{{ formatDate(achievement.dateEarned) }}</span>
+          </div>
+        </div>
+        
+        <!-- Locked State -->
+        <div class="locked-state" *ngIf="!achievement.isUnlocked">
+          <ion-icon name="lock-closed-outline" color="medium"></ion-icon>
+          <span>Bloqueada</span>
+        </div>
+      </div>
+
+      <!-- Category Badge -->
+      <div class="category-badge" [attr.data-category]="achievement.category">
+        <ion-icon [name]="getCategoryIcon(achievement.category)"></ion-icon>
+      </div>
+    </div>
+  </div>
+
+  <!-- Empty State -->
+  <div class="empty-state" *ngIf="filteredAchievements.length === 0">
+    <ion-icon name="trophy-outline" color="medium"></ion-icon>
+    <h3>Nenhuma conquista encontrada</h3>
+    <p>{{ showUnlockedOnly ? 'Você ainda não desbloqueou conquistas nesta categoria.' : 'Tente ajustar os filtros.' }}</p>
+  </div>
+</ion-content>

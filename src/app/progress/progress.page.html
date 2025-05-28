@@ -1,0 +1,267 @@
+<ion-header [translucent]="true" class="gradient-header">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button color="light"></ion-back-button>
+    </ion-buttons>
+    <ion-title class="gradient-text">Progresso & Analytics</ion-title>
+    <ion-buttons slot="end">
+      <ion-button fill="clear" (click)="openWorkoutHistory()">
+        <ion-icon name="calendar-outline" color="light"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="progress-content">
+  <!-- Loading State -->
+  <div class="loading-container" *ngIf="isLoading">
+    <ion-spinner name="crescent"></ion-spinner>
+    <p>Carregando dados de progresso...</p>
+  </div>
+
+  <!-- Main Content -->
+  <div class="progress-container" *ngIf="!isLoading">
+    
+    <!-- Performance Overview -->
+    <div class="performance-overview" *ngIf="performanceMetrics">
+      <h2 class="section-title">
+        <ion-icon name="analytics-outline"></ion-icon>
+        Visão Geral
+      </h2>
+      
+      <div class="metrics-grid">
+        <div class="metric-card primary">
+          <div class="metric-icon">
+            <ion-icon name="barbell-outline"></ion-icon>
+          </div>
+          <div class="metric-info">
+            <span class="metric-value">{{ performanceMetrics.totalWorkouts }}</span>
+            <span class="metric-label">Treinos Realizados</span>
+          </div>
+        </div>
+        
+        <div class="metric-card success">
+          <div class="metric-icon">
+            <ion-icon name="trending-up-outline"></ion-icon>
+          </div>
+          <div class="metric-info">
+            <span class="metric-value">{{ formatVolume(performanceMetrics.totalVolume) }}kg</span>
+            <span class="metric-label">Volume Total</span>
+          </div>
+        </div>
+        
+        <div class="metric-card warning">
+          <div class="metric-icon">
+            <ion-icon name="time-outline"></ion-icon>
+          </div>
+          <div class="metric-info">
+            <span class="metric-value">{{ performanceMetrics.averageWorkoutDuration }}</span>
+            <span class="metric-label">Min. Médio</span>
+          </div>
+        </div>
+        
+        <div class="metric-card" [ngClass]="getConsistencyColor()">
+          <div class="metric-icon">
+            <ion-icon name="checkmark-circle-outline"></ion-icon>
+          </div>
+          <div class="metric-info">
+            <span class="metric-value">{{ performanceMetrics.consistencyScore }}%</span>
+            <span class="metric-label">Consistência</span>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Progress Description -->
+      <div class="progress-description">
+        <div class="description-card">
+          <ion-icon name="trophy-outline"></ion-icon>
+          <div>
+            <h4>{{ getProgressDescription() }}</h4>
+            <p>Progresso semanal: +{{ performanceMetrics.weeklyProgress }}%</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Overview Charts Section -->
+  <div class="section">
+    <div class="section-header">
+      <h2>Visão Geral dos Gráficos</h2>
+      <ion-button fill="clear" size="small" (click)="openWorkoutHistory()">
+        <ion-icon name="analytics-outline" slot="start"></ion-icon>
+        Ver Detalhes
+      </ion-button>
+    </div>
+
+    <div class="charts-grid">
+      <!-- Volume Progress Chart -->
+      <div class="chart-container">
+        <app-progress-chart
+          *ngIf="progressData.length > 0"
+          [data]="getVolumeChartData()"
+          [config]="volumeChartConfig"
+          title="Progresso de Volume Total">
+        </app-progress-chart>
+      </div>
+
+      <!-- Strength Progress Chart -->
+      <div class="chart-container">
+        <app-progress-chart
+          *ngIf="progressData.length > 0"
+          [data]="getStrengthChartData()"
+          [config]="strengthChartConfig"
+          title="Progresso de Força">
+        </app-progress-chart>
+      </div>
+    </div>
+  </div>
+
+  <!-- Achievements Section -->
+  <div class="achievements-section" *ngIf="achievements.length > 0">
+    <div class="section-header">
+      <h2 class="section-title">
+        <ion-icon name="trophy-outline"></ion-icon>
+        Conquistas Recentes
+      </h2>
+      <ion-button fill="clear" size="small" (click)="openAchievements()">
+        Ver Todas
+      </ion-button>
+    </div>
+    
+    <div class="achievements-carousel">
+      <div class="achievement-card" 
+           *ngFor="let achievement of achievements.slice(0, 3)" 
+           [ngClass]="achievement.category">
+        <div class="achievement-icon">
+          <ion-icon [name]="achievement.icon"></ion-icon>
+        </div>
+        <div class="achievement-info">
+          <h4>{{ achievement.title }}</h4>
+          <p>{{ achievement.description }}</p>
+          <span class="achievement-date">{{ formatDate(achievement.dateEarned) }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filters -->
+  <div class="filters-section">
+    <h2 class="section-title">
+      <ion-icon name="filter-outline"></ion-icon>
+      Análise de Exercícios
+    </h2>
+    
+    <div class="filter-controls">
+      <!-- Time Range Filter -->
+      <div class="filter-group">
+        <span class="filter-label">Período:</span>
+        <div class="filter-chips">
+          <ion-chip 
+            *ngFor="let range of ['week', 'month', 'quarter', 'year']"
+            [class.active]="selectedTimeRange === range"
+            (click)="onTimeRangeChange(range)"
+            [color]="selectedTimeRange === range ? 'primary' : 'medium'">
+            <ion-label>
+              {{ range === 'week' ? 'Semana' : 
+                 range === 'month' ? 'Mês' : 
+                 range === 'quarter' ? 'Trimestre' : 'Ano' }}
+            </ion-label>
+          </ion-chip>
+        </div>
+      </div>
+      
+      <!-- Muscle Group Filter -->
+      <div class="filter-group">
+        <span class="filter-label">Grupo Muscular:</span>
+        <div class="filter-chips">
+          <ion-chip 
+            *ngFor="let group of muscleGroups"
+            [class.active]="selectedMuscleGroup === group.id"
+            (click)="onMuscleGroupChange(group.id)"
+            [color]="selectedMuscleGroup === group.id ? 'primary' : 'medium'">
+            <ion-icon [name]="group.icon"></ion-icon>
+            <ion-label>{{ group.name }}</ion-label>
+          </ion-chip>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Exercise Progress -->
+  <div class="exercise-progress-section">
+    <div class="progress-grid">
+      <div class="progress-card" 
+           *ngFor="let exercise of progressData" 
+           (click)="openExerciseDetail(exercise.exerciseId)">
+        
+        <!-- Exercise Header -->
+        <div class="exercise-header">
+          <div class="exercise-info">
+            <h3>{{ exercise.exerciseName }}</h3>
+            <span class="muscle-badge" [ngClass]="exercise.muscleGroup">
+              {{ getMuscleGroupName(exercise.muscleGroup) }}
+            </span>
+          </div>
+          <div class="trend-indicator">
+            <ion-icon 
+              [name]="getTrendIcon(exercise.progressTrend)" 
+              [color]="getTrendColor(exercise.progressTrend)">
+            </ion-icon>
+          </div>
+        </div>
+        
+        <!-- Progress Stats -->
+        <div class="progress-stats">
+          <div class="stat-item">
+            <span class="stat-value">{{ exercise.bestSet.weight }}kg</span>
+            <span class="stat-label">Melhor Peso</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-value">{{ exercise.bestSet.reps }}</span>
+            <span class="stat-label">Repetições</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-value">{{ formatVolume(exercise.totalVolume) }}</span>
+            <span class="stat-label">Volume Total</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-value">{{ exercise.averageRPE.toFixed(1) }}</span>
+            <span class="stat-label">RPE Médio</span>
+          </div>        </div>
+        
+        <!-- Mini Chart -->
+        <div class="mini-chart">
+          <app-progress-chart
+            [data]="exercise.chartData"
+            [config]="{ type: 'line', color: getTrendColor(exercise.progressTrend) === 'success' ? '#10dc60' : getTrendColor(exercise.progressTrend) === 'danger' ? '#f04141' : '#ffce00', showPoints: false, showGrid: false, height: 80 }"
+            [title]="">
+          </app-progress-chart>
+          <span class="sessions-count">{{ exercise.sessions.length }} sessões</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quick Actions -->
+  <div class="quick-actions">
+    <ion-button 
+      expand="block" 
+      fill="outline" 
+      (click)="openWorkoutHistory()"
+      class="action-btn">
+      <ion-icon name="calendar-outline" slot="start"></ion-icon>
+      Ver Histórico Completo
+    </ion-button>
+    
+    <ion-button 
+      expand="block" 
+      fill="solid" 
+      color="primary"
+      (click)="router.navigate(['/lista'])"
+      class="action-btn">
+      <ion-icon name="add-outline" slot="start"></ion-icon>
+      Novo Treino
+    </ion-button>
+  </div>
+</ion-content>

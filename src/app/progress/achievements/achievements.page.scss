@@ -1,0 +1,370 @@
+.achievements-content {
+  --background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+// Progress Header
+.progress-header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 20px 16px;
+  
+  .progress-summary {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    
+    .trophy-icon {
+      font-size: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 80px;
+      height: 80px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 20px;
+      backdrop-filter: blur(10px);
+    }
+    
+    .progress-info {
+      flex: 1;
+      
+      h2 {
+        margin: 0;
+        font-size: 32px;
+        font-weight: 700;
+      }
+      
+      p {
+        margin: 4px 0 12px 0;
+        opacity: 0.9;
+        font-size: 16px;
+      }
+      
+      .progress-bar {
+        width: 100%;
+        height: 8px;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 4px;
+        overflow: hidden;
+        margin-bottom: 8px;
+        
+        .progress-fill {
+          height: 100%;
+          background: linear-gradient(90deg, #10dc60, #59d15f);
+          border-radius: 4px;
+          transition: width 0.3s ease;
+        }
+      }
+      
+      .progress-text {
+        font-size: 14px;
+        opacity: 0.8;
+      }
+    }
+  }
+}
+
+// Category Filters
+.filter-section {
+  padding: 16px;
+  background: var(--ion-color-light);
+  
+  .filter-scroll {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding-bottom: 4px;
+    
+    &::-webkit-scrollbar {
+      display: none;
+    }
+    
+    ion-chip {
+      min-width: fit-content;
+      white-space: nowrap;
+      transition: all 0.2s ease;
+      
+      &.active {
+        transform: scale(1.05);
+      }
+      
+      ion-icon {
+        margin-right: 4px;
+      }
+    }
+  }
+}
+
+// Achievements Grid
+.achievements-grid {
+  padding: 16px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 16px;
+}
+
+.achievement-card {
+  background: var(--ion-color-light);
+  border-radius: 16px;
+  padding: 20px;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  border: 2px solid transparent;
+  
+  &.unlocked {
+    background: linear-gradient(135deg, rgba(16, 220, 96, 0.1), rgba(89, 209, 95, 0.1));
+    border-color: var(--ion-color-success);
+    
+    &:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 25px rgba(16, 220, 96, 0.2);
+    }
+  }
+  
+  &.locked {
+    opacity: 0.7;
+    
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+  }
+  
+  // Achievement Icon
+  .achievement-icon {
+    position: relative;
+    width: 64px;
+    height: 64px;
+    margin: 0 auto 16px;
+    
+    .icon-container {
+      width: 100%;
+      height: 100%;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
+      position: relative;
+      
+      &[data-category="consistency"] {
+        background: linear-gradient(135deg, #3880ff, #5260ff);
+      }
+      
+      &[data-category="strength"] {
+        background: linear-gradient(135deg, #f04141, #ff6b6b);
+      }
+      
+      &[data-category="volume"] {
+        background: linear-gradient(135deg, #ffce00, #ffc947);
+      }
+      
+      &[data-category="milestone"] {
+        background: linear-gradient(135deg, #10dc60, #59d15f);
+      }
+    }
+    
+    .status-badge {
+      position: absolute;
+      top: -4px;
+      right: -4px;
+      width: 24px;
+      height: 24px;
+      background: var(--ion-color-success);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      border: 3px solid white;
+      
+      ion-icon {
+        --color: white;
+      }
+    }
+  }
+  
+  // Achievement Info
+  .achievement-info {
+    text-align: center;
+    
+    h3 {
+      margin: 0 0 8px 0;
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--ion-color-dark);
+      
+      &.faded {
+        color: var(--ion-color-medium);
+      }
+    }
+    
+    p {
+      margin: 0 0 16px 0;
+      font-size: 14px;
+      color: var(--ion-color-medium);
+      line-height: 1.4;
+      
+      &.faded {
+        opacity: 0.7;
+      }
+    }
+    
+    .unlock-info {
+      .unlock-date {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        color: var(--ion-color-success);
+        font-size: 12px;
+        font-weight: 500;
+        
+        ion-icon {
+          font-size: 14px;
+        }
+      }
+    }
+    
+    .locked-state {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      color: var(--ion-color-medium);
+      font-size: 12px;
+      
+      ion-icon {
+        font-size: 14px;
+      }
+    }
+  }
+  
+  // Category Badge
+  .category-badge {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    opacity: 0.7;
+    
+    &[data-category="consistency"] {
+      background: rgba(56, 128, 255, 0.1);
+      color: var(--ion-color-primary);
+    }
+    
+    &[data-category="strength"] {
+      background: rgba(240, 65, 65, 0.1);
+      color: var(--ion-color-danger);
+    }
+    
+    &[data-category="volume"] {
+      background: rgba(255, 206, 0, 0.1);
+      color: var(--ion-color-warning);
+    }
+    
+    &[data-category="milestone"] {
+      background: rgba(16, 220, 96, 0.1);
+      color: var(--ion-color-success);
+    }
+  }
+}
+
+// Empty State
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  text-align: center;
+  
+  ion-icon {
+    font-size: 64px;
+    margin-bottom: 16px;
+  }
+  
+  h3 {
+    margin: 0 0 8px 0;
+    color: var(--ion-color-medium);
+    font-weight: 500;
+  }
+  
+  p {
+    margin: 0;
+    color: var(--ion-color-medium);
+    font-size: 14px;
+    line-height: 1.4;
+    max-width: 280px;
+  }
+}
+
+// Dark Mode Support
+@media (prefers-color-scheme: dark) {
+  .filter-section {
+    background: var(--ion-color-dark);
+  }
+  
+  .achievement-card {
+    background: var(--ion-color-dark);
+    
+    &.unlocked {
+      background: linear-gradient(135deg, rgba(16, 220, 96, 0.15), rgba(89, 209, 95, 0.15));
+    }
+    
+    .achievement-info {
+      h3:not(.faded) {
+        color: var(--ion-color-light);
+      }
+    }
+    
+    .status-badge {
+      border-color: var(--ion-color-dark);
+    }
+  }
+}
+
+// Responsive Design
+@media (max-width: 576px) {
+  .achievements-grid {
+    grid-template-columns: 1fr;
+    padding: 12px;
+    gap: 12px;
+  }
+  
+  .achievement-card {
+    padding: 16px;
+    
+    .achievement-icon {
+      width: 56px;
+      height: 56px;
+      
+      .icon-container {
+        font-size: 28px;
+      }
+    }
+  }
+  
+  .progress-header {
+    padding: 16px 12px;
+    
+    .progress-summary {
+      .trophy-icon {
+        width: 64px;
+        height: 64px;
+        font-size: 36px;
+      }
+      
+      .progress-info h2 {
+        font-size: 24px;
+      }
+    }
+  }
+}

@@ -1,0 +1,316 @@
+.exercise-library-content {
+  --background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  
+  .search-section {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    padding: 20px;
+    margin: 10px;
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    
+    .search-container {
+      margin-bottom: 15px;
+      
+      .modern-searchbar {
+        --background: rgba(255, 255, 255, 0.15);
+        --border-radius: 15px;
+        --box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        --color: #ffffff;
+        --placeholder-color: rgba(255, 255, 255, 0.7);
+        --icon-color: #ffffff;
+        
+        .searchbar-input {
+          font-weight: 500;
+        }
+      }
+    }
+    
+    .filter-chips {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding: 5px 0;
+      
+      &::-webkit-scrollbar {
+        display: none;
+      }
+      
+      ion-chip {
+        --background: rgba(255, 255, 255, 0.15);
+        --color: #ffffff;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        backdrop-filter: blur(10px);
+        transition: all 0.3s ease;
+        min-width: fit-content;
+        
+        &.active {
+          --background: linear-gradient(45deg, var(--ion-color-primary), var(--ion-color-secondary));
+          transform: scale(1.05);
+          box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        &:hover {
+          transform: translateY(-2px);
+        }
+        
+        ion-icon {
+          margin-right: 5px;
+        }
+      }
+    }
+  }
+  
+  .exercises-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+    padding: 20px;
+    
+    @media (max-width: 768px) {
+      grid-template-columns: 1fr;
+      padding: 15px;
+    }
+    
+    .exercise-card {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(15px);
+      border-radius: 20px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      overflow: hidden;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      animation: slideUp 0.6s ease-out;
+      
+      &:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+        border-color: rgba(255, 255, 255, 0.4);
+      }
+      
+      .exercise-image {
+        position: relative;
+        height: 180px;
+        overflow: hidden;
+        
+        img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          transition: transform 0.3s ease;
+        }
+        
+        .exercise-overlay {
+          position: absolute;
+          top: 10px;
+          right: 10px;
+          
+          .favorite-btn {
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(10px);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            
+            &:hover {
+              background: rgba(0, 0, 0, 0.7);
+              transform: scale(1.1);
+            }
+          }
+        }
+        
+        &::after {
+          content: '';
+          position: absolute;
+          bottom: 0;
+          left: 0;
+          right: 0;
+          height: 60px;
+          background: linear-gradient(transparent, rgba(0, 0, 0, 0.7));
+        }
+      }
+      
+      .exercise-content {
+        padding: 20px;
+        
+        .exercise-name {
+          color: #ffffff;
+          font-size: 1.2rem;
+          font-weight: 600;
+          margin: 0 0 8px 0;
+          background: linear-gradient(45deg, #ffffff, #e0e7ff);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+        }
+        
+        .exercise-muscle {
+          color: rgba(255, 255, 255, 0.8);
+          font-size: 0.9rem;
+          margin: 0 0 15px 0;
+          text-transform: capitalize;
+        }
+        
+        .exercise-stats {
+          display: flex;
+          justify-content: space-between;
+          margin-bottom: 15px;
+          
+          .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 0.85rem;
+            font-weight: 500;
+            
+            ion-icon {
+              color: var(--ion-color-primary-tint);
+              font-size: 1rem;
+            }
+          }
+        }
+        
+        .exercise-equipment {
+          ion-chip {
+            --background: rgba(118, 75, 162, 0.3);
+            --color: #ffffff;
+            font-size: 0.75rem;
+            
+            ion-icon {
+              margin-right: 4px;
+            }
+          }
+        }
+      }
+      
+      &:hover .exercise-image img {
+        transform: scale(1.1);
+      }
+    }
+  }
+  
+  .empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: rgba(255, 255, 255, 0.8);
+    
+    .empty-icon {
+      font-size: 4rem;
+      color: rgba(255, 255, 255, 0.4);
+      margin-bottom: 20px;
+    }
+    
+    h3 {
+      color: #ffffff;
+      font-size: 1.5rem;
+      margin-bottom: 10px;
+      font-weight: 600;
+    }
+    
+    p {
+      font-size: 1rem;
+      margin-bottom: 30px;
+      line-height: 1.5;
+    }
+    
+    ion-button {
+      --background: rgba(255, 255, 255, 0.1);
+      --border-color: rgba(255, 255, 255, 0.3);
+      --color: #ffffff;
+      
+      &:hover {
+        --background: rgba(255, 255, 255, 0.2);
+      }
+    }
+  }
+  
+  ion-fab {
+    ion-fab-button {
+      --background: linear-gradient(45deg, var(--ion-color-primary), var(--ion-color-secondary));
+      --color: #ffffff;
+      --box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+      
+      &:hover {
+        transform: scale(1.1);
+      }
+    }
+  }
+}
+
+// Animations
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// Add staggered animation delay for cards
+.exercises-grid .exercise-card {
+  &:nth-child(1) { animation-delay: 0.1s; }
+  &:nth-child(2) { animation-delay: 0.2s; }
+  &:nth-child(3) { animation-delay: 0.3s; }
+  &:nth-child(4) { animation-delay: 0.4s; }
+  &:nth-child(5) { animation-delay: 0.5s; }
+  &:nth-child(6) { animation-delay: 0.6s; }
+  &:nth-child(n+7) { animation-delay: 0.7s; }
+}
+
+// Responsive adjustments
+@media (max-width: 768px) {
+  .exercise-library-content {
+    .search-section {
+      margin: 5px;
+      padding: 15px;
+      
+      .filter-chips {
+        gap: 6px;
+        
+        ion-chip {
+          font-size: 0.8rem;
+          height: 32px;
+        }
+      }
+    }
+    
+    .exercises-grid {
+      padding: 10px;
+      gap: 15px;
+      
+      .exercise-card {
+        .exercise-image {
+          height: 150px;
+        }
+        
+        .exercise-content {
+          padding: 15px;
+          
+          .exercise-name {
+            font-size: 1.1rem;
+          }
+          
+          .exercise-stats {
+            .stat-item {
+              font-size: 0.8rem;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+// Dark mode compatibility
+@media (prefers-color-scheme: dark) {
+  .exercise-library-content {
+    .search-section,
+    .exercises-grid .exercise-card {
+      border-color: rgba(255, 255, 255, 0.15);
+    }
+  }
+}

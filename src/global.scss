@@ -125,3 +125,277 @@
   justify-content: center;
   padding: 20px;
 }
+
+/**
+ * FitSync Modern Professional Design System
+ * -----------------------------------------------------
+ * Enhanced UI components with gradients and animations
+ */
+
+// Gradientes modernos
+.gradient-bg {
+  background: linear-gradient(135deg, var(--ion-color-primary) 0%, var(--ion-color-secondary) 100%);
+}
+
+.gradient-success {
+  background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+}
+
+.gradient-warning {
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+}
+
+.gradient-danger {
+  background: linear-gradient(135deg, #e53935 0%, #e35d5b 100%);
+}
+
+// Cartões modernos com glassmorphism
+.modern-card {
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  transition: all 0.3s ease;
+  background: rgba(255, 255, 255, 0.25);
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+  }
+}
+
+// Botões modernos
+.btn-modern {
+  border-radius: 12px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-transform: none;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  height: 48px;
+  --padding-start: 24px;
+  --padding-end: 24px;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+  }
+}
+
+// Estatísticas circulares profissionais
+.stats-circle {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  position: relative;
+  background: linear-gradient(135deg, var(--ion-color-primary), var(--ion-color-secondary));
+  color: white;
+  font-weight: bold;
+  margin: 0 auto;
+  box-shadow: 0 8px 24px rgba(102, 126, 234, 0.3);
+  
+  .number {
+    font-size: 2.2rem;
+    line-height: 1;
+    font-weight: 700;
+  }
+  
+  .label {
+    font-size: 0.8rem;
+    opacity: 0.9;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-top: 4px;
+  }
+}
+
+// Progress bars com animação
+.progress-modern {
+  height: 8px;
+  border-radius: 4px;
+  background: rgba(102, 126, 234, 0.2);
+  overflow: hidden;
+  position: relative;
+  
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--ion-color-primary), var(--ion-color-secondary));
+    border-radius: 4px;
+    transition: width 0.8s ease;
+    position: relative;
+    overflow: hidden;
+    
+    &::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+      animation: shimmer 2s infinite;
+    }
+  }
+}
+
+@keyframes shimmer {
+  0% { left: -100%; }
+  100% { left: 100%; }
+}
+
+// Badges de grupos musculares
+.muscle-badge {
+  display: inline-block;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: white;
+  margin: 2px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  
+  &.chest { background: var(--fitsync-muscle-chest); }
+  &.back { background: var(--fitsync-muscle-back); }
+  &.legs { background: var(--fitsync-muscle-legs); }
+  &.shoulders { background: var(--fitsync-muscle-shoulders); }
+  &.arms { background: var(--fitsync-muscle-arms); }
+  &.core { background: var(--fitsync-muscle-core); }
+  &.cardio { background: var(--fitsync-muscle-cardio); }
+}
+
+// Animações suaves
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+.animate-slide-up {
+  animation: slideInUp 0.6s ease-out;
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.4s ease-out;
+}
+
+.animate-pulse {
+  animation: pulse 2s infinite;
+}
+
+// Typography moderna
+.text-gradient {
+  background: linear-gradient(135deg, var(--ion-color-primary), var(--ion-color-secondary));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-weight: 700;
+}
+
+.section-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  color: var(--ion-color-primary);
+}
+
+.subsection-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: var(--ion-text-color);
+}
+
+// Cards de workout melhorados
+.workout-card-modern {
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  padding: 20px;
+  margin: 12px 0;
+  border: none;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--ion-color-primary), var(--ion-color-secondary));
+  }
+  
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+  }
+}
+
+.exercise-card-modern {
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 12px;
+  padding: 16px;
+  margin: 8px 0;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+  border-left: 4px solid var(--ion-color-primary);
+  transition: all 0.3s ease;
+  
+  &:hover {
+    transform: translateX(4px);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  }
+}
+
+// Header personalizado
+.header-modern {
+  --background: linear-gradient(135deg, var(--ion-color-primary), var(--ion-color-secondary));
+  --color: white;
+  
+  ion-title {
+    font-weight: 700;
+    font-size: 1.3rem;
+  }
+}
+
+// Responsividade melhorada
+@media (max-width: 768px) {
+  .stats-circle {
+    width: 100px;
+    height: 100px;
+    
+    .number { font-size: 1.8rem; }
+    .label { font-size: 0.7rem; }
+  }
+  
+  .modern-card {
+    margin: 8px;
+    padding: 16px;
+  }
+  
+  .section-title {
+    font-size: 1.3rem;
+  }
+}

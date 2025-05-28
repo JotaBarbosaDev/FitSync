@@ -1,0 +1,250 @@
+<ion-header [translucent]="true" class="gradient-header">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button color="light"></ion-back-button>
+    </ion-buttons>
+    <ion-title class="gradient-text">Meu Progresso</ion-title>
+    <ion-buttons slot="end">
+      <ion-button fill="clear" (click)="toggleView()">
+        <ion-icon [name]="viewMode === 'charts' ? 'list-outline' : 'analytics-outline'" color="light"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="progress-content">
+  <!-- Period Selector -->
+  <div class="period-selector">
+    <ion-segment [(ngModel)]="selectedPeriod" (ionChange)="changePeriod()">
+      <ion-segment-button value="week">
+        <ion-label>Semana</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="month">
+        <ion-label>Mês</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="year">
+        <ion-label>Ano</ion-label>
+      </ion-segment-button>
+    </ion-segment>
+  </div>
+
+  <!-- Overview Stats -->
+  <div class="overview-stats">
+    <div class="stat-card">
+      <div class="stat-icon">
+        <ion-icon name="fitness-outline"></ion-icon>
+      </div>
+      <div class="stat-content">
+        <h3>{{ totalWorkouts }}</h3>
+        <p>Treinos</p>
+        <span class="trend positive">+{{ weeklyChange }}%</span>
+      </div>
+    </div>
+    
+    <div class="stat-card">
+      <div class="stat-icon">
+        <ion-icon name="flame-outline"></ion-icon>
+      </div>
+      <div class="stat-content">
+        <h3>{{ totalCalories }}</h3>
+        <p>Calorias</p>
+        <span class="trend positive">+{{ calorieChange }}%</span>
+      </div>
+    </div>
+    
+    <div class="stat-card">
+      <div class="stat-icon">
+        <ion-icon name="time-outline"></ion-icon>
+      </div>
+      <div class="stat-content">
+        <h3>{{ totalMinutes }}</h3>
+        <p>Minutos</p>
+        <span class="trend neutral">={{ timeChange }}%</span>
+      </div>
+    </div>
+    
+    <div class="stat-card">
+      <div class="stat-icon">
+        <ion-icon name="trophy-outline"></ion-icon>
+      </div>
+      <div class="stat-content">
+        <h3>{{ currentStreak }}</h3>
+        <p>Sequência</p>
+        <span class="trend positive">+{{ streakChange }}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Charts View -->
+  <div *ngIf="viewMode === 'charts'">
+    <!-- Weight Progress Chart -->
+    <div class="chart-section">
+      <h2 class="section-title">
+        <ion-icon name="trending-up-outline"></ion-icon>
+        Progresso de Peso
+      </h2>
+      <div class="chart-container">
+        <canvas #weightChart></canvas>
+      </div>
+      <div class="chart-legend">
+        <div class="legend-item">
+          <div class="legend-color weight"></div>
+          <span>Peso Corporal</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-color target"></div>
+          <span>Meta</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Workout Frequency Chart -->
+    <div class="chart-section">
+      <h2 class="section-title">
+        <ion-icon name="bar-chart-outline"></ion-icon>
+        Frequência de Treinos
+      </h2>
+      <div class="chart-container">
+        <canvas #workoutChart></canvas>
+      </div>
+    </div>
+
+    <!-- Muscle Group Distribution -->
+    <div class="chart-section">
+      <h2 class="section-title">
+        <ion-icon name="pie-chart-outline"></ion-icon>
+        Grupos Musculares
+      </h2>
+      <div class="muscle-group-stats">
+        <div class="muscle-stat" *ngFor="let group of muscleGroupStats">
+          <div class="muscle-header">
+            <ion-icon [name]="group.icon" [color]="group.color"></ion-icon>
+            <span class="muscle-name">{{ group.name }}</span>
+            <span class="muscle-percentage">{{ group.percentage }}%</span>
+          </div>
+          <div class="muscle-progress">
+            <div class="progress-bar">
+              <div class="progress-fill" [style.width.%]="group.percentage" [style.background]="'var(--ion-color-' + group.color + ')'"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- List View -->
+  <div *ngIf="viewMode === 'list'">
+    <!-- Recent Achievements -->
+    <div class="achievements-section">
+      <h2 class="section-title">
+        <ion-icon name="medal-outline"></ion-icon>
+        Conquistas Recentes
+      </h2>
+      <div class="achievements-grid">
+        <div class="achievement-card" *ngFor="let achievement of recentAchievements" [class.unlocked]="achievement.unlocked">
+          <div class="achievement-icon">
+            <ion-icon [name]="achievement.icon"></ion-icon>
+          </div>
+          <div class="achievement-content">
+            <h4>{{ achievement.title }}</h4>
+            <p>{{ achievement.description }}</p>
+            <div class="achievement-progress" *ngIf="!achievement.unlocked">
+              <div class="progress-bar">
+                <div class="progress-fill" [style.width.%]="achievement.progress"></div>
+              </div>
+              <span class="progress-text">{{ achievement.current }}/{{ achievement.target }}</span>
+            </div>
+            <span class="achievement-date" *ngIf="achievement.unlocked">{{ achievement.unlockedDate | date:'dd/MM' }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Workout History -->
+    <div class="history-section">
+      <h2 class="section-title">
+        <ion-icon name="calendar-outline"></ion-icon>
+        Histórico de Treinos
+      </h2>
+      <div class="workout-timeline">
+        <div class="timeline-item" *ngFor="let workout of workoutHistory">
+          <div class="timeline-date">
+            <span class="date">{{ workout.date | date:'dd' }}</span>
+            <span class="month">{{ workout.date | date:'MMM' }}</span>
+          </div>
+          <div class="timeline-content">
+            <div class="workout-card">
+              <div class="workout-header">
+                <h4>{{ workout.name }}</h4>
+                <span class="workout-duration">{{ workout.duration }}min</span>
+              </div>
+              <div class="workout-stats">
+                <div class="stat-item">
+                  <ion-icon name="fitness-outline"></ion-icon>
+                  <span>{{ workout.exercises }} exercícios</span>
+                </div>
+                <div class="stat-item">
+                  <ion-icon name="flame-outline"></ion-icon>
+                  <span>{{ workout.calories }} kcal</span>
+                </div>
+                <div class="stat-item">
+                  <ion-icon name="barbell-outline"></ion-icon>
+                  <span>{{ workout.sets }} séries</span>
+                </div>
+              </div>
+              <div class="workout-tags">
+                <ion-chip *ngFor="let tag of workout.muscleGroups" size="small" [color]="getMuscleGroupColor(tag)">
+                  {{ tag }}
+                </ion-chip>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Personal Records -->
+    <div class="records-section">
+      <h2 class="section-title">
+        <ion-icon name="trophy-outline"></ion-icon>
+        Recordes Pessoais
+      </h2>
+      <div class="records-grid">
+        <div class="record-card" *ngFor="let record of personalRecords">
+          <div class="record-icon">
+            <ion-icon [name]="record.icon"></ion-icon>
+          </div>
+          <div class="record-content">
+            <h4>{{ record.exercise }}</h4>
+            <div class="record-value">
+              <span class="value">{{ record.value }}</span>
+              <span class="unit">{{ record.unit }}</span>
+            </div>
+            <p class="record-date">{{ record.date | date:'dd/MM/yyyy' }}</p>
+            <span class="record-improvement" *ngIf="record.improvement">
+              +{{ record.improvement }}{{ record.unit }} desde o último
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Floating Action Button -->
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+    <ion-fab-button (click)="presentActionSheet()">
+      <ion-icon name="add"></ion-icon>
+    </ion-fab-button>
+    <ion-fab-list side="top">
+      <ion-fab-button (click)="addWeight()" color="primary">
+        <ion-icon name="scale-outline"></ion-icon>
+      </ion-fab-button>
+      <ion-fab-button (click)="addMeasurement()" color="secondary">
+        <ion-icon name="resize-outline"></ion-icon>
+      </ion-fab-button>
+      <ion-fab-button (click)="addGoal()" color="tertiary">
+        <ion-icon name="flag-outline"></ion-icon>
+      </ion-fab-button>
+    </ion-fab-list>
+  </ion-fab>
+</ion-content>

@@ -39,7 +39,12 @@ const routes: Routes = [
   {
     path: 'detalhe/:id',
     loadChildren: () => import('./detalhe/detalhe.module').then( m => m.DetalhePageModule)
+  },  {
+    path: 'progress',
+    loadChildren: () => import('./progress/progress.module').then( m => m.ProgressPageModule),
+    canActivate: [AuthGuard]
   },
+
 ];
 
 @NgModule({
