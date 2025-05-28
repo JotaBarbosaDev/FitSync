@@ -1,94 +1,105 @@
-<ion-content class="login-content">
-  <div class="login-container">
+<ion-content class="fitsync-fade-in">
+  <div class="fitsync-container">
     <!-- Logo e título -->
-    <div class="logo-section">
-      <img src="/assets/logo.png" alt="FitSync Logo" class="logo">
-      <h1 class="app-title">FitSync</h1>
-      <p class="app-subtitle">Sua jornada fitness começa aqui</p>
-    </div>    <!-- Formulário de login -->
-    <form class="login-form" (ngSubmit)="onLogin()">
-      <div class="form-section">
-        <ion-item class="input-item">
-          <ion-label position="stacked">Email</ion-label>
-          <ion-input
-            type="email"
-            [value]="loginData.email"
-            (ionInput)="updateField('email', $event)"
-            name="email"
-            placeholder="Digite seu email"
-            required
-            clearInput="true">
-          </ion-input>
-        </ion-item>
+    <div class="logo-section fitsync-slide-right">
+      <img src="/src/assets/logo.png" alt="FitSync Logo" class="logo">
+      <h1 class="fitsync-text-4xl fitsync-text-center">FitSync</h1>
+      <p class="fitsync-text-lg fitsync-text-center">Sua jornada fitness começa aqui</p>
+    </div>
 
-        <ion-item class="input-item">
-          <ion-label position="stacked">Senha</ion-label>
-          <ion-input
-            [type]="showPassword ? 'text' : 'password'"
-            [value]="loginData.password"
-            (ionInput)="updateField('password', $event)"
-            name="password"
-            placeholder="Digite sua senha"
-            required>
-          </ion-input>
-          <ion-button 
-            fill="clear" 
-            slot="end" 
-            (click)="togglePasswordVisibility()"
-            class="password-toggle">
-            <ion-icon 
-              [name]="showPassword ? 'eye-off' : 'eye'" 
-              slot="icon-only">
-            </ion-icon>
-          </ion-button>
-        </ion-item>
+    <!-- Formulário de login -->
+    <form class="login-form fitsync-slide-left" (ngSubmit)="onLogin()">
+      <div class="form-section">
+        <div class="fitsync-input">
+          <label class="input-label">Email</label>
+          <div class="input-wrapper">
+            <ion-input
+              type="email"
+              [value]="loginData.email"
+              (ionInput)="updateField('email', $event)"
+              name="email"
+              placeholder="Digite seu email"
+              required
+              clearInput="true">
+            </ion-input>
+            <ion-icon name="mail" class="input-icon"></ion-icon>
+          </div>
+        </div>
+
+        <div class="fitsync-input">
+          <label class="input-label">Senha</label>
+          <div class="input-wrapper">
+            <ion-input
+              [type]="showPassword ? 'text' : 'password'"
+              [value]="loginData.password"
+              (ionInput)="updateField('password', $event)"
+              name="password"
+              placeholder="Digite sua senha"
+              required>
+            </ion-input>
+            <ion-button 
+              fill="clear" 
+              (click)="togglePasswordVisibility()"
+              class="password-toggle">
+              <ion-icon 
+                [name]="showPassword ? 'eye-off' : 'eye'" 
+                slot="icon-only">
+              </ion-icon>
+            </ion-button>
+          </div>
+        </div>
       </div>
 
       <!-- Botões de ação -->
-      <div class="action-section">        <ion-button 
-          expand="block" 
+      <div class="action-section">
+        <button 
           type="submit"
-          class="btn-primary login-btn"
+          class="fitsync-btn fitsync-btn--primary fitsync-btn--lg"
+          [class.fitsync-btn--disabled]="isLoading"
           [disabled]="isLoading">
           <ion-spinner [hidden]="!isLoading" name="crescent"></ion-spinner>
           <span [hidden]="isLoading">Entrar</span>
-        </ion-button>
+        </button>
 
-        <ion-button 
-          fill="clear" 
-          class="forgot-password-btn"
+        <button 
+          type="button"
+          class="fitsync-btn fitsync-btn--ghost"
           (click)="forgotPassword()">
           Esqueceu a senha?
-        </ion-button>
+        </button>
       </div>
     </form>
 
     <!-- Divisor -->
     <div class="divider">
-      <span>ou</span>
+      <span class="fitsync-text-sm">ou</span>
     </div>
 
     <!-- Registro -->
     <div class="register-section">
-      <p>Não tem uma conta?</p>
-      <ion-button 
-        fill="outline" 
-        expand="block"
-        class="btn-secondary register-btn"
+      <p class="fitsync-text-base fitsync-text-center">Não tem uma conta?</p>
+      <button 
+        type="button"
+        class="fitsync-btn fitsync-btn--outline fitsync-btn--lg"
         (click)="goToRegister()">
         Criar Conta
-      </ion-button>
+      </button>
     </div>
 
     <!-- Versão demo -->
     <div class="demo-section">
-      <ion-card class="demo-card">
-        <ion-card-content>
+      <div class="fitsync-card fitsync-card--glass">
+        <div class="card-header">
           <ion-icon name="information-circle" class="demo-icon"></ion-icon>
-          <h3>Conta Demo</h3>
-          <p>Email: demo&#64;fitsync.app<br>Senha: demo123</p>
-        </ion-card-content>
-      </ion-card>
+          <h3 class="fitsync-text-lg fitsync-text-bold">Conta Demo</h3>
+        </div>
+        <div class="card-content">
+          <p class="fitsync-text-sm">
+            <strong>Email:</strong> demo&#64;fitsync.app<br>
+            <strong>Senha:</strong> demo123
+          </p>
+        </div>
+      </div>
     </div>
   </div>
 </ion-content>

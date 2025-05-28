@@ -1,11 +1,11 @@
-<ion-header [translucent]="true" class="gradient-header">
+<ion-header [translucent]="true" class="header-modern">
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-back-button color="light"></ion-back-button>
+      <ion-back-button color="light" class="fitsync-btn icon"></ion-back-button>
     </ion-buttons>
-    <ion-title class="gradient-text">Biblioteca de Exercícios</ion-title>
+    <ion-title class="fitsync-text gradient">Biblioteca de Exercícios</ion-title>
     <ion-buttons slot="end">
-      <ion-button fill="clear" (click)="toggleFavorites()">
+      <ion-button fill="clear" class="fitsync-btn icon" (click)="toggleFavorites()">
         <ion-icon name="heart" color="light"></ion-icon>
       </ion-button>
     </ion-buttons>
@@ -19,7 +19,7 @@
         [(ngModel)]="searchQuery" 
         placeholder="Buscar exercícios..." 
         (ionInput)="filterExercises()"
-        class="modern-searchbar">
+        class="fitsync-input search">
       </ion-searchbar>
     </div>
     
@@ -27,8 +27,9 @@
       <ion-chip 
         *ngFor="let group of muscleGroups" 
         [class.active]="selectedMuscleGroup === group.id"
-        (click)="filterByMuscleGroup(group.id)"
-        [color]="selectedMuscleGroup === group.id ? 'primary' : 'medium'">
+        class="fitsync-badge"
+        [class]="selectedMuscleGroup === group.id ? 'fitsync-badge primary' : 'fitsync-badge'"
+        (click)="filterByMuscleGroup(group.id)">
         <ion-icon [name]="group.icon"></ion-icon>
         <ion-label>{{ group.name }}</ion-label>
       </ion-chip>
@@ -36,46 +37,46 @@
   </div>
 
   <div class="exercises-grid">
-    <div class="exercise-card" 
+    <div class="fitsync-card exercise animated" 
          *ngFor="let exercise of filteredExercises; trackBy: trackByExerciseId"
          (click)="openExerciseDetail(exercise)">
       <div class="exercise-image">
-        <img [src]="exercise.image" [alt]="exercise.name" />
+        <img [src]="exercise.imageUrl" [alt]="exercise.name" />
         <div class="exercise-overlay">
           <ion-button 
             fill="clear" 
             size="small" 
-            (click)="toggleFavorite(exercise, $event)"
-            class="favorite-btn">
+            class="fitsync-btn icon favorite-btn"
+            (click)="toggleFavorite(exercise, $event)">
             <ion-icon 
-              [name]="exercise.isFavorite ? 'heart' : 'heart-outline'" 
-              [color]="exercise.isFavorite ? 'danger' : 'light'">
+              [name]="isFavorite(exercise.id) ? 'heart' : 'heart-outline'" 
+              [color]="isFavorite(exercise.id) ? 'danger' : 'light'">
             </ion-icon>
           </ion-button>
         </div>
       </div>
       
       <div class="exercise-content">
-        <h3 class="exercise-name">{{ exercise.name }}</h3>
-        <p class="exercise-muscle">{{ getMuscleGroupName(exercise.muscleGroup) }}</p>
+        <h3 class="fitsync-text large white">{{ exercise.name }}</h3>
+        <p class="fitsync-text muted light">{{ getMuscleGroupName(exercise.muscleGroup) }}</p>
         
         <div class="exercise-stats">
           <div class="stat-item">
             <ion-icon name="barbell-outline"></ion-icon>
-            <span>{{ exercise.difficulty }}</span>
+            <span class="fitsync-text small">{{ exercise.difficulty }}</span>
           </div>
           <div class="stat-item">
             <ion-icon name="time-outline"></ion-icon>
-            <span>{{ exercise.duration }}min</span>
+            <span class="fitsync-text small">{{ exercise.duration }}min</span>
           </div>
           <div class="stat-item">
             <ion-icon name="flame-outline"></ion-icon>
-            <span>{{ exercise.calories }}kcal</span>
+            <span class="fitsync-text small">{{ exercise.calories }}kcal</span>
           </div>
         </div>
         
         <div class="exercise-equipment" *ngIf="exercise.equipment">
-          <ion-chip color="tertiary" size="small">
+          <ion-chip class="fitsync-badge equipment" size="small">
             <ion-icon name="fitness-outline"></ion-icon>
             <ion-label>{{ exercise.equipment }}</ion-label>
           </ion-chip>
@@ -86,15 +87,15 @@
 
   <div class="empty-state" *ngIf="filteredExercises.length === 0">
     <ion-icon name="search-outline" class="empty-icon"></ion-icon>
-    <h3>Nenhum exercício encontrado</h3>
-    <p>Tente ajustar seus filtros ou termo de busca</p>
-    <ion-button (click)="clearFilters()" fill="outline">
+    <h3 class="fitsync-text large white">Nenhum exercício encontrado</h3>
+    <p class="fitsync-text muted light">Tente ajustar seus filtros ou termo de busca</p>
+    <ion-button class="fitsync-btn outline" (click)="clearFilters()">
       Limpar Filtros
     </ion-button>
   </div>
 
   <ion-fab vertical="bottom" horizontal="end" slot="fixed">
-    <ion-fab-button (click)="createCustomExercise()">
+    <ion-fab-button class="fitsync-btn primary" (click)="createCustomExercise()">
       <ion-icon name="add"></ion-icon>
     </ion-fab-button>
   </ion-fab>

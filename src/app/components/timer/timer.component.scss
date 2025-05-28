@@ -1,0 +1,158 @@
+.timer-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1rem;
+  text-align: center;
+}
+
+.timer-display {
+  position: relative;
+  margin-bottom: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  .time-text {
+    font-size: 3rem;
+    font-weight: 700;
+    color: var(--fitsync-primary);
+    font-family: 'Roboto Mono', monospace;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  .progress-ring {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+
+    .progress-ring-svg {
+      transform: rotate(-90deg);
+    }
+
+    .progress-ring-circle {
+      transition: stroke-dashoffset 0.35s;
+      stroke-linecap: round;
+    }
+
+    .progress-ring-circle-bg {
+      opacity: 0.3;
+    }
+  }
+}
+
+.timer-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  width: 100%;
+  max-width: 300px;
+
+  .control-buttons {
+    display: flex;
+    gap: 0.5rem;
+
+    ion-button {
+      flex: 1;
+    }
+  }
+
+  .quick-adjustments {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin-top: 0.5rem;
+
+    ion-button {
+      --padding-start: 0.5rem;
+      --padding-end: 0.5rem;
+      min-width: 60px;
+    }
+  }
+}
+
+.timer-status {
+  margin-top: 1rem;
+  
+  ion-chip {
+    --background: rgba(255, 255, 255, 0.1);
+    --color: white;
+    font-weight: 500;
+  }
+}
+
+// Responsive design
+@media (max-width: 480px) {
+  .timer-display {
+    .time-text {
+      font-size: 2.5rem;
+    }
+
+    .progress-ring {
+      .progress-ring-svg {
+        width: 100px;
+        height: 100px;
+      }
+    }
+  }
+
+  .timer-controls {
+    max-width: 280px;
+
+    .quick-adjustments {
+      ion-button {
+        min-width: 50px;
+        font-size: 0.8rem;
+      }
+    }
+  }
+}
+
+// Animations
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.timer-display.running {
+  .time-text {
+    animation: pulse 2s infinite;
+  }
+}
+
+// Theme variations
+.timer-container.dark-theme {
+  .timer-display .time-text {
+    color: var(--ion-color-light);
+  }
+
+  .progress-ring-circle-bg {
+    stroke: #444;
+  }
+}
+
+.timer-container.compact {
+  padding: 0.5rem;
+
+  .timer-display {
+    margin-bottom: 1rem;
+
+    .time-text {
+      font-size: 2rem;
+    }
+  }
+
+  .timer-controls {
+    max-width: 250px;
+    gap: 0.5rem;
+  }
+}

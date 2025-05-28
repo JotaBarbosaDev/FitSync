@@ -1,0 +1,468 @@
+// FitSync Design System - Progresso Page Styles
+
+:host {
+  --ion-background-color: #1a1a1a;
+  --ion-text-color: #ffffff;
+}
+
+ion-content {
+  --background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
+  
+  .progress-container {
+    padding: 20px;
+    
+    .overview-stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+      
+      .stat-card {
+        background: linear-gradient(135deg, #2a2a2a 0%, #3a3a3a 100%);
+        border-radius: 16px;
+        padding: 20px;
+        text-align: center;
+        border: 1px solid #404040;
+        
+        .stat-value {
+          font-size: 24px;
+          font-weight: 700;
+          color: var(--ion-color-primary);
+          margin-bottom: 4px;
+        }
+        
+        .stat-label {
+          font-size: 14px;
+          color: #888;
+          margin-bottom: 8px;
+        }
+        
+        .stat-change {
+          font-size: 12px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 4px;
+          
+          &.positive {
+            color: var(--ion-color-success);
+          }
+          
+          &.negative {
+            color: var(--ion-color-danger);
+          }
+          
+          &.neutral {
+            color: #888;
+          }
+        }
+      }
+    }
+    
+    .section {
+      margin-bottom: 32px;
+      
+      .section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 16px;
+        
+        .section-title {
+          font-size: 20px;
+          font-weight: 600;
+          color: #ffffff;
+        }
+        
+        .view-toggle {
+          display: flex;
+          background: #2a2a2a;
+          border-radius: 8px;
+          padding: 4px;
+          
+          ion-button {
+            --background: transparent;
+            --color: #888;
+            margin: 0;
+            height: 32px;
+            font-size: 12px;
+            
+            &.active {
+              --background: var(--ion-color-primary);
+              --color: #ffffff;
+            }
+          }
+        }
+      }
+      
+      .chart-container {
+        background: #2a2a2a;
+        border-radius: 16px;
+        padding: 20px;
+        margin-bottom: 16px;
+        border: 1px solid #404040;
+        
+        canvas {
+          width: 100% !important;
+          height: 200px !important;
+        }
+      }
+      
+      .period-selector {
+        display: flex;
+        justify-content: center;
+        gap: 8px;
+        margin-bottom: 16px;
+        
+        ion-segment {
+          --background: #2a2a2a;
+          border-radius: 8px;
+          
+          ion-segment-button {
+            --background: transparent;
+            --color: #888;
+            --indicator-color: var(--ion-color-primary);
+            
+            &.segment-button-checked {
+              --color: #ffffff;
+            }
+          }
+        }
+      }
+    }
+    
+    .muscle-groups {
+      .muscle-group-item {
+        display: flex;
+        align-items: center;
+        background: #2a2a2a;
+        border-radius: 12px;
+        padding: 16px;
+        margin-bottom: 12px;
+        border: 1px solid #404040;
+        
+        .muscle-icon {
+          width: 48px;
+          height: 48px;
+          border-radius: 12px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          margin-right: 16px;
+          
+          ion-icon {
+            font-size: 24px;
+            color: #ffffff;
+          }
+        }
+        
+        .muscle-info {
+          flex: 1;
+          
+          .muscle-name {
+            font-size: 16px;
+            font-weight: 600;
+            color: #ffffff;
+            margin-bottom: 4px;
+          }
+          
+          .muscle-workouts {
+            font-size: 14px;
+            color: #888;
+          }
+        }
+        
+        .muscle-percentage {
+          font-size: 18px;
+          font-weight: 700;
+          color: var(--ion-color-primary);
+        }
+      }
+    }
+    
+    .achievements-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px;
+      
+      .achievement-card {
+        background: #2a2a2a;
+        border-radius: 16px;
+        padding: 20px;
+        border: 1px solid #404040;
+        position: relative;
+        overflow: hidden;
+        
+        &.unlocked {
+          border-color: var(--ion-color-success);
+          background: linear-gradient(135deg, #2a2a2a 0%, #1a4d3a 100%);
+        }
+        
+        .achievement-header {
+          display: flex;
+          align-items: center;
+          margin-bottom: 12px;
+          
+          .achievement-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            background: var(--ion-color-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 16px;
+            
+            ion-icon {
+              font-size: 24px;
+              color: #ffffff;
+            }
+          }
+          
+          .achievement-info {
+            flex: 1;
+            
+            .achievement-title {
+              font-size: 16px;
+              font-weight: 600;
+              color: #ffffff;
+              margin-bottom: 4px;
+            }
+            
+            .achievement-description {
+              font-size: 14px;
+              color: #888;
+              line-height: 1.4;
+            }
+          }
+        }
+        
+        .achievement-progress {
+          margin-bottom: 12px;
+          
+          .progress-bar {
+            height: 8px;
+            background: #1a1a1a;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 8px;
+            
+            .progress-fill {
+              height: 100%;
+              background: var(--ion-color-primary);
+              border-radius: 4px;
+              transition: width 0.3s ease;
+            }
+          }
+          
+          .progress-text {
+            font-size: 12px;
+            color: #888;
+            text-align: center;
+          }
+        }
+        
+        .achievement-date {
+          font-size: 12px;
+          color: var(--ion-color-success);
+          text-align: center;
+        }
+        
+        .unlock-badge {
+          position: absolute;
+          top: 12px;
+          right: 12px;
+          background: var(--ion-color-success);
+          color: #ffffff;
+          border-radius: 12px;
+          padding: 4px 8px;
+          font-size: 10px;
+          font-weight: 600;
+          text-transform: uppercase;
+        }
+      }
+    }
+    
+    .workout-history {
+      .history-item {
+        background: #2a2a2a;
+        border-radius: 12px;
+        padding: 16px;
+        margin-bottom: 12px;
+        border: 1px solid #404040;
+        
+        .history-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: flex-start;
+          margin-bottom: 12px;
+          
+          .workout-info {
+            .workout-name {
+              font-size: 16px;
+              font-weight: 600;
+              color: #ffffff;
+              margin-bottom: 4px;
+            }
+            
+            .workout-date {
+              font-size: 14px;
+              color: #888;
+            }
+          }
+          
+          .workout-duration {
+            font-size: 14px;
+            color: var(--ion-color-primary);
+            font-weight: 600;
+          }
+        }
+        
+        .history-stats {
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+          gap: 16px;
+          margin-bottom: 12px;
+          
+          .stat {
+            text-align: center;
+            
+            .stat-value {
+              font-size: 18px;
+              font-weight: 600;
+              color: var(--ion-color-primary);
+              margin-bottom: 4px;
+            }
+            
+            .stat-label {
+              font-size: 12px;
+              color: #888;
+            }
+          }
+        }
+        
+        .muscle-groups-tags {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 8px;
+          
+          .muscle-tag {
+            background: #404040;
+            color: #ffffff;
+            border-radius: 16px;
+            padding: 4px 12px;
+            font-size: 12px;
+            font-weight: 500;
+          }
+        }
+      }
+    }
+    
+    .personal-records {
+      .record-item {
+        display: flex;
+        align-items: center;
+        background: #2a2a2a;
+        border-radius: 12px;
+        padding: 16px;
+        margin-bottom: 12px;
+        border: 1px solid #404040;
+        
+        .record-icon {
+          width: 48px;
+          height: 48px;
+          border-radius: 12px;
+          background: var(--ion-color-warning);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          margin-right: 16px;
+          
+          ion-icon {
+            font-size: 24px;
+            color: #ffffff;
+          }
+        }
+        
+        .record-info {
+          flex: 1;
+          
+          .record-exercise {
+            font-size: 16px;
+            font-weight: 600;
+            color: #ffffff;
+            margin-bottom: 4px;
+          }
+          
+          .record-date {
+            font-size: 14px;
+            color: #888;
+          }
+        }
+        
+        .record-value {
+          text-align: right;
+          
+          .value {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--ion-color-primary);
+            margin-bottom: 4px;
+          }
+          
+          .improvement {
+            font-size: 12px;
+            color: var(--ion-color-success);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+          }
+        }
+      }
+    }
+  }
+}
+
+// Header customization
+ion-header {
+  ion-toolbar {
+    --background: #1a1a1a;
+    --color: #ffffff;
+    --border-color: #404040;
+    
+    ion-title {
+      font-weight: 600;
+    }
+    
+    ion-button {
+      --color: #ffffff;
+    }
+  }
+}
+
+// Responsive design
+@media (max-width: 768px) {
+  .progress-container {
+    .overview-stats {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .achievements-grid {
+      grid-template-columns: 1fr;
+    }
+    
+    .history-stats {
+      grid-template-columns: repeat(2, 1fr) !important;
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .progress-container {
+    padding: 16px;
+    
+    .overview-stats {
+      grid-template-columns: 1fr;
+    }
+  }
+}

@@ -41,6 +41,17 @@ export class ProgressPage implements OnInit, OnDestroy {
   selectedMuscleGroup: string = 'all';
   isLoading: boolean = true;
 
+  muscleGroups = [
+    { id: 'all', name: 'Todos', icon: 'apps-outline' },
+    { id: 'chest', name: 'Peito', icon: 'body-outline' },
+    { id: 'back', name: 'Costas', icon: 'body-outline' },
+    { id: 'legs', name: 'Pernas', icon: 'body-outline' },
+    { id: 'shoulders', name: 'Ombros', icon: 'body-outline' },
+    { id: 'arms', name: 'Braços', icon: 'body-outline' },
+    { id: 'core', name: 'Core', icon: 'body-outline' },
+    { id: 'cardio', name: 'Cardio', icon: 'heart-outline' }
+  ];
+
   private subscriptions: Subscription[] = [];
 
   // Chart configurations
@@ -67,16 +78,6 @@ export class ProgressPage implements OnInit, OnDestroy {
     { value: '365', label: '1 ano' }
   ];
 
-  muscleGroupOptions = [
-    { id: 'all', name: 'Todos', icon: 'fitness-outline' },
-    { id: 'chest', name: 'Peito', icon: 'fitness-outline' },
-    { id: 'back', name: 'Costas', icon: 'fitness-outline' },
-    { id: 'shoulders', name: 'Ombros', icon: 'fitness-outline' },
-    { id: 'legs', name: 'Pernas', icon: 'walk-outline' },
-    { id: 'arms', name: 'Braços', icon: 'barbell-outline' },
-    { id: 'core', name: 'Core', icon: 'body-outline' }
-  ];
-
   constructor(
     public router: Router,
     private progressDataService: ProgressDataService
@@ -88,7 +89,7 @@ export class ProgressPage implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.subscriptions.forEach(sub => sub.unsubscribe());
+    this.subscriptions.forEach((sub: Subscription) => sub.unsubscribe());
   }
 
   private subscribeToData() {
@@ -312,12 +313,12 @@ export class ProgressPage implements OnInit, OnDestroy {
 
   // Utility methods
   getMuscleGroupName(groupId: string): string {
-    const group = this.muscleGroupOptions.find(g => g.id === groupId);
+    const group = this.muscleGroups.find(g => g.id === groupId);
     return group ? group.name : groupId;
   }
 
   getMuscleGroupIcon(groupId: string): string {
-    const group = this.muscleGroupOptions.find(g => g.id === groupId);
+    const group = this.muscleGroups.find(g => g.id === groupId);
     return group ? group.icon : 'fitness-outline';
   }
 
@@ -344,8 +345,9 @@ export class ProgressPage implements OnInit, OnDestroy {
     return volume.toString();
   }
 
-  formatDate(date: Date): string {
-    return date.toLocaleDateString('pt-PT', { 
+  formatDate(date: Date | string): string {
+    const dateObj = typeof date === 'string' ? new Date(date) : date;
+    return dateObj.toLocaleDateString('pt-PT', { 
       day: '2-digit', 
       month: '2-digit' 
     });

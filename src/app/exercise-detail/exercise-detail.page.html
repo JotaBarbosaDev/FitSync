@@ -1,0 +1,270 @@
+<ion-header [translucent]="true">
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/home" (click)="goBack()"></ion-back-button>
+    </ion-buttons>
+    <ion-title>{{ exercise?.name || 'Detalhe do Exercício' }}</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="toggleFavorite()" fill="clear">
+        <ion-icon 
+          [name]="isFavorite ? 'heart' : 'heart-outline'" 
+          [color]="isFavorite ? 'danger' : 'medium'">
+        </ion-icon>
+      </ion-button>
+      <ion-button (click)="shareExercise()" fill="clear">
+        <ion-icon name="share-outline" color="medium"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <!-- Header colapsável -->
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">{{ exercise?.name || 'Detalhe do Exercício' }}</ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  <!-- Loading state -->
+  <div *ngIf="isLoading" class="loading-container">
+    <ion-spinner name="dots" color="primary"></ion-spinner>
+    <ion-text>
+      <p>Carregando exercício...</p>
+    </ion-text>
+  </div>
+
+  <!-- Error state -->
+  <ion-card *ngIf="!isLoading && !exercise" color="danger">
+    <ion-card-content>
+      <div class="error-content">
+        <ion-icon name="alert-circle-outline" size="large"></ion-icon>
+        <h2>Exercício não encontrado</h2>
+        <p>O exercício solicitado não foi encontrado. Verifique o ID e tente novamente.</p>
+        <ion-button (click)="goBack()" fill="outline" color="light">
+          <ion-icon name="arrow-back-outline" slot="start"></ion-icon>
+          Voltar
+        </ion-button>
+      </div>
+    </ion-card-content>
+  </ion-card>
+
+  <!-- Exercise content -->
+  <div *ngIf="!isLoading && exercise" class="exercise-container">
+    
+    <!-- Exercise image/video -->
+    <div class="exercise-media">
+      <img 
+        [src]="exercise.imageUrl || '/assets/images/exercise-placeholder.jpg'" 
+        [alt]="exercise.name"
+        (error)="onImageError($event)"
+      />
+      <div class="media-overlay">
+        <ion-button 
+          *ngIf="exercise.videoUrl" 
+          (click)="playVideo()" 
+          fill="clear" 
+          size="large"
+          class="play-button">
+          <ion-icon name="play-circle" size="large" color="light"></ion-icon>
+        </ion-button>
+      </div>
+    </div>
+
+    <!-- Exercise info -->
+    <div class="exercise-info">
+      <ion-card>
+        <ion-card-header>
+          <ion-card-title>{{ exercise.name }}</ion-card-title>
+          <ion-card-subtitle>
+            <ion-chip [color]="getDifficultyColor(exercise.difficulty)">
+              <ion-icon [name]="getDifficultyIcon(exercise.difficulty)" slot="start"></ion-icon>
+              <ion-label>{{ exercise.difficulty | titlecase }}</ion-label>
+            </ion-chip>
+            <ion-chip color="secondary" *ngFor="let muscle of exercise.muscleGroups">
+              <ion-icon name="fitness-outline" slot="start"></ion-icon>
+              <ion-label>{{ muscle }}</ion-label>
+            </ion-chip>
+          </ion-card-subtitle>
+        </ion-card-header>
+
+        <ion-card-content>
+          <p>{{ exercise.description }}</p>
+
+          <!-- Exercise stats -->
+          <div class="exercise-stats">
+            <div class="stat-item">
+              <ion-icon name="time-outline" color="primary"></ion-icon>
+              <span>{{ exercise.duration || 'Variável' }}</span>
+            </div>
+            <div class="stat-item">
+              <ion-icon name="flame-outline" color="warning"></ion-icon>
+              <span>{{ exercise.calories || 'N/A' }} cal</span>
+            </div>
+            <div class="stat-item">
+              <ion-icon name="barbell-outline" color="success"></ion-icon>
+              <span>{{ exercise.equipment || 'Peso corporal' }}</span>
+            </div>
+          </div>
+        </ion-card-content>
+      </ion-card>
+
+      <!-- Instructions -->
+      <ion-card>
+        <ion-card-header>
+          <ion-card-title>
+            <ion-icon name="list-outline" slot="start"></ion-icon>
+            Instruções
+          </ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          <ol class="instructions-list">
+            <li *ngFor="let instruction of exercise.instructions; let i = index">
+              <span class="step-number">{{ i + 1 }}</span>
+              {{ instruction }}
+            </li>
+          </ol>
+        </ion-card-content>
+      </ion-card>
+
+      <!-- Tips -->
+      <ion-card *ngIf="exercise.tips && exercise.tips.length > 0">
+        <ion-card-header>
+          <ion-card-title>
+            <ion-icon name="bulb-outline" slot="start"></ion-icon>
+            Dicas
+          </ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          <ion-item *ngFor="let tip of exercise.tips" lines="none">
+            <ion-icon name="checkmark-circle-outline" slot="start" color="success"></ion-icon>
+            <ion-label class="ion-text-wrap">{{ tip }}</ion-label>
+          </ion-item>
+        </ion-card-content>
+      </ion-card>
+
+      <!-- Common mistakes -->
+      <ion-card *ngIf="exercise.commonMistakes && exercise.commonMistakes.length > 0">
+        <ion-card-header>
+          <ion-card-title>
+            <ion-icon name="warning-outline" slot="start"></ion-icon>
+            Erros Comuns
+          </ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          <ion-item *ngFor="let mistake of exercise.commonMistakes" lines="none">
+            <ion-icon name="close-circle-outline" slot="start" color="danger"></ion-icon>
+            <ion-label class="ion-text-wrap">{{ mistake }}</ion-label>
+          </ion-item>
+        </ion-card-content>
+      </ion-card>
+
+      <!-- Workout timer -->
+      <ion-card>
+        <ion-card-header>
+          <ion-card-title>
+            <ion-icon name="stopwatch-outline" slot="start"></ion-icon>
+            Timer de Treino
+          </ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          <!-- Timer Component Integration -->
+          <app-timer 
+            [initialTime]="0"
+            [autoStart]="false"
+            (timeUpdate)="onTimerUpdate($event)"
+            (timerComplete)="onTimerComplete()">
+          </app-timer>
+        </ion-card-content>
+      </ion-card>
+
+      <!-- Add to workout -->
+      <ion-card>
+        <ion-card-header>
+          <ion-card-title>
+            <ion-icon name="add-circle-outline" slot="start"></ion-icon>
+            Adicionar ao Treino
+          </ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          <div class="workout-form">
+            <ion-item>
+              <ion-label position="stacked">Séries</ion-label>
+              <ion-input 
+                type="number" 
+                [(ngModel)]="workoutData.sets" 
+                placeholder="3">
+              </ion-input>
+            </ion-item>
+            <ion-item>
+              <ion-label position="stacked">Repetições</ion-label>
+              <ion-input 
+                type="number" 
+                [(ngModel)]="workoutData.reps" 
+                placeholder="12">
+              </ion-input>
+            </ion-item>
+            <ion-item>
+              <ion-label position="stacked">Peso (kg)</ion-label>
+              <ion-input 
+                type="number" 
+                [(ngModel)]="workoutData.weight" 
+                placeholder="0">
+              </ion-input>
+            </ion-item>
+            <ion-item>
+              <ion-label position="stacked">Observações</ion-label>
+              <ion-textarea 
+                [(ngModel)]="workoutData.notes" 
+                placeholder="Adicione suas observações...">
+              </ion-textarea>
+            </ion-item>
+            <ion-button 
+              (click)="addToWorkout()" 
+              expand="block" 
+              fill="solid" 
+              color="primary"
+              class="add-workout-button">
+              <ion-icon name="fitness-outline" slot="start"></ion-icon>
+              Adicionar ao Treino
+            </ion-button>
+          </div>
+        </ion-card-content>
+      </ion-card>
+
+      <!-- Related exercises -->
+      <ion-card *ngIf="relatedExercises.length > 0">
+        <ion-card-header>
+          <ion-card-title>
+            <ion-icon name="trending-up-outline" slot="start"></ion-icon>
+            Exercícios Relacionados
+          </ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          <div class="related-exercises">
+            <ion-item 
+              *ngFor="let relatedExercise of relatedExercises" 
+              button 
+              (click)="navigateToExercise(relatedExercise.id)">
+              <ion-avatar slot="start">
+                <img [src]="relatedExercise.imageUrl || '/assets/images/exercise-placeholder.jpg'" />
+              </ion-avatar>
+              <ion-label>
+                <h3>{{ relatedExercise.name }}</h3>
+                <p>{{ relatedExercise.difficulty | titlecase }}</p>
+              </ion-label>
+              <ion-icon name="chevron-forward-outline" slot="end"></ion-icon>
+            </ion-item>
+          </div>
+        </ion-card-content>
+      </ion-card>
+    </div>
+  </div>
+
+  <!-- Floating action button -->
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+    <ion-fab-button color="primary" (click)="toggleOrientationLock()">
+      <ion-icon [name]="isOrientationLocked ? 'phone-portrait-outline' : 'phone-landscape-outline'"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+</ion-content>

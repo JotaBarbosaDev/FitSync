@@ -1,0 +1,336 @@
+{
+  "exercises": [
+    {
+      "id": "1",
+      "name": "Supino Reto",
+      "muscleGroup": "Peito",
+      "equipment": "Barra",
+      "difficulty": "Intermediário",
+      "instructions": [
+        "Deite-se no banco com os pés apoiados no chão",
+        "Segure a barra com pegada mais larga que os ombros",
+        "Baixe a barra até o peito de forma controlada",
+        "Empurre a barra de volta à posição inicial"
+      ],
+      "primaryMuscles": ["Peitoral Maior"],
+      "secondaryMuscles": ["Tríceps", "Deltoides Anterior"],
+      "tips": [
+        "Mantenha os ombros pressionados contra o banco",
+        "Não deixe a barra quicar no peito",
+        "Mantenha os pulsos retos"
+      ]
+    },
+    {
+      "id": "2",
+      "name": "Agachamento",
+      "muscleGroup": "Pernas",
+      "equipment": "Barra",
+      "difficulty": "Intermediário",
+      "instructions": [
+        "Posicione a barra nos ombros",
+        "Mantenha os pés na largura dos ombros",
+        "Desça como se fosse sentar em uma cadeira",
+        "Volte à posição inicial empurrando pelos calcanhares"
+      ],
+      "primaryMuscles": ["Quadríceps", "Glúteos"],
+      "secondaryMuscles": ["Isquiotibiais", "Panturrilhas"],
+      "tips": [
+        "Mantenha o peito erguido",
+        "Joelhos alinhados com os pés",
+        "Desça até as coxas ficarem paralelas ao chão"
+      ]
+    },
+    {
+      "id": "3",
+      "name": "Puxada Frontal",
+      "muscleGroup": "Costas",
+      "equipment": "Máquina",
+      "difficulty": "Iniciante",
+      "instructions": [
+        "Sente-se na máquina e ajuste a almofada das coxas",
+        "Segure a barra com pegada larga",
+        "Puxe a barra em direção ao peito",
+        "Retorne controladamente à posição inicial"
+      ],
+      "primaryMuscles": ["Latíssimo do Dorso"],
+      "secondaryMuscles": ["Bíceps", "Romboides"],
+      "tips": [
+        "Mantenha o peito erguido",
+        "Puxe com os músculos das costas, não com os braços",
+        "Evite balançar o corpo"
+      ]
+    },
+    {
+      "id": "4",
+      "name": "Rosca Direta",
+      "muscleGroup": "Braços",
+      "equipment": "Halter",
+      "difficulty": "Iniciante",
+      "instructions": [
+        "Fique em pé com os halteres nas mãos",
+        "Mantenha os cotovelos fixos ao lado do corpo",
+        "Flexione os braços levantando os halteres",
+        "Baixe controladamente à posição inicial"
+      ],
+      "primaryMuscles": ["Bíceps"],
+      "secondaryMuscles": ["Antebraços"],
+      "tips": [
+        "Não balance o corpo",
+        "Controle a descida",
+        "Mantenha os pulsos firmes"
+      ]
+    },
+    {
+      "id": "5",
+      "name": "Desenvolvimento com Halteres",
+      "muscleGroup": "Ombros",
+      "equipment": "Halter",
+      "difficulty": "Intermediário",
+      "instructions": [
+        "Sente-se ou fique em pé com halteres nos ombros",
+        "Empurre os halteres acima da cabeça",
+        "Mantenha o core contraído",
+        "Baixe controladamente aos ombros"
+      ],
+      "primaryMuscles": ["Deltoides"],
+      "secondaryMuscles": ["Tríceps", "Trapézio"],
+      "tips": [
+        "Não arquee as costas excessivamente",
+        "Mantenha os halteres alinhados",
+        "Controle todo o movimento"
+      ]
+    },
+    {
+      "id": "6",
+      "name": "Prancha",
+      "muscleGroup": "Abdômen",
+      "equipment": "Corpo Livre",
+      "difficulty": "Iniciante",
+      "instructions": [
+        "Fique em posição de flexão apoiado nos antebraços",
+        "Mantenha o corpo em linha reta",
+        "Contraia o abdômen e glúteos",
+        "Mantenha a posição pelo tempo determinado"
+      ],
+      "primaryMuscles": ["Core", "Abdômen"],
+      "secondaryMuscles": ["Ombros", "Glúteos"],
+      "tips": [
+        "Não deixe o quadril cair ou subir",
+        "Mantenha a respiração regular",
+        "Olhe para baixo, mantendo o pescoço neutro"
+      ]
+    }
+  ],
+  "workoutPlans": [
+    {
+      "id": "plan1",
+      "name": "Treino Full Body Iniciante",
+      "description": "Treino completo para iniciantes, trabalhando todos os grupos musculares",
+      "difficulty": "Iniciante",
+      "duration": 45,
+      "frequency": "3x por semana",
+      "exercises": [
+        {
+          "exerciseId": "1",
+          "sets": 3,
+          "reps": "8-12",
+          "restTime": 60,
+          "weight": 0
+        },
+        {
+          "exerciseId": "2",
+          "sets": 3,
+          "reps": "10-15",
+          "restTime": 90,
+          "weight": 0
+        },
+        {
+          "exerciseId": "3",
+          "sets": 3,
+          "reps": "8-12",
+          "restTime": 60,
+          "weight": 0
+        },
+        {
+          "exerciseId": "4",
+          "sets": 3,
+          "reps": "10-15",
+          "restTime": 45,
+          "weight": 0
+        },
+        {
+          "exerciseId": "6",
+          "sets": 3,
+          "reps": "30-60s",
+          "restTime": 30,
+          "weight": 0
+        }
+      ]
+    },
+    {
+      "id": "plan2",
+      "name": "Treino Upper Body",
+      "description": "Foco em membros superiores - peito, costas, ombros e braços",
+      "difficulty": "Intermediário",
+      "duration": 60,
+      "frequency": "2x por semana",
+      "exercises": [
+        {
+          "exerciseId": "1",
+          "sets": 4,
+          "reps": "6-10",
+          "restTime": 90,
+          "weight": 0
+        },
+        {
+          "exerciseId": "3",
+          "sets": 4,
+          "reps": "8-12",
+          "restTime": 90,
+          "weight": 0
+        },
+        {
+          "exerciseId": "5",
+          "sets": 3,
+          "reps": "8-12",
+          "restTime": 60,
+          "weight": 0
+        },
+        {
+          "exerciseId": "4",
+          "sets": 3,
+          "reps": "10-15",
+          "restTime": 45,
+          "weight": 0
+        }
+      ]
+    }
+  ],
+  "achievements": [
+    {
+      "id": "ach1",
+      "title": "Primeiro Treino",
+      "description": "Complete seu primeiro treino no FitSync",
+      "icon": "trophy-outline",
+      "category": "Iniciante",
+      "points": 10,
+      "unlocked": false,
+      "progress": 0,
+      "target": 1
+    },
+    {
+      "id": "ach2",
+      "title": "Consistência",
+      "description": "Complete 7 treinos consecutivos",
+      "icon": "calendar-outline",
+      "category": "Consistência",
+      "points": 50,
+      "unlocked": false,
+      "progress": 0,
+      "target": 7
+    },
+    {
+      "id": "ach3",
+      "title": "Força Total",
+      "description": "Treine todos os grupos musculares",
+      "icon": "fitness-outline",
+      "category": "Diversidade",
+      "points": 30,
+      "unlocked": false,
+      "progress": 0,
+      "target": 6
+    },
+    {
+      "id": "ach4",
+      "title": "Maratonista",
+      "description": "Acumule 10 horas de treino",
+      "icon": "time-outline",
+      "category": "Resistência",
+      "points": 100,
+      "unlocked": false,
+      "progress": 0,
+      "target": 600
+    },
+    {
+      "id": "ach5",
+      "title": "Queimador de Calorias",
+      "description": "Queime 1000 calorias em uma semana",
+      "icon": "flame-outline",
+      "category": "Cardio",
+      "points": 75,
+      "unlocked": false,
+      "progress": 0,
+      "target": 1000
+    }
+  ],
+  "tips": [
+    {
+      "id": "tip1",
+      "title": "Hidratação",
+      "content": "Beba pelo menos 8 copos de água por dia para manter a performance nos treinos.",
+      "category": "Nutrição"
+    },
+    {
+      "id": "tip2",
+      "title": "Aquecimento",
+      "content": "Sempre faça 5-10 minutos de aquecimento antes de iniciar o treino.",
+      "category": "Treino"
+    },
+    {
+      "id": "tip3",
+      "title": "Descanso",
+      "content": "O músculo cresce durante o descanso. Durma pelo menos 7-8 horas por noite.",
+      "category": "Recuperação"
+    },
+    {
+      "id": "tip4",
+      "title": "Progressão",
+      "content": "Aumente gradualmente peso, repetições ou séries para continuar progredindo.",
+      "category": "Treino"
+    }
+  ],
+  "muscleGroups": [
+    {
+      "id": "chest",
+      "name": "Peito",
+      "icon": "body-outline",
+      "color": "#e74c3c",
+      "exercises": ["1"]
+    },
+    {
+      "id": "back",
+      "name": "Costas",
+      "icon": "person-outline",
+      "color": "#27ae60",
+      "exercises": ["3"]
+    },
+    {
+      "id": "legs",
+      "name": "Pernas",
+      "icon": "walk-outline",
+      "color": "#f39c12",
+      "exercises": ["2"]
+    },
+    {
+      "id": "arms",
+      "name": "Braços",
+      "icon": "barbell-outline",
+      "color": "#9b59b6",
+      "exercises": ["4"]
+    },
+    {
+      "id": "shoulders",
+      "name": "Ombros",
+      "icon": "arrow-up-outline",
+      "color": "#3498db",
+      "exercises": ["5"]
+    },
+    {
+      "id": "abs",
+      "name": "Abdômen",
+      "icon": "diamond-outline",
+      "color": "#95a5a6",
+      "exercises": ["6"]
+    }
+  ]
+}

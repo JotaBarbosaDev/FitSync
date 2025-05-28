@@ -1,0 +1,147 @@
+<div class="timer-container">
+  <!-- Timer Display -->
+  <div class="timer-display">
+    <div class="time-text">{{ getDisplayTime() }}</div>
+    
+    <!-- Progress Ring for Countdown -->
+    <div *ngIf="countDown && initialTime > 0" class="progress-ring">
+      <svg class="progress-ring-svg" width="120" height="120">
+        <circle 
+          class="progress-ring-circle-bg"
+          stroke="#e0e0e0"
+          stroke-width="8"
+          fill="transparent"
+          r="52"
+          cx="60"
+          cy="60"/>
+        <circle 
+          class="progress-ring-circle"
+          stroke="var(--fitsync-primary)"
+          stroke-width="8"
+          fill="transparent"
+          r="52"
+          cx="60"
+          cy="60"
+          [style.stroke-dasharray]="326.726"
+          [style.stroke-dashoffset]="326.726 - (getProgressPercentage() / 100) * 326.726"/>
+      </svg>
+    </div>
+  </div>
+
+  <!-- Timer Controls -->
+  <div class="timer-controls">
+    <!-- Start/Resume Button -->
+    <ion-button 
+      *ngIf="!isRunning && !isPaused" 
+      (click)="start()" 
+      fill="solid" 
+      color="success"
+      expand="block">
+      <ion-icon name="play-outline" slot="start"></ion-icon>
+      Iniciar
+    </ion-button>
+
+    <!-- Resume Button -->
+    <ion-button 
+      *ngIf="!isRunning && isPaused" 
+      (click)="resume()" 
+      fill="solid" 
+      color="success"
+      expand="block">
+      <ion-icon name="play-outline" slot="start"></ion-icon>
+      Continuar
+    </ion-button>
+
+    <!-- Pause Button -->
+    <ion-button 
+      *ngIf="isRunning" 
+      (click)="pause()" 
+      fill="solid" 
+      color="warning"
+      expand="block">
+      <ion-icon name="pause-outline" slot="start"></ion-icon>
+      Pausar
+    </ion-button>
+
+    <!-- Control Buttons Row -->
+    <div class="control-buttons">
+      <!-- Reset Button -->
+      <ion-button 
+        (click)="reset()" 
+        fill="outline" 
+        color="medium"
+        expand="block">
+        <ion-icon name="refresh-outline" slot="start"></ion-icon>
+        Reset
+      </ion-button>
+
+      <!-- Stop Button -->
+      <ion-button 
+        *ngIf="isRunning || isPaused"
+        (click)="stop()" 
+        fill="outline" 
+        color="danger"
+        expand="block">
+        <ion-icon name="stop-outline" slot="start"></ion-icon>
+        Parar
+      </ion-button>
+    </div>
+
+    <!-- Quick Time Adjustments (for countdown mode) -->
+    <div *ngIf="countDown" class="quick-adjustments">
+      <ion-button 
+        (click)="addTime(-30)" 
+        fill="clear" 
+        size="small"
+        color="medium">
+        <ion-icon name="remove-outline" slot="start"></ion-icon>
+        30s
+      </ion-button>
+      
+      <ion-button 
+        (click)="addTime(-60)" 
+        fill="clear" 
+        size="small"
+        color="medium">
+        <ion-icon name="remove-outline" slot="start"></ion-icon>
+        1min
+      </ion-button>
+      
+      <ion-button 
+        (click)="addTime(60)" 
+        fill="clear" 
+        size="small"
+        color="medium">
+        <ion-icon name="add-outline" slot="start"></ion-icon>
+        1min
+      </ion-button>
+      
+      <ion-button 
+        (click)="addTime(300)" 
+        fill="clear" 
+        size="small"
+        color="medium">
+        <ion-icon name="add-outline" slot="start"></ion-icon>
+        5min
+      </ion-button>
+    </div>
+  </div>
+
+  <!-- Timer Status -->
+  <div class="timer-status">
+    <ion-chip *ngIf="isRunning" color="success">
+      <ion-icon name="play-circle" slot="start"></ion-icon>
+      <ion-label>Em execução</ion-label>
+    </ion-chip>
+    
+    <ion-chip *ngIf="isPaused" color="warning">
+      <ion-icon name="pause-circle" slot="start"></ion-icon>
+      <ion-label>Pausado</ion-label>
+    </ion-chip>
+    
+    <ion-chip *ngIf="!isRunning && !isPaused" color="medium">
+      <ion-icon name="stop-circle" slot="start"></ion-icon>
+      <ion-label>Parado</ion-label>
+    </ion-chip>
+  </div>
+</div>

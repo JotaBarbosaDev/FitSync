@@ -39,195 +39,417 @@
 /**
  * FitSync Custom Global Styles
  * -----------------------------------------------------
+ * Modern design system with brand colors and automatic dark/light mode detection
+ * Cores: #E6FE58 (verde lima), #141414 (preto), #FFFFFF (branco)
  */
 
-// Tipografia personalizada
-.text-xs { font-size: 0.75rem; }
-.text-sm { font-size: 0.875rem; }
-.text-base { font-size: 1rem; }
-.text-lg { font-size: 1.125rem; }
-.text-xl { font-size: 1.25rem; }
-.text-2xl { font-size: 1.5rem; }
-.text-3xl { font-size: 1.875rem; }
-
-.font-light { font-weight: 300; }
-.font-normal { font-weight: 400; }
-.font-medium { font-weight: 500; }
-.font-semibold { font-weight: 600; }
-.font-bold { font-weight: 700; }
-
-// Estilos de botões personalizados
-.btn-primary {
-  --background: var(--ion-color-primary);
-  --color: var(--ion-color-primary-contrast);
-  --border-radius: 8px;
-  font-weight: 600;
-  height: 48px;
-}
-
-.btn-secondary {
-  --background: transparent;
-  --color: var(--ion-color-secondary);
-  --border-color: var(--ion-color-secondary);
-  --border-width: 2px;
-  --border-style: solid;
-  --border-radius: 8px;
-  font-weight: 600;
-  height: 48px;
-}
-
-// Cards personalizados
-.workout-card {
-  background: var(--ion-background-color);
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-  padding: 16px;
-  margin: 8px 0;
-  border-left: 4px solid var(--ion-color-primary);
-}
-
-.exercise-card {
-  background: var(--ion-surface-color);
-  border-radius: 8px;
-  padding: 12px;
-  margin: 4px 0;
-  border-left: 3px solid var(--fitsync-muscle-chest);
-}
-
-.plan-card {
-  background: var(--ion-background-color);
-  border-radius: 16px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-  padding: 20px;
-  margin: 12px 0;
-  border: 1px solid rgba(230, 254, 88, 0.2);
-}
-
-// Estados e cores dos músculos
-.muscle-chest { color: var(--fitsync-muscle-chest); }
-.muscle-back { color: var(--fitsync-muscle-back); }
-.muscle-legs { color: var(--fitsync-muscle-legs); }
-.muscle-shoulders { color: var(--fitsync-muscle-shoulders); }
-.muscle-arms { color: var(--fitsync-muscle-arms); }
-.muscle-core { color: var(--fitsync-muscle-core); }
-
-// Utilitários
-.center-content {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 100%;
-}
-
-.loading-spinner {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-}
-
-/**
- * FitSync Modern Professional Design System
- * -----------------------------------------------------
- * Enhanced UI components with gradients and animations
- */
-
-// Gradientes modernos
-.gradient-bg {
-  background: linear-gradient(135deg, var(--ion-color-primary) 0%, var(--ion-color-secondary) 100%);
-}
-
-.gradient-success {
-  background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
-}
-
-.gradient-warning {
-  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-}
-
-.gradient-danger {
-  background: linear-gradient(135deg, #e53935 0%, #e35d5b 100%);
-}
-
-// Cartões modernos com glassmorphism
-.modern-card {
-  border-radius: 16px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  transition: all 0.3s ease;
-  background: rgba(255, 255, 255, 0.25);
-
-  &:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+/* ===== SISTEMA DE TIPOGRAFIA RESPONSIVA ===== */
+.fitsync-text {
+  &-xs { 
+    font-size: clamp(0.75rem, 1vw, 0.8rem); 
+    line-height: 1.4; 
+    font-weight: 400;
   }
-}
-
-// Botões modernos
-.btn-modern {
-  border-radius: 12px;
-  font-weight: 600;
-  letter-spacing: 0.5px;
-  text-transform: none;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
-  transition: all 0.3s ease;
-  height: 48px;
-  --padding-start: 24px;
-  --padding-end: 24px;
-
-  &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+  &-sm { 
+    font-size: clamp(0.875rem, 1.2vw, 0.95rem); 
+    line-height: 1.5; 
+    font-weight: 400;
   }
-}
-
-// Estatísticas circulares profissionais
-.stats-circle {
-  width: 120px;
-  height: 120px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
-  position: relative;
-  background: linear-gradient(135deg, var(--ion-color-primary), var(--ion-color-secondary));
-  color: white;
-  font-weight: bold;
-  margin: 0 auto;
-  box-shadow: 0 8px 24px rgba(102, 126, 234, 0.3);
-  
-  .number {
-    font-size: 2.2rem;
-    line-height: 1;
+  &-base { 
+    font-size: clamp(1rem, 1.5vw, 1.1rem); 
+    line-height: 1.5; 
+    font-weight: 400;
+  }
+  &-lg { 
+    font-size: clamp(1.125rem, 2vw, 1.25rem); 
+    line-height: 1.6; 
+    font-weight: 500;
+  }
+  &-xl { 
+    font-size: clamp(1.25rem, 2.5vw, 1.5rem); 
+    line-height: 1.6; 
+    font-weight: 600;
+  }
+  &-2xl { 
+    font-size: clamp(1.5rem, 3vw, 2rem); 
+    line-height: 1.4; 
     font-weight: 700;
   }
+  &-3xl { 
+    font-size: clamp(1.875rem, 4vw, 2.5rem); 
+    line-height: 1.3; 
+    font-weight: 800;
+  }
+  &-4xl { 
+    font-size: clamp(2.25rem, 5vw, 3rem); 
+    line-height: 1.2; 
+    font-weight: 900;
+  }
+}
+
+// Classes de apoio para textos
+.fitsync-text-bold { font-weight: 700; }
+.fitsync-text-medium { font-weight: 500; }
+.fitsync-text-light { font-weight: 300; }
+.fitsync-text-center { text-align: center; }
+.fitsync-text-left { text-align: left; }
+.fitsync-text-right { text-align: right; }
+
+/* ===== SISTEMA DE BOTÕES PREMIUM ===== */
+.fitsync-btn {
+  position: relative;
+  padding: 12px 24px;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: clamp(0.875rem, 1.2vw, 1rem);
+  text-transform: none;
+  letter-spacing: 0.5px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border: none;
+  cursor: pointer;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   
-  .label {
-    font-size: 0.8rem;
-    opacity: 0.9;
-    text-transform: uppercase;
-    letter-spacing: 1px;
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    transition: left 0.5s;
+  }
+  
+  &:hover::before {
+    left: 100%;
+  }
+  
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+  }
+  
+  &:active {
+    transform: translateY(0px);
+    transition: transform 0.1s;
+  }
+  
+  // Variantes de botões
+  &--primary {
+    background: var(--fitsync-gradient-primary);
+    color: var(--ion-color-primary-contrast);
+    box-shadow: var(--ion-box-shadow-primary);
+    
+    &:hover {
+      box-shadow: 0 8px 24px rgba(230, 254, 88, 0.4);
+    }
+  }
+  
+  &--secondary {
+    background: var(--fitsync-gradient-secondary);
+    color: var(--ion-color-secondary-contrast);
+    
+    &:hover {
+      box-shadow: 0 8px 20px rgba(20, 20, 20, 0.3);
+    }
+  }
+  
+  &--accent {
+    background: var(--fitsync-gradient-accent);
+    color: var(--ion-color-tertiary-contrast);
+    
+    &:hover {
+      box-shadow: 0 8px 20px rgba(64, 224, 208, 0.4);
+    }
+  }
+  
+  &--outline {
+    background: transparent;
+    border: 2px solid var(--ion-color-primary);
+    color: var(--ion-color-primary);
+    box-shadow: none;
+    
+    &:hover {
+      background: var(--ion-color-primary);
+      color: var(--ion-color-primary-contrast);
+    }
+  }
+  
+  &--ghost {
+    background: rgba(230, 254, 88, 0.1);
+    color: var(--ion-color-primary);
+    box-shadow: none;
+    
+    &:hover {
+      background: rgba(230, 254, 88, 0.2);
+    }
+  }
+  
+  // Tamanhos
+  &--sm {
+    padding: 8px 16px;
+    font-size: clamp(0.75rem, 1vw, 0.875rem);
+    border-radius: 8px;
+  }
+  
+  &--lg {
+    padding: 16px 32px;
+    font-size: clamp(1rem, 1.5vw, 1.125rem);
+    border-radius: 16px;
+  }
+  
+  // Estados
+  &--disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none !important;
+    
+    &:hover {
+      transform: none !important;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+    }
+  }
+}
+
+/* ===== SISTEMA DE CARDS MODERNOS ===== */
+.fitsync-card {
+  background: var(--ion-card-background);
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: var(--ion-box-shadow-card);
+  border: 1px solid var(--ion-border-color);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+  
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+  }
+  
+  // Variantes de cards
+  &--workout {
+    background: linear-gradient(135deg, var(--ion-card-background) 0%, rgba(230, 254, 88, 0.05) 100%);
+    border-left: 4px solid var(--ion-color-primary);
+    
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+      
+      .card-title {
+        font-size: clamp(1.125rem, 2vw, 1.25rem);
+        font-weight: 600;
+        color: var(--ion-text-color);
+      }
+      
+      .card-badge {
+        padding: 4px 12px;
+        background: var(--ion-color-primary);
+        color: var(--ion-color-primary-contrast);
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 600;
+      }
+    }
+    
+    .card-content {
+      color: var(--ion-text-color-secondary);
+      font-size: clamp(0.875rem, 1.2vw, 1rem);
+      line-height: 1.5;
+    }
+    
+    .card-stats {
+      display: flex;
+      gap: 16px;
+      margin-top: 16px;
+      
+      .stat-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        
+        .stat-value {
+          font-weight: 700;
+          font-size: clamp(1rem, 1.5vw, 1.125rem);
+          color: var(--ion-color-primary);
+        }
+        
+        .stat-label {
+          font-size: 0.75rem;
+          color: var(--ion-text-color-tertiary);
+          margin-top: 2px;
+        }
+      }
+    }
+  }
+  
+  &--exercise {
+    border-radius: 12px;
+    padding: 16px;
+    
+    .exercise-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+      
+      .exercise-icon {
+        width: 40px;
+        height: 40px;
+        background: var(--fitsync-gradient-primary);
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        
+        ion-icon {
+          font-size: 20px;
+          color: var(--ion-color-primary-contrast);
+        }
+      }
+      
+      .exercise-info {
+        flex: 1;
+        
+        .exercise-name {
+          font-weight: 600;
+          color: var(--ion-text-color);
+          font-size: clamp(1rem, 1.5vw, 1.125rem);
+        }
+        
+        .exercise-muscle {
+          font-size: 0.875rem;
+          color: var(--ion-text-color-secondary);
+        }
+      }
+    }
+    
+    .exercise-sets {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      
+      .set-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 8px 12px;
+        background: rgba(230, 254, 88, 0.05);
+        border-radius: 8px;
+        
+        .set-number {
+          font-weight: 600;
+          color: var(--ion-color-primary);
+        }
+        
+        .set-details {
+          font-size: 0.875rem;
+          color: var(--ion-text-color-secondary);
+        }
+      }
+    }
+  }
+  
+  &--glass {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    
+    @media (prefers-color-scheme: dark) {
+      background: rgba(26, 26, 26, 0.8);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+  }
+  
+  &--elevated {
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+    
+    &:hover {
+      box-shadow: 0 16px 48px rgba(0, 0, 0, 0.16);
+    }
+  }
+}
+
+/* ===== SISTEMA DE INPUTS AVANÇADOS ===== */
+.fitsync-input {
+  position: relative;
+  margin-bottom: 20px;
+  
+  .input-wrapper {
+    position: relative;
+    
+    ion-input, ion-textarea, ion-select {
+      --background: var(--ion-card-background);
+      --color: var(--ion-text-color);
+      --border-radius: 12px;
+      --border-width: 2px;
+      --border-color: var(--ion-border-color);
+      --padding-start: 16px;
+      --padding-end: 16px;
+      --padding-top: 16px;
+      --padding-bottom: 16px;
+      font-size: clamp(1rem, 1.5vw, 1.125rem);
+      transition: all 0.3s ease;
+      
+      &.has-focus {
+        --border-color: var(--ion-color-primary);
+        box-shadow: 0 0 0 3px rgba(230, 254, 88, 0.1);
+      }
+    }
+    
+    .input-icon {
+      position: absolute;
+      right: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--ion-text-color-tertiary);
+      font-size: 20px;
+    }
+  }
+  
+  .input-label {
+    font-weight: 500;
+    color: var(--ion-text-color);
+    margin-bottom: 8px;
+    font-size: clamp(0.875rem, 1.2vw, 1rem);
+  }
+  
+  .input-error {
+    color: var(--ion-color-danger);
+    font-size: 0.875rem;
+    margin-top: 4px;
+    animation: fadeInUp 0.3s ease;
+  }
+  
+  .input-hint {
+    color: var(--ion-text-color-tertiary);
+    font-size: 0.875rem;
     margin-top: 4px;
   }
 }
 
-// Progress bars com animação
-.progress-modern {
-  height: 8px;
-  border-radius: 4px;
-  background: rgba(102, 126, 234, 0.2);
-  overflow: hidden;
+/* ===== PROGRESS BARS COM SHIMMER ===== */
+.fitsync-progress {
   position: relative;
+  width: 100%;
+  height: 8px;
+  background: var(--ion-color-light);
+  border-radius: 4px;
+  overflow: hidden;
   
-  .progress-fill {
+  .progress-bar {
     height: 100%;
-    background: linear-gradient(90deg, var(--ion-color-primary), var(--ion-color-secondary));
+    background: var(--fitsync-gradient-primary);
     border-radius: 4px;
-    transition: width 0.8s ease;
+    transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
-    overflow: hidden;
     
     &::after {
       content: '';
@@ -236,8 +458,24 @@
       left: -100%;
       width: 100%;
       height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
       animation: shimmer 2s infinite;
+    }
+  }
+  
+  &--thick {
+    height: 12px;
+    
+    .progress-bar {
+      border-radius: 6px;
+    }
+  }
+  
+  &--thin {
+    height: 4px;
+    
+    .progress-bar {
+      border-radius: 2px;
     }
   }
 }
@@ -245,6 +483,895 @@
 @keyframes shimmer {
   0% { left: -100%; }
   100% { left: 100%; }
+}
+
+/* ===== BADGES PARA GRUPOS MUSCULARES ===== */
+.fitsync-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  
+  &--chest {
+    background: rgba(230, 254, 88, 0.15);
+    color: var(--fitsync-muscle-chest);
+    border: 1px solid rgba(230, 254, 88, 0.3);
+  }
+  
+  &--back {
+    background: rgba(64, 224, 208, 0.15);
+    color: var(--fitsync-muscle-back);
+    border: 1px solid rgba(64, 224, 208, 0.3);
+  }
+  
+  &--legs {
+    background: rgba(16, 220, 96, 0.15);
+    color: var(--fitsync-muscle-legs);
+    border: 1px solid rgba(16, 220, 96, 0.3);
+  }
+  
+  &--shoulders {
+    background: rgba(255, 184, 0, 0.15);
+    color: var(--fitsync-muscle-shoulders);
+    border: 1px solid rgba(255, 184, 0, 0.3);
+  }
+  
+  &--arms {
+    background: rgba(240, 65, 65, 0.15);
+    color: var(--fitsync-muscle-arms);
+    border: 1px solid rgba(240, 65, 65, 0.3);
+  }
+  
+  &--core {
+    background: rgba(157, 78, 221, 0.15);
+    color: var(--fitsync-muscle-core);
+    border: 1px solid rgba(157, 78, 221, 0.3);
+  }
+  
+  &--cardio {
+    background: rgba(255, 107, 107, 0.15);
+    color: var(--fitsync-muscle-cardio);
+    border: 1px solid rgba(255, 107, 107, 0.3);
+  }
+}
+
+/* ===== ANIMAÇÕES FLUIDAS ===== */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+@keyframes bounce {
+  0%, 20%, 53%, 80%, 100% {
+    transform: translateY(0);
+  }
+  40%, 43% {
+    transform: translateY(-8px);
+  }
+  70% {
+    transform: translateY(-4px);
+  }
+  90% {
+    transform: translateY(-2px);
+  }
+}
+
+// Classes de animação
+.fitsync-fade-in { animation: fadeInUp 0.6s ease-out; }
+.fitsync-slide-right { animation: slideInRight 0.6s ease-out; }
+.fitsync-slide-left { animation: slideInLeft 0.6s ease-out; }
+.fitsync-pulse { animation: pulse 2s infinite; }
+.fitsync-bounce { animation: bounce 1s; }
+
+/* ===== CLASSES UTILITÁRIAS RESPONSIVAS ===== */
+.fitsync-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 16px;
+  
+  @media (min-width: 768px) {
+    padding: 0 24px;
+  }
+  
+  @media (min-width: 1024px) {
+    padding: 0 32px;
+  }
+}
+
+.fitsync-grid {
+  display: grid;
+  gap: 16px;
+  
+  &--2 {
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  }
+  
+  &--3 {
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  }
+  
+  &--4 {
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  }
+}
+
+.fitsync-flex {
+  display: flex;
+  
+  &--center {
+    align-items: center;
+    justify-content: center;
+  }
+  
+  &--between {
+    justify-content: space-between;
+  }
+  
+  &--around {
+    justify-content: space-around;
+  }
+  
+  &--column {
+    flex-direction: column;
+  }
+  
+  &--wrap {
+    flex-wrap: wrap;
+  }
+}
+
+// Espaçamentos responsivos
+.fitsync-spacing {
+  &--xs { margin: 4px; }
+  &--sm { margin: 8px; }
+  &--md { margin: 16px; }
+  &--lg { margin: 24px; }
+  &--xl { margin: 32px; }
+  &--2xl { margin: 48px; }
+}
+
+.fitsync-padding {
+  &--xs { padding: 4px; }
+  &--sm { padding: 8px; }
+  &--md { padding: 16px; }
+  &--lg { padding: 24px; }
+  &--xl { padding: 32px; }
+  &--2xl { padding: 48px; }
+}
+
+/* ===== CORREÇÕES ESPECÍFICAS PARA IONIC ===== */
+ion-content {
+  --background: var(--ion-background-color);
+  --color: var(--ion-text-color);
+}
+
+ion-header {
+  --background: var(--ion-card-background);
+  --color: var(--ion-text-color);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+ion-toolbar {
+  --background: var(--ion-card-background);
+  --color: var(--ion-text-color);
+  --border-color: var(--ion-border-color);
+}
+
+ion-title {
+  color: var(--ion-text-color);
+  font-weight: 600;
+}
+
+ion-tab-bar {
+  --background: var(--ion-card-background);
+  --color: var(--ion-text-color-secondary);
+  border-top: 1px solid var(--ion-border-color);
+  
+  ion-tab-button {
+    --color: var(--ion-text-color-secondary);
+    --color-selected: var(--ion-color-primary);
+  }
+}
+
+// Correção para modo escuro
+@media (prefers-color-scheme: dark) {
+  .fitsync-progress {
+    background: rgba(42, 42, 42, 0.5);
+  }
+  
+  .fitsync-card {
+    border-color: rgba(255, 255, 255, 0.1);
+  }
+}
+.text-3xl { font-size: 1.875rem; line-height: 1.3; }
+.text-4xl { font-size: 2.25rem; line-height: 1.2; }
+
+.font-light { font-weight: 300; }
+.font-normal { font-weight: 400; }
+.font-medium { font-weight: 500; }
+.font-semibold { font-weight: 600; }
+.font-bold { font-weight: 700; }
+.font-extrabold { font-weight: 800; }
+
+// FitSync Brand Typography
+.text-brand {
+  background: linear-gradient(135deg, var(--ion-color-primary) 0%, #B8E636 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.text-gradient-secondary {
+  background: linear-gradient(135deg, var(--ion-color-secondary) 0%, #404040 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-weight: 600;
+}
+
+// Modern Button System - FitSync Brand
+.btn-primary {
+  --background: var(--ion-color-primary);
+  --color: var(--ion-color-secondary);
+  --border-radius: 12px;
+  font-weight: 700;
+  height: 52px;
+  letter-spacing: 0.02em;
+  text-transform: none;
+  box-shadow: 0 4px 16px rgba(230, 254, 88, 0.3);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(230, 254, 88, 0.4);
+  }
+  
+  &:active {
+    transform: translateY(0);
+    transition: all 0.1s ease;
+  }
+}
+
+.btn-secondary {
+  --background: transparent;
+  --color: var(--ion-color-secondary);
+  --border-color: var(--ion-color-secondary);
+  --border-width: 2px;
+  --border-style: solid;
+  --border-radius: 12px;
+  font-weight: 600;
+  height: 52px;
+  letter-spacing: 0.02em;
+  text-transform: none;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  
+  &:hover {
+    --background: var(--ion-color-secondary);
+    --color: var(--ion-color-primary);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(20, 20, 20, 0.15);
+  }
+}
+
+.btn-outline-primary {
+  --background: transparent;
+  --color: var(--ion-color-primary);
+  --border-color: var(--ion-color-primary);
+  --border-width: 2px;
+  --border-style: solid;
+  --border-radius: 12px;
+  font-weight: 600;
+  height: 52px;
+  transition: all 0.3s ease;
+  
+  &:hover {
+    --background: var(--ion-color-primary);
+    --color: var(--ion-color-secondary);
+  }
+}
+
+.btn-floating {
+  --background: var(--ion-color-primary);
+  --color: var(--ion-color-secondary);
+  --border-radius: 50%;
+  width: 64px;
+  height: 64px;
+  box-shadow: 0 8px 24px rgba(230, 254, 88, 0.3);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  
+  &:hover {
+    transform: scale(1.05);
+    box-shadow: 0 12px 32px rgba(230, 254, 88, 0.4);
+  }
+}
+
+// Modern Card System - Premium Design
+.workout-card {
+  background: var(--ion-card-background);
+  border-radius: 16px;
+  box-shadow: 
+    0 1px 3px rgba(0, 0, 0, 0.12),
+    0 1px 2px rgba(0, 0, 0, 0.24);
+  padding: 20px;
+  margin: 12px 0;
+  border-left: 4px solid var(--ion-color-primary);
+  position: relative;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--ion-color-primary) 0%, #B8E636 100%);
+    opacity: 0.8;
+  }
+  
+  &:hover {
+    transform: translateY(-4px) scale(1.01);
+    box-shadow: 
+      0 8px 25px rgba(0, 0, 0, 0.15),
+      0 4px 10px rgba(0, 0, 0, 0.12);
+  }
+}
+
+.exercise-card {
+  background: var(--ion-card-background);
+  border-radius: 12px;
+  padding: 16px;
+  margin: 8px 0;
+  border-left: 3px solid var(--fitsync-muscle-chest);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+  
+  &:hover {
+    transform: translateX(4px);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+  }
+}
+
+.plan-card {
+  background: var(--ion-card-background);
+  border-radius: 20px;
+  box-shadow: 
+    0 4px 16px rgba(0, 0, 0, 0.1),
+    0 2px 4px rgba(0, 0, 0, 0.06);
+  padding: 24px;
+  margin: 16px 0;
+  border: 1px solid var(--ion-color-primary-tint);
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  
+  &::after {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    background: linear-gradient(135deg, var(--ion-color-primary), transparent, var(--ion-color-primary));
+    border-radius: 22px;
+    z-index: -1;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+  
+  &:hover {
+    transform: translateY(-6px);
+    box-shadow: 
+      0 12px 32px rgba(0, 0, 0, 0.15),
+      0 6px 12px rgba(0, 0, 0, 0.1);
+      
+    &::after {
+      opacity: 0.1;
+    }
+  }
+}
+
+// Glass Card Effect
+.glass-card {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  transition: all 0.3s ease;
+  
+  &:hover {
+    background: rgba(255, 255, 255, 0.15);
+    transform: translateY(-2px);
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  .glass-card {
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    
+    &:hover {
+      background: rgba(0, 0, 0, 0.3);
+    }
+  }
+}
+
+// Enhanced Muscle Group Styling
+.muscle-chest { 
+  color: var(--fitsync-muscle-chest); 
+  font-weight: 600;
+}
+.muscle-back { 
+  color: var(--fitsync-muscle-back); 
+  font-weight: 600;
+}
+.muscle-legs { 
+  color: var(--fitsync-muscle-legs); 
+  font-weight: 600;
+}
+.muscle-shoulders { 
+  color: var(--fitsync-muscle-shoulders); 
+  font-weight: 600;
+}
+.muscle-arms { 
+  color: var(--fitsync-muscle-arms); 
+  font-weight: 600;
+}
+.muscle-core { 
+  color: var(--fitsync-muscle-core); 
+  font-weight: 600;
+}
+
+// Modern Muscle Badges
+.muscle-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 16px;
+  border-radius: 24px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: white;
+  margin: 4px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+    transition: left 0.6s ease;
+  }
+  
+  &:hover {
+    transform: translateY(-2px) scale(1.05);
+    
+    &::before {
+      left: 100%;
+    }
+  }
+  
+  &.chest { background: linear-gradient(135deg, var(--fitsync-muscle-chest), #E57373); }
+  &.back { background: linear-gradient(135deg, var(--fitsync-muscle-back), #64B5F6); }
+  &.legs { background: linear-gradient(135deg, var(--fitsync-muscle-legs), #81C784); }
+  &.shoulders { background: linear-gradient(135deg, var(--fitsync-muscle-shoulders), #FFB74D); }
+  &.arms { background: linear-gradient(135deg, var(--fitsync-muscle-arms), #BA68C8); }
+  &.core { background: linear-gradient(135deg, var(--fitsync-muscle-core), #4DB6AC); }
+  &.cardio { background: linear-gradient(135deg, var(--fitsync-muscle-cardio), #F06292); }
+}
+
+// Modern Layout Utilities
+.center-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+}
+
+.flex-between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.flex-start {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.flex-column {
+  display: flex;
+  flex-direction: column;
+}
+
+.loading-spinner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 32px;
+  
+  ion-spinner {
+    color: var(--ion-color-primary);
+    --color: var(--ion-color-primary);
+  }
+}
+
+// Spacing System
+.p-xs { padding: 4px !important; }
+.p-sm { padding: 8px !important; }
+.p-md { padding: 16px !important; }
+.p-lg { padding: 24px !important; }
+.p-xl { padding: 32px !important; }
+
+.m-xs { margin: 4px !important; }
+.m-sm { margin: 8px !important; }
+.m-md { margin: 16px !important; }
+.m-lg { margin: 24px !important; }
+.m-xl { margin: 32px !important; }
+
+.mt-xs { margin-top: 4px !important; }
+.mt-sm { margin-top: 8px !important; }
+.mt-md { margin-top: 16px !important; }
+.mt-lg { margin-top: 24px !important; }
+.mt-xl { margin-top: 32px !important; }
+
+.mb-xs { margin-bottom: 4px !important; }
+.mb-sm { margin-bottom: 8px !important; }
+.mb-md { margin-bottom: 16px !important; }
+.mb-lg { margin-bottom: 24px !important; }
+.mb-xl { margin-bottom: 32px !important; }
+
+/**
+ * FitSync Premium Design System
+ * -----------------------------------------------------
+ * Modern gradients, animations, and professional components
+ */
+
+// Brand Gradients
+.gradient-brand-primary {
+  background: linear-gradient(135deg, var(--ion-color-primary) 0%, #B8E636 50%, #A3D134 100%);
+}
+
+.gradient-brand-secondary {
+  background: linear-gradient(135deg, var(--ion-color-secondary) 0%, #404040 50%, #2A2A2A 100%);
+}
+
+.gradient-brand-accent {
+  background: linear-gradient(135deg, var(--ion-color-primary) 0%, var(--ion-color-secondary) 100%);
+}
+
+.gradient-success {
+  background: linear-gradient(135deg, #4CAF50 0%, #8BC34A 100%);
+}
+
+.gradient-warning {
+  background: linear-gradient(135deg, #FF9800 0%, #FFC107 100%);
+}
+
+.gradient-danger {
+  background: linear-gradient(135deg, #F44336 0%, #E91E63 100%);
+}
+
+// Modern Glassmorphism Cards
+.glass-card-modern {
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.15);
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.5), transparent);
+  }
+
+  &:hover {
+    transform: translateY(-8px) scale(1.02);
+    background: rgba(255, 255, 255, 0.25);
+    box-shadow: 
+      0 20px 48px rgba(0, 0, 0, 0.15),
+      inset 0 1px 0 rgba(255, 255, 255, 0.4);
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  .glass-card-modern {
+    background: rgba(0, 0, 0, 0.25);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    
+    &:hover {
+      background: rgba(0, 0, 0, 0.35);
+    }
+  }
+}
+
+// Premium Button Styles
+.btn-premium {
+  border-radius: 16px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: none;
+  height: 56px;
+  --padding-start: 32px;
+  --padding-end: 32px;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+    transition: left 0.6s ease;
+  }
+  
+  &:hover {
+    transform: translateY(-3px) scale(1.02);
+    
+    &::before {
+      left: 100%;
+    }
+  }
+  
+  &:active {
+    transform: translateY(-1px) scale(0.98);
+    transition: all 0.1s ease;
+  }
+}
+
+// Enhanced Statistics Circles with Modern Design
+.stats-circle {
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  position: relative;
+  background: linear-gradient(135deg, var(--ion-color-primary), #B8E636);
+  color: var(--ion-color-secondary);
+  font-weight: bold;
+  margin: 0 auto;
+  box-shadow: 
+    0 12px 32px rgba(230, 254, 88, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: -4px;
+    left: -4px;
+    right: -4px;
+    bottom: -4px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--ion-color-primary), #B8E636, var(--ion-color-primary));
+    z-index: -1;
+    opacity: 0.5;
+    animation: pulse-ring 3s infinite;
+  }
+  
+  &:hover {
+    transform: scale(1.05);
+    box-shadow: 
+      0 16px 40px rgba(230, 254, 88, 0.4),
+      inset 0 1px 0 rgba(255, 255, 255, 0.4);
+  }
+  
+  .number {
+    font-size: 2.5rem;
+    line-height: 1;
+    font-weight: 800;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .label {
+    font-size: 0.8rem;
+    opacity: 0.9;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    margin-top: 6px;
+    font-weight: 600;
+  }
+}
+
+@keyframes pulse-ring {
+  0% {
+    transform: scale(1);
+    opacity: 0.5;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 0.2;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 0.5;
+  }
+}
+
+// Compact stats circle for smaller spaces
+.stats-circle-sm {
+  width: 100px;
+  height: 100px;
+  
+  .number { font-size: 1.8rem; }
+  .label { font-size: 0.7rem; letter-spacing: 0.8px; }
+}
+
+// Modern Progress Bars with Enhanced Animations
+.progress-modern {
+  height: 12px;
+  border-radius: 8px;
+  background: var(--ion-color-step-100);
+  overflow: hidden;
+  position: relative;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+  
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--ion-color-primary) 0%, #B8E636 50%, var(--ion-color-primary) 100%);
+    border-radius: 8px;
+    transition: width 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(230, 254, 88, 0.4);
+    
+    &::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(90deg, 
+        rgba(255,255,255,0) 0%, 
+        rgba(255,255,255,0.3) 50%, 
+        rgba(255,255,255,0) 100%);
+      animation: shimmer 2.5s infinite;
+    }
+    
+    &::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: rgba(255, 255, 255, 0.6);
+      border-radius: 8px 8px 0 0;
+    }
+  }
+}
+
+.progress-circle {
+  position: relative;
+  width: 80px;
+  height: 80px;
+  
+  svg {
+    transform: rotate(-90deg);
+    width: 100%;
+    height: 100%;
+  }
+  
+  .progress-bg {
+    fill: none;
+    stroke: var(--ion-color-step-200);
+    stroke-width: 8;
+  }
+  
+  .progress-bar {
+    fill: none;
+    stroke: var(--ion-color-primary);
+    stroke-width: 8;
+    stroke-linecap: round;
+    stroke-dasharray: 251.2;
+    stroke-dashoffset: 251.2;
+    transition: stroke-dashoffset 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+    filter: drop-shadow(0 2px 4px rgba(230, 254, 88, 0.3));
+  }
+  
+  .progress-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-weight: 700;
+    font-size: 1rem;
+    color: var(--ion-color-primary);
+  }
+}
+
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+@keyframes progress-pulse {
+  0%, 100% { 
+    box-shadow: 0 2px 8px rgba(230, 254, 88, 0.4);
+  }
+  50% { 
+    box-shadow: 0 4px 16px rgba(230, 254, 88, 0.6);
+  }
 }
 
 // Badges de grupos musculares
@@ -269,11 +1396,11 @@
   &.cardio { background: var(--fitsync-muscle-cardio); }
 }
 
-// Animações suaves
+// Enhanced Modern Animations
 @keyframes slideInUp {
   from {
     opacity: 0;
-    transform: translateY(30px);
+    transform: translateY(40px);
   }
   to {
     opacity: 1;
@@ -281,62 +1408,283 @@
   }
 }
 
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from { 
+    opacity: 0; 
+    transform: scale(0.95);
+  }
+  to { 
+    opacity: 1; 
+    transform: scale(1);
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 @keyframes pulse {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.05); }
+  0%, 100% { 
+    transform: scale(1); 
+    opacity: 1;
+  }
+  50% { 
+    transform: scale(1.05); 
+    opacity: 0.8;
+  }
 }
 
+@keyframes bounce {
+  0%, 20%, 53%, 80%, 100% {
+    transform: translate3d(0, 0, 0);
+  }
+  40%, 43% {
+    transform: translate3d(0, -8px, 0);
+  }
+  70% {
+    transform: translate3d(0, -4px, 0);
+  }
+  90% {
+    transform: translate3d(0, -2px, 0);
+  }
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(-4px); }
+  20%, 40%, 60%, 80% { transform: translateX(4px); }
+}
+
+@keyframes glow {
+  0%, 100% {
+    box-shadow: 0 0 8px rgba(230, 254, 88, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 24px rgba(230, 254, 88, 0.6);
+  }
+}
+
+// Animation Classes
 .animate-slide-up {
-  animation: slideInUp 0.6s ease-out;
+  animation: slideInUp 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.animate-slide-left {
+  animation: slideInLeft 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.animate-slide-right {
+  animation: slideInRight 0.6s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .animate-fade-in {
-  animation: fadeIn 0.4s ease-out;
+  animation: fadeIn 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.8s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .animate-pulse {
   animation: pulse 2s infinite;
 }
 
-// Typography moderna
+.animate-bounce {
+  animation: bounce 1s;
+}
+
+.animate-shake {
+  animation: shake 0.8s;
+}
+
+.animate-glow {
+  animation: glow 2s infinite;
+}
+
+// Staggered animations for lists
+.stagger-animation {
+  > * {
+    opacity: 0;
+    animation: fadeInUp 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  }
+  
+  > *:nth-child(1) { animation-delay: 0.1s; }
+  > *:nth-child(2) { animation-delay: 0.2s; }
+  > *:nth-child(3) { animation-delay: 0.3s; }
+  > *:nth-child(4) { animation-delay: 0.4s; }
+  > *:nth-child(5) { animation-delay: 0.5s; }
+  > *:nth-child(6) { animation-delay: 0.6s; }
+  > *:nth-child(7) { animation-delay: 0.7s; }
+  > *:nth-child(8) { animation-delay: 0.8s; }
+}
+
+// Enhanced Modern Typography System
 .text-gradient {
-  background: linear-gradient(135deg, var(--ion-color-primary), var(--ion-color-secondary));
+  background: linear-gradient(135deg, var(--ion-color-primary) 0%, #B8E636 50%, var(--ion-color-primary) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
   font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.text-gradient-dark {
+  background: linear-gradient(135deg, var(--ion-color-secondary) 0%, #404040 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-weight: 600;
 }
 
 .section-title {
-  font-size: 1.5rem;
-  font-weight: 700;
-  margin-bottom: 1rem;
+  font-size: 1.75rem;
+  font-weight: 800;
+  margin-bottom: 1.5rem;
   color: var(--ion-color-primary);
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+  
+  &.center {
+    text-align: center;
+  }
+  
+  &.large {
+    font-size: 2.25rem;
+    margin-bottom: 2rem;
+  }
 }
 
 .subsection-title {
-  font-size: 1.1rem;
-  font-weight: 600;
-  margin-bottom: 0.5rem;
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
   color: var(--ion-text-color);
+  letter-spacing: -0.01em;
+  line-height: 1.3;
 }
 
-// Cards de workout melhorados
+.page-title {
+  font-size: 2rem;
+  font-weight: 800;
+  margin-bottom: 0.5rem;
+  color: var(--ion-text-color);
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+  
+  &.hero {
+    font-size: 2.75rem;
+    background: linear-gradient(135deg, var(--ion-color-primary) 0%, #B8E636 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+}
+
+.subtitle {
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--ion-color-medium);
+  margin-bottom: 2rem;
+  line-height: 1.5;
+  
+  &.large {
+    font-size: 1.125rem;
+  }
+}
+
+.caption {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--ion-color-medium);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.overline {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--ion-color-primary);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 0.5rem;
+}
+
+// Text decorations
+.text-shadow {
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.text-shadow-strong {
+  text-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+// Text utilities
+.text-truncate {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.text-truncate-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.text-truncate-3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+// Premium Workout & Exercise Cards
 .workout-card-modern {
-  background: white;
-  border-radius: 16px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-  padding: 20px;
-  margin: 12px 0;
+  background: var(--ion-card-background);
+  border-radius: 20px;
+  box-shadow: 
+    0 4px 20px rgba(0, 0, 0, 0.08),
+    0 2px 6px rgba(0, 0, 0, 0.04);
+  padding: 24px;
+  margin: 16px 0;
   border: none;
   position: relative;
   overflow: hidden;
-  transition: all 0.3s ease;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   
   &::before {
     content: '';
@@ -344,58 +1692,599 @@
     top: 0;
     left: 0;
     right: 0;
-    height: 4px;
-    background: linear-gradient(90deg, var(--ion-color-primary), var(--ion-color-secondary));
+    height: 3px;
+    background: linear-gradient(90deg, var(--ion-color-primary) 0%, #B8E636 50%, var(--ion-color-primary) 100%);
+  }
+  
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 60px;
+    height: 60px;
+    background: radial-gradient(circle, rgba(230, 254, 88, 0.1) 0%, transparent 70%);
+    border-radius: 0 0 0 60px;
   }
   
   &:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+    transform: translateY(-6px) scale(1.02);
+    box-shadow: 
+      0 12px 40px rgba(0, 0, 0, 0.15),
+      0 6px 20px rgba(0, 0, 0, 0.08);
+  }
+  
+  .workout-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+    
+    h3 {
+      margin: 0;
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--ion-text-color);
+      letter-spacing: -0.01em;
+    }
+    
+    .workout-status {
+      padding: 6px 12px;
+      border-radius: 16px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      
+      &.completed {
+        background: linear-gradient(135deg, #4CAF50, #8BC34A);
+        color: white;
+      }
+      
+      &.in-progress {
+        background: linear-gradient(135deg, var(--ion-color-primary), #B8E636);
+        color: var(--ion-color-secondary);
+      }
+      
+      &.pending {
+        background: var(--ion-color-light);
+        color: var(--ion-color-medium);
+      }
+    }
+  }
+  
+  .workout-stats {
+    display: flex;
+    gap: 16px;
+    margin-top: 16px;
+    
+    .stat-item {
+      flex: 1;
+      text-align: center;
+      padding: 12px 8px;
+      background: var(--ion-color-light);
+      border-radius: 12px;
+      
+      .stat-value {
+        font-size: 1.125rem;
+        font-weight: 700;
+        color: var(--ion-color-primary);
+        margin-bottom: 4px;
+      }
+      
+      .stat-label {
+        font-size: 0.75rem;
+        color: var(--ion-color-medium);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+    }
   }
 }
 
 .exercise-card-modern {
-  background: rgba(255, 255, 255, 0.9);
-  border-radius: 12px;
-  padding: 16px;
-  margin: 8px 0;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+  background: var(--ion-card-background);
+  border-radius: 16px;
+  padding: 20px;
+  margin: 12px 0;
+  box-shadow: 
+    0 2px 12px rgba(0, 0, 0, 0.06),
+    0 1px 3px rgba(0, 0, 0, 0.1);
   border-left: 4px solid var(--ion-color-primary);
-  transition: all 0.3s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 8px;
+    height: 8px;
+    background: var(--ion-color-primary);
+    border-radius: 50%;
+    opacity: 0.3;
+  }
   
   &:hover {
-    transform: translateX(4px);
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+    transform: translateX(6px) translateY(-2px);
+    box-shadow: 
+      0 6px 24px rgba(0, 0, 0, 0.12),
+      0 3px 8px rgba(0, 0, 0, 0.08);
+    border-left-color: #B8E636;
+    
+    &::before {
+      opacity: 1;
+      animation: pulse 1.5s infinite;
+    }
+  }
+  
+  .exercise-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+    
+    h4 {
+      margin: 0;
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--ion-text-color);
+    }
+    
+    .muscle-tag {
+      padding: 4px 8px;
+      border-radius: 8px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+      background: rgba(230, 254, 88, 0.15);
+      color: var(--ion-color-primary);
+    }
+  }
+  
+  .sets-info {
+    display: flex;
+    gap: 12px;
+    margin-top: 12px;
+    
+    .set-detail {
+      flex: 1;
+      padding: 8px 12px;
+      background: var(--ion-color-step-50);
+      border-radius: 8px;
+      text-align: center;
+      
+      .set-value {
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: var(--ion-text-color);
+        margin-bottom: 2px;
+      }
+      
+      .set-label {
+        font-size: 0.7rem;
+        color: var(--ion-color-medium);
+        text-transform: uppercase;
+        letter-spacing: 0.3px;
+      }
+    }
   }
 }
 
-// Header personalizado
+// Modern Header & Navigation
 .header-modern {
-  --background: linear-gradient(135deg, var(--ion-color-primary), var(--ion-color-secondary));
-  --color: white;
+  --background: linear-gradient(135deg, var(--ion-color-primary) 0%, #B8E636 100%);
+  --color: var(--ion-color-secondary);
+  box-shadow: 0 2px 16px rgba(230, 254, 88, 0.2);
   
   ion-title {
-    font-weight: 700;
-    font-size: 1.3rem;
+    font-weight: 800;
+    font-size: 1.4rem;
+    letter-spacing: -0.02em;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  }
+  
+  ion-button {
+    --color: var(--ion-color-secondary);
+    font-weight: 600;
+    
+    &:hover {
+      --background: rgba(20, 20, 20, 0.1);
+    }
   }
 }
 
-// Responsividade melhorada
+.header-transparent {
+  --background: rgba(255, 255, 255, 0.95);
+  --color: var(--ion-text-color);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(230, 254, 88, 0.2);
+  
+  ion-title {
+    background: linear-gradient(135deg, var(--ion-color-primary) 0%, #B8E636 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  .header-transparent {
+    --background: rgba(13, 13, 13, 0.95);
+    border-bottom: 1px solid rgba(230, 254, 88, 0.15);
+  }
+}
+
+// Modern Tab Bar
+.tab-bar-modern {
+  --background: var(--ion-background-color);
+  border-top: 1px solid var(--ion-color-step-150);
+  box-shadow: 0 -2px 16px rgba(0, 0, 0, 0.08);
+  
+  ion-tab-button {
+    --color: var(--ion-color-medium);
+    --color-selected: var(--ion-color-primary);
+    font-weight: 600;
+    
+    &.tab-selected {
+      transform: translateY(-2px);
+      
+      ion-icon {
+        transform: scale(1.1);
+      }
+    }
+  }
+}
+
+// Floating Action Button
+.fab-modern {
+  --background: linear-gradient(135deg, var(--ion-color-primary) 0%, #B8E636 100%);
+  --color: var(--ion-color-secondary);
+  --box-shadow: 0 8px 24px rgba(230, 254, 88, 0.4);
+  --border-radius: 16px;
+  
+  &:hover {
+    --box-shadow: 0 12px 32px rgba(230, 254, 88, 0.5);
+    transform: scale(1.05);
+  }
+}
+
+// Modern Input Styles
+.input-modern {
+  --background: var(--ion-color-step-50);
+  --border-radius: 12px;
+  --padding-start: 16px;
+  --padding-end: 16px;
+  --border-width: 2px;
+  --border-color: transparent;
+  --color: var(--ion-text-color);
+  font-weight: 500;
+  
+  &.ion-focused {
+    --border-color: var(--ion-color-primary);
+    --box-shadow: 0 0 0 3px rgba(230, 254, 88, 0.2);
+  }
+  
+  &.ion-invalid {
+    --border-color: var(--ion-color-danger);
+    --box-shadow: 0 0 0 3px rgba(244, 67, 54, 0.2);
+  }
+}
+
+// Enhanced Responsive Design
 @media (max-width: 768px) {
   .stats-circle {
-    width: 100px;
-    height: 100px;
+    width: 110px;
+    height: 110px;
     
-    .number { font-size: 1.8rem; }
+    .number { font-size: 2rem; }
     .label { font-size: 0.7rem; }
   }
   
-  .modern-card {
+  .glass-card-modern {
     margin: 8px;
     padding: 16px;
+    border-radius: 16px;
   }
   
   .section-title {
-    font-size: 1.3rem;
+    font-size: 1.5rem;
+    
+    &.large {
+      font-size: 1.875rem;
+    }
+    
+    &.hero {
+      font-size: 2.25rem;
+    }
+  }
+  
+  .page-title {
+    font-size: 1.75rem;
+    
+    &.hero {
+      font-size: 2.25rem;
+    }
+  }
+  
+  .workout-card-modern {
+    padding: 20px;
+    margin: 12px 8px;
+    
+    .workout-stats {
+      gap: 12px;
+      
+      .stat-item {
+        padding: 10px 6px;
+      }
+    }
+  }
+  
+  .exercise-card-modern {
+    padding: 16px;
+    margin: 8px;
+    
+    .sets-info {
+      gap: 8px;
+      
+      .set-detail {
+        padding: 6px 8px;
+      }
+    }
+  }
+  
+  .btn-premium {
+    height: 52px;
+    --padding-start: 24px;
+    --padding-end: 24px;
+  }
+}
+
+@media (max-width: 480px) {
+  .stats-circle {
+    width: 90px;
+    height: 90px;
+    
+    .number { font-size: 1.6rem; }
+    .label { font-size: 0.65rem; }
+  }
+  
+  .section-title {
+    font-size: 1.25rem;
+    margin-bottom: 1rem;
+    
+    &.large {
+      font-size: 1.5rem;
+    }
+    
+    &.hero {
+      font-size: 1.875rem;
+    }
+  }
+  
+  .muscle-badge {
+    padding: 6px 12px;
+    font-size: 0.7rem;
+    margin: 2px;
+  }
+}
+
+// Modern Loading States
+.skeleton {
+  background: linear-gradient(90deg, 
+    var(--ion-color-step-100) 25%, 
+    var(--ion-color-step-200) 50%, 
+    var(--ion-color-step-100) 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+  border-radius: 8px;
+}
+
+@keyframes loading {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+.loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  
+  .loading-content {
+    text-align: center;
+    padding: 32px;
+    
+    ion-spinner {
+      color: var(--ion-color-primary);
+      --color: var(--ion-color-primary);
+      width: 48px;
+      height: 48px;
+      margin-bottom: 16px;
+    }
+    
+    .loading-text {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--ion-color-primary);
+      margin-top: 16px;
+    }
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  .loading-overlay {
+    background: rgba(13, 13, 13, 0.9);
+  }
+}
+
+// Toast & Alert Improvements
+.toast-modern {
+  --background: var(--ion-color-step-50);
+  --color: var(--ion-text-color);
+  --border-radius: 12px;
+  --box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+  backdrop-filter: blur(16px);
+  border: 1px solid var(--ion-color-step-200);
+  
+  &.toast-success {
+    --background: linear-gradient(135deg, #4CAF50, #8BC34A);
+    --color: white;
+    border: none;
+  }
+  
+  &.toast-error {
+    --background: linear-gradient(135deg, #F44336, #E91E63);
+    --color: white;
+    border: none;
+  }
+  
+  &.toast-warning {
+    --background: linear-gradient(135deg, #FF9800, #FFC107);
+    --color: white;
+    border: none;
+  }
+}
+
+// Special FitSync Components
+.workout-timer {
+  background: linear-gradient(135deg, var(--ion-color-primary), #B8E636);
+  border-radius: 20px;
+  padding: 24px;
+  text-align: center;
+  color: var(--ion-color-secondary);
+  margin: 16px 0;
+  box-shadow: 0 8px 24px rgba(230, 254, 88, 0.3);
+  
+  .timer-display {
+    font-size: 3rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    margin-bottom: 8px;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .timer-label {
+    font-size: 0.875rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    opacity: 0.8;
+  }
+  
+  .timer-controls {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    margin-top: 20px;
+    
+    ion-button {
+      --background: rgba(20, 20, 20, 0.1);
+      --color: var(--ion-color-secondary);
+      --border-radius: 12px;
+      font-weight: 600;
+      
+      &:hover {
+        --background: rgba(20, 20, 20, 0.2);
+      }
+    }
+  }
+}
+
+.achievement-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  background: linear-gradient(135deg, #FFD700, #FFA500);
+  border-radius: 16px;
+  color: white;
+  font-weight: 700;
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  box-shadow: 0 4px 16px rgba(255, 215, 0, 0.3);
+  animation: glow 2s infinite;
+  
+  ion-icon {
+    font-size: 1.2rem;
+  }
+}
+
+.rest-timer {
+  background: var(--ion-color-step-100);
+  border-radius: 16px;
+  padding: 20px;
+  text-align: center;
+  margin: 16px 0;
+  border: 2px solid var(--ion-color-primary);
+  
+  .rest-time {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: var(--ion-color-primary);
+    margin-bottom: 8px;
+  }
+  
+  .rest-label {
+    font-size: 0.875rem;
+    color: var(--ion-color-medium);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  
+  .rest-progress {
+    width: 100%;
+    height: 4px;
+    background: var(--ion-color-step-200);
+    border-radius: 2px;
+    margin-top: 16px;
+    overflow: hidden;
+    
+    .rest-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--ion-color-primary), #B8E636);
+      border-radius: 2px;
+      transition: width 1s linear;
+    }
+  }
+}
+
+// Dark mode specific adjustments
+@media (prefers-color-scheme: dark) {
+  .workout-timer {
+    box-shadow: 0 8px 24px rgba(230, 254, 88, 0.2);
+  }
+  
+  .achievement-badge {
+    box-shadow: 0 4px 16px rgba(255, 215, 0, 0.2);
+  }
+}
+
+// Print styles
+@media print {
+  .workout-card-modern,
+  .exercise-card-modern,
+  .glass-card-modern {
+    box-shadow: none !important;
+    border: 1px solid #ddd !important;
+    background: white !important;
+  }
+  
+  .btn-premium,
+  .btn-primary,
+  .btn-secondary {
+    background: white !important;
+    color: black !important;
+    border: 1px solid #ddd !important;
   }
 }

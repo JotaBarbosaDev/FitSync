@@ -44,6 +44,14 @@ const routes: Routes = [
     loadChildren: () => import('./progress/progress.module').then( m => m.ProgressPageModule),
     canActivate: [AuthGuard]
   },
+  {
+    path: 'progresso',
+    loadChildren: () => import('./progresso/progresso.module').then( m => m.ProgressoPageModule)
+  },
+  {
+    path: 'exercise-detail/:id',
+    loadChildren: () => import('./exercise-detail/exercise-detail.module').then( m => m.ExerciseDetailPageModule)
+  },
 
 ];
 

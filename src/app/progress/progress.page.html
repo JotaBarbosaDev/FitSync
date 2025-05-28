@@ -1,11 +1,11 @@
-<ion-header [translucent]="true" class="gradient-header">
+<ion-header [translucent]="true" class="header-modern">
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-back-button color="light"></ion-back-button>
+      <ion-back-button color="light" class="fitsync-btn icon"></ion-back-button>
     </ion-buttons>
-    <ion-title class="gradient-text">Progresso & Analytics</ion-title>
+    <ion-title class="fitsync-text gradient">Progresso & Analytics</ion-title>
     <ion-buttons slot="end">
-      <ion-button fill="clear" (click)="openWorkoutHistory()">
+      <ion-button fill="clear" class="fitsync-btn icon" (click)="openWorkoutHistory()">
         <ion-icon name="calendar-outline" color="light"></ion-icon>
       </ion-button>
     </ion-buttons>
@@ -16,7 +16,7 @@
   <!-- Loading State -->
   <div class="loading-container" *ngIf="isLoading">
     <ion-spinner name="crescent"></ion-spinner>
-    <p>Carregando dados de progresso...</p>
+    <p class="fitsync-text muted">Carregando dados de progresso...</p>
   </div>
 
   <!-- Main Content -->
@@ -24,29 +24,29 @@
     
     <!-- Performance Overview -->
     <div class="performance-overview" *ngIf="performanceMetrics">
-      <h2 class="section-title">
+      <h2 class="fitsync-text section-title primary">
         <ion-icon name="analytics-outline"></ion-icon>
         Visão Geral
       </h2>
       
       <div class="metrics-grid">
-        <div class="metric-card primary">
+        <div class="fitsync-card metric primary">
           <div class="metric-icon">
             <ion-icon name="barbell-outline"></ion-icon>
           </div>
           <div class="metric-info">
-            <span class="metric-value">{{ performanceMetrics.totalWorkouts }}</span>
-            <span class="metric-label">Treinos Realizados</span>
+            <span class="fitsync-text large primary">{{ performanceMetrics.totalWorkouts || 0 }}</span>
+            <span class="fitsync-text small muted">Treinos Realizados</span>
           </div>
         </div>
         
-        <div class="metric-card success">
+        <div class="fitsync-card metric success">
           <div class="metric-icon">
             <ion-icon name="trending-up-outline"></ion-icon>
           </div>
           <div class="metric-info">
-            <span class="metric-value">{{ formatVolume(performanceMetrics.totalVolume) }}kg</span>
-            <span class="metric-label">Volume Total</span>
+            <span class="fitsync-text large primary">{{ formatVolume(performanceMetrics.totalVolume || 0) }}kg</span>
+            <span class="fitsync-text small muted">Volume Total</span>
           </div>
         </div>
         
@@ -55,7 +55,7 @@
             <ion-icon name="time-outline"></ion-icon>
           </div>
           <div class="metric-info">
-            <span class="metric-value">{{ performanceMetrics.averageWorkoutDuration }}</span>
+            <span class="metric-value">{{ performanceMetrics.averageWorkoutDuration || 0 }}</span>
             <span class="metric-label">Min. Médio</span>
           </div>
         </div>
@@ -65,7 +65,7 @@
             <ion-icon name="checkmark-circle-outline"></ion-icon>
           </div>
           <div class="metric-info">
-            <span class="metric-value">{{ performanceMetrics.consistencyScore }}%</span>
+            <span class="metric-value">{{ performanceMetrics.consistencyScore || 0 }}%</span>
             <span class="metric-label">Consistência</span>
           </div>
         </div>
@@ -77,7 +77,7 @@
           <ion-icon name="trophy-outline"></ion-icon>
           <div>
             <h4>{{ getProgressDescription() }}</h4>
-            <p>Progresso semanal: +{{ performanceMetrics.weeklyProgress }}%</p>
+            <p>Progresso semanal: +{{ performanceMetrics.weeklyProgress || 0 }}%</p>
           </div>
         </div>
       </div>

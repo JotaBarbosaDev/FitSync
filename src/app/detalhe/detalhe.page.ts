@@ -1,20 +1,10 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { ToastController, AlertController } from '@ionic/angular';
-
-interface Exercise {
-  id: string;
-  name: string;
-  muscleGroup: string;
-  difficulty: string;
-  duration: number;
-  calories: number;
-  equipment?: string;
-  image: string;
-  isFavorite: boolean;
-  description: string;
-  instructions: string[];
-}
+import { JsonDataService, ExerciseData } from '../services/json-data.service';
+import { NavigationService } from '../services/navigation.service';
+import { StorageService } from '../services/storage.service';
+import { DeviceControlService } from '../services/device-control.service';
 
 interface WorkoutSet {
   reps: number | null;
@@ -49,11 +39,15 @@ interface MuscleGroup {
   styleUrls: ["./detalhe.page.scss"],
   standalone: false,
 })
-export class DetalhePage implements OnInit, OnDestroy {  exercise: Exercise | null = null;
-  relatedExercises: Exercise[] = [];
+export class DetalhePage implements OnInit, OnDestroy {
+  exercise: ExerciseData | null = null;
+  exerciseId: string = '';
+  relatedExercises: ExerciseData[] = [];
   workoutSets: WorkoutSet[] = [{ reps: null, weight: null, rpe: null, completed: false }];
   exerciseHistory: ExerciseHistory[] = [];
   restTimers: { [key: number]: RestTimer } = {};
+  loading: boolean = true;
+  isFavorite: boolean = false;
   
   // Timer properties
   currentTime: number = 0;
@@ -67,86 +61,93 @@ export class DetalhePage implements OnInit, OnDestroy {  exercise: Exercise | nu
     { id: 'chest', name: 'Peito', icon: 'body-outline', color: 'danger' },
     { id: 'back', name: 'Costas', icon: 'person-outline', color: 'success' },
     { id: 'legs', name: 'Pernas', icon: 'walk-outline', color: 'warning' },
-    { id: 'shoulders', name: 'Ombros', icon: 'arrow-up-outline', color: 'tertiary' },
     { id: 'arms', name: 'Braços', icon: 'barbell-outline', color: 'secondary' },
+    { id: 'shoulders', name: 'Ombros', icon: 'arrow-up-outline', color: 'tertiary' },
     { id: 'core', name: 'Abdômen', icon: 'diamond-outline', color: 'medium' }
-  ];
-
-  // Mock exercises data (in a real app, this would come from a service)
-  exercises: Exercise[] = [
-    {
-      id: '1',
-      name: 'Supino Reto',
-      muscleGroup: 'chest',
-      difficulty: 'Intermediário',
-      duration: 45,
-      calories: 120,
-      equipment: 'Barra',
-      image: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80',
-      isFavorite: false,
-      description: 'Exercício fundamental para desenvolvimento do peitoral. Trabalha principalmente o peitoral maior, deltoides anterior e tríceps.',
-      instructions: [
-        'Deite-se no banco com os pés apoiados no chão',
-        'Segure a barra com pegada um pouco mais larga que os ombros',
-        'Desça a barra controladamente até o peito',
-        'Empurre a barra de volta à posição inicial'
-      ]
-    },
-    {
-      id: '2',
-      name: 'Agachamento',
-      muscleGroup: 'legs',
-      difficulty: 'Iniciante',
-      duration: 30,
-      calories: 100,
-      equipment: 'Peso Corporal',
-      image: 'https://images.unsplash.com/photo-1566241142559-40e1dab266c6?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80',
-      isFavorite: true,
-      description: 'Exercício completo para membros inferiores. Fortalece quadríceps, glúteos, isquiotibiais e core.',
-      instructions: [
-        'Fique em pé com os pés afastados na largura dos ombros',
-        'Desça como se fosse sentar em uma cadeira',
-        'Mantenha o peito erguido e os joelhos alinhados',
-        'Retorne à posição inicial'
-      ]
-    },
-    // Add more exercises as needed
   ];
 
   constructor(
     private route: ActivatedRoute,
-    private router: Router,
     private toastController: ToastController,
-    private alertController: AlertController
-  ) {}
+    private alertController: AlertController,
+    private jsonDataService: JsonDataService,
+    private navigationService: NavigationService,
+    private storageService: StorageService,
+    private deviceControlService: DeviceControlService
+  ) { }
 
-  ngOnInit() {
-    const exerciseId = this.route.snapshot.queryParams['exerciseId'] || this.route.snapshot.paramMap.get("id");
-    if (exerciseId) {
-      this.loadExercise(exerciseId);
-    }
+  async ngOnInit() {
+    // Lock orientation for exercise detail
+    await this.deviceControlService.lockToPortrait();
+    
+    // Get exercise ID from query params
+    this.route.queryParams.subscribe(params => {
+      if (params['exerciseId']) {
+        this.exerciseId = params['exerciseId'];
+        this.loadExercise();
+      }
+    });
   }
 
-  ngOnDestroy() {
+  async ngOnDestroy() {
     if (this.timerInterval) {
       clearInterval(this.timerInterval);
     }
+    // Allow orientation changes when leaving
+    await this.deviceControlService.allowLandscape();
   }
 
-  loadExercise(exerciseId: string) {
-    // In a real app, this would be a service call
-    this.exercise = this.exercises.find(ex => ex.id === exerciseId) || null;
-    if (this.exercise) {
-      this.loadRelatedExercises();
+  async loadExercise() {
+    try {
+      this.loading = true;
+      
+      // Load exercise data from JSON service
+      this.exercise = await this.jsonDataService.getExercise(this.exerciseId);
+      
+      if (this.exercise) {
+        await this.loadRelatedExercises();
+        await this.checkIfFavorite();
+        await this.loadExerciseHistory();
+      }
+      
+    } catch (error) {
+      console.error('Error loading exercise:', error);
+      await this.showToast('Erro ao carregar exercício', 'danger');
+    } finally {
+      this.loading = false;
     }
   }
 
-  loadRelatedExercises() {
-    if (!this.exercise) return;
-    
-    this.relatedExercises = this.exercises
-      .filter(ex => ex.muscleGroup === this.exercise!.muscleGroup && ex.id !== this.exercise!.id)
-      .slice(0, 3);
+  async loadRelatedExercises() {
+    try {
+      if (this.exercise) {
+        this.relatedExercises = await this.jsonDataService.getExercisesByMuscleGroup(
+          this.exercise.muscleGroup
+        );
+        // Remove current exercise from related
+        this.relatedExercises = this.relatedExercises.filter(ex => ex.id !== this.exerciseId);
+      }
+    } catch (error) {
+      console.error('Error loading related exercises:', error);
+    }
+  }
+
+  async checkIfFavorite() {
+    try {
+      const favorites = await this.storageService.get('favoriteExercises') || [];
+      this.isFavorite = favorites.includes(this.exerciseId);
+    } catch (error) {
+      console.error('Error checking favorites:', error);
+    }
+  }
+
+  async loadExerciseHistory() {
+    try {
+      const history = await this.storageService.get('exerciseHistory') || [];
+      this.exerciseHistory = history.filter((h: any) => h.exerciseId === this.exerciseId);
+    } catch (error) {
+      console.error('Error loading exercise history:', error);
+    }
   }
 
   getMuscleGroupName(groupId: string): string {
@@ -155,45 +156,50 @@ export class DetalhePage implements OnInit, OnDestroy {  exercise: Exercise | nu
   }
 
   async toggleFavorite() {
-    if (!this.exercise) return;
-    
-    this.exercise.isFavorite = !this.exercise.isFavorite;
-    
-    const toast = await this.toastController.create({
-      message: this.exercise.isFavorite ? 
-        `${this.exercise.name} adicionado aos favoritos` : 
-        `${this.exercise.name} removido dos favoritos`,
-      duration: 2000,
-      position: 'bottom',
-      color: this.exercise.isFavorite ? 'success' : 'medium'
-    });
-    toast.present();
+    try {
+      let favorites = await this.storageService.get('favoriteExercises') || [];
+      
+      if (this.isFavorite) {
+        favorites = favorites.filter((id: string) => id !== this.exerciseId);
+        this.isFavorite = false;
+        await this.showToast('Removido dos favoritos');
+      } else {
+        favorites.push(this.exerciseId);
+        this.isFavorite = true;
+        await this.showToast('Adicionado aos favoritos');
+      }
+      
+      await this.storageService.set('favoriteExercises', favorites);
+      
+    } catch (error) {
+      console.error('Error toggling favorite:', error);
+      await this.showToast('Erro ao atualizar favoritos', 'danger');
+    }
   }
 
   async shareExercise() {
-    if (!this.exercise) return;
-    
-    // In a real app, this would use native sharing
-    const toast = await this.toastController.create({
-      message: `Compartilhando ${this.exercise.name}...`,
-      duration: 2000,
-      position: 'bottom'
-    });
-    toast.present();
+    // Simulate sharing functionality
+    await this.showToast('Funcionalidade de compartilhamento em desenvolvimento');
   }
 
   // Timer methods
   startTimer() {
-    this.isTimerRunning = true;
-    this.currentTime = this.timerState === 'exercise' ? this.exerciseTime : this.restTime;
-    
-    this.timerInterval = setInterval(() => {
-      this.currentTime--;
-      
-      if (this.currentTime <= 0) {
-        this.switchTimerState();
-      }
-    }, 1000);
+    if (!this.isTimerRunning) {
+      this.isTimerRunning = true;
+      this.timerInterval = setInterval(() => {
+        if (this.timerState === 'exercise') {
+          this.currentTime++;
+          if (this.currentTime >= this.exerciseTime) {
+            this.switchTimerState();
+          }
+        } else {
+          this.currentTime--;
+          if (this.currentTime <= 0) {
+            this.switchTimerState();
+          }
+        }
+      }, 1000);
+    }
   }
 
   pauseTimer() {
@@ -204,17 +210,23 @@ export class DetalhePage implements OnInit, OnDestroy {  exercise: Exercise | nu
   }
 
   resetTimer() {
-    this.pauseTimer();
-    this.currentTime = this.timerState === 'exercise' ? this.exerciseTime : this.restTime;
+    this.isTimerRunning = false;
+    this.currentTime = 0;
+    this.timerState = 'exercise';
+    if (this.timerInterval) {
+      clearInterval(this.timerInterval);
+    }
   }
 
   switchTimerState() {
     if (this.timerState === 'exercise') {
       this.timerState = 'rest';
       this.currentTime = this.restTime;
+      this.showToast('Tempo de descanso!', 'warning');
     } else {
       this.timerState = 'exercise';
-      this.currentTime = this.exerciseTime;
+      this.currentTime = 0;
+      this.showToast('Próxima série!', 'success');
     }
   }
 
@@ -223,6 +235,7 @@ export class DetalhePage implements OnInit, OnDestroy {  exercise: Exercise | nu
     const secs = seconds % 60;
     return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   }
+
   // Workout tracking methods
   addSet() {
     this.workoutSets.push({ reps: null, weight: null, rpe: null, completed: false });
@@ -234,59 +247,103 @@ export class DetalhePage implements OnInit, OnDestroy {  exercise: Exercise | nu
     }
   }
 
-  async saveWorkout() {
-    const validSets = this.workoutSets.filter(set => set.reps && set.reps > 0);
-    
-    if (validSets.length === 0) {
-      const alert = await this.alertController.create({
-        header: 'Dados incompletos',
-        message: 'Por favor, adicione pelo menos uma série com repetições.',
-        buttons: ['OK']
-      });
-      await alert.present();
-      return;
-    }
-
-    // In a real app, this would save to a service/database
-    const toast = await this.toastController.create({
-      message: `Treino salvo! ${validSets.length} série(s) registradas.`,
-      duration: 3000,
-      position: 'bottom',
-      color: 'success'
-    });
-    toast.present();    // Reset workout tracking
-    this.workoutSets = [{ reps: null, weight: null, rpe: null, completed: false }];
-  }
-
-  openRelatedExercise(exercise: Exercise) {
-    this.router.navigate(['/detalhe'], { 
-      queryParams: { exerciseId: exercise.id } 
-    }).then(() => {
-      this.loadExercise(exercise.id);
-    });
-  }
-
-  // Advanced tracking methods
-  onSetCompleted(setIndex: number) {
-    const set = this.workoutSets[setIndex];
+  onSetCompleted(index: number) {
+    const set = this.workoutSets[index];
     if (set.completed && set.reps && set.weight) {
-      // Auto-start rest timer if not the last set
-      if (!this.isLastSet(setIndex)) {
-        this.startRestTimer(setIndex);
-      }
+      this.startRestTimer(index);
     }
   }
 
-  isLastSet(setIndex: number): boolean {
-    return setIndex === this.workoutSets.length - 1;
+  startRestTimer(setIndex: number) {
+    const restTime = 60; // 60 seconds default
+    this.restTimers[setIndex] = {
+      timeLeft: restTime,
+      running: true,
+      interval: setInterval(() => {
+        this.restTimers[setIndex].timeLeft--;
+        if (this.restTimers[setIndex].timeLeft <= 0) {
+          this.restTimers[setIndex].running = false;
+          clearInterval(this.restTimers[setIndex].interval);
+          this.showToast('Tempo de descanso finalizado!', 'success');
+        }
+      }, 1000)
+    };
   }
 
-  hasCompletedSets(): boolean {
-    return this.workoutSets.some(set => set.completed && set.reps && set.weight);
+  async saveWorkout() {
+    try {
+      const completedSets = this.workoutSets.filter(set => set.completed);
+      
+      if (completedSets.length === 0) {
+        await this.showToast('Complete pelo menos uma série', 'warning');
+        return;
+      }
+
+      const workoutData = {
+        exerciseId: this.exerciseId,
+        exerciseName: this.exercise?.name,
+        date: new Date(),
+        sets: completedSets,
+        totalVolume: this.getTotalVolume(),
+        notes: ''
+      };
+
+      // Save to exercise history
+      const history = await this.storageService.get('exerciseHistory') || [];
+      history.push(workoutData);
+      await this.storageService.set('exerciseHistory', history);
+
+      // Save to user progress
+      await this.updateUserProgress(workoutData);
+
+      await this.showToast('Treino salvo com sucesso!', 'success');
+      this.resetWorkout();
+      
+    } catch (error) {
+      console.error('Error saving workout:', error);
+      await this.showToast('Erro ao salvar treino', 'danger');
+    }
   }
 
+  async updateUserProgress(workoutData: any) {
+    try {
+      const progress = await this.storageService.get('userProgress') || {};
+      const today = new Date().toDateString();
+      
+      if (!progress[today]) {
+        progress[today] = {
+          exercises: [],
+          totalVolume: 0,
+          totalSets: 0,
+          calories: 0
+        };
+      }
+      
+      progress[today].exercises.push(workoutData);
+      progress[today].totalVolume += workoutData.totalVolume;
+      progress[today].totalSets += workoutData.sets.length;
+      progress[today].calories += this.exercise?.calories || 0;
+      
+      await this.storageService.set('userProgress', progress);
+      
+    } catch (error) {
+      console.error('Error updating progress:', error);
+    }
+  }
+
+  resetWorkout() {
+    this.workoutSets = [{ reps: null, weight: null, rpe: null, completed: false }];
+    Object.keys(this.restTimers).forEach(key => {
+      if (this.restTimers[parseInt(key)].interval) {
+        clearInterval(this.restTimers[parseInt(key)].interval);
+      }
+    });
+    this.restTimers = {};
+  }
+
+  // Helper methods
   getCompletedSets(): number {
-    return this.workoutSets.filter(set => set.completed && set.reps && set.weight).length;
+    return this.workoutSets.filter(set => set.completed).length;
   }
 
   getTotalReps(): number {
@@ -301,132 +358,77 @@ export class DetalhePage implements OnInit, OnDestroy {  exercise: Exercise | nu
       .reduce((total, set) => total + ((set.reps || 0) * (set.weight || 0)), 0);
   }
 
-  getAverageRPE(): string {
-    const completedSetsWithRPE = this.workoutSets.filter(set => set.completed && set.rpe);
-    if (completedSetsWithRPE.length === 0) return '0.0';
+  getAverageRPE(): number {
+    const completedSets = this.workoutSets.filter(set => set.completed && set.rpe);
+    if (completedSets.length === 0) return 0;
     
-    const totalRPE = completedSetsWithRPE.reduce((sum, set) => sum + (set.rpe || 0), 0);
-    return (totalRPE / completedSetsWithRPE.length).toFixed(1);
+    const totalRPE = completedSets.reduce((total, set) => total + (set.rpe || 0), 0);
+    return Math.round(totalRPE / completedSets.length * 10) / 10;
   }
 
-  // Rest timer methods
-  startRestTimer(setIndex: number) {
-    const restTime = this.getRestTimeForSet(setIndex);
-    
-    if (this.restTimers[setIndex]) {
-      clearInterval(this.restTimers[setIndex].interval);
+  hasCompletedSets(): boolean {
+    return this.workoutSets.some(set => set.completed);
+  }
+
+  getRecommendedWeight(): number {
+    // Simple logic for weight recommendation based on history
+    if (this.exerciseHistory.length > 0) {
+      const lastWorkout = this.exerciseHistory[this.exerciseHistory.length - 1];
+      const maxWeight = Math.max(...lastWorkout.sets.map(set => set.weight || 0));
+      return maxWeight * 1.05; // 5% increase
     }
-
-    this.restTimers[setIndex] = {
-      timeLeft: restTime,
-      running: true,
-      interval: setInterval(() => {
-        this.restTimers[setIndex].timeLeft--;
-        
-        if (this.restTimers[setIndex].timeLeft <= 0) {
-          this.completeRestTimer(setIndex);
-        }
-      }, 1000)
-    };
+    return 0;
   }
 
-  completeRestTimer(setIndex: number) {
-    if (this.restTimers[setIndex]) {
-      clearInterval(this.restTimers[setIndex].interval);
-      this.restTimers[setIndex].running = false;
-      
-      // Play notification sound or vibration
-      this.playNotification();
-    }
+  getRecommendedReps(): string {
+    return '8-12'; // Default recommendation
   }
 
-  getRestTimeForSet(setIndex: number): number {
-    // Dynamic rest time based on exercise type and RPE
-    const baseRestTime = 90; // seconds
-    const set = this.workoutSets[setIndex];
-    
-    if (set.rpe && set.rpe >= 8) {
-      return baseRestTime + 30; // Longer rest for high intensity
-    } else if (set.rpe && set.rpe <= 5) {
-      return baseRestTime - 30; // Shorter rest for low intensity
-    }
-    
-    return baseRestTime;
-  }
-
-  // Performance tracking methods
   getLastWorkoutDate(): string {
-    if (this.exerciseHistory.length === 0) return 'Nunca';
-    
-    const lastWorkout = this.exerciseHistory[this.exerciseHistory.length - 1];
-    return lastWorkout.date.toLocaleDateString('pt-PT');
+    if (this.exerciseHistory.length > 0) {
+      return this.exerciseHistory[this.exerciseHistory.length - 1].date.toLocaleDateString();
+    }
+    return 'Nunca';
   }
 
   getBestSet(): string {
-    if (this.exerciseHistory.length === 0) return 'Sem dados';
-    
     let bestVolume = 0;
     let bestSet = '';
     
     this.exerciseHistory.forEach(workout => {
       workout.sets.forEach(set => {
-        if (set.reps && set.weight) {
-          const volume = set.reps * set.weight;
-          if (volume > bestVolume) {
-            bestVolume = volume;
-            bestSet = `${set.reps} x ${set.weight}kg`;
-          }
+        const volume = (set.reps || 0) * (set.weight || 0);
+        if (volume > bestVolume) {
+          bestVolume = volume;
+          bestSet = `${set.weight}kg x ${set.reps}`;
         }
       });
     });
     
-    return bestSet || 'Sem dados';
+    return bestSet || 'Nenhum';
   }
 
-  getRecommendedWeight(): number {
-    if (this.exerciseHistory.length === 0) return 0;
-    
-    // Calculate recommended weight based on last workout + progressive overload
-    const lastWorkout = this.exerciseHistory[this.exerciseHistory.length - 1];
-    const lastBestSet = lastWorkout.sets.reduce((best, set) => {
-      if (!set.weight || !set.reps) return best;
-      if (!best.weight || !best.reps) return set;
-      
-      const currentVolume = set.reps * set.weight;
-      const bestVolume = best.reps * best.weight;
-      
-      return currentVolume > bestVolume ? set : best;
-    }, { weight: 0, reps: 0 } as WorkoutSet);
-    
-    if (lastBestSet.weight) {
-      // Progressive overload: +2.5% or +1.25kg minimum
-      return Math.max(lastBestSet.weight + 1.25, lastBestSet.weight * 1.025);
-    }
-    
-    return 0;
+  getRestTimeForSet(setIndex: number): number {
+    // Return rest time in seconds based on set index
+    const baseRestTime = this.exercise?.difficulty === 'advanced' ? 180 : 60;
+    return baseRestTime;
   }
 
-  getRecommendedReps(): string {
-    if (this.exerciseHistory.length === 0) return '8-12';
-    
-    // Base recommendation on exercise type and user's typical rep range
-    const avgReps = this.exerciseHistory
-      .flatMap(w => w.sets)
-      .filter(s => s.reps)
-      .reduce((sum, s, _, arr) => sum + (s.reps || 0) / arr.length, 0);
-    
-    const targetMin = Math.max(6, Math.floor(avgReps * 0.8));
-    const targetMax = Math.min(15, Math.ceil(avgReps * 1.2));
-    
-    return `${targetMin}-${targetMax}`;
+  openRelatedExercise(exercise: ExerciseData) {
+    this.navigationService.navigateToExerciseDetail(exercise.id);
   }
-  private playNotification() {
-    // Vibration for mobile devices
-    if ('vibrate' in navigator) {
-      navigator.vibrate([200, 100, 200]);
-    }
-    
-    // Audio notification could be added here
-    console.log('Rest period completed!');
+
+  goBack() {
+    this.navigationService.goBack();
+  }
+
+  async showToast(message: string, color: string = 'primary') {
+    const toast = await this.toastController.create({
+      message,
+      duration: 2000,
+      position: 'bottom',
+      color
+    });
+    toast.present();
   }
 }

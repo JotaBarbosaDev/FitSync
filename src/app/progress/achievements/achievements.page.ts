@@ -7,6 +7,7 @@ import { ProgressDataService, Achievement } from '../../services/progress-data.s
   selector: 'app-achievements',
   templateUrl: './achievements.page.html',
   styleUrls: ['./achievements.page.scss'],
+  standalone: false,
 })
 export class AchievementsPage implements OnInit, OnDestroy {
   achievements: Achievement[] = [];

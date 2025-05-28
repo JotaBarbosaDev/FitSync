@@ -8,6 +8,7 @@ export interface Plan {
   duration: number; // semanas
   difficulty: 'beginner' | 'intermediate' | 'advanced';
   goals: string[];
+  primaryMuscle?: string;
   days: Day[];
   isActive: boolean;
   createdAt: string;

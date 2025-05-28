@@ -1,8 +1,11 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
-import { MenuController, AlertController } from '@ionic/angular';
+import { MenuController, AlertController, Platform } from '@ionic/angular';
 import { Subscription } from 'rxjs';
 import { AuthService } from './services/auth.service';
+import { StorageService } from './services/storage.service';
+import { JsonDataService } from './services/json-data.service';
+import { DeviceControlService } from './services/device-control.service';
 import { User } from './models';
 
 @Component({
@@ -19,8 +22,32 @@ export class AppComponent implements OnInit, OnDestroy {
     private authService: AuthService,
     private router: Router,
     private menuController: MenuController,
-    private alertController: AlertController
-  ) {}
+    private alertController: AlertController,
+    private platform: Platform,
+    private storageService: StorageService,
+    private jsonDataService: JsonDataService,
+    private deviceControlService: DeviceControlService
+  ) {
+    this.initializeApp();
+  }
+
+  async initializeApp() {
+    await this.platform.ready();
+    
+    // Initialize storage
+    await this.storageService.init();
+    
+    // Initialize JSON data
+    await this.jsonDataService.initializeAppData();
+    
+    // Initialize device controls
+    await this.deviceControlService.initializeDevice();
+    
+    // Setup orientation listener
+    await this.deviceControlService.setupOrientationListener();
+    
+    console.log('FitSync app initialized successfully');
+  }
 
   ngOnInit() {
     this.authSubscription = this.authService.currentUser$.subscribe(user => {

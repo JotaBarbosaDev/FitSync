@@ -18,6 +18,7 @@ export interface ChartConfig {
   selector: 'app-progress-chart',
   templateUrl: './progress-chart.component.html',
   styleUrls: ['./progress-chart.component.scss'],
+  standalone: false,
 })
 export class ProgressChartComponent implements OnInit, OnChanges {
   @Input() data: ChartDataPoint[] = [];

@@ -220,6 +220,19 @@ export class DashboardPage implements OnInit, OnDestroy {  currentUser: User | n
     return tips[Math.floor(Math.random() * tips.length)];
   }
 
+  formatWorkoutTime(): string {
+    const totalSeconds = this.workoutTimer?.totalTime || 0;
+    const hours = Math.floor(totalSeconds / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const seconds = totalSeconds % 60;
+
+    if (hours > 0) {
+      return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+    } else {
+      return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+    }
+  }
+
   // Métodos de navegação
   showProfile(): void {
     this.router.navigate(['/profile']);

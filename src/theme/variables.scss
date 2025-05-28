@@ -1,78 +1,154 @@
 // For information on how to create your own theme, please see:
 // http://ionicframework.com/docs/theming/
 
-// FitSync Modern Professional Theme
+// FitSync Rebranded Theme - Verde Lima e Preto
 :root {
-  // Cores principais - Gradient moderno azul/roxo
-  --ion-color-primary: #667eea;
-  --ion-color-primary-rgb: 102, 126, 234;
-  --ion-color-primary-contrast: #ffffff;
-  --ion-color-primary-contrast-rgb: 255, 255, 255;
-  --ion-color-primary-shade: #5a6fd8;
-  --ion-color-primary-tint: #758bec;
+  // Cores principais baseadas no guia do sistema (#E6FE58, #141414, #FFFFFF)
+  --ion-color-primary: #E6FE58;
+  --ion-color-primary-rgb: 230, 254, 88;
+  --ion-color-primary-contrast: #141414;
+  --ion-color-primary-contrast-rgb: 20, 20, 20;
+  --ion-color-primary-shade: #CBEF4D;
+  --ion-color-primary-tint: #E9FE69;
 
-  --ion-color-secondary: #764ba2;
-  --ion-color-secondary-rgb: 118, 75, 162;
-  --ion-color-secondary-contrast: #ffffff;
-  --ion-color-secondary-contrast-rgb: 255, 255, 255;
-  --ion-color-secondary-shade: #68428f;
-  --ion-color-secondary-tint: #8459ab;
+  --ion-color-secondary: #141414;
+  --ion-color-secondary-rgb: 20, 20, 20;
+  --ion-color-secondary-contrast: #E6FE58;
+  --ion-color-secondary-contrast-rgb: 230, 254, 88;
+  --ion-color-secondary-shade: #0F0F0F;
+  --ion-color-secondary-tint: #2C2C2C;
+
+  // Cores complementares
+  --ion-color-tertiary: #40E0D0;
+  --ion-color-tertiary-rgb: 64, 224, 208;
+  --ion-color-tertiary-contrast: #141414;
+  --ion-color-tertiary-contrast-rgb: 20, 20, 20;
+  --ion-color-tertiary-shade: #39C7B7;
+  --ion-color-tertiary-tint: #53E3D6;
 
   // Cores de estado
-  --ion-color-success: #28A745;
-  --ion-color-success-rgb: 40, 167, 69;
-  --ion-color-success-contrast: #ffffff;
-  --ion-color-success-contrast-rgb: 255, 255, 255;
-  --ion-color-success-shade: #239F3D;
-  --ion-color-success-tint: #3EAF58;
+  --ion-color-success: #10DC60;
+  --ion-color-success-rgb: 16, 220, 96;
+  --ion-color-success-contrast: #141414;
+  --ion-color-success-contrast-rgb: 20, 20, 20;
+  --ion-color-success-shade: #0EC254;
+  --ion-color-success-tint: #28E070;
 
-  --ion-color-warning: #FFC107;
-  --ion-color-warning-rgb: 255, 193, 7;
+  --ion-color-warning: #FFB800;
+  --ion-color-warning-rgb: 255, 184, 0;
   --ion-color-warning-contrast: #141414;
   --ion-color-warning-contrast-rgb: 20, 20, 20;
-  --ion-color-warning-shade: #E0A906;
-  --ion-color-warning-tint: #FFCA20;
+  --ion-color-warning-shade: #E0A200;
+  --ion-color-warning-tint: #FFC21A;
 
-  --ion-color-danger: #DC3545;
-  --ion-color-danger-rgb: 220, 53, 69;
-  --ion-color-danger-contrast: #ffffff;
+  --ion-color-danger: #F04141;
+  --ion-color-danger-rgb: 240, 65, 65;
+  --ion-color-danger-contrast: #FFFFFF;
   --ion-color-danger-contrast-rgb: 255, 255, 255;
-  --ion-color-danger-shade: #C12C3C;
-  --ion-color-danger-tint: #E04858;
-  // Cores personalizadas FitSync - Paleta profissional
-  --fitsync-gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  --fitsync-gradient-success: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
-  --fitsync-gradient-warning: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-  --fitsync-gradient-danger: linear-gradient(135deg, #e53935 0%, #e35d5b 100%);
+  --ion-color-danger-shade: #D33939;
+  --ion-color-danger-tint: #F25454;
+
+  // Cores dark
+  --ion-color-dark: #141414;
+  --ion-color-dark-rgb: 20, 20, 20;
+  --ion-color-dark-contrast: #E6FE58;
+  --ion-color-dark-contrast-rgb: 230, 254, 88;
+  --ion-color-dark-shade: #0F0F0F;
+  --ion-color-dark-tint: #2C2C2C;
+
+  // Cores medium
+  --ion-color-medium: #92949C;
+  --ion-color-medium-rgb: 146, 148, 156;
+  --ion-color-medium-contrast: #FFFFFF;
+  --ion-color-medium-contrast-rgb: 255, 255, 255;
+  --ion-color-medium-shade: #808289;
+  --ion-color-medium-tint: #9D9FA6;
+
+  // Cores light
+  --ion-color-light: #F4F5F8;
+  --ion-color-light-rgb: 244, 245, 248;
+  --ion-color-light-contrast: #141414;
+  --ion-color-light-contrast-rgb: 20, 20, 20;
+  --ion-color-light-shade: #D7D8DA;
+  --ion-color-light-tint: #F5F6F9;
+
+  // Gradientes FitSync personalizados
+  --fitsync-gradient-primary: linear-gradient(135deg, #E6FE58 0%, #CBEF4D 100%);
+  --fitsync-gradient-secondary: linear-gradient(135deg, #141414 0%, #2C2C2C 100%);
+  --fitsync-gradient-accent: linear-gradient(135deg, #40E0D0 0%, #E6FE58 100%);
+  --fitsync-gradient-success: linear-gradient(135deg, #10DC60 0%, #40E0D0 100%);
+  --fitsync-gradient-warning: linear-gradient(135deg, #FFB800 0%, #E6FE58 100%);
+  --fitsync-gradient-danger: linear-gradient(135deg, #F04141 0%, #FF6B6B 100%);
   
   // Cores para grupos musculares
-  --fitsync-muscle-chest: #e74c3c;
-  --fitsync-muscle-back: #3498db;
-  --fitsync-muscle-legs: #9b59b6;
-  --fitsync-muscle-shoulders: #f39c12;
-  --fitsync-muscle-arms: #2ecc71;
-  --fitsync-muscle-core: #e67e22;
-  --fitsync-muscle-cardio: #1abc9c;
+  --fitsync-muscle-chest: #E6FE58;
+  --fitsync-muscle-back: #40E0D0;
+  --fitsync-muscle-legs: #10DC60;
+  --fitsync-muscle-shoulders: #FFB800;
+  --fitsync-muscle-arms: #F04141;
+  --fitsync-muscle-core: #9D4EDD;
+  --fitsync-muscle-cardio: #FF6B6B;
 
-  // Cores de fundo e superfície
-  --ion-background-color: #ffffff;
+  // Light Mode - Cores de fundo e superfície
+  --ion-background-color: #FFFFFF;
   --ion-background-color-rgb: 255, 255, 255;
   --ion-surface-color: #F8F9FA;
   --ion-surface-variant: #F1F3F4;
+  --ion-card-background: #FFFFFF;
 
-  // Cores de texto
+  // Light Mode - Cores de texto
   --ion-text-color: #141414;
   --ion-text-color-rgb: 20, 20, 20;
   --ion-text-color-secondary: #666666;
+  --ion-text-color-tertiary: #999999;
   --ion-text-color-disabled: #CCCCCC;
+
+  // Light Mode - Bordas e separadores
+  --ion-border-color: #E1E5E9;
+  --ion-separator-color: #E1E5E9;
+
+  // Light Mode - Sombras
+  --ion-box-shadow-primary: 0 4px 16px rgba(230, 254, 88, 0.2);
+  --ion-box-shadow-secondary: 0 2px 8px rgba(20, 20, 20, 0.1);
+  --ion-box-shadow-card: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 
-// Dark theme (opcional para futuro)
+// Dark Mode - Detecta automaticamente o tema do sistema
 @media (prefers-color-scheme: dark) {
   :root {
-    --ion-background-color: #121212;
-    --ion-background-color-rgb: 18, 18, 18;
-    --ion-text-color: #ffffff;
+    // Dark Mode - Cores de fundo e superfície
+    --ion-background-color: #0D0D0D;
+    --ion-background-color-rgb: 13, 13, 13;
+    --ion-surface-color: #1A1A1A;
+    --ion-surface-variant: #2A2A2A;
+    --ion-card-background: #1A1A1A;
+
+    // Dark Mode - Cores de texto
+    --ion-text-color: #FFFFFF;
     --ion-text-color-rgb: 255, 255, 255;
+    --ion-text-color-secondary: #CCCCCC;
+    --ion-text-color-tertiary: #999999;
+    --ion-text-color-disabled: #666666;
+
+    // Dark Mode - Bordas e separadores
+    --ion-border-color: #2A2A2A;
+    --ion-separator-color: #2A2A2A;
+
+    // Dark Mode - Ajustes nas cores principais
+    --ion-color-primary-shade: #CBEF4D;
+    --ion-color-primary-tint: #E9FE69;
+    
+    --ion-color-secondary: #2A2A2A;
+    --ion-color-secondary-rgb: 42, 42, 42;
+    --ion-color-secondary-shade: #1F1F1F;
+    --ion-color-secondary-tint: #3D3D3D;
+
+    // Dark Mode - Sombras
+    --ion-box-shadow-primary: 0 4px 16px rgba(230, 254, 88, 0.3);
+    --ion-box-shadow-secondary: 0 2px 8px rgba(255, 255, 255, 0.1);
+    --ion-box-shadow-card: 0 4px 12px rgba(0, 0, 0, 0.3);
+
+    // Dark Mode - Gradientes ajustados
+    --fitsync-gradient-secondary: linear-gradient(135deg, #2A2A2A 0%, #3D3D3D 100%);
   }
 }

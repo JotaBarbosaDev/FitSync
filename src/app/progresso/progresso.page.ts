@@ -1,5 +1,12 @@
+// filepath: /Users/joaobarbosa/Desktop/projetos/FitSync/src/app/progresso/progresso.page.ts
 import { Component, OnInit, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
-import { ActionSheetController, AlertController, ToastController } from '@ionic/angular';
+import { ActionSheetController, AlertController, ToastController, IonicModule } from '@ionic/angular';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { JsonDataService } from '../services/json-data.service';
+import { NavigationService } from '../services/navigation.service';
+import { StorageService } from '../services/storage.service';
+import { DeviceControlService } from '../services/device-control.service';
 
 interface Achievement {
   id: string;
@@ -46,243 +53,282 @@ interface MuscleGroupStat {
   selector: 'app-progresso',
   templateUrl: './progresso.page.html',
   styleUrls: ['./progresso.page.scss'],
+  standalone: true,
+  imports: [CommonModule, FormsModule, IonicModule]
 })
 export class ProgressoPage implements OnInit, AfterViewInit {
-  @ViewChild('weightChart', { static: false }) weightChartRef!: ElementRef<HTMLCanvasElement>;
-  @ViewChild('workoutChart', { static: false }) workoutChartRef!: ElementRef<HTMLCanvasElement>;
+  @ViewChild('weightChartRef', { static: false }) weightChartRef!: ElementRef;
+  @ViewChild('workoutChartRef', { static: false }) workoutChartRef!: ElementRef;
 
+  loading: boolean = true;
+  selectedPeriod: string = 'month';
+  selectedMuscleGroup: string = 'all';
   viewMode: 'charts' | 'list' = 'charts';
-  selectedPeriod: 'week' | 'month' | 'year' = 'month';
 
-  // Overview stats
-  totalWorkouts: number = 28;
-  totalCalories: number = 3240;
-  totalMinutes: number = 1260;
-  currentStreak: number = 7;
-  weeklyChange: number = 15;
-  calorieChange: number = 8;
+  // Stats
+  totalWorkouts: number = 0;
+  totalCalories: number = 0;
+  totalVolume: number = 0;
+  totalMinutes: number = 0;
+  currentStreak: number = 0;
+  weeklyGoal: number = 4;
+  weeklyProgress: number = 0;
+  weeklyChange: number = 0;
+  calorieChange: number = 0;
   timeChange: number = 0;
-  streakChange: number = 2;
+  streakChange: number = 0;
 
-  muscleGroupStats: MuscleGroupStat[] = [
-    { name: 'Peito', icon: 'body-outline', color: 'danger', percentage: 25, workouts: 7 },
-    { name: 'Costas', icon: 'person-outline', color: 'success', percentage: 22, workouts: 6 },
-    { name: 'Pernas', icon: 'walk-outline', color: 'warning', percentage: 20, workouts: 6 },
-    { name: 'Braços', icon: 'barbell-outline', color: 'secondary', percentage: 18, workouts: 5 },
-    { name: 'Ombros', icon: 'arrow-up-outline', color: 'tertiary', percentage: 10, workouts: 3 },
-    { name: 'Abdômen', icon: 'diamond-outline', color: 'medium', percentage: 5, workouts: 1 }
-  ];
+  achievements: Achievement[] = [];
+  recentAchievements: Achievement[] = [];
+  workoutHistory: WorkoutHistory[] = [];
+  personalRecords: PersonalRecord[] = [];
+  muscleGroupStats: MuscleGroupStat[] = [];
 
-  recentAchievements: Achievement[] = [
-    {
-      id: '1',
-      title: 'Primeira Semana',
-      description: 'Complete 7 dias consecutivos de treino',
-      icon: 'calendar-outline',
-      unlocked: true,
-      progress: 100,
-      current: 7,
-      target: 7,
-      unlockedDate: new Date('2025-05-21')
-    },
-    {
-      id: '2',
-      title: 'Queimador de Calorias',
-      description: 'Queime 1000 calorias em uma semana',
-      icon: 'flame-outline',
-      unlocked: true,
-      progress: 100,
-      current: 1240,
-      target: 1000,
-      unlockedDate: new Date('2025-05-23')
-    },
-    {
-      id: '3',
-      title: 'Maratonista',
-      description: 'Acumule 10 horas de treino',
-      icon: 'time-outline',
-      unlocked: false,
-      progress: 84,
-      current: 8.4,
-      target: 10
-    },
-    {
-      id: '4',
-      title: 'Força Total',
-      description: 'Treine todos os grupos musculares',
-      icon: 'fitness-outline',
-      unlocked: false,
-      progress: 83,
-      current: 5,
-      target: 6
-    }
-  ];
-
-  workoutHistory: WorkoutHistory[] = [
-    {
-      id: '1',
-      name: 'Treino de Peito e Tríceps',
-      date: new Date('2025-05-27'),
-      duration: 45,
-      exercises: 6,
-      calories: 180,
-      sets: 18,
-      muscleGroups: ['Peito', 'Tríceps']
-    },
-    {
-      id: '2',
-      name: 'Treino de Costas e Bíceps',
-      date: new Date('2025-05-25'),
-      duration: 50,
-      exercises: 7,
-      calories: 200,
-      sets: 21,
-      muscleGroups: ['Costas', 'Bíceps']
-    },
-    {
-      id: '3',
-      name: 'Treino de Pernas',
-      date: new Date('2025-05-23'),
-      duration: 60,
-      exercises: 8,
-      calories: 250,
-      sets: 24,
-      muscleGroups: ['Quadríceps', 'Glúteos', 'Panturrilha']
-    },
-    {
-      id: '4',
-      name: 'Treino de Ombros',
-      date: new Date('2025-05-21'),
-      duration: 40,
-      exercises: 5,
-      calories: 150,
-      sets: 15,
-      muscleGroups: ['Ombros', 'Trapézio']
-    },
-    {
-      id: '5',
-      name: 'Treino Full Body',
-      date: new Date('2025-05-19'),
-      duration: 55,
-      exercises: 9,
-      calories: 220,
-      sets: 27,
-      muscleGroups: ['Peito', 'Costas', 'Pernas', 'Braços']
-    }
-  ];
-
-  personalRecords: PersonalRecord[] = [
-    {
-      id: '1',
-      exercise: 'Supino Reto',
-      value: 80,
-      unit: 'kg',
-      date: new Date('2025-05-25'),
-      icon: 'barbell-outline',
-      improvement: 5
-    },
-    {
-      id: '2',
-      exercise: 'Agachamento',
-      value: 100,
-      unit: 'kg',
-      date: new Date('2025-05-23'),
-      icon: 'fitness-outline',
-      improvement: 10
-    },
-    {
-      id: '3',
-      exercise: 'Levantamento Terra',
-      value: 120,
-      unit: 'kg',
-      date: new Date('2025-05-20'),
-      icon: 'barbell-outline',
-      improvement: 15
-    },
-    {
-      id: '4',
-      exercise: 'Desenvolvimento',
-      value: 50,
-      unit: 'kg',
-      date: new Date('2025-05-18'),
-      icon: 'arrow-up-outline',
-      improvement: 5
-    },
-    {
-      id: '5',
-      exercise: 'Barra Fixa',
-      value: 12,
-      unit: 'reps',
-      date: new Date('2025-05-15'),
-      icon: 'fitness-outline',
-      improvement: 3
-    },
-    {
-      id: '6',
-      exercise: 'Prancha',
-      value: 120,
-      unit: 'seg',
-      date: new Date('2025-05-10'),
-      icon: 'timer-outline',
-      improvement: 30
-    }
-  ];
+  // Chart data
+  weightData: number[] = [];
+  workoutData: number[] = [];
+  labels: string[] = [];
 
   constructor(
     private actionSheetController: ActionSheetController,
     private alertController: AlertController,
-    private toastController: ToastController
+    private toastController: ToastController,
+    private jsonDataService: JsonDataService,
+    private navigationService: NavigationService,
+    private storageService: StorageService,
+    private deviceControlService: DeviceControlService
   ) { }
 
-  ngOnInit() {
-    // Initialize component
+  async ngOnInit() {
+    await this.deviceControlService.lockToPortrait();
+    await this.loadProgressData();
+    await this.loadAchievements();
+    await this.loadWorkoutHistory();
+    await this.loadPersonalRecords();
+    this.calculateStats();
+    this.loading = false;
   }
 
   ngAfterViewInit() {
-    // Initialize charts after view is ready
     setTimeout(() => {
-      this.initializeCharts();
+      this.createWeightChart();
+      this.createWorkoutChart();
     }, 100);
   }
 
-  toggleView() {
-    this.viewMode = this.viewMode === 'charts' ? 'list' : 'charts';
-    if (this.viewMode === 'charts') {
-      setTimeout(() => {
-        this.initializeCharts();
-      }, 100);
+  async loadProgressData() {
+    try {
+      const progress = await this.storageService.get('userProgress') || {};
+      
+      // Calculate totals from stored progress
+      Object.values(progress).forEach((day: any) => {
+        this.totalWorkouts += day.exercises?.length || 0;
+        this.totalCalories += day.calories || 0;
+        this.totalVolume += day.totalVolume || 0;
+      });
+
+      // Calculate current streak
+      this.currentStreak = this.calculateCurrentStreak(progress);
+      
+      // Calculate weekly progress
+      this.weeklyProgress = this.calculateWeeklyProgress(progress);
+
+    } catch (error) {
+      console.error('Error loading progress data:', error);
     }
   }
 
-  changePeriod() {
-    // Update data based on selected period
-    this.updateStatsForPeriod();
-  }
+  async loadAchievements() {
+    try {
+      const storedAchievements = await this.storageService.get('achievements') || [];
+      
+      // Default achievements
+      this.achievements = [
+        {
+          id: '1',
+          title: 'Primeiro Treino',
+          description: 'Complete seu primeiro treino',
+          icon: 'trophy-outline',
+          unlocked: this.totalWorkouts > 0,
+          progress: Math.min(this.totalWorkouts, 1),
+          current: this.totalWorkouts,
+          target: 1
+        },
+        {
+          id: '2',
+          title: 'Consistência',
+          description: 'Complete 10 treinos',
+          icon: 'medal-outline',
+          unlocked: this.totalWorkouts >= 10,
+          progress: Math.min(this.totalWorkouts / 10, 1),
+          current: this.totalWorkouts,
+          target: 10
+        },
+        {
+          id: '3',
+          title: 'Queimador de Calorias',
+          description: 'Queime 1000 calorias',
+          icon: 'flame-outline',
+          unlocked: this.totalCalories >= 1000,
+          progress: Math.min(this.totalCalories / 1000, 1),
+          current: this.totalCalories,
+          target: 1000
+        },
+        {
+          id: '4',
+          title: 'Sequência de Ferro',
+          description: 'Mantenha uma sequência de 7 dias',
+          icon: 'ribbon-outline',
+          unlocked: this.currentStreak >= 7,
+          progress: Math.min(this.currentStreak / 7, 1),
+          current: this.currentStreak,
+          target: 7
+        }
+      ];
 
-  updateStatsForPeriod() {
-    // Mock data update based on period
-    switch (this.selectedPeriod) {
-      case 'week':
-        this.totalWorkouts = 5;
-        this.totalCalories = 1200;
-        this.totalMinutes = 300;
-        break;
-      case 'month':
-        this.totalWorkouts = 28;
-        this.totalCalories = 3240;
-        this.totalMinutes = 1260;
-        break;
-      case 'year':
-        this.totalWorkouts = 156;
-        this.totalCalories = 18500;
-        this.totalMinutes = 7200;
-        break;
+      // Set recent achievements (copy of achievements)
+      this.recentAchievements = [...this.achievements];
+
+      // Merge with stored achievements
+      storedAchievements.forEach((stored: Achievement) => {
+        const index = this.achievements.findIndex(a => a.id === stored.id);
+        if (index !== -1) {
+          this.achievements[index] = { ...this.achievements[index], ...stored };
+          this.recentAchievements[index] = { ...this.recentAchievements[index], ...stored };
+        }
+      });
+
+    } catch (error) {
+      console.error('Error loading achievements:', error);
     }
   }
 
-  initializeCharts() {
-    this.createWeightChart();
-    this.createWorkoutChart();
+  async loadWorkoutHistory() {
+    try {
+      const history = await this.storageService.get('exerciseHistory') || [];
+      
+      // Group exercises by date to create workout sessions
+      const workoutsByDate = new Map();
+      
+      history.forEach((exercise: any) => {
+        const dateKey = new Date(exercise.date).toDateString();
+        if (!workoutsByDate.has(dateKey)) {
+          workoutsByDate.set(dateKey, []);
+        }
+        workoutsByDate.get(dateKey).push(exercise);
+      });
+
+      // Convert to workout history format
+      this.workoutHistory = Array.from(workoutsByDate.entries()).map(([dateKey, exercises]: [string, any[]]) => {
+        const date = new Date(dateKey);
+        const totalCalories = exercises.reduce((sum, ex) => sum + (ex.calories || 0), 0);
+        const totalSets = exercises.reduce((sum, ex) => sum + ex.sets.length, 0);
+        
+        return {
+          id: dateKey,
+          name: `Treino do dia ${date.toLocaleDateString()}`,
+          date,
+          duration: exercises.length * 15, // Estimate 15min per exercise
+          exercises: exercises.length,
+          calories: totalCalories,
+          sets: totalSets,
+          muscleGroups: [...new Set(exercises.map(ex => ex.muscleGroup || 'Geral'))]
+        };
+      }).sort((a, b) => b.date.getTime() - a.date.getTime());
+
+    } catch (error) {
+      console.error('Error loading workout history:', error);
+    }
+  }
+
+  async loadPersonalRecords() {
+    try {
+      const records = await this.storageService.get('personalRecords') || [];
+      
+      // Group by exercise and get best records
+      const bestRecords = new Map();
+      
+      records.forEach((record: any) => {
+        const key = record.exerciseName || record.exercise;
+        if (!bestRecords.has(key) || record.oneRepMax > bestRecords.get(key).value) {
+          bestRecords.set(key, {
+            id: record.id,
+            exercise: key,
+            value: record.oneRepMax || record.weight,
+            unit: 'kg',
+            date: new Date(record.date),
+            icon: 'barbell-outline'
+          });
+        }
+      });
+
+      this.personalRecords = Array.from(bestRecords.values())
+        .sort((a, b) => b.date.getTime() - a.date.getTime())
+        .slice(0, 5); // Show top 5 records
+
+    } catch (error) {
+      console.error('Error loading personal records:', error);
+    }
+  }
+
+  calculateStats() {
+    // Calculate muscle group stats based on workout history
+    const muscleGroupCounts = new Map();
+    
+    this.workoutHistory.forEach(workout => {
+      workout.muscleGroups.forEach(group => {
+        muscleGroupCounts.set(group, (muscleGroupCounts.get(group) || 0) + 1);
+      });
+    });
+
+    const totalWorkouts = this.workoutHistory.length;
+    
+    this.muscleGroupStats = [
+      { name: 'Peito', icon: 'body-outline', color: 'danger', percentage: 0, workouts: 0 },
+      { name: 'Costas', icon: 'person-outline', color: 'success', percentage: 0, workouts: 0 },
+      { name: 'Pernas', icon: 'walk-outline', color: 'warning', percentage: 0, workouts: 0 },
+      { name: 'Braços', icon: 'barbell-outline', color: 'secondary', percentage: 0, workouts: 0 },
+      { name: 'Ombros', icon: 'arrow-up-outline', color: 'tertiary', percentage: 0, workouts: 0 }
+    ];
+
+    this.muscleGroupStats.forEach(stat => {
+      const count = muscleGroupCounts.get(stat.name) || 0;
+      stat.workouts = count;
+      stat.percentage = totalWorkouts > 0 ? Math.round((count / totalWorkouts) * 100) : 0;
+    });
+  }
+
+  calculateCurrentStreak(progress: any): number {
+    const dates = Object.keys(progress).sort().reverse();
+    let streak = 0;
+    
+    for (const date of dates) {
+      if (progress[date].exercises?.length > 0) {
+        streak++;
+      } else {
+        break;
+      }
+    }
+    
+    return streak;
+  }
+
+  calculateWeeklyProgress(progress: any): number {
+    const now = new Date();
+    const weekStart = new Date(now.getFullYear(), now.getMonth(), now.getDate() - now.getDay());
+    
+    let weeklyWorkouts = 0;
+    for (let i = 0; i < 7; i++) {
+      const date = new Date(weekStart);
+      date.setDate(weekStart.getDate() + i);
+      const dateKey = date.toDateString();
+      
+      if (progress[dateKey]?.exercises?.length > 0) {
+        weeklyWorkouts++;
+      }
+    }
+    
+    return Math.min(weeklyWorkouts / this.weeklyGoal, 1);
   }
 
   createWeightChart() {
@@ -291,13 +337,11 @@ export class ProgressoPage implements OnInit, AfterViewInit {
     const ctx = this.weightChartRef.nativeElement.getContext('2d');
     if (!ctx) return;
 
-    // Mock weight data
-    const weightData = [78, 77.5, 77.8, 77.2, 76.9, 76.5, 76.8, 76.3];
-    const targetWeight = 75;
-    const labels = ['Sem 1', 'Sem 2', 'Sem 3', 'Sem 4', 'Sem 5', 'Sem 6', 'Sem 7', 'Sem 8'];
+    // Mock weight progression data
+    const weightData = [70, 69.5, 69.8, 69.2, 68.9, 68.5, 68.3, 68.0];
+    const labels = ['8 sem', '7 sem', '6 sem', '5 sem', '4 sem', '3 sem', '2 sem', '1 sem'];
 
-    // Simple canvas chart implementation
-    this.drawLineChart(ctx, labels, weightData, targetWeight);
+    this.drawLineChart(ctx, labels, weightData, '#10dc60');
   }
 
   createWorkoutChart() {
@@ -313,131 +357,78 @@ export class ProgressoPage implements OnInit, AfterViewInit {
     this.drawBarChart(ctx, labels, workoutData);
   }
 
-  drawLineChart(ctx: CanvasRenderingContext2D, labels: string[], data: number[], target: number) {
+  drawLineChart(ctx: CanvasRenderingContext2D, labels: string[], data: number[], color: string) {
     const canvas = ctx.canvas;
-    const width = canvas.width = canvas.offsetWidth * 2;
-    const height = canvas.height = canvas.offsetHeight * 2;
-    ctx.scale(2, 2);
+    const padding = 20;
+    const chartWidth = canvas.width - padding * 2;
+    const chartHeight = canvas.height - padding * 2;
 
-    const chartWidth = width / 2 - 80;
-    const chartHeight = height / 2 - 80;
-    const startX = 40;
-    const startY = 40;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 2;
+    ctx.fillStyle = color;
 
-    // Clear canvas
-    ctx.clearRect(0, 0, width / 2, height / 2);
-
-    // Draw grid
-    ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
-    ctx.lineWidth = 1;
-    for (let i = 0; i <= 5; i++) {
-      const y = startY + (chartHeight / 5) * i;
-      ctx.beginPath();
-      ctx.moveTo(startX, y);
-      ctx.lineTo(startX + chartWidth, y);
-      ctx.stroke();
-    }
-
-    // Draw weight line
-    ctx.strokeStyle = '#667eea';
-    ctx.lineWidth = 3;
-    ctx.beginPath();
-    
-    const maxValue = Math.max(...data, target);
-    const minValue = Math.min(...data, target);
+    const maxValue = Math.max(...data);
+    const minValue = Math.min(...data);
     const range = maxValue - minValue || 1;
 
-    data.forEach((value, index) => {
-      const x = startX + (chartWidth / (data.length - 1)) * index;
-      const y = startY + chartHeight - ((value - minValue) / range) * chartHeight;
+    ctx.beginPath();
+    for (let i = 0; i < data.length; i++) {
+      const x = padding + (i * chartWidth) / (data.length - 1);
+      const y = padding + chartHeight - ((data[i] - minValue) / range) * chartHeight;
       
-      if (index === 0) {
+      if (i === 0) {
         ctx.moveTo(x, y);
       } else {
         ctx.lineTo(x, y);
       }
-    });
-    ctx.stroke();
-
-    // Draw target line
-    ctx.strokeStyle = '#764ba2';
-    ctx.lineWidth = 2;
-    ctx.setLineDash([5, 5]);
-    const targetY = startY + chartHeight - ((target - minValue) / range) * chartHeight;
-    ctx.beginPath();
-    ctx.moveTo(startX, targetY);
-    ctx.lineTo(startX + chartWidth, targetY);
-    ctx.stroke();
-    ctx.setLineDash([]);
-
-    // Draw data points
-    ctx.fillStyle = '#667eea';
-    data.forEach((value, index) => {
-      const x = startX + (chartWidth / (data.length - 1)) * index;
-      const y = startY + chartHeight - ((value - minValue) / range) * chartHeight;
       
+      // Draw points
       ctx.beginPath();
-      ctx.arc(x, y, 4, 0, 2 * Math.PI);
+      ctx.arc(x, y, 3, 0, 2 * Math.PI);
       ctx.fill();
-    });
-
-    // Draw labels
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
-    ctx.font = '12px Arial';
-    ctx.textAlign = 'center';
-    labels.forEach((label, index) => {
-      const x = startX + (chartWidth / (labels.length - 1)) * index;
-      ctx.fillText(label, x, startY + chartHeight + 20);
-    });
+      ctx.beginPath();
+    }
+    ctx.stroke();
   }
 
   drawBarChart(ctx: CanvasRenderingContext2D, labels: string[], data: number[]) {
     const canvas = ctx.canvas;
-    const width = canvas.width = canvas.offsetWidth * 2;
-    const height = canvas.height = canvas.offsetHeight * 2;
-    ctx.scale(2, 2);
+    const padding = 20;
+    const chartWidth = canvas.width - padding * 2;
+    const chartHeight = canvas.height - padding * 2;
 
-    const chartWidth = width / 2 - 80;
-    const chartHeight = height / 2 - 80;
-    const startX = 40;
-    const startY = 40;
-    const barWidth = chartWidth / data.length * 0.6;
-    const barSpacing = chartWidth / data.length * 0.4;
-
-    // Clear canvas
-    ctx.clearRect(0, 0, width / 2, height / 2);
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = '#3880ff';
 
     const maxValue = Math.max(...data);
+    const barWidth = chartWidth / data.length * 0.8;
+    const barSpacing = chartWidth / data.length * 0.2;
 
-    // Draw bars
-    data.forEach((value, index) => {
-      const x = startX + (chartWidth / data.length) * index + barSpacing / 2;
-      const barHeight = (value / maxValue) * chartHeight;
-      const y = startY + chartHeight - barHeight;
-
-      // Gradient fill
-      const gradient = ctx.createLinearGradient(0, y, 0, y + barHeight);
-      gradient.addColorStop(0, '#667eea');
-      gradient.addColorStop(1, '#764ba2');
+    for (let i = 0; i < data.length; i++) {
+      const barHeight = (data[i] / maxValue) * chartHeight;
+      const x = padding + i * (barWidth + barSpacing) + barSpacing / 2;
+      const y = padding + chartHeight - barHeight;
       
-      ctx.fillStyle = gradient;
       ctx.fillRect(x, y, barWidth, barHeight);
+    }
+  }
 
-      // Value labels
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
-      ctx.font = '12px Arial';
-      ctx.textAlign = 'center';
-      ctx.fillText(value.toString(), x + barWidth / 2, y - 5);
+  async presentAchievementDetails(achievement: Achievement) {
+    const alert = await this.alertController.create({
+      header: achievement.title,
+      message: `${achievement.description}<br><br>Progresso: ${achievement.current}/${achievement.target}`,
+      buttons: ['OK']
     });
+    await alert.present();
+  }
 
-    // Draw labels
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
-    ctx.font = '12px Arial';
-    ctx.textAlign = 'center';
-    labels.forEach((label, index) => {
-      const x = startX + (chartWidth / labels.length) * index + (chartWidth / labels.length) / 2;
-      ctx.fillText(label, x, startY + chartHeight + 20);
-    });
+  async openWorkoutHistory() {
+    this.navigationService.navigateToWorkouts();
+  }
+
+  async openExerciseDetail(exerciseId: string) {
+    this.navigationService.navigateToExerciseDetail(exerciseId);
   }
 
   getMuscleGroupColor(muscleGroup: string): string {
@@ -446,16 +437,77 @@ export class ProgressoPage implements OnInit, AfterViewInit {
       'Costas': 'success',
       'Pernas': 'warning',
       'Braços': 'secondary',
-      'Ombros': 'tertiary',
-      'Abdômen': 'medium',
-      'Quadríceps': 'warning',
-      'Glúteos': 'warning',
-      'Panturrilha': 'warning',
-      'Bíceps': 'secondary',
-      'Tríceps': 'secondary',
-      'Trapézio': 'tertiary'
+      'Ombros': 'tertiary'
     };
-    return colorMap[muscleGroup] || 'primary';
+    return colorMap[muscleGroup] || 'medium';
+  }
+
+  formatDate(date: Date): string {
+    return date.toLocaleDateString('pt-BR');
+  }
+
+  async showToast(message: string, color: string = 'primary') {
+    const toast = await this.toastController.create({
+      message,
+      duration: 2000,
+      position: 'bottom',
+      color
+    });
+    toast.present();
+  }
+
+  // Navigation methods
+  navigateToExercises() {
+    this.navigationService.navigateToExercisesList();
+  }
+
+  navigateToWorkouts() {
+    this.navigationService.navigateToWorkoutPlans();
+  }
+
+  async startNewWorkout() {
+    await this.deviceControlService.lockOrientation('portrait');
+    this.navigationService.navigateToQuickWorkout();
+  }
+
+  // UI Methods
+  toggleView() {
+    this.viewMode = this.viewMode === 'charts' ? 'list' : 'charts';
+    if (this.viewMode === 'charts') {
+      setTimeout(() => {
+        this.createWeightChart();
+        this.createWorkoutChart();
+      }, 100);
+    }
+  }
+
+  changePeriod() {
+    // Update data based on selected period
+    this.updateStatsForPeriod();
+  }
+
+  updateStatsForPeriod() {
+    // Mock data update based on period
+    switch (this.selectedPeriod) {
+      case 'week':
+        this.weeklyChange = 5;
+        this.calorieChange = 10;
+        this.timeChange = 0;
+        this.streakChange = 1;
+        break;
+      case 'month':
+        this.weeklyChange = 15;
+        this.calorieChange = 8;
+        this.timeChange = 0;
+        this.streakChange = 2;
+        break;
+      case 'year':
+        this.weeklyChange = 25;
+        this.calorieChange = 12;
+        this.timeChange = 5;
+        this.streakChange = 3;
+        break;
+    }
   }
 
   async presentActionSheet() {
@@ -506,13 +558,7 @@ export class ProgressoPage implements OnInit, AfterViewInit {
           text: 'Salvar',
           handler: async (data) => {
             if (data.weight && data.weight > 0) {
-              const toast = await this.toastController.create({
-                message: `Peso registrado: ${data.weight}kg`,
-                duration: 2000,
-                position: 'bottom',
-                color: 'success'
-              });
-              toast.present();
+              await this.showToast(`Peso registrado: ${data.weight}kg`, 'success');
             }
           }
         }
@@ -546,13 +592,7 @@ export class ProgressoPage implements OnInit, AfterViewInit {
         {
           text: 'Salvar',
           handler: async (data) => {
-            const toast = await this.toastController.create({
-              message: 'Medidas registradas com sucesso!',
-              duration: 2000,
-              position: 'bottom',
-              color: 'success'
-            });
-            toast.present();
+            await this.showToast('Medidas registradas com sucesso!', 'success');
           }
         }
       ]
@@ -581,13 +621,7 @@ export class ProgressoPage implements OnInit, AfterViewInit {
           text: 'Criar Meta',
           handler: async (data) => {
             if (data.goal && data.target) {
-              const toast = await this.toastController.create({
-                message: 'Meta criada com sucesso!',
-                duration: 2000,
-                position: 'bottom',
-                color: 'success'
-              });
-              toast.present();
+              await this.showToast('Meta criada com sucesso!', 'success');
             }
           }
         }
