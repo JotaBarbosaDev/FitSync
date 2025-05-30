@@ -172,8 +172,8 @@
           <app-timer 
             [initialTime]="0"
             [autoStart]="false"
-            (timeUpdate)="onTimerUpdate($event)"
-            (timerComplete)="onTimerComplete()">
+            (timeChanged)="onTimerUpdate($event)"
+            (timerFinished)="onTimerComplete()">
           </app-timer>
         </ion-card-content>
       </ion-card>

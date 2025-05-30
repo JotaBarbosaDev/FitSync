@@ -70,7 +70,7 @@ export class ListaPage implements OnInit {
 
   async loadFavorites() {
     try {
-      this.favoriteExercises = await this.storageService.get('favoriteExercises') || [];
+      this.favoriteExercises = await this.storageService.get<string[]>('favoriteExercises') || [];
     } catch (error) {
       console.error('Error loading favorites:', error);
     }
@@ -104,7 +104,7 @@ export class ListaPage implements OnInit {
     event.stopPropagation();
     
     try {
-      let favorites = await this.storageService.get('favoriteExercises') || [];
+      let favorites = await this.storageService.get<string[]>('favoriteExercises') || [];
       
       if (this.isFavorite(exercise.id)) {
         favorites = favorites.filter((id: string) => id !== exercise.id);

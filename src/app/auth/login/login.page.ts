@@ -28,10 +28,8 @@ export class LoginPage implements OnInit {
   ) { }
 
   ngOnInit() {
-    // Verificar se já está logado
-    if (this.authService.isAuthenticated()) {
-      this.router.navigate(['/dashboard']);
-    }
+    // Não é necessário verificar autenticação aqui, pois o GuestGuard já faz isso
+    console.log('LoginPage: Página de login carregada');
   }
   async onLogin() {
     if (!this.validateForm()) {
@@ -47,9 +45,9 @@ export class LoginPage implements OnInit {
 
     try {
       this.authService.login(this.loginData.email, this.loginData.password).subscribe({
-        next: (user) => {
+        next: () => {
           this.showToast('Login realizado com sucesso!', 'success');
-          this.router.navigate(['/dashboard']);
+          this.router.navigate(['/tabs/home']);
           this.isLoading = false;
           loading.dismiss();
         },
@@ -110,8 +108,71 @@ export class LoginPage implements OnInit {
     await toast.present();
   }
 
+  async testNavigation() {
+    console.log('=== TESTE DE NAVEGAÇÃO INICIADO ===');
+    console.log('Estado atual:', {
+      isLoading: this.isLoading,
+      currentUrl: this.router.url
+    });
+    
+    const alert = await this.alertController.create({
+      header: 'Teste de Navegação',
+      message: 'Tentando navegar para a página de registro...',
+      buttons: [
+        {
+          text: 'Cancelar',
+          role: 'cancel'
+        },
+        {
+          text: 'Prosseguir',
+          handler: () => {
+            this.router.navigate(['/auth/register']).then(
+              success => console.log('Sucesso:', success),
+              error => console.error('Erro:', error)
+            );
+          }
+        }
+      ]
+    });
+    
+    await alert.present();
+  }
+
   goToRegister() {
-    this.router.navigate(['/auth/register']);
+    console.log('Navegando para página de registro...');
+    
+    // Verificar se já está carregando
+    if (this.isLoading) {
+      console.log('Navegação bloqueada: operação em andamento');
+      return;
+    }
+    
+    // Não é necessário verificar autenticação aqui, pois o GuestGuard já fez isso
+    
+    try {
+      console.log('Iniciando navegação...');
+      this.isLoading = true;
+      
+      this.router.navigate(['/auth/register']).then(
+        (success) => {
+          console.log('Navegação bem-sucedida:', success);
+          this.isLoading = false;
+        },
+        (error) => {
+          console.error('Erro na navegação:', error);
+          this.isLoading = false;
+          this.showAlert('Erro', 'Não foi possível abrir a página de registro. Tente novamente.');
+        }
+      ).catch((error) => {
+        console.error('Erro na promise de navegação:', error);
+        this.isLoading = false;
+        this.showAlert('Erro', 'Ocorreu um erro inesperado. Tente novamente.');
+      });
+    } catch (error) {
+      console.error('Erro ao tentar navegar:', error);
+      this.isLoading = false;
+      this.showAlert('Erro', 'Ocorreu um erro inesperado. Tente novamente.');
+    }
   }
 
   async forgotPassword() {
@@ -123,8 +184,9 @@ export class LoginPage implements OnInit {
     await alert.present();
   }
 
-  updateField(field: string, event: any) {
-    const value = event.detail.value;
+  updateField(field: string, event: Event) {
+    const target = event.target as HTMLIonInputElement;
+    const value = target.value as string;
     if (field === 'email') {
       this.loginData.email = value;
     } else if (field === 'password') {

@@ -1,201 +1,567 @@
-.register-content {
-  --background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+/* ===== REGISTER PAGE - FITSYNC MODERN DESIGN ===== */
+ion-content {
+  --background: #f8f9fa;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 20px;
 }
 
-.register-container {
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  ion-content {
+    --background: #1a1a1a;
+  }
+}
+
+.fitsync-container {
   width: 100%;
-  max-width: 500px;
-  padding: 1.5rem;
+  max-width: 450px;
   margin: 0 auto;
 }
 
+/* ===== HEADER SECTION ===== */
 .header-section {
   position: relative;
   text-align: center;
   margin-bottom: 2rem;
-  padding-top: 1rem;
+  animation-delay: 0.2s;
   
   .back-btn {
     position: absolute;
     left: 0;
     top: 0;
-    --color: var(--ion-color-dark);
+    --color: #333;
+    --border-radius: 12px;
+    --box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    width: 44px;
+    height: 44px;
+    z-index: 10;
+    
+    &:hover {
+      --color: #007bff;
+      transform: translateX(-2px);
+    }
   }
   
-  .page-title {
-    font-size: 1.8rem;
-    font-weight: 700;
-    color: var(--ion-color-dark);
-    margin: 0.5rem 0;
+  /* Dark mode */
+  @media (prefers-color-scheme: dark) {
+    .back-btn {
+      --color: #fff;
+      
+      &:hover {
+        --color: #007bff;
+      }
+    }
   }
   
-  .page-subtitle {
-    color: var(--ion-color-medium);
-    font-size: 1rem;
-    margin: 0;
+  .logo-section {
+    .logo {
+      width: 60px;
+      height: 60px;
+      margin-bottom: 1rem;
+      border-radius: 16px;
+      box-shadow: var(--ion-box-shadow-primary);
+      transition: transform 0.3s ease;
+      
+      &:hover {
+        transform: scale(1.05);
+      }
+    }
+    
+    h1 {
+      background: var(--fitsync-gradient-primary);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin: 0.5rem 0;
+      letter-spacing: -0.02em;
+    }
+    
+    p {
+      color: var(--ion-text-color-secondary);
+      margin: 0;
+      font-weight: 400;
+    }
   }
 }
 
-.register-form {
-  .form-section {
-    margin-bottom: 2rem;
-    
-    .section-title {
-      font-size: 1.1rem;
-      font-weight: 600;
-      color: var(--ion-color-dark);
-      margin: 0 0 0.5rem 0;
-    }
-    
-    .section-description {
-      color: var(--ion-color-medium);
-      font-size: 0.9rem;
-      margin: 0 0 1rem 0;
-    }
-    
-    .input-item {
-      margin-bottom: 1rem;
-      --border-radius: 12px;
-      --background: white;
-      --border-width: 2px;
-      --border-color: #e9ecef;
-      
-      &.item-has-focus {
-        --border-color: var(--ion-color-primary);
-      }
-      
-      ion-label {
-        font-weight: 600;
-        color: var(--ion-color-dark);
-        margin-bottom: 0.5rem;
-      }
-      
-      ion-input {
-        font-size: 1rem;
-      }
-      
-      &.half-width {
-        flex: 1;
-      }
-    }
-  }
+/* ===== PROGRESS SECTION ===== */
+.progress-section {
+  margin-bottom: 2rem;
+  animation-delay: 0.3s;
   
-  .row-inputs {
+  .progress-bar {
     display: flex;
-    gap: 1rem;
-  }
-  
-  .password-toggle {
-    --color: var(--ion-color-medium);
-    margin: 0;
-  }
-  
-  .radio-options {
-    .radio-item {
-      --background: white;
-      --border-radius: 12px;
-      margin-bottom: 0.5rem;
-      --border-width: 2px;
-      --border-color: #e9ecef;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 10px;
+    
+    .progress-step {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      flex: 0 0 auto;
       
-      ion-radio {
-        --color: var(--ion-color-primary);
-        --color-checked: var(--ion-color-primary);
+      .step-number {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+        font-size: 14px;
+        background: var(--ion-color-light);
+        color: var(--ion-text-color-tertiary);
+        border: 2px solid var(--ion-border-color);
+        transition: all 0.3s ease;
       }
       
-      ion-label {
+      .step-label {
+        font-size: 12px;
+        margin-top: 6px;
+        color: var(--ion-text-color-tertiary);
         font-weight: 500;
-        color: var(--ion-color-dark);
+        transition: color 0.3s ease;
+      }
+      
+      &.active {
+        .step-number {
+          background: var(--ion-color-primary);
+          color: black;
+          border-color: var(--ion-color-primary);
+          transform: scale(1.1);
+        }
+        
+        .step-label {
+          color: var(--ion-color-primary);
+        }
+      }
+    }
+    
+    .progress-line {
+      flex: 1;
+      height: 2px;
+      background: var(--ion-border-color);
+      margin: 0 12px;
+      transition: background 0.3s ease;
+      
+      &.active {
+        background: var(--ion-color-primary);
+      }
+    }
+  }
+}
+
+/* ===== FORM STYLING ===== */
+.register-form {
+  animation-delay: 0.4s;
+  
+  .form-step {
+    .step-header {
+      text-align: center;
+      margin-bottom: 2rem;
+      
+      h2 {
+        margin: 0 0 0.5rem 0;
+        color: #333333;
+        font-weight: 600;
+      }
+      
+      p {
+        margin: 0;
+        color: #666666;
+        font-weight: 400;
+      }
+      
+      /* Dark mode */
+      @media (prefers-color-scheme: dark) {
+        h2 {
+          color: #ffffff;
+        }
+        
+        p {
+          color: #cccccc;
+        }
+      }
+    }
+    
+    .form-section {
+      margin-bottom: 2rem;
+      margin-bottom: 2rem;
+      
+      .input-row {
+        display: flex;
+        gap: 16px;
+        
+        .fitsync-input {
+          flex: 1;
+        }
+      }
+      
+      .password-strength {
+        margin-top: 8px;
+        
+        .strength-bar {
+          height: 4px;
+          background: var(--ion-color-light);
+          border-radius: 2px;
+          overflow: hidden;
+          margin-bottom: 4px;
+          
+          .strength-fill {
+            height: 100%;
+            transition: all 0.3s ease;
+            border-radius: 2px;
+            
+            &.weak {
+              width: 33%;
+              background: var(--ion-color-danger);
+            }
+            
+            &.medium {
+              width: 66%;
+              background: var(--ion-color-warning);
+            }
+            
+            &.strong {
+              width: 100%;
+              background: var(--ion-color-success);
+            }
+          }
+        }
+        
+        .strength-text {
+          font-size: 12px;
+          font-weight: 500;
+          
+          &.weak { color: var(--ion-color-danger); }
+          &.medium { color: var(--ion-color-warning); }
+          &.strong { color: var(--ion-color-success); }
+        }
+      }
+      
+      .validation-message {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        margin-top: 8px;
+        font-size: 12px;
+        color: var(--ion-color-danger);
+        
+        ion-icon {
+          font-size: 14px;
+        }
+      }
+    }
+  }
+}
+
+/* ===== FITNESS LEVELS ===== */
+.fitness-levels {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  
+  .fitness-level-card {
+    position: relative;
+    padding: 20px;
+    border: 2px solid var(--ion-border-color);
+    border-radius: 16px;
+    background: var(--ion-card-background);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    
+    &:hover {
+      border-color: var(--ion-color-primary);
+      transform: translateY(-2px);
+      box-shadow: var(--ion-box-shadow-secondary);
+    }
+    
+    &.selected {
+      border-color: var(--ion-color-primary);
+      background: var(--ion-color-primary-tint);
+      box-shadow: var(--ion-box-shadow-primary);
+    }
+    
+    ion-radio {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      --color: var(--ion-color-primary);
+      --color-checked: var(--ion-color-primary);
+    }
+    
+    .level-content {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      
+      .level-icon {
+        font-size: 32px;
+        color: var(--ion-color-primary);
+        min-width: 32px;
+      }
+      
+      h3 {
+        margin: 0 0 4px 0;
+        font-size: 18px;
+        font-weight: 600;
+        color: var(--ion-text-color);
+      }
+      
+      p {
+        margin: 0;
+        font-size: 14px;
+        color: var(--ion-text-color-secondary);
+      }
+    }
+  }
+}
+
+/* ===== GOALS GRID ===== */
+.goals-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  
+  .goal-card {
+    position: relative;
+    padding: 20px;
+    border: 2px solid var(--ion-border-color);
+    border-radius: 16px;
+    background: var(--ion-card-background);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: center;
+    
+    &:hover {
+      border-color: var(--ion-color-primary);
+      transform: translateY(-2px);
+      box-shadow: var(--ion-box-shadow-secondary);
+    }
+    
+    &.selected {
+      border-color: var(--ion-color-primary);
+      background: var(--ion-color-primary-tint);
+      box-shadow: var(--ion-box-shadow-primary);
+    }
+    
+    ion-checkbox {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      --color: var(--ion-color-primary);
+      --color-checked: var(--ion-color-primary);
+    }
+    
+    .goal-content {
+      .goal-icon {
+        font-size: 40px;
+        color: var(--ion-color-primary);
+        margin-bottom: 12px;
+      }
+      
+      h3 {
+        margin: 0 0 6px 0;
+        font-size: 16px;
+        font-weight: 600;
+        color: var(--ion-text-color);
+      }
+      
+      p {
+        margin: 0;
+        font-size: 13px;
+        color: var(--ion-text-color-secondary);
+        line-height: 1.4;
+      }
+    }
+  }
+}
+
+/* ===== STEP ACTIONS ===== */
+.step-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 2rem;
+  
+  .fitsync-btn {
+    flex: 1;
+    
+    &.fitsync-btn--outline {
+      flex: 0 0 auto;
+      min-width: 120px;
+    }
+  }
+}
+
+/* ===== LOGIN SECTION ===== */
+.login-section {
+  text-align: center;
+  margin-top: 2rem;
+  
+  p {
+    color: var(--ion-text-color-secondary);
+    margin: 0;
+    
+    .fitsync-btn--inline {
+      display: inline;
+      padding: 0;
+      height: auto;
+      font-size: inherit;
+      font-weight: 600;
+      margin-left: 4px;
+    }
+  }
+}
+
+/* ===== PASSWORD TOGGLE ===== */
+.password-toggle {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  --color: var(--ion-text-color-tertiary);
+  z-index: 10;
+  
+  &:hover {
+    --color: var(--ion-color-primary);
+  }
+}
+
+/* ===== RESPONSIVE DESIGN ===== */
+@media (max-width: 480px) {
+  ion-content {
+    padding: 16px;
+  }
+  
+  .fitsync-container {
+    max-width: 100%;
+  }
+  
+  .header-section {
+    margin-bottom: 1.5rem;
+    
+    .logo-section {
+      .logo {
+        width: 50px;
+        height: 50px;
+      }
+    }
+  }
+  
+  .progress-section {
+    margin-bottom: 1.5rem;
+    
+    .progress-bar {
+      .progress-step {
+        .step-number {
+          width: 28px;
+          height: 28px;
+          font-size: 12px;
+        }
+        
+        .step-label {
+          font-size: 11px;
+        }
+      }
+      
+      .progress-line {
+        margin: 0 8px;
+      }
+    }
+  }
+  
+  .form-section {
+    .input-row {
+      flex-direction: column;
+      gap: 0;
+    }
+  }
+  
+  .fitness-levels {
+    .fitness-level-card {
+      padding: 16px;
+      
+      .level-content {
+        gap: 12px;
+        
+        .level-icon {
+          font-size: 28px;
+        }
+        
+        h3 {
+          font-size: 16px;
+        }
+        
+        p {
+          font-size: 13px;
+        }
       }
     }
   }
   
   .goals-grid {
-    .goal-item {
-      --background: white;
-      --border-radius: 12px;
-      margin-bottom: 0.5rem;
-      --border-width: 2px;
-      --border-color: #e9ecef;
+    grid-template-columns: 1fr;
+    gap: 12px;
+    
+    .goal-card {
+      padding: 16px;
       
-      ion-checkbox {
-        --color: var(--ion-color-primary);
-        --color-checked: var(--ion-color-primary);
-      }
-      
-      ion-label {
-        font-weight: 500;
-        color: var(--ion-color-dark);
+      .goal-content {
+        .goal-icon {
+          font-size: 32px;
+        }
       }
     }
   }
-}
-
-.action-section {
-  margin: 2rem 0;
   
-  .register-btn {
-    height: 48px;
-    font-weight: 600;
-    font-size: 1rem;
-    
-    ion-spinner {
-      margin-right: 0.5rem;
-    }
-  }
-}
-
-.login-section {
-  text-align: center;
-  margin-bottom: 2rem;
-  
-  p {
-    color: var(--ion-color-medium);
-    margin: 0;
-    font-size: 0.9rem;
-    
-    .login-link {
-      --color: var(--ion-color-primary);
-      font-weight: 600;
-      text-decoration: none;
-      margin: 0;
-      padding: 0;
-      height: auto;
-      font-size: 0.9rem;
-    }
-  }
-}
-
-// Responsividade
-@media (max-width: 480px) {
-  .register-container {
-    padding: 1rem;
-  }
-  
-  .row-inputs {
+  .step-actions {
     flex-direction: column;
-    gap: 0;
-  }
-  
-  .header-section {
-    .page-title {
-      font-size: 1.5rem;
+    
+    .fitsync-btn {
+      width: 100%;
     }
   }
 }
 
-// Animações
-.register-container {
-  animation: fadeInUp 0.6s ease-out;
+@media (min-width: 768px) {
+  .fitsync-container {
+    max-width: 500px;
+  }
+  
+  .goals-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 
-@keyframes fadeInUp {
+/* ===== ANIMATIONS ===== */
+.form-step {
+  animation: slideIn 0.4s ease-out;
+}
+
+@keyframes slideIn {
   from {
     opacity: 0;
-    transform: translateY(30px);
+    transform: translateX(20px);
   }
   to {
     opacity: 1;
-    transform: translateY(0);
+    transform: translateX(0);
+  }
+}
+
+/* ===== DARK MODE ESPECÍFICO ===== */
+@media (prefers-color-scheme: dark) {
+  .fitness-level-card,
+  .goal-card {
+    background: rgba(26, 26, 26, 0.95);
+    backdrop-filter: blur(20px);
+    
+    &.selected {
+      background: rgba(var(--ion-color-primary-rgb), 0.1);
+    }
   }
 }

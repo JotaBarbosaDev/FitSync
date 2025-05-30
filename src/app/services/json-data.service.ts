@@ -3,6 +3,14 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { StorageService } from './storage.service';
 
+export interface Tip {
+  id: string;
+  title: string;
+  content: string;
+  category: string;
+  difficulty?: string;
+}
+
 export interface ExerciseData {
   id: string;
   name: string;
@@ -64,7 +72,7 @@ export interface FitnessData {
   exercises: ExerciseData[];
   workoutPlans: WorkoutPlan[];
   achievements: AchievementData[];
-  tips: any[];
+  tips: Tip[];
   muscleGroups: MuscleGroup[];
 }
 
@@ -94,9 +102,9 @@ export class JsonDataService {
     try {
       const exercises = await this.storageService.getExerciseData();
       const achievements = await this.storageService.getAchievements();
-      const workoutPlans = await this.storageService.get('workoutPlans') || [];
-      const muscleGroups = await this.storageService.get('muscleGroups') || [];
-      const tips = await this.storageService.get('tips') || [];
+      const workoutPlans = await this.storageService.get<WorkoutPlan[]>('workoutPlans') || [];
+      const muscleGroups = await this.storageService.get<MuscleGroup[]>('muscleGroups') || [];
+      const tips = await this.storageService.get<Tip[]>('tips') || [];
       
       return {
         exercises: exercises as unknown as ExerciseData[],
@@ -123,8 +131,25 @@ export class JsonDataService {
           this.fitnessData = data;
           
           // Save to storage with type conversion
-          await this.storageService.saveExerciseData(data.exercises as any);
-          await this.storageService.saveAchievements(data.achievements as any);
+          // Convert ExerciseData[] to Exercise[] for storage compatibility
+          const exercisesForStorage = data.exercises.map(ex => ({
+            id: ex.id,
+            name: ex.name,
+            sets: 3, // default value
+            reps: 10, // default value
+            weight: 0, // default value
+            muscleGroup: ex.muscleGroup,
+            equipment: ex.equipment
+          }));
+          await this.storageService.saveExerciseData(exercisesForStorage);
+          
+          // Convert AchievementData[] to the format expected by storage
+          const achievementsForStorage = data.achievements.map(ach => ({
+            ...ach,
+            unlocked: ach.unlocked || false,
+            progress: ach.progress || 0
+          }));
+          await this.storageService.saveAchievements(achievementsForStorage);
           await this.storageService.set('workoutPlans', data.workoutPlans);
           await this.storageService.set('muscleGroups', data.muscleGroups);
           await this.storageService.set('tips', data.tips);
@@ -178,7 +203,7 @@ export class JsonDataService {
   }
 
   // Get tips
-  async getTips(): Promise<any[]> {
+  async getTips(): Promise<Tip[]> {
     return (await this.storageService.get('tips')) || [];
   }
 
@@ -207,7 +232,7 @@ export class JsonDataService {
   }
 
   // Get random tip
-  async getRandomTip(): Promise<any> {
+  async getRandomTip(): Promise<Tip | null> {
     const tips = await this.getTips();
     if (tips.length === 0) return null;
     const randomIndex = Math.floor(Math.random() * tips.length);

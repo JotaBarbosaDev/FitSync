@@ -1,10 +1,11 @@
 <ion-app>
-  <ion-menu side="start" menuId="main-menu" contentId="main">
+  <ion-menu side="start" menuId="main-menu" contentId="main" *ngIf="!isTabsPage">
     <ion-header>
       <ion-toolbar color="primary">
         <ion-title>FitSync</ion-title>
       </ion-toolbar>
-    </ion-header>    <ion-content>
+    </ion-header>
+    <ion-content>
       <div class="menu-header" *ngIf="currentUser">
         <ion-avatar class="menu-avatar">
           <img src="/assets/icon/favicon.png" alt="Avatar">

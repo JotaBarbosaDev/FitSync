@@ -144,7 +144,7 @@ export class ListaPage implements OnInit {
   }
 
   createCustomExercise() {
-    this.navigationService.navigateToCreateExercise();
+    this.navigationService.navigateToExercisesList();
   }
 
   async startQuickWorkout() {

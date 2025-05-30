@@ -1,0 +1,443 @@
+<ion-header [translucent]="true" class="modern-header">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button fill="clear" (click)="voltarParaHome()" class="back-button">
+        <ion-icon name="arrow-back" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title class="header-title">
+      <div class="title-content">
+        <ion-icon name="analytics" class="title-icon"></ion-icon>
+        <span>Análise de Progresso</span>
+      </div>
+    </ion-title>
+    <ion-buttons slot="end">
+      <ion-button fill="clear" (click)="exportarRelatorio()" class="share-button">
+        <ion-icon name="share-outline" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="analisar-progresso-content">
+  <!-- Hero Section -->
+  <div class="hero-section">
+    <div class="hero-background"></div>
+    <div class="hero-content">
+      <div class="hero-icon">
+        <ion-icon name="analytics"></ion-icon>
+      </div>
+      <h1>Seu Progresso</h1>
+      <p>Análise completa da sua evolução fitness</p>
+    </div>
+  </div>
+
+  <!-- Period Filter -->
+  <div class="period-filter">
+    <div class="filter-container">
+      <h3>Período de Análise</h3>
+      <ion-segment [(ngModel)]="periodoSelecionado" (ionChange)="onPeriodoChange()" class="period-segment">
+        <ion-segment-button *ngFor="let periodo of periodosDisponiveis" [value]="periodo.valor">
+          <ion-label>{{ periodo.label }}</ion-label>
+        </ion-segment-button>
+      </ion-segment>
+    </div>
+  </div>
+
+  <!-- Weekly Summary -->
+  <div class="weekly-summary">
+    <div class="glass-card summary-card">
+      <div class="card-header">
+        <div class="header-icon">
+          <ion-icon name="calendar-number"></ion-icon>
+        </div>
+        <div class="header-text">
+          <h3>Resumo Semanal</h3>
+          <p>Progresso dos últimos 7 dias</p>
+        </div>
+      </div>
+      
+      <div class="summary-content">
+        <div class="progress-circle-container">
+          <div class="progress-circle">
+            <svg viewBox="0 0 120 120" class="progress-svg">
+              <circle cx="60" cy="60" r="50" class="progress-bg"></circle>
+              <circle cx="60" cy="60" r="50" class="progress-fill" 
+                      [style.stroke-dasharray]="progressoSemanal.percentual * 3.14 + ' 314'"></circle>
+            </svg>
+            <div class="progress-text">
+              <span class="progress-value">{{ progressoSemanal.percentual | number:'1.0-0' }}%</span>
+              <span class="progress-label">Meta</span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="summary-stats">
+          <div class="stat-item">
+            <div class="stat-number">{{ progressoSemanal.treinos }}</div>
+            <div class="stat-label">Treinos</div>
+          </div>
+          <div class="stat-divider"></div>
+          <div class="stat-item">
+            <div class="stat-number">{{ progressoSemanal.meta }}</div>
+            <div class="stat-label">Meta</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Statistics Grid -->
+  <div class="statistics-grid">
+    <div class="stats-header">
+      <h3>Estatísticas Gerais</h3>
+      <p>Seu desempenho em números</p>
+    </div>
+    
+    <div class="stats-container">
+      <div class="stat-card glass-card">
+        <div class="stat-icon">
+          <ion-icon name="fitness" class="icon-primary"></ion-icon>
+        </div>
+        <div class="stat-content">
+          <div class="stat-number">{{ estatisticas.totalTreinos }}</div>
+          <div class="stat-label">Total de Treinos</div>
+        </div>
+        <div class="stat-trend">
+          <ion-icon name="trending-up" class="trend-up"></ion-icon>
+        </div>
+      </div>
+
+      <div class="stat-card glass-card">
+        <div class="stat-icon">
+          <ion-icon name="flame" class="icon-orange"></ion-icon>
+        </div>
+        <div class="stat-content">
+          <div class="stat-number">{{ formatNumber(estatisticas.totalCalorias) }}</div>
+          <div class="stat-label">Calorias Queimadas</div>
+        </div>
+        <div class="stat-trend">
+          <ion-icon name="trending-up" class="trend-up"></ion-icon>
+        </div>
+      </div>
+
+      <div class="stat-card glass-card">
+        <div class="stat-icon">
+          <ion-icon name="time" class="icon-blue"></ion-icon>
+        </div>
+        <div class="stat-content">
+          <div class="stat-number">{{ formatarTempo(estatisticas.tempoTotal) }}</div>
+          <div class="stat-label">Tempo de Treino</div>
+        </div>
+        <div class="stat-trend">
+          <ion-icon name="trending-up" class="trend-up"></ion-icon>
+        </div>
+      </div>
+
+      <div class="stat-card glass-card">
+        <div class="stat-icon">
+          <ion-icon name="trophy" class="icon-gold"></ion-icon>
+        </div>
+        <div class="stat-content">
+          <div class="stat-number">{{ estatisticas.melhorSequencia }}</div>
+          <div class="stat-label">Melhor Sequência</div>
+        </div>
+        <div class="stat-trend">
+          <ion-icon name="star" class="trend-star"></ion-icon>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Physical Progress -->
+  <div class="physical-progress">
+    <div class="glass-card progress-card">
+      <div class="card-header">
+        <div class="header-icon">
+          <ion-icon name="body"></ion-icon>
+        </div>
+        <div class="header-text">
+          <h3>Progresso Físico</h3>
+          <p>Evolução das suas medidas corporais</p>
+        </div>
+      </div>
+
+      <div class="progress-metrics">
+        <!-- Weight Progress -->
+        <div class="metric-item">
+          <div class="metric-header">
+            <div class="metric-icon weight">
+              <ion-icon name="scale-outline"></ion-icon>
+            </div>
+            <div class="metric-info">
+              <h4>Peso Corporal</h4>
+              <div class="metric-values">
+                <span class="current-value">{{ progressoMensal.peso.atual }}kg</span>
+                <span class="target-value">Meta: {{ progressoMensal.peso.meta }}kg</span>
+              </div>
+            </div>
+            <div class="metric-percentage">
+              <span class="percentage-badge" [class]="getProgressClass(getProgressoPercentual(progressoMensal.peso.atual, progressoMensal.peso.inicial, progressoMensal.peso.meta))">
+                {{ getProgressoPercentual(progressoMensal.peso.atual, progressoMensal.peso.inicial, progressoMensal.peso.meta) | number:'1.0-0' }}%
+              </span>
+            </div>
+          </div>
+          <div class="metric-progress">
+            <div class="progress-track">
+              <div class="progress-fill" 
+                   [style.width.%]="getProgressoPercentual(progressoMensal.peso.atual, progressoMensal.peso.inicial, progressoMensal.peso.meta)"
+                   [class]="getProgressClass(getProgressoPercentual(progressoMensal.peso.atual, progressoMensal.peso.inicial, progressoMensal.peso.meta))"></div>
+            </div>
+            <div class="progress-labels">
+              <span>Inicial: {{ progressoMensal.peso.inicial }}kg</span>
+              <span>{{ getDifference(progressoMensal.peso.atual, progressoMensal.peso.inicial) }}kg</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Muscle Mass Progress -->
+        <div class="metric-item">
+          <div class="metric-header">
+            <div class="metric-icon muscle">
+              <ion-icon name="barbell-outline"></ion-icon>
+            </div>
+            <div class="metric-info">
+              <h4>Massa Muscular</h4>
+              <div class="metric-values">
+                <span class="current-value">{{ progressoMensal.massa.atual }}kg</span>
+                <span class="target-value">Meta: {{ progressoMensal.massa.meta }}kg</span>
+              </div>
+            </div>
+            <div class="metric-percentage">
+              <span class="percentage-badge" [class]="getProgressClass(getProgressoPercentual(progressoMensal.massa.atual, progressoMensal.massa.inicial, progressoMensal.massa.meta))">
+                {{ getProgressoPercentual(progressoMensal.massa.atual, progressoMensal.massa.inicial, progressoMensal.massa.meta) | number:'1.0-0' }}%
+              </span>
+            </div>
+          </div>
+          <div class="metric-progress">
+            <div class="progress-track">
+              <div class="progress-fill" 
+                   [style.width.%]="getProgressoPercentual(progressoMensal.massa.atual, progressoMensal.massa.inicial, progressoMensal.massa.meta)"
+                   [class]="getProgressClass(getProgressoPercentual(progressoMensal.massa.atual, progressoMensal.massa.inicial, progressoMensal.massa.meta))"></div>
+            </div>
+            <div class="progress-labels">
+              <span>Inicial: {{ progressoMensal.massa.inicial }}kg</span>
+              <span>+{{ getDifference(progressoMensal.massa.atual, progressoMensal.massa.inicial) }}kg</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Body Fat Progress -->
+        <div class="metric-item">
+          <div class="metric-header">
+            <div class="metric-icon fat">
+              <ion-icon name="analytics-outline"></ion-icon>
+            </div>
+            <div class="metric-info">
+              <h4>Gordura Corporal</h4>
+              <div class="metric-values">
+                <span class="current-value">{{ progressoMensal.gordura.atual }}%</span>
+                <span class="target-value">Meta: {{ progressoMensal.gordura.meta }}%</span>
+              </div>
+            </div>
+            <div class="metric-percentage">
+              <span class="percentage-badge" [class]="getProgressClass(getProgressoPercentual(progressoMensal.gordura.atual, progressoMensal.gordura.inicial, progressoMensal.gordura.meta))">
+                {{ getProgressoPercentual(progressoMensal.gordura.atual, progressoMensal.gordura.inicial, progressoMensal.gordura.meta) | number:'1.0-0' }}%
+              </span>
+            </div>
+          </div>
+          <div class="metric-progress">
+            <div class="progress-track">
+              <div class="progress-fill" 
+                   [style.width.%]="getProgressoPercentual(progressoMensal.gordura.atual, progressoMensal.gordura.inicial, progressoMensal.gordura.meta)"
+                   [class]="getProgressClass(getProgressoPercentual(progressoMensal.gordura.atual, progressoMensal.gordura.inicial, progressoMensal.gordura.meta))"></div>
+            </div>
+            <div class="progress-labels">
+              <span>Inicial: {{ progressoMensal.gordura.inicial }}%</span>
+              <span>{{ getDifference(progressoMensal.gordura.atual, progressoMensal.gordura.inicial) }}%</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Charts Section -->
+  <div class="charts-section">
+    <!-- Weight Evolution Chart -->
+    <div class="chart-container glass-card">
+      <div class="chart-header">
+        <div class="header-icon">
+          <ion-icon name="trending-up"></ion-icon>
+        </div>
+        <div class="header-text">
+          <h3>Evolução do Peso</h3>
+          <p>{{ getPeriodLabel() }}</p>
+        </div>
+      </div>
+      
+      <div class="weight-chart">
+        <div class="chart-area">
+          <svg class="chart-svg" viewBox="0 0 400 200">
+            <!-- Grid lines -->
+            <defs>
+              <pattern id="grid" width="40" height="20" patternUnits="userSpaceOnUse">
+                <path d="M 40 0 L 0 0 0 20" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
+              </pattern>
+            </defs>
+            <rect width="100%" height="100%" fill="url(#grid)" />
+            
+            <!-- Chart line -->
+            <polyline 
+              [attr.points]="getWeightChartPoints()" 
+              fill="none" 
+              stroke="url(#weightGradient)" 
+              stroke-width="3" 
+              stroke-linecap="round"
+              stroke-linejoin="round" />
+            
+            <!-- Data points -->
+            <circle *ngFor="let ponto of dadosGraficoPeso; let i = index"
+                    [attr.cx]="(i / (dadosGraficoPeso.length - 1)) * 360 + 20"
+                    [attr.cy]="180 - ((getPesoValue(ponto) - 65) / (80 - 65)) * 160"
+                    r="4" 
+                    fill="#00D2FF" 
+                    stroke="white" 
+                    stroke-width="2"
+                    class="chart-point">
+              <title>{{ getDataValue(ponto) }}: {{ getPesoValue(ponto) }}kg</title>
+            </circle>
+            
+            <!-- Gradient definition -->
+            <defs>
+              <linearGradient id="weightGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" style="stop-color:#667eea;stop-opacity:1" />
+                <stop offset="100%" style="stop-color:#764ba2;stop-opacity:1" />
+              </linearGradient>
+            </defs>
+          </svg>
+        </div>
+        
+        <div class="chart-labels">
+          <div class="y-axis-labels">
+            <span>80kg</span>
+            <span>75kg</span>
+            <span>70kg</span>
+            <span>65kg</span>
+          </div>
+          <div class="x-axis-labels">
+            <span *ngFor="let ponto of dadosGraficoPeso">{{ getDataValue(ponto) }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Workouts Chart -->
+    <div class="chart-container glass-card">
+      <div class="chart-header">
+        <div class="header-icon">
+          <ion-icon name="bar-chart"></ion-icon>
+        </div>
+        <div class="header-text">
+          <h3>Treinos por Semana</h3>
+          <p>Frequência de treinos semanal</p>
+        </div>
+      </div>
+      
+      <div class="workouts-chart">
+        <div class="chart-bars">
+          <div *ngFor="let item of dadosGraficoTreinos" class="bar-item">
+            <div class="bar-wrapper">
+              <div class="bar-fill" [style.height.%]="(getTreinosValue(item) / 7) * 100">
+                <span class="bar-value">{{ getTreinosValue(item) }}</span>
+              </div>
+            </div>
+            <span class="bar-label">{{ getSemanaValue(item) }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Achievements Section -->
+  <div class="achievements-section">
+    <div class="glass-card achievements-card">
+      <div class="card-header">
+        <div class="header-icon">
+          <ion-icon name="trophy"></ion-icon>
+        </div>
+        <div class="header-text">
+          <h3>Conquistas Recentes</h3>
+          <p>Suas últimas realizações</p>
+        </div>
+      </div>
+
+      <div class="achievements-list">
+        <div *ngFor="let conquista of conquistasRecentes" class="achievement-item">
+          <div class="achievement-icon">
+            <ion-icon [name]="conquista.icone"></ion-icon>
+          </div>
+          <div class="achievement-content">
+            <h4>{{ conquista.titulo }}</h4>
+            <p>{{ conquista.descricao }}</p>
+            <div class="achievement-date">
+              <ion-icon name="time-outline"></ion-icon>
+              <span>{{ conquista.data | date:'dd/MM/yyyy' }}</span>
+            </div>
+          </div>
+          <div class="achievement-badge">
+            <ion-icon name="checkmark-circle" class="badge-icon"></ion-icon>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Insights Section -->
+  <div class="insights-section">
+    <div class="glass-card insights-card">
+      <div class="card-header">
+        <div class="header-icon">
+          <ion-icon name="bulb"></ion-icon>
+        </div>
+        <div class="header-text">
+          <h3>Insights e Recomendações</h3>
+          <p>Análise personalizada do seu progresso</p>
+        </div>
+      </div>
+
+      <div class="insights-list">
+        <div class="insight-item positive">
+          <div class="insight-icon">
+            <ion-icon name="trending-up"></ion-icon>
+          </div>
+          <div class="insight-content">
+            <h4>Excelente Progresso!</h4>
+            <p>Você está {{ progressoSemanal.percentual }}% da sua meta semanal. Seu desempenho está acima da média!</p>
+          </div>
+        </div>
+        
+        <div class="insight-item warning">
+          <div class="insight-icon">
+            <ion-icon name="bulb-outline"></ion-icon>
+          </div>
+          <div class="insight-content">
+            <h4>Dica de Otimização</h4>
+            <p>Considere adicionar mais treinos de força para acelerar o ganho de massa muscular e atingir suas metas mais rapidamente.</p>
+          </div>
+        </div>
+        
+        <div class="insight-item info">
+          <div class="insight-icon">
+            <ion-icon name="calendar-outline"></ion-icon>
+          </div>
+          <div class="insight-content">
+            <h4>Previsão de Meta</h4>
+            <p>Com seu ritmo atual de progresso, você pode atingir sua meta de peso em aproximadamente {{ getEstimatedWeeks() }} semanas.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</ion-content>

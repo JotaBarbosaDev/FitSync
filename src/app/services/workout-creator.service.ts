@@ -111,6 +111,7 @@ export class WorkoutCreatorService {
     if (!workoutPlan) throw new Error('Workout plan not found');
 
     const fitnessData = await this.jsonDataService.getFitnessData();
+    if (!fitnessData) throw new Error('Fitness data not found');
     const exercise = fitnessData.exercises.find(ex => ex.id === exerciseId);
     if (!exercise) throw new Error('Exercise not found');
 
@@ -241,6 +242,7 @@ export class WorkoutCreatorService {
   // Quick Workout Generation
   async generateQuickWorkout(targetMuscleGroups: string[], duration: number = 30, difficulty: 'Fácil' | 'Médio' | 'Difícil' = 'Médio'): Promise<WorkoutPlan> {
     const fitnessData = await this.jsonDataService.getFitnessData();
+    if (!fitnessData) throw new Error('Fitness data not found');
     
     // Filter exercises by muscle groups and difficulty
     let availableExercises = fitnessData.exercises.filter(exercise => 
@@ -267,7 +269,7 @@ export class WorkoutCreatorService {
     // Add exercises to workout
     for (const exercise of selectedExercises) {
       const sets = this.getRecommendedSets(difficulty);
-      const reps = this.getRecommendedReps(exercise.type || 'strength', difficulty);
+      const reps = this.getRecommendedReps('strength', difficulty);
       
       await this.addExerciseToWorkout(workoutPlan.id, exercise.id, sets, reps);
     }

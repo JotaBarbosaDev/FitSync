@@ -14,6 +14,7 @@ interface WorkoutSet {
 }
 
 interface ExerciseHistory {
+  exerciseId: string;
   date: Date;
   sets: WorkoutSet[];
   totalVolume: number;
@@ -23,7 +24,7 @@ interface ExerciseHistory {
 interface RestTimer {
   timeLeft: number;
   running: boolean;
-  interval?: any;
+  interval?: ReturnType<typeof setInterval>;
 }
 
 interface MuscleGroup {
@@ -31,6 +32,17 @@ interface MuscleGroup {
   name: string;
   icon: string;
   color: string;
+}
+
+interface UserProgressDay {
+  exercises: ExerciseHistory[];
+  totalVolume: number;
+  totalSets: number;
+  calories: number;
+}
+
+interface UserProgressData {
+  [dateKey: string]: UserProgressDay;
 }
 
 @Component({
@@ -53,7 +65,7 @@ export class DetalhePage implements OnInit, OnDestroy {
   currentTime: number = 0;
   isTimerRunning: boolean = false;
   timerState: 'exercise' | 'rest' = 'exercise';
-  timerInterval: any;
+  timerInterval?: ReturnType<typeof setInterval>;
   exerciseTime: number = 45; // seconds
   restTime: number = 30; // seconds
 
@@ -134,7 +146,7 @@ export class DetalhePage implements OnInit, OnDestroy {
 
   async checkIfFavorite() {
     try {
-      const favorites = await this.storageService.get('favoriteExercises') || [];
+      const favorites = await this.storageService.get<string[]>('favoriteExercises') || [];
       this.isFavorite = favorites.includes(this.exerciseId);
     } catch (error) {
       console.error('Error checking favorites:', error);
@@ -143,8 +155,8 @@ export class DetalhePage implements OnInit, OnDestroy {
 
   async loadExerciseHistory() {
     try {
-      const history = await this.storageService.get('exerciseHistory') || [];
-      this.exerciseHistory = history.filter((h: any) => h.exerciseId === this.exerciseId);
+      const history = await this.storageService.get<ExerciseHistory[]>('exerciseHistory') || [];
+      this.exerciseHistory = history.filter((h: ExerciseHistory) => h.exerciseId === this.exerciseId);
     } catch (error) {
       console.error('Error loading exercise history:', error);
     }
@@ -157,7 +169,7 @@ export class DetalhePage implements OnInit, OnDestroy {
 
   async toggleFavorite() {
     try {
-      let favorites = await this.storageService.get('favoriteExercises') || [];
+      let favorites = await this.storageService.get<string[]>('favoriteExercises') || [];
       
       if (this.isFavorite) {
         favorites = favorites.filter((id: string) => id !== this.exerciseId);
@@ -289,7 +301,7 @@ export class DetalhePage implements OnInit, OnDestroy {
       };
 
       // Save to exercise history
-      const history = await this.storageService.get('exerciseHistory') || [];
+      const history = await this.storageService.get<ExerciseHistory[]>('exerciseHistory') || [];
       history.push(workoutData);
       await this.storageService.set('exerciseHistory', history);
 
@@ -305,9 +317,9 @@ export class DetalhePage implements OnInit, OnDestroy {
     }
   }
 
-  async updateUserProgress(workoutData: any) {
+  async updateUserProgress(workoutData: ExerciseHistory) {
     try {
-      const progress = await this.storageService.get('userProgress') || {};
+      const progress = await this.storageService.get<UserProgressData>('userProgress') || {};
       const today = new Date().toDateString();
       
       if (!progress[today]) {
@@ -409,9 +421,14 @@ export class DetalhePage implements OnInit, OnDestroy {
   }
 
   getRestTimeForSet(setIndex: number): number {
-    // Return rest time in seconds based on set index
+    // Return rest time in seconds based on set index and exercise difficulty
     const baseRestTime = this.exercise?.difficulty === 'advanced' ? 180 : 60;
-    return baseRestTime;
+    // Add 10 seconds for each additional set to account for fatigue
+    return baseRestTime + (setIndex * 10);
+  }
+
+  isLastSet(setIndex: number): boolean {
+    return setIndex === this.workoutSets.length - 1;
   }
 
   openRelatedExercise(exercise: ExerciseData) {

@@ -1,7 +1,8 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, NavigationEnd } from '@angular/router';
 import { MenuController, AlertController, Platform } from '@ionic/angular';
 import { Subscription } from 'rxjs';
+import { filter } from 'rxjs/operators';
 import { AuthService } from './services/auth.service';
 import { StorageService } from './services/storage.service';
 import { JsonDataService } from './services/json-data.service';
@@ -16,7 +17,9 @@ import { User } from './models';
 })
 export class AppComponent implements OnInit, OnDestroy {
   currentUser: User | null = null;
+  isTabsPage = false;
   private authSubscription?: Subscription;
+  private routerSubscription?: Subscription;
 
   constructor(
     private authService: AuthService,
@@ -53,17 +56,39 @@ export class AppComponent implements OnInit, OnDestroy {
     this.authSubscription = this.authService.currentUser$.subscribe(user => {
       this.currentUser = user;
     });
+
+    // Listen to route changes to detect tabs page
+    this.routerSubscription = this.router.events
+      .pipe(filter(event => event instanceof NavigationEnd))
+      .subscribe((event: NavigationEnd) => {
+        this.isTabsPage = event.url.startsWith('/tabs');
+      });
   }
 
   ngOnDestroy() {
     if (this.authSubscription) {
       this.authSubscription.unsubscribe();
     }
+    if (this.routerSubscription) {
+      this.routerSubscription.unsubscribe();
+    }
   }
 
   async navigateTo(path: string) {
     await this.menuController.close();
-    this.router.navigate([path]);
+    
+    // Redirect to tabs for main app sections
+    const tabsRoutes = {
+      '/dashboard': '/tabs/home',
+      '/home': '/tabs/home',
+      '/plans': '/tabs/exercises',
+      '/workout': '/tabs/training',
+      '/progress': '/tabs/progress',
+      '/profile': '/tabs/profile'
+    };
+    
+    const targetPath = tabsRoutes[path as keyof typeof tabsRoutes] || path;
+    this.router.navigate([targetPath]);
   }
 
   async logout() {

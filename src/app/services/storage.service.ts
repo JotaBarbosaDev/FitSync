@@ -1,6 +1,27 @@
 import { Injectable } from '@angular/core';
 import { Storage } from '@ionic/storage-angular';
 
+export interface AppSettings {
+  theme: 'light' | 'dark';
+  notifications: boolean;
+  units: 'metric' | 'imperial';
+  language: string;
+}
+
+export interface ProgressData {
+  [date: string]: {
+    workoutsCompleted: number;
+    exercisesCompleted: number;
+    totalDuration: number;
+    caloriesBurned: number;
+    personalRecords?: Array<{
+      exerciseId: string;
+      value: number;
+      date: string;
+    }>;
+  };
+}
+
 export interface WorkoutData {
   id: string;
   name: string;
@@ -60,22 +81,22 @@ export class StorageService {
   }
 
   // CREATE operations
-  public async set(key: string, value: any): Promise<any> {
+  public async set<T>(key: string, value: T): Promise<T | undefined> {
     return this._storage?.set(key, value);
   }
 
   // READ operations
-  public async get(key: string): Promise<any> {
+  public async get<T>(key: string): Promise<T | null> {
     return this._storage?.get(key);
   }
 
   // UPDATE operations
-  public async update(key: string, value: any): Promise<any> {
+  public async update<T>(key: string, value: T): Promise<T | undefined> {
     return this._storage?.set(key, value);
   }
 
   // DELETE operations
-  public async remove(key: string): Promise<any> {
+  public async remove(key: string): Promise<boolean | undefined> {
     return this._storage?.remove(key);
   }
 
@@ -142,11 +163,11 @@ export class StorageService {
   }
 
   // Settings methods
-  async saveSettings(settings: any): Promise<void> {
+  async saveSettings(settings: AppSettings): Promise<void> {
     await this.set('appSettings', settings);
   }
 
-  async getSettings(): Promise<any> {
+  async getSettings(): Promise<AppSettings> {
     return (await this.get('appSettings')) || {
       theme: 'dark',
       notifications: true,
@@ -165,11 +186,11 @@ export class StorageService {
   }
 
   // Progress tracking
-  async saveProgressData(progressData: any): Promise<void> {
+  async saveProgressData(progressData: ProgressData): Promise<void> {
     await this.set('progressData', progressData);
   }
 
-  async getProgressData(): Promise<any> {
+  async getProgressData(): Promise<ProgressData> {
     return (await this.get('progressData')) || {};
   }
 }

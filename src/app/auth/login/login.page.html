@@ -81,7 +81,8 @@
       <button 
         type="button"
         class="fitsync-btn fitsync-btn--outline fitsync-btn--lg"
-        (click)="goToRegister()">
+        (click)="goToRegister()"
+        [disabled]="isLoading">
         Criar Conta
       </button>
     </div>

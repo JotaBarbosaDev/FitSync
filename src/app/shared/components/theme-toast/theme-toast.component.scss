@@ -1,0 +1,71 @@
+.theme-toast-content {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px;
+}
+
+.theme-icon {
+  font-size: 1.5rem;
+  color: var(--ion-color-success);
+  animation: themeIconPulse 0.6s ease;
+}
+
+.theme-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.theme-title {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--ion-color-dark);
+}
+
+.theme-subtitle {
+  font-size: 0.75rem;
+  color: var(--ion-color-medium);
+  opacity: 0.8;
+}
+
+@keyframes themeIconPulse {
+  0% {
+    transform: scale(0.8);
+    opacity: 0.6;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+// Dark theme overrides
+.dark {
+  .theme-title {
+    color: var(--ion-color-light);
+  }
+  
+  .theme-subtitle {
+    color: var(--ion-color-light);
+    opacity: 0.7;
+  }
+}
+
+// Custom toast styling
+:global(.theme-toast-custom) {
+  --background: rgba(255, 255, 255, 0.95);
+  --color: var(--ion-color-dark);
+  --border-radius: 12px;
+  --box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(10px);
+  
+  .dark & {
+    --background: rgba(28, 28, 30, 0.95);
+    --color: var(--ion-color-light);
+  }
+}

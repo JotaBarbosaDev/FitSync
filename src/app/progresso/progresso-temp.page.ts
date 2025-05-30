@@ -413,7 +413,7 @@ export class ProgressoPage implements OnInit, AfterViewInit {
   }
 
   async openWorkoutHistory() {
-    this.navigationService.navigateToWorkoutHistory();
+    this.navigationService.navigateToWorkouts();
   }
 
   async openExerciseDetail(exerciseId: string) {

@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste de Navegação FitSync</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .success { background-color: #d4edda; border-color: #c3e6cb; }
+        .error { background-color: #f8d7da; border-color: #f5c6cb; }
+        .info { background-color: #d1ecf1; border-color: #bee5eb; }
+        button {
+            padding: 10px 15px;
+            margin: 5px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .btn-primary { background-color: #007bff; color: white; }
+        .btn-success { background-color: #28a745; color: white; }
+        .btn-warning { background-color: #ffc107; color: black; }
+        .log {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 12px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 Teste de Navegação FitSync</h1>
+        <p>Este teste simula o fluxo de navegação para verificar se o problema de bloqueio foi resolvido.</p>
+        
+        <div class="test-section info">
+            <h3>🚀 Status do Servidor</h3>
+            <p>Certifique-se de que o servidor está rodando em: <strong>http://localhost:8101</strong></p>
+            <button class="btn-primary" onclick="testServerStatus()">Verificar Servidor</button>
+            <div id="server-status"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>📱 Testes de Navegação</h3>
+            <button class="btn-primary" onclick="openLoginPage()">1. Abrir Página de Login</button>
+            <button class="btn-warning" onclick="simulateRegisterClick()">2. Simular Clique "Criar Conta"</button>
+            <button class="btn-success" onclick="openRegisterPage()">3. Abrir Página de Registro Diretamente</button>
+        </div>
+
+        <div class="test-section">
+            <h3>🔧 Teste LocalStorage</h3>
+            <button class="btn-primary" onclick="testLocalStorage()">Verificar Estado da Autenticação</button>
+            <button class="btn-warning" onclick="clearAuth()">Limpar Dados de Autenticação</button>
+            <div id="auth-status"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>📋 Log de Testes</h3>
+            <div class="log" id="test-log"></div>
+            <button class="btn-success" onclick="clearLog()">Limpar Log</button>
+        </div>
+    </div>
+
+    <script>
+        function log(message, type = 'info') {
+            const logDiv = document.getElementById('test-log');
+            const timestamp = new Date().toLocaleTimeString();
+            const logEntry = `[${timestamp}] ${type.toUpperCase()}: ${message}\n`;
+            logDiv.textContent += logEntry;
+            logDiv.scrollTop = logDiv.scrollHeight;
+        }
+
+        function clearLog() {
+            document.getElementById('test-log').textContent = '';
+        }
+
+        async function testServerStatus() {
+            log('Verificando status do servidor...');
+            try {
+                const response = await fetch('http://localhost:8101', { 
+                    method: 'HEAD',
+                    mode: 'no-cors'
+                });
+                log('Servidor está respondendo ✓', 'success');
+                document.getElementById('server-status').innerHTML = 
+                    '<div style="color: green; font-weight: bold;">✓ Servidor Online</div>';
+            } catch (error) {
+                log(`Erro ao conectar com servidor: ${error.message}`, 'error');
+                document.getElementById('server-status').innerHTML = 
+                    '<div style="color: red; font-weight: bold;">✗ Servidor Offline</div>';
+            }
+        }
+
+        function openLoginPage() {
+            log('Abrindo página de login...');
+            const loginUrl = 'http://localhost:8101/auth/login';
+            window.open(loginUrl, '_blank');
+            log(`Página aberta: ${loginUrl}`, 'success');
+        }
+
+        function simulateRegisterClick() {
+            log('Simulando clique no botão "Criar Conta"...');
+            log('INSTRUÇÕES: Na página de login, clique no botão "Criar Conta" e observe o comportamento.', 'info');
+            log('Verifique se:', 'info');
+            log('1. A URL muda para /auth/register', 'info');
+            log('2. A página carrega sem travar', 'info');
+            log('3. Não há mensagem de "esperar ou sair da página"', 'info');
+        }
+
+        function openRegisterPage() {
+            log('Abrindo página de registro diretamente...');
+            const registerUrl = 'http://localhost:8101/auth/register';
+            window.open(registerUrl, '_blank');
+            log(`Página aberta: ${registerUrl}`, 'success');
+        }
+
+        function testLocalStorage() {
+            log('Verificando estado da autenticação no localStorage...');
+            const currentUser = localStorage.getItem('fitsync_current_user');
+            const isAuthenticated = !!currentUser;
+            
+            log(`Estado de autenticação: ${isAuthenticated ? 'AUTENTICADO' : 'NÃO AUTENTICADO'}`, 
+                isAuthenticated ? 'warning' : 'success');
+            
+            if (currentUser) {
+                log(`ID do usuário: ${currentUser}`, 'info');
+            }
+            
+            document.getElementById('auth-status').innerHTML = `
+                <div style="color: ${isAuthenticated ? 'orange' : 'green'}; font-weight: bold;">
+                    ${isAuthenticated ? '⚠️ Usuário Autenticado' : '✓ Usuário Não Autenticado'}
+                </div>
+            `;
+        }
+
+        function clearAuth() {
+            log('Limpando dados de autenticação...');
+            localStorage.removeItem('fitsync_current_user');
+            log('Dados de autenticação removidos ✓', 'success');
+            testLocalStorage();
+        }
+
+        // Executar testes iniciais
+        window.addEventListener('load', () => {
+            log('Teste de navegação FitSync iniciado', 'success');
+            testServerStatus();
+            testLocalStorage();
+        });
+    </script>
+</body>
+</html>

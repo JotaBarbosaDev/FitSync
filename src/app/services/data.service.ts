@@ -8,15 +8,25 @@ import { AppData } from '../models';
 export class DataService {
   private dataSubject = new BehaviorSubject<AppData | null>(null);
   public data$ = this.dataSubject.asObservable();  constructor() {
-    this.loadInitialData();
+    console.log('DataService: Construtor iniciado');
+    this.loadInitialData().catch((error: Error) => {
+      console.error('DataService: Erro crítico na inicialização:', error);
+      // Fallback: criar dados básicos mesmo com erro
+      this.createFallbackData();
+    });
   }
   private async loadInitialData(): Promise<void> {
+    console.log('DataService: loadInitialData iniciado');
+    
     try {
       // Tentar carregar do localStorage primeiro
       this.loadFromLocalStorage();
       
       // Se não houver dados, criar dados iniciais básicos
-      if (!this.dataSubject.value) {        const initialData: AppData = {
+      if (!this.dataSubject.value) {
+        console.log('DataService: Nenhum dado encontrado, criando dados iniciais');
+        
+        const initialData: AppData = {
           version: "1.0.0",
           lastUpdated: new Date().toISOString(),
           users: [
@@ -40,12 +50,16 @@ export class DataService {
           workoutSessions: [],
           exerciseLibrary: []
         };
+        
         this.dataSubject.next(initialData);
         localStorage.setItem('fitsync_data', JSON.stringify(initialData));
+        console.log('DataService: Dados iniciais criados com sucesso');
+      } else {
+        console.log('DataService: Dados carregados do localStorage');
       }
     } catch (error) {
-      console.error('Erro ao carregar dados iniciais:', error);
-      this.loadFromLocalStorage();
+      console.error('DataService: Erro ao carregar dados iniciais:', error);
+      this.createFallbackData();
     }
   }
 
@@ -115,11 +129,32 @@ export class DataService {
   }
 
   // Método para atualizar dados específicos
-  updateDataSection(section: keyof AppData, newData: any[]): void {
+  updateDataSection(section: keyof AppData, newData: unknown[]): void {
     const currentData = this.getCurrentData();
     if (currentData) {
-      currentData[section] = newData as any;
+      (currentData[section] as unknown[]) = newData;
       this.saveData(currentData);
     }
+  }
+
+  // Método de fallback para criar dados básicos em caso de erro
+  private createFallbackData(): void {
+    console.log('DataService: Criando dados de fallback');
+    const fallbackData: AppData = {
+      version: "1.0.0",
+      lastUpdated: new Date().toISOString(),
+      users: [],
+      plans: [],
+      days: [],
+      workouts: [],
+      exercises: [],
+      sets: [],
+      workoutSessions: [],
+      exerciseLibrary: []
+    };
+    
+    this.dataSubject.next(fallbackData);
+    localStorage.setItem('fitsync_data', JSON.stringify(fallbackData));
+    console.log('DataService: Dados de fallback criados com sucesso');
   }
 }

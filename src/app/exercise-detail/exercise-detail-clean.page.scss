@@ -1,0 +1,574 @@
+// Exercise Detail Page - FitSync Modern Design System
+// Modern sports-themed design with glass morphism and advanced animations
+
+// Import FitSync design tokens
+:root {
+  --fitsync-primary: #E6FE58;
+  --fitsync-secondary: #f7931e;
+  --fitsync-tertiary: #4ecdc4;
+  --fitsync-success: #2dd36f;
+  --fitsync-warning: #ffc409;
+  --fitsync-danger: #eb445a;
+  --fitsync-dark: #1a1a1a;
+  --fitsync-light: #f8f9fa;
+  --fitsync-glass: rgba(255, 255, 255, 0.1);
+  --fitsync-glass-border: rgba(255, 255, 255, 0.2);
+}
+
+// Modern header design
+.header-modern {
+  --background: linear-gradient(135deg, var(--fitsync-primary), var(--fitsync-secondary));
+  
+  ion-toolbar {
+    --background: transparent;
+    --color: white;
+    
+    &::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 20"><defs><radialGradient id="a"><stop offset="20%" stop-color="%23fff" stop-opacity="0.1"/><stop offset="100%" stop-color="%23fff" stop-opacity="0"/></radialGradient></defs><circle fill="url(%23a)" cx="10" cy="10" r="2"/><circle fill="url(%23a)" cx="30" cy="10" r="2"/><circle fill="url(%23a)" cx="50" cy="10" r="2"/><circle fill="url(%23a)" cx="70" cy="10" r="2"/><circle fill="url(%23a)" cx="90" cy="10" r="2"/></svg>') repeat;
+      opacity: 0.3;
+      animation: dots-float 6s ease-in-out infinite;
+    }
+  }
+  
+  ion-title {
+    font-weight: 700;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  }
+}
+
+// Content container
+.exercise-detail-content {
+  --background: linear-gradient(180deg, var(--fitsync-dark) 0%, #0a0a0a 100%);
+  
+  &.fitsync-fade-in {
+    animation: fadeInUp 0.6s ease-out;
+  }
+}
+
+// Loading state
+.loading-container {
+  padding: 2rem 1rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 50vh;
+  
+  .loading-content {
+    text-align: center;
+    padding: 2rem;
+    
+    ion-spinner {
+      margin-bottom: 1rem;
+      --color: var(--fitsync-primary);
+    }
+  }
+}
+
+// Error state
+.error-container {
+  padding: 2rem 1rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 50vh;
+  
+  .error-content {
+    text-align: center;
+    padding: 2rem;
+    
+    .error-icon {
+      font-size: 4rem;
+      color: var(--fitsync-danger);
+      margin-bottom: 1rem;
+    }
+    
+    h2 {
+      margin-bottom: 1rem;
+    }
+    
+    p {
+      margin-bottom: 2rem;
+    }
+  }
+}
+
+// Exercise container
+.exercise-container {
+  padding: 0 0 100px 0; // Bottom padding for FAB
+}
+
+// Hero section
+.exercise-hero {
+  position: relative;
+  width: 100%;
+  height: 300px;
+  overflow: hidden;
+  margin-bottom: 1rem;
+  
+  .hero-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: brightness(0.7);
+  }
+  
+  .hero-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(transparent, rgba(0, 0, 0, 0.8));
+    padding: 2rem 1.5rem 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+  }
+  
+  .exercise-title {
+    flex: 1;
+    
+    h1 {
+      margin: 0 0 0.5rem 0;
+      font-size: 2rem;
+      font-weight: 700;
+    }
+    
+    p {
+      margin: 0;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+  }
+  
+  .fitsync-badge.difficulty {
+    margin-left: 1rem;
+    text-transform: uppercase;
+    font-weight: 600;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    
+    &.difficulty-beginner {
+      background: linear-gradient(135deg, var(--fitsync-success), #26d0ce);
+    }
+    
+    &.difficulty-intermediate {
+      background: linear-gradient(135deg, var(--fitsync-warning), var(--fitsync-secondary));
+    }
+    
+    &.difficulty-advanced {
+      background: linear-gradient(135deg, var(--fitsync-danger), #ff4757);
+    }
+  }
+  
+  .play-button {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    --border-radius: 50%;
+    --padding-start: 0;
+    --padding-end: 0;
+    --color: white;
+    transition: all 0.3s ease;
+    
+    &:hover {
+      transform: translate(-50%, -50%) scale(1.1);
+    }
+    
+    ion-icon {
+      font-size: 4rem;
+      filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
+    }
+  }
+}
+
+// Exercise stats section
+.exercise-stats-section {
+  padding: 0 1rem 1rem;
+  
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    
+    .stat-item {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 1rem;
+      
+      .stat-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        border-radius: 12px;
+        background: rgba(255, 255, 255, 0.1);
+        
+        ion-icon {
+          font-size: 1.25rem;
+        }
+      }
+      
+      .stat-info {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+        
+        span:first-child {
+          font-size: 0.75rem;
+          opacity: 0.7;
+        }
+        
+        span:last-child {
+          font-weight: 600;
+        }
+      }
+    }
+  }
+}
+
+// Glass morphism cards
+.fitsync-card.glass {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  margin: 0 1rem 1rem;
+  padding: 1.5rem;
+  transition: all 0.3s ease;
+  
+  &:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.2);
+    transform: translateY(-2px);
+  }
+  
+  .card-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+    
+    .header-icon {
+      font-size: 1.5rem;
+      color: var(--fitsync-primary);
+    }
+    
+    h3 {
+      margin: 0;
+      font-weight: 600;
+    }
+  }
+}
+
+// Exercise description
+.exercise-description {
+  .muscle-groups {
+    margin-top: 1.5rem;
+    
+    h4 {
+      margin: 0 0 0.75rem 0;
+      font-weight: 600;
+    }
+    
+    .muscle-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      
+      .fitsync-badge.secondary {
+        background: linear-gradient(135deg, var(--fitsync-secondary), var(--fitsync-tertiary));
+        color: white;
+        padding: 0.25rem 0.75rem;
+        border-radius: 12px;
+        font-size: 0.75rem;
+        font-weight: 500;
+      }
+    }
+  }
+}
+
+// Instructions section
+.instructions-section {
+  .instructions-list {
+    .instruction-item {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1rem;
+      
+      &:last-child {
+        margin-bottom: 0;
+      }
+      
+      .step-number {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 32px;
+        height: 32px;
+        background: linear-gradient(135deg, var(--fitsync-primary), var(--fitsync-secondary));
+        color: white;
+        border-radius: 50%;
+        font-weight: 600;
+        font-size: 0.875rem;
+        flex-shrink: 0;
+      }
+      
+      p {
+        margin: 0;
+        flex: 1;
+        align-self: center;
+      }
+    }
+  }
+}
+
+// Tips section
+.tips-section {
+  .tips-list {
+    .tip-item {
+      display: flex;
+      gap: 0.75rem;
+      margin-bottom: 0.75rem;
+      
+      &:last-child {
+        margin-bottom: 0;
+      }
+      
+      .tip-icon {
+        color: var(--fitsync-success);
+        font-size: 1.25rem;
+        flex-shrink: 0;
+        margin-top: 0.125rem;
+      }
+      
+      p {
+        margin: 0;
+        flex: 1;
+      }
+    }
+  }
+}
+
+// Mistakes section
+.mistakes-section {
+  .mistakes-list {
+    .mistake-item {
+      display: flex;
+      gap: 0.75rem;
+      margin-bottom: 0.75rem;
+      
+      &:last-child {
+        margin-bottom: 0;
+      }
+      
+      .mistake-icon {
+        color: var(--fitsync-danger);
+        font-size: 1.25rem;
+        flex-shrink: 0;
+        margin-top: 0.125rem;
+      }
+      
+      p {
+        margin: 0;
+        flex: 1;
+      }
+    }
+  }
+}
+
+// Timer section
+.timer-section {
+  app-timer {
+    display: block;
+    width: 100%;
+  }
+}
+
+// Add to workout section
+.add-workout-section {
+  .workout-form {
+    .form-row {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1rem;
+      
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
+    
+    .form-field {
+      flex: 1;
+      
+      &.full-width {
+        flex: none;
+        width: 100%;
+      }
+      
+      label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 500;
+      }
+      
+      .fitsync-input,
+      .fitsync-textarea {
+        --background: rgba(255, 255, 255, 0.1);
+        --color: white;
+        --border-color: rgba(255, 255, 255, 0.2);
+        --border-radius: 12px;
+        --padding-start: 1rem;
+        --padding-end: 1rem;
+        
+        &:focus {
+          --border-color: var(--fitsync-primary);
+        }
+      }
+    }
+  }
+}
+
+// Related exercises section
+.related-exercises-section {
+  .related-exercises-list {
+    .related-exercise-item {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 1rem 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      cursor: pointer;
+      transition: all 0.3s ease;
+      
+      &:last-child {
+        border-bottom: none;
+      }
+      
+      &:hover {
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 12px;
+        padding: 1rem;
+        margin: 0 -1rem;
+      }
+      
+      .exercise-avatar {
+        width: 60px;
+        height: 60px;
+        border-radius: 12px;
+        overflow: hidden;
+        flex-shrink: 0;
+        
+        img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+        }
+      }
+      
+      .exercise-info {
+        flex: 1;
+        
+        h4 {
+          margin: 0 0 0.25rem 0;
+          font-weight: 600;
+        }
+        
+        p {
+          margin: 0;
+          font-size: 0.875rem;
+          opacity: 0.7;
+        }
+      }
+      
+      .nav-icon {
+        color: var(--fitsync-primary);
+        font-size: 1.25rem;
+      }
+    }
+  }
+}
+
+// Floating action buttons
+ion-fab {
+  .fitsync-fab {
+    --background: var(--fitsync-primary);
+    --color: white;
+    --border-radius: 16px;
+    box-shadow: 0 8px 32px rgba(255, 107, 53, 0.3);
+    
+    &.secondary {
+      --background: var(--fitsync-secondary);
+      box-shadow: 0 8px 32px rgba(247, 147, 30, 0.3);
+    }
+    
+    &.success {
+      --background: var(--fitsync-success);
+      box-shadow: 0 8px 32px rgba(45, 211, 111, 0.3);
+    }
+    
+    &.warning {
+      --background: var(--fitsync-warning);
+      box-shadow: 0 8px 32px rgba(255, 196, 9, 0.3);
+    }
+    
+    &:hover {
+      transform: translateY(-2px);
+    }
+  }
+}
+
+// Animations
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes dots-float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+// Responsive design
+@media (max-width: 768px) {
+  .exercise-hero {
+    height: 250px;
+    
+    .exercise-title h1 {
+      font-size: 1.5rem;
+    }
+  }
+  
+  .exercise-stats-section .stats-grid {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+  
+  .add-workout-section .workout-form .form-row {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  
+  .fitsync-card.glass {
+    margin: 0 0.5rem 1rem;
+    padding: 1rem;
+  }
+}

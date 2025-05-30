@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { map, switchMap, take } from 'rxjs/operators';
-import { Workout, Exercise, Day, Set, AppData } from '../models';
+import { Workout, Exercise, Day, Set } from '../models';
 import { DataService } from './data.service';
 import { AuthService } from './auth.service';
 
@@ -34,7 +33,6 @@ export class WorkoutService {
         ...exercise,
         sets: data.sets
           .filter((s: Set) => s.exerciseId === exercise.id)
-          .sort((a: Set, b: Set) => a.order - b.order)
       }));
 
       return {

@@ -21,7 +21,7 @@ export class TimerComponent implements OnInit, OnDestroy {
   currentTime: number = 0;
   isRunning: boolean = false;
   isPaused: boolean = false;
-  private intervalId: any;
+  private intervalId?: ReturnType<typeof setInterval>;
 
   ngOnInit() {
     this.currentTime = this.initialTime;

@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
-import { Router, ActivatedRoute, NavigationExtras } from '@angular/router';
-import { Location } from '@angular/common';
+import { Router, NavigationExtras, ActivatedRoute } from '@angular/router';
+
+type NavigationParams = { [key: string]: string | number | boolean | undefined };
 
 @Injectable({
   providedIn: 'root'
@@ -8,8 +9,7 @@ import { Location } from '@angular/common';
 export class NavigationService {
 
   constructor(
-    private router: Router,
-    private location: Location
+    private router: Router
   ) {}
 
   // Navigate to specific page
@@ -18,7 +18,7 @@ export class NavigationService {
   }
 
   // Navigate with parameters
-  navigateWithParams(route: string, params: { [key: string]: any }, queryParams?: { [key: string]: any }): Promise<boolean> {
+  navigateWithParams(route: string, params: NavigationParams, queryParams?: NavigationParams): Promise<boolean> {
     const navigationExtras: NavigationExtras = {
       queryParams: queryParams
     };
@@ -26,19 +26,22 @@ export class NavigationService {
     // Replace route parameters
     let finalRoute = route;
     Object.keys(params).forEach(key => {
-      finalRoute = finalRoute.replace(`:${key}`, params[key]);
+      const value = params[key];
+      if (value !== undefined) {
+        finalRoute = finalRoute.replace(`:${key}`, String(value));
+      }
     });
 
     return this.router.navigate([finalRoute], navigationExtras);
   }
 
   // Navigate to workout detail
-  navigateToWorkoutDetail(workoutId: string, params?: { [key: string]: any }): Promise<boolean> {
+  navigateToWorkoutDetail(workoutId: string, params?: NavigationParams): Promise<boolean> {
     return this.navigateWithParams('/detalhe/:id', { id: workoutId }, params);
   }
 
   // Navigate to exercise detail
-  navigateToExerciseDetail(exerciseId: string, params?: { [key: string]: any }): Promise<boolean> {
+  navigateToExerciseDetail(exerciseId: string, params?: NavigationParams): Promise<boolean> {
     if (params) {
       return this.navigateWithParams('/exercise-detail/:id', { id: exerciseId }, params);
     }
@@ -48,42 +51,42 @@ export class NavigationService {
   // Navigate to progress with date filter
   navigateToProgress(period?: 'week' | 'month' | 'year'): Promise<boolean> {
     const queryParams = period ? { period } : undefined;
-    return this.navigateWithParams('/progresso', {}, queryParams);
+    return this.navigateWithParams('/tabs/progress', {}, queryParams);
   }
 
   // Navigate to workout plans
   navigateToWorkoutPlans(difficulty?: string): Promise<boolean> {
     const queryParams = difficulty ? { difficulty } : undefined;
-    return this.navigateWithParams('/lista', {}, queryParams);
+    return this.navigateWithParams('/tabs/exercises', {}, queryParams);
   }
 
   // Navigate back
   goBack(): void {
-    this.location.back();
+    window.history.back();
   }
 
   // Navigate forward
   goForward(): void {
-    this.location.forward();
+    window.history.forward();
   }
 
   // Navigate to root
   navigateToHome(): Promise<boolean> {
-    return this.navigateTo('/home');
+    return this.navigateTo('/tabs/home');
   }
 
   // Navigate to dashboard
   navigateToDashboard(): Promise<boolean> {
-    return this.navigateTo('/dashboard');
+    return this.navigateTo('/tabs/home');
   }
 
   // Navigate to achievements
   navigateToAchievements(): Promise<boolean> {
-    return this.navigateTo('/progress/achievements');
+    return this.navigateTo('/tabs/progress');
   }
 
   // Navigate with state
-  navigateWithState(route: string, state: any): Promise<boolean> {
+  navigateWithState(route: string, state: Record<string, unknown>): Promise<boolean> {
     return this.router.navigate([route], { state });
   }
 
@@ -112,12 +115,12 @@ export class NavigationService {
 
   // Navigate to workout with muscle group filter
   navigateToWorkoutsWithFilter(muscleGroup: string): Promise<boolean> {
-    return this.navigateWithParams('/lista', {}, { muscleGroup });
+    return this.navigateWithParams('/tabs/exercises', {}, { muscleGroup });
   }
 
   // Navigate to profile settings
   navigateToProfile(): Promise<boolean> {
-    return this.navigateTo('/profile');
+    return this.navigateTo('/tabs/profile');
   }
 
   // Navigate to login
@@ -144,17 +147,17 @@ export class NavigationService {
 
   // Navigate to exercises list
   navigateToExercisesList(): Promise<boolean> {
-    return this.navigateTo('/exercises');
+    return this.navigateTo('/tabs/exercises');
   }
 
   // Navigate to workouts
   navigateToWorkouts(): Promise<boolean> {
-    return this.navigateTo('/workouts');
+    return this.navigateTo('/tabs/training');
   }
 
   // Navigate to quick workout
   navigateToQuickWorkout(): Promise<boolean> {
-    return this.navigateTo('/quick-workout');
+    return this.navigateTo('/tabs/training');
   }
 
   // Navigate to workout creator
@@ -163,27 +166,27 @@ export class NavigationService {
   }
 
   // Enhanced navigate to exercise detail with parameters
-  navigateToExerciseDetailWithParams(exerciseId: string, params?: { [key: string]: any }): Promise<boolean> {
+  navigateToExerciseDetailWithParams(exerciseId: string, params?: NavigationParams): Promise<boolean> {
     return this.navigateWithParams('/exercise-detail/:id', { id: exerciseId }, params);
   }
 
   // Get route parameters from activated route
-  getRouteParams(activatedRoute: ActivatedRoute): { [key: string]: any } {
+  getRouteParams(activatedRoute: ActivatedRoute): NavigationParams {
     return activatedRoute.snapshot.params;
   }
 
   // Get query parameters from activated route
-  getQueryParams(activatedRoute: ActivatedRoute): { [key: string]: any } {
+  getQueryParams(activatedRoute: ActivatedRoute): NavigationParams {
     return activatedRoute.snapshot.queryParams;
   }
 
   // Get route data
-  getRouteData(activatedRoute: ActivatedRoute): any {
+  getRouteData(activatedRoute: ActivatedRoute): Record<string, unknown> {
     return activatedRoute.snapshot.data;
   }
 
   // Get navigation state
-  getNavigationState(): any {
+  getNavigationState(): Record<string, unknown> | undefined {
     return this.router.getCurrentNavigation()?.extras?.state;
   }
 }

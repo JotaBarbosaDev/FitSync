@@ -1,0 +1,332 @@
+<ion-header [translucent]="true" class="header-modern">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button color="light"></ion-menu-button>
+    </ion-buttons>
+    <ion-title>
+      <span class="fitsync-text gradient">FitSync Pro</span>
+    </ion-title>
+    <ion-buttons slot="end">
+      <ion-button fill="clear" (click)="showProfile()" class="fitsync-btn icon">
+        <ion-avatar>
+          <img src="/assets/logo.png" alt="Profile">
+        </ion-avatar>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="dashboard-content" [fullscreen]="true">
+  <!-- Hero Section com Boas-vindas -->
+  <div class="hero-section gradient-bg animate-fade-in">
+    <div class="hero-content">
+      <div class="greeting-section">
+        <h1 class="fitsync-text hero white">{{ getGreeting() }}, {{ getUserFirstName() }}!</h1>
+        <p class="fitsync-text large light">{{ getMotivationalMessage() }}</p>
+      </div>
+      
+      <!-- Timer de Treino Ativo -->
+      <div class="workout-timer-hero" *ngIf="workoutTimer.isRunning">
+        <div class="timer-display animate-pulse">
+          <ion-icon name="timer-outline" class="timer-icon"></ion-icon>
+          <div class="timer-info">
+            <span class="timer-label">Treino Ativo</span>
+            <span class="timer-time">{{ formatWorkoutTime() }}</span>
+          </div>
+          <ion-badge [color]="workoutTimer.isPaused ? 'warning' : 'success'">
+            {{ workoutTimer.isPaused ? 'PAUSADO' : 'ATIVO' }}
+          </ion-badge>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Estatísticas Principais -->
+  <div class="stats-overview animate-slide-up">
+    <h2 class="fitsync-text section-title primary">Sua Performance</h2>
+    <div class="stats-grid">
+      <!-- Card 1: Treinos da Semana -->
+      <div class="fitsync-card stats modern">
+        <div class="stats-circle-container">
+          <div class="circular-progress" data-progress="70">
+            <svg class="progress-ring" width="80" height="80">
+              <circle
+                class="progress-ring-circle background"
+                stroke="#e6e6e6"
+                stroke-width="6"
+                fill="transparent"
+                r="34"
+                cx="40"
+                cy="40"/>
+              <circle
+                class="progress-ring-circle foreground"
+                stroke="#ff6b35"
+                stroke-width="6"
+                fill="transparent"
+                r="34"
+                cx="40"
+                cy="40"
+                stroke-dasharray="213.6"
+                stroke-dashoffset="64.08"/>
+            </svg>
+            <div class="progress-content">
+              <span class="fitsync-text number">{{ getWeeklyWorkouts() }}</span>
+              <span class="fitsync-text small">de 7</span>
+            </div>
+          </div>
+          <div class="stats-info">
+            <span class="fitsync-text label">Treinos</span>
+            <span class="fitsync-text sublabel">Esta Semana</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 2: Calorias Queimadas -->
+      <div class="fitsync-card stats modern">
+        <div class="stats-circle-container">
+          <div class="circular-progress" data-progress="65">
+            <svg class="progress-ring" width="80" height="80">
+              <circle
+                class="progress-ring-circle background"
+                stroke="#e6e6e6"
+                stroke-width="6"
+                fill="transparent"
+                r="34"
+                cx="40"
+                cy="40"/>
+              <circle
+                class="progress-ring-circle foreground"
+                stroke="#4ecdc4"
+                stroke-width="6"
+                fill="transparent"
+                r="34"
+                cx="40"
+                cy="40"
+                stroke-dasharray="213.6"
+                stroke-dashoffset="74.76"/>
+            </svg>
+            <div class="progress-content">
+              <span class="fitsync-text number">{{ getTotalCalories() }}</span>
+              <span class="fitsync-text small">kcal</span>
+            </div>
+          </div>
+          <div class="stats-info">
+            <span class="fitsync-text label">Calorias</span>
+            <span class="fitsync-text sublabel">Hoje</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 3: Tempo de Treino -->
+      <div class="fitsync-card stats modern">
+        <div class="stats-circle-container">
+          <div class="circular-progress" data-progress="80">
+            <svg class="progress-ring" width="80" height="80">
+              <circle
+                class="progress-ring-circle background"
+                stroke="#e6e6e6"
+                stroke-width="6"
+                fill="transparent"
+                r="34"
+                cx="40"
+                cy="40"/>
+              <circle
+                class="progress-ring-circle foreground"
+                stroke="#f7931e"
+                stroke-width="6"
+                fill="transparent"
+                r="34"
+                cx="40"
+                cy="40"
+                stroke-dasharray="213.6"
+                stroke-dashoffset="42.72"/>
+            </svg>
+            <div class="progress-content">
+              <span class="fitsync-text number">{{ getWeeklyMinutes() }}</span>
+              <span class="fitsync-text small">min</span>
+            </div>
+          </div>
+          <div class="stats-info">
+            <span class="fitsync-text label">Tempo</span>
+            <span class="fitsync-text sublabel">Esta Semana</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 4: Nível de Fitness -->
+      <div class="fitsync-card stats modern">
+        <div class="stats-circle-container">
+          <div class="circular-progress" data-progress="90">
+            <svg class="progress-ring" width="80" height="80">
+              <circle
+                class="progress-ring-circle background"
+                stroke="#e6e6e6"
+                stroke-width="6"
+                fill="transparent"
+                r="34"
+                cx="40"
+                cy="40"/>
+              <circle
+                class="progress-ring-circle foreground"
+                stroke="#56e39f"
+                stroke-width="6"
+                fill="transparent"
+                r="34"
+                cx="40"
+                cy="40"
+                stroke-dasharray="213.6"
+                stroke-dashoffset="21.36"/>
+            </svg>
+            <div class="progress-content">
+              <span class="fitsync-text number">{{ getFitnessLevel() }}</span>
+              <span class="fitsync-text small">nível</span>
+            </div>
+          </div>
+          <div class="stats-info">
+            <span class="fitsync-text label">Fitness</span>
+            <span class="fitsync-text sublabel">Atual</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Plano Ativo -->
+  <div class="active-plan-section" *ngIf="activePlan">
+    <h2 class="fitsync-text section-title primary">Plano Ativo</h2>
+    <div class="fitsync-card workout animated">
+      <div class="plan-header">
+        <div class="plan-info">
+          <h3 class="fitsync-text large primary">{{ activePlan.name }}</h3>
+          <p class="fitsync-text muted">{{ activePlan.description }}</p>
+          <div class="plan-badges">
+            <span class="fitsync-badge {{ activePlan.primaryMuscle }}">
+              {{ getMuscleGroupName(activePlan.primaryMuscle || 'general') }}
+            </span>
+            <span class="fitsync-badge secondary">{{ activePlan.difficulty }}</span>
+          </div>
+        </div>
+        
+        <div class="plan-progress-circle">
+          <div class="fitsync-progress primary">
+            <div class="progress-fill" [style.width.%]="getPlanProgress()"></div>
+          </div>
+          <span class="fitsync-text medium primary">{{ getPlanProgress() }}%</span>
+        </div>
+      </div>
+      
+      <div class="plan-actions">
+        <ion-button expand="block" class="fitsync-btn primary" (click)="startWorkout()">
+          <ion-icon name="play" slot="start"></ion-icon>
+          Continuar Treino
+        </ion-button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sem Plano Ativo -->
+  <div class="no-plan-section" *ngIf="!activePlan">
+    <div class="fitsync-card glass">
+      <div class="empty-state">
+        <ion-icon name="fitness-outline" class="empty-icon"></ion-icon>
+        <h3 class="fitsync-text large primary">Comece Sua Jornada</h3>
+        <p class="fitsync-text muted">Escolha um plano de treino personalizado para atingir seus objetivos</p>
+        <ion-button expand="block" class="fitsync-btn primary" (click)="navigateToPlans()">
+          <ion-icon name="rocket" slot="start"></ion-icon>
+          Explorar Planos
+        </ion-button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Ações Rápidas -->
+  <div class="quick-actions-section">
+    <h2 class="fitsync-text section-title primary">Ações Rápidas</h2>
+    <div class="actions-grid">
+      <div class="fitsync-card action animated" (click)="quickStartWorkout()">
+        <div class="action-icon gradient-bg">
+          <ion-icon name="flash"></ion-icon>
+        </div>
+        <h4 class="fitsync-text medium">Treino Rápido</h4>
+        <p class="fitsync-text small muted">15-30 min</p>
+      </div>
+      
+      <div class="fitsync-card action animated" (click)="navigateToExercises()">
+        <div class="action-icon gradient-success">
+          <ion-icon name="barbell"></ion-icon>
+        </div>
+        <h4 class="fitsync-text medium">Exercícios</h4>
+        <p class="fitsync-text small muted">Biblioteca</p>
+      </div>
+      
+      <div class="fitsync-card action animated" (click)="navigateToProgress()">
+        <div class="action-icon gradient-warning">
+          <ion-icon name="trending-up"></ion-icon>
+        </div>
+        <h4 class="fitsync-text medium">Progresso</h4>
+        <p class="fitsync-text small muted">Estatísticas</p>
+      </div>
+      
+      <div class="fitsync-card action animated" (click)="navigateToNutrition()">
+        <div class="action-icon gradient-danger">
+          <ion-icon name="nutrition"></ion-icon>
+        </div>
+        <h4 class="fitsync-text medium">Nutrição</h4>
+        <p class="fitsync-text small muted">Dieta</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Últimos Treinos -->
+  <div class="recent-workouts-section">
+    <div class="section-header">
+      <h2 class="fitsync-text section-title primary">Treinos Recentes</h2>
+      <ion-button fill="clear" class="fitsync-btn outline" (click)="navigateToHistory()">
+        <span>Ver Todos</span>
+        <ion-icon name="chevron-forward" slot="end"></ion-icon>
+      </ion-button>
+    </div>
+    
+    <div class="workouts-list">
+      <div class="fitsync-card exercise animated" *ngFor="let workout of recentWorkouts">
+        <div class="workout-summary">
+          <div class="workout-info">
+            <h4 class="fitsync-text medium">{{ workout.name }}</h4>
+            <p class="fitsync-text small muted">{{ workout.date | date:'dd/MM' }} • {{ workout.duration }} min</p>
+            <div class="workout-tags">
+              <span class="fitsync-badge {{ workout.primaryMuscle }}">
+                {{ getMuscleGroupName(workout.primaryMuscle) }}
+              </span>
+            </div>
+          </div>
+          <div class="workout-stats">
+            <span class="fitsync-text large primary">{{ workout.exerciseCount }}</span>
+            <span class="fitsync-text small muted">exercícios</span>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Estado vazio para treinos -->
+      <div class="empty-workouts" *ngIf="!recentWorkouts || recentWorkouts.length === 0">
+        <ion-icon name="calendar-outline" class="empty-icon-small"></ion-icon>
+        <p class="fitsync-text muted">Nenhum treino realizado ainda</p>
+        <ion-button size="small" class="fitsync-btn outline" (click)="startFirstWorkout()">
+          Fazer Primeiro Treino
+        </ion-button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Dicas e Motivação -->
+  <div class="tips-section">
+    <div class="fitsync-card glass">
+      <div class="tip-content">
+        <ion-icon name="bulb" class="tip-icon"></ion-icon>
+        <div class="tip-text">
+          <h4 class="fitsync-text medium">💡 Dica do Dia</h4>
+          <p class="fitsync-text muted">{{ getDailyTip() }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</ion-content>

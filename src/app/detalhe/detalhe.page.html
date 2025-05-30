@@ -21,14 +21,14 @@
 <ion-content [fullscreen]="true" class="exercise-detail-content" *ngIf="exercise">
   <!-- Hero Image Section -->
   <div class="exercise-hero">
-    <img [src]="exercise?.imageUrl || 'assets/placeholder-exercise.jpg'" [alt]="exercise?.name" class="hero-image" />
+    <img [src]="exercise.imageUrl || 'assets/placeholder-exercise.jpg'" [alt]="exercise.name" class="hero-image" />
     <div class="hero-overlay">
       <div class="exercise-title">
-        <h1 class="fitsync-text hero white">{{ exercise?.name }}</h1>
-        <p class="fitsync-text large light">{{ getMuscleGroupName(exercise?.muscleGroup || 'general') }}</p>
+        <h1 class="fitsync-text hero white">{{ exercise.name }}</h1>
+        <p class="fitsync-text large light">{{ getMuscleGroupName(exercise.muscleGroup || 'general') }}</p>
       </div>
-      <div class="fitsync-badge difficulty" [class]="'difficulty-' + (exercise?.difficulty || 'beginner').toLowerCase()">
-        {{ exercise?.difficulty }}
+      <div class="fitsync-badge difficulty" [class]="'difficulty-' + (exercise.difficulty || 'beginner').toLowerCase()">
+        {{ exercise.difficulty }}
       </div>
     </div>
   </div>
@@ -38,21 +38,21 @@
     <div class="fitsync-card metric">
       <ion-icon name="time-outline" class="stat-icon"></ion-icon>
       <div class="stat-info">
-        <span class="fitsync-text large white">{{ exercise?.duration || 0 }}</span>
+        <span class="fitsync-text large white">{{ exercise.duration || 0 }}</span>
         <span class="fitsync-text small muted">minutos</span>
       </div>
     </div>
     <div class="fitsync-card metric">
       <ion-icon name="flame-outline" class="stat-icon"></ion-icon>
       <div class="stat-info">
-        <span class="fitsync-text large white">{{ exercise?.calories || 0 }}</span>
+        <span class="fitsync-text large white">{{ exercise.calories || 0 }}</span>
         <span class="fitsync-text small muted">kcal</span>
       </div>
     </div>
     <div class="fitsync-card metric" *ngIf="exercise?.equipment">
       <ion-icon name="fitness-outline" class="stat-icon"></ion-icon>
       <div class="stat-info">
-        <span class="fitsync-text large white">{{ exercise?.equipment }}</span>
+        <span class="fitsync-text large white">{{ exercise.equipment }}</span>
         <span class="fitsync-text small muted">equipamento</span>
       </div>
     </div>
@@ -64,7 +64,7 @@
       <ion-icon name="information-circle-outline"></ion-icon>
       Descrição
     </h2>
-    <p class="fitsync-text medium">{{ exercise?.description }}</p>
+    <p class="fitsync-text medium">{{ exercise.description }}</p>
   </div>
 
   <!-- Instructions -->
@@ -265,7 +265,7 @@
       <div class="fitsync-card exercise related-card" 
            *ngFor="let related of relatedExercises" 
            (click)="openRelatedExercise(related)">
-        <img [src]="related.image" [alt]="related.name" />
+        <img [src]="related.imageUrl" [alt]="related.name" />
         <div class="related-info">
           <h4 class="fitsync-text medium white">{{ related.name }}</h4>
           <p class="fitsync-text small muted">{{ getMuscleGroupName(related.muscleGroup) }}</p>

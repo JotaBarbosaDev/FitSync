@@ -1,0 +1,118 @@
+<!-- Exercise Card Component - Reutilizável -->
+<div 
+  class="exercise-card fitsync-card animated" 
+  [class.list-layout]="layout === 'list'"
+  [class.grid-layout]="layout === 'grid'"
+  (click)="onExerciseClick()">
+  
+  <!-- Grid Layout -->
+  <div *ngIf="layout === 'grid'" class="grid-content">
+    <!-- Exercise Image -->
+    <div class="exercise-image">
+      <img 
+        [src]="exercise.imageUrl || 'assets/placeholder-exercise.jpg'" 
+        [alt]="exercise.name" 
+        loading="lazy" />
+      
+      <!-- Favorite Button -->
+      <div class="exercise-overlay" *ngIf="showFavoriteButton">
+        <ion-button 
+          fill="clear" 
+          size="small" 
+          class="fitsync-btn icon favorite-btn"
+          (click)="onFavoriteClick($event)">
+          <ion-icon 
+            [name]="isFavorite ? 'heart' : 'heart-outline'" 
+            [color]="isFavorite ? 'danger' : 'light'">
+          </ion-icon>
+        </ion-button>
+      </div>
+
+      <!-- Difficulty Badge -->
+      <div class="difficulty-badge" [attr.data-difficulty]="exercise.difficulty.toLowerCase()">
+        <ion-icon [name]="getDifficultyIcon(exercise.difficulty)" size="small"></ion-icon>
+        {{ exercise.difficulty }}
+      </div>
+    </div>
+    
+    <!-- Exercise Content -->
+    <div class="exercise-content">
+      <h3 class="fitsync-text large white exercise-name">{{ exercise.name }}</h3>
+      <p class="fitsync-text muted light exercise-muscle">{{ getMuscleGroupName(exercise.muscleGroup) }}</p>
+      
+      <!-- Exercise Stats -->
+      <div class="exercise-stats" *ngIf="showStats">
+        <div class="stat-item">
+          <ion-icon name="barbell-outline"></ion-icon>
+          <span class="fitsync-text small">{{ exercise.difficulty }}</span>
+        </div>
+        <div class="stat-item" *ngIf="exercise.duration">
+          <ion-icon name="time-outline"></ion-icon>
+          <span class="fitsync-text small">{{ exercise.duration }}min</span>
+        </div>
+        <div class="stat-item" *ngIf="exercise.calories">
+          <ion-icon name="flame-outline"></ion-icon>
+          <span class="fitsync-text small">{{ exercise.calories }}kcal</span>
+        </div>
+      </div>
+
+      <!-- Equipment Badge -->
+      <div class="exercise-equipment" *ngIf="exercise.equipment">
+        <ion-chip color="medium" outline="true">
+          <ion-icon name="fitness-outline"></ion-icon>
+          <ion-label>{{ exercise.equipment }}</ion-label>
+        </ion-chip>
+      </div>
+    </div>
+  </div>
+
+  <!-- List Layout -->
+  <div *ngIf="layout === 'list'" class="list-content">
+    <!-- Exercise Avatar -->
+    <div class="exercise-avatar">
+      <img 
+        [src]="exercise.imageUrl || 'assets/placeholder-exercise.jpg'" 
+        [alt]="exercise.name" 
+        loading="lazy" />
+    </div>
+
+    <!-- Exercise Info -->
+    <div class="exercise-info">
+      <div class="exercise-header">
+        <h4 class="fitsync-text medium white exercise-name">{{ exercise.name }}</h4>
+        <ion-button 
+          *ngIf="showFavoriteButton"
+          fill="clear" 
+          size="small" 
+          class="fitsync-btn icon favorite-btn"
+          (click)="onFavoriteClick($event)">
+          <ion-icon 
+            [name]="isFavorite ? 'heart' : 'heart-outline'" 
+            [color]="isFavorite ? 'danger' : 'light'">
+          </ion-icon>
+        </ion-button>
+      </div>
+      
+      <p class="fitsync-text small muted exercise-muscle">{{ getMuscleGroupName(exercise.muscleGroup) }}</p>
+      
+      <!-- Stats Row -->
+      <div class="stats-row" *ngIf="showStats">
+        <div class="stat-badge" [attr.data-color]="getDifficultyColor(exercise.difficulty)">
+          <ion-icon [name]="getDifficultyIcon(exercise.difficulty)" size="small"></ion-icon>
+          {{ exercise.difficulty }}
+        </div>
+        <div class="stat-item" *ngIf="exercise.duration">
+          <ion-icon name="time-outline" size="small"></ion-icon>
+          {{ exercise.duration }}min
+        </div>
+        <div class="stat-item" *ngIf="exercise.calories">
+          <ion-icon name="flame-outline" size="small"></ion-icon>
+          {{ exercise.calories }}kcal
+        </div>
+      </div>
+    </div>
+
+    <!-- Navigation Arrow -->
+    <ion-icon name="chevron-forward-outline" class="nav-arrow"></ion-icon>
+  </div>
+</div>

@@ -1,4 +1,3 @@
-// filepath: /Users/joaobarbosa/Desktop/projetos/FitSync/src/app/progresso/progresso.page.ts
 import { Component, OnInit, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 import { ActionSheetController, AlertController, ToastController, IonicModule } from '@ionic/angular';
 import { CommonModule } from '@angular/common';
@@ -7,6 +6,41 @@ import { JsonDataService } from '../services/json-data.service';
 import { NavigationService } from '../services/navigation.service';
 import { StorageService } from '../services/storage.service';
 import { DeviceControlService } from '../services/device-control.service';
+
+interface UserProgressDay {
+  exercises?: Array<{
+    name: string;
+    sets: number;
+    reps: number;
+    weight: number;
+  }>;
+  calories?: number;
+  totalVolume?: number;
+  duration?: number;
+}
+
+interface UserProgress {
+  [date: string]: UserProgressDay;
+}
+
+interface ExerciseRecord {
+  id?: string;
+  exerciseId: string;
+  exerciseName?: string;
+  exercise?: string;
+  name: string;
+  personalRecord: number;
+  oneRepMax?: number;
+  weight?: number;
+  date: string;
+  calories?: number;
+  sets?: Array<{
+    reps: number;
+    weight: number;
+    completed: boolean;
+  }>;
+  muscleGroup?: string;
+}
 
 interface Achievement {
   id: string;
@@ -47,6 +81,13 @@ interface MuscleGroupStat {
   color: string;
   percentage: number;
   workouts: number;
+}
+
+interface AlertData {
+  weight?: number;
+  goal?: string;
+  target?: number;
+  [key: string]: string | number | boolean | undefined;
 }
 
 @Component({
@@ -121,17 +162,17 @@ export class ProgressoPage implements OnInit, AfterViewInit {
       const progress = await this.storageService.get('userProgress') || {};
       
       // Calculate totals from stored progress
-      Object.values(progress).forEach((day: any) => {
+      Object.values(progress).forEach((day: UserProgressDay) => {
         this.totalWorkouts += day.exercises?.length || 0;
         this.totalCalories += day.calories || 0;
         this.totalVolume += day.totalVolume || 0;
       });
 
       // Calculate current streak
-      this.currentStreak = this.calculateCurrentStreak(progress);
+      this.currentStreak = this.calculateCurrentStreak(progress as UserProgress);
       
       // Calculate weekly progress
-      this.weeklyProgress = this.calculateWeeklyProgress(progress);
+      this.weeklyProgress = this.calculateWeeklyProgress(progress as UserProgress);
 
     } catch (error) {
       console.error('Error loading progress data:', error);
@@ -190,7 +231,7 @@ export class ProgressoPage implements OnInit, AfterViewInit {
       this.recentAchievements = [...this.achievements];
 
       // Merge with stored achievements
-      storedAchievements.forEach((stored: Achievement) => {
+      (storedAchievements as Achievement[]).forEach((stored: Achievement) => {
         const index = this.achievements.findIndex(a => a.id === stored.id);
         if (index !== -1) {
           this.achievements[index] = { ...this.achievements[index], ...stored };
@@ -210,7 +251,7 @@ export class ProgressoPage implements OnInit, AfterViewInit {
       // Group exercises by date to create workout sessions
       const workoutsByDate = new Map();
       
-      history.forEach((exercise: any) => {
+      (history as ExerciseRecord[]).forEach((exercise: ExerciseRecord) => {
         const dateKey = new Date(exercise.date).toDateString();
         if (!workoutsByDate.has(dateKey)) {
           workoutsByDate.set(dateKey, []);
@@ -219,10 +260,10 @@ export class ProgressoPage implements OnInit, AfterViewInit {
       });
 
       // Convert to workout history format
-      this.workoutHistory = Array.from(workoutsByDate.entries()).map(([dateKey, exercises]: [string, any[]]) => {
+      this.workoutHistory = Array.from(workoutsByDate.entries()).map(([dateKey, exercises]: [string, ExerciseRecord[]]) => {
         const date = new Date(dateKey);
         const totalCalories = exercises.reduce((sum, ex) => sum + (ex.calories || 0), 0);
-        const totalSets = exercises.reduce((sum, ex) => sum + ex.sets.length, 0);
+        const totalSets = exercises.reduce((sum, ex) => sum + (ex.sets?.length || 0), 0);
         
         return {
           id: dateKey,
@@ -248,13 +289,13 @@ export class ProgressoPage implements OnInit, AfterViewInit {
       // Group by exercise and get best records
       const bestRecords = new Map();
       
-      records.forEach((record: any) => {
+      (records as ExerciseRecord[]).forEach((record: ExerciseRecord) => {
         const key = record.exerciseName || record.exercise;
-        if (!bestRecords.has(key) || record.oneRepMax > bestRecords.get(key).value) {
+        if (!bestRecords.has(key) || (record.oneRepMax && record.oneRepMax > bestRecords.get(key).value)) {
           bestRecords.set(key, {
             id: record.id,
             exercise: key,
-            value: record.oneRepMax || record.weight,
+            value: record.oneRepMax || record.weight || 0,
             unit: 'kg',
             date: new Date(record.date),
             icon: 'barbell-outline'
@@ -298,12 +339,12 @@ export class ProgressoPage implements OnInit, AfterViewInit {
     });
   }
 
-  calculateCurrentStreak(progress: any): number {
+  calculateCurrentStreak(progress: UserProgress): number {
     const dates = Object.keys(progress).sort().reverse();
     let streak = 0;
     
     for (const date of dates) {
-      if (progress[date].exercises?.length > 0) {
+      if (progress[date]?.exercises?.length && progress[date].exercises!.length > 0) {
         streak++;
       } else {
         break;
@@ -313,7 +354,7 @@ export class ProgressoPage implements OnInit, AfterViewInit {
     return streak;
   }
 
-  calculateWeeklyProgress(progress: any): number {
+  calculateWeeklyProgress(progress: UserProgress): number {
     const now = new Date();
     const weekStart = new Date(now.getFullYear(), now.getMonth(), now.getDate() - now.getDay());
     
@@ -323,7 +364,7 @@ export class ProgressoPage implements OnInit, AfterViewInit {
       date.setDate(weekStart.getDate() + i);
       const dateKey = date.toDateString();
       
-      if (progress[dateKey]?.exercises?.length > 0) {
+      if (progress[dateKey]?.exercises?.length && progress[dateKey].exercises!.length > 0) {
         weeklyWorkouts++;
       }
     }
@@ -556,7 +597,7 @@ export class ProgressoPage implements OnInit, AfterViewInit {
         'Cancelar',
         {
           text: 'Salvar',
-          handler: async (data) => {
+          handler: async (data: AlertData) => {
             if (data.weight && data.weight > 0) {
               await this.showToast(`Peso registrado: ${data.weight}kg`, 'success');
             }
@@ -591,7 +632,7 @@ export class ProgressoPage implements OnInit, AfterViewInit {
         'Cancelar',
         {
           text: 'Salvar',
-          handler: async (data) => {
+          handler: async () => {
             await this.showToast('Medidas registradas com sucesso!', 'success');
           }
         }
@@ -619,7 +660,7 @@ export class ProgressoPage implements OnInit, AfterViewInit {
         'Cancelar',
         {
           text: 'Criar Meta',
-          handler: async (data) => {
+          handler: async (data: AlertData) => {
             if (data.goal && data.target) {
               await this.showToast('Meta criada com sucesso!', 'success');
             }

@@ -6,6 +6,47 @@ import { NavigationService } from '../services/navigation.service';
 import { DeviceControlService } from '../services/device-control.service';
 import { AlertController, ToastController } from '@ionic/angular';
 
+// Interfaces locais para o HomePage
+interface UserProfile {
+  name: string;
+  level: string;
+  streak: number;
+}
+
+interface WorkoutHistory {
+  id: string;
+  name: string;
+  date: string;
+  duration: number;
+  caloriesBurned: number;
+  completed: boolean;
+}
+
+interface QuickNote {
+  id: number;
+  text: string;
+  date: string;
+}
+
+interface Exercise {
+  id: string;
+  name: string;
+  description: string;
+  difficulty: string;
+  imageUrl?: string;
+  duration?: string;
+  muscleGroups?: string[];
+}
+
+interface ActivePlan {
+  id: string;
+  name: string;
+  description: string;
+  progress: number;
+  totalWorkouts: number;
+  completedWorkouts: number;
+}
+
 @Component({
   selector: 'app-home',
   templateUrl: 'home.page.html',
@@ -14,15 +55,33 @@ import { AlertController, ToastController } from '@ionic/angular';
 })
 export class HomePage implements OnInit {
   nomeInstituto: string;
-  userProfile: any = {};
-  recentWorkouts: any[] = [];
-  featuredExercises: any[] = [];
+  userProfile: UserProfile = {
+    name: 'Usuário FitSync',
+    level: 'Iniciante',
+    streak: 0
+  };
+  recentWorkouts: WorkoutHistory[] = [];
+  featuredExercises: Exercise[] = [];
+  activePlan: ActivePlan | null = null;
+
   todayStats = {
     workouts: 0,
     calories: 0,
     time: 0
   };
   isLoading = true;
+
+  // Array de dicas diárias
+  private dailyTips = [
+    'Mantenha-se hidratado durante o treino!',
+    'O descanso é tão importante quanto o exercício.',
+    'Aqueça sempre antes de começar os exercícios.',
+    'Mantenha uma alimentação equilibrada.',
+    'Ouça seu corpo e respeite seus limites.',
+    'A consistência é a chave para o sucesso.',
+    'Varie seus exercícios para evitar o tédio.',
+    'Durma pelo menos 7-8 horas por noite.'
+  ];
 
   constructor(
     private router: Router,
@@ -45,16 +104,32 @@ export class HomePage implements OnInit {
 
   async loadUserData() {
     try {
-      // Load user profile
-      this.userProfile = await this.storageService.getUserProfile() || {
-        name: 'Usuário FitSync',
-        level: 'Iniciante',
-        streak: 0
-      };
+      // Load user profile - converter do storage UserProfile para interface local
+      const storageProfile = await this.storageService.getUserProfile();
+      if (storageProfile) {
+        this.userProfile = {
+          name: storageProfile.name,
+          level: 'Iniciante', // Valor padrão baseado no fitnessGoal ou calculado
+          streak: 0 // Seria calculado baseado no histórico
+        };
+      } else {
+        this.userProfile = {
+          name: 'Usuário FitSync',
+          level: 'Iniciante',
+          streak: 0
+        };
+      }
 
-      // Load recent workouts
-      this.recentWorkouts = await this.storageService.getWorkouts() || [];
-      this.recentWorkouts = this.recentWorkouts.slice(0, 3); // Last 3 workouts
+      // Load recent workouts - converter WorkoutData[] para WorkoutHistory[]
+      const workoutData = await this.storageService.getWorkouts() || [];
+      this.recentWorkouts = workoutData.map(workout => ({
+        id: workout.id,
+        name: workout.name,
+        date: workout.date instanceof Date ? workout.date.toISOString() : String(workout.date),
+        duration: workout.duration,
+        caloriesBurned: workout.calories || 0,
+        completed: true // WorkoutData salvo assume que foi completado
+      })).slice(0, 3); // Last 3 workouts
     } catch (error) {
       console.error('Error loading user data:', error);
     }
@@ -64,7 +139,18 @@ export class HomePage implements OnInit {
     try {
       const fitnessData = await this.jsonDataService.getFitnessData();
       if (fitnessData && fitnessData.exercises) {
-        this.featuredExercises = fitnessData.exercises.slice(0, 4); // Featured exercises
+        // Converter ExerciseData[] para Exercise[]
+        this.featuredExercises = fitnessData.exercises
+          .slice(0, 4)
+          .map(exercise => ({
+            id: exercise.id,
+            name: exercise.name,
+            description: exercise.description || exercise.instructions?.[0] || 'Exercício de fitness',
+            difficulty: exercise.difficulty,
+            imageUrl: exercise.imageUrl,
+            duration: exercise.duration,
+            muscleGroups: exercise.muscleGroups
+          }));
       }
     } catch (error) {
       console.error('Error loading featured exercises:', error);
@@ -177,7 +263,7 @@ export class HomePage implements OnInit {
           text: 'Salvar',
           handler: async (data) => {
             if (data.note) {
-              const notes = await this.storageService.get('quick-notes') || [];
+              const notes = await this.storageService.get<QuickNote[]>('quick-notes') || [];
               notes.push({
                 id: Date.now(),
                 text: data.note,
@@ -231,6 +317,24 @@ export class HomePage implements OnInit {
       default:
         return 'medium';
     }
+  }
+
+  // Métodos chamados no template HTML
+  getPlanProgress(): number {
+    if (!this.activePlan) return 0;
+    if (this.activePlan.totalWorkouts === 0) return 0;
+    return Math.round((this.activePlan.completedWorkouts / this.activePlan.totalWorkouts) * 100);
+  }
+
+  startWorkout(): void {
+    // Navegar para iniciar um treino
+    this.navigationService.navigateToQuickWorkout();
+  }
+
+  getDailyTip(): string {
+    // Retornar uma dica baseada no dia atual
+    const dayIndex = new Date().getDay();
+    return this.dailyTips[dayIndex] || this.dailyTips[0];
   }
 }
 

@@ -6,6 +6,39 @@ import { StorageService } from '../services/storage.service';
 import { DeviceControlService } from '../services/device-control.service';
 import { AlertController, ToastController, ActionSheetController } from '@ionic/angular';
 
+// Interfaces para tipagem
+interface PersonalRecord {
+  id: string;
+  exerciseId: string;
+  exerciseName?: string;
+  weight: number;
+  reps: number;
+  sets: number;
+  date: Date;
+  oneRepMax: number;
+}
+
+interface PersonalRecordData {
+  weight: string;
+  reps: string;
+  sets: string;
+}
+
+interface WorkoutEntry {
+  exerciseId: string;
+  exerciseName?: string;
+  sets: number;
+  reps: number;
+  weight: number;
+  notes: string;
+  date: Date;
+  completed: boolean;
+}
+
+interface TimerUpdateEvent {
+  detail?: number;
+}
+
 @Component({
   selector: 'app-exercise-detail',
   templateUrl: './exercise-detail.page.html',
@@ -20,13 +53,13 @@ export class ExerciseDetailPage implements OnInit, OnDestroy {
   isFavorite: boolean = false;
   relatedExercises: ExerciseData[] = [];
   userNotes: string = '';
-  personalRecords: any[] = [];
+  personalRecords: PersonalRecord[] = [];
   isOrientationLocked: boolean = false;
 
   // Timer properties
   timerSeconds: number = 0;
   isTimerRunning: boolean = false;
-  private timerInterval: any;
+  private timerInterval?: ReturnType<typeof setInterval>;
 
   // Workout data
   workoutData = {
@@ -52,7 +85,7 @@ export class ExerciseDetailPage implements OnInit, OnDestroy {
     await this.deviceControlService.lockToPortrait();
     
     // Get exercise ID from route parameters
-    this.exerciseId = this.navigationService.getRouteParams(this.route)['id'];
+    this.exerciseId = String(this.navigationService.getRouteParams(this.route)['id'] || '');
     
     // Get query parameters (for additional context)
     const queryParams = this.navigationService.getQueryParams(this.route);
@@ -98,7 +131,7 @@ export class ExerciseDetailPage implements OnInit, OnDestroy {
 
   async checkIfFavorite() {
     try {
-      const favorites = await this.storageService.get('favoriteExercises') || [];
+      const favorites = await this.storageService.get<string[]>('favoriteExercises') || [];
       this.isFavorite = favorites.includes(this.exerciseId);
     } catch (error) {
       console.error('Error checking favorites:', error);
@@ -107,7 +140,7 @@ export class ExerciseDetailPage implements OnInit, OnDestroy {
 
   async toggleFavorite() {
     try {
-      const favorites = await this.storageService.get('favoriteExercises') || [];
+      const favorites = await this.storageService.get<string[]>('favoriteExercises') || [];
       
       if (this.isFavorite) {
         // Remove from favorites
@@ -134,7 +167,7 @@ export class ExerciseDetailPage implements OnInit, OnDestroy {
 
   async loadUserNotes() {
     try {
-      const notes = await this.storageService.get(`exerciseNotes_${this.exerciseId}`);
+      const notes = await this.storageService.get<string>(`exerciseNotes_${this.exerciseId}`);
       this.userNotes = notes || '';
     } catch (error) {
       console.error('Error loading notes:', error);
@@ -153,8 +186,8 @@ export class ExerciseDetailPage implements OnInit, OnDestroy {
 
   async loadPersonalRecords() {
     try {
-      const allRecords = await this.storageService.get('personalRecords') || [];
-      this.personalRecords = allRecords.filter((record: any) => 
+      const allRecords = await this.storageService.get<PersonalRecord[]>('personalRecords') || [];
+      this.personalRecords = allRecords.filter((record: PersonalRecord) => 
         record.exerciseId === this.exerciseId
       );
     } catch (error) {
@@ -204,11 +237,11 @@ export class ExerciseDetailPage implements OnInit, OnDestroy {
     await alert.present();
   }
 
-  async savePersonalRecord(data: any) {
+  async savePersonalRecord(data: PersonalRecordData) {
     try {
-      const allRecords = await this.storageService.get('personalRecords') || [];
+      const allRecords = await this.storageService.get<PersonalRecord[]>('personalRecords') || [];
       
-      const newRecord = {
+      const newRecord: PersonalRecord = {
         id: Date.now().toString(),
         exerciseId: this.exerciseId,
         exerciseName: this.exercise?.name,
@@ -357,8 +390,11 @@ export class ExerciseDetailPage implements OnInit, OnDestroy {
   }
 
   // Video and image methods
-  onImageError(event: any) {
-    event.target.src = '/assets/images/exercise-placeholder.jpg';
+  onImageError(event: Event) {
+    const target = event.target as HTMLImageElement;
+    if (target) {
+      target.src = '/assets/images/exercise-placeholder.jpg';
+    }
   }
 
   playVideo() {
@@ -380,7 +416,7 @@ export class ExerciseDetailPage implements OnInit, OnDestroy {
         completed: false
       };
 
-      const currentWorkout = await this.storageService.get('currentWorkout') || [];
+      const currentWorkout = await this.storageService.get<WorkoutEntry[]>('currentWorkout') || [];
       currentWorkout.push(workoutEntry);
       await this.storageService.set('currentWorkout', currentWorkout);
 
@@ -397,8 +433,8 @@ export class ExerciseDetailPage implements OnInit, OnDestroy {
   }
 
   // Timer component event handlers
-  onTimerUpdate(event: any) {
-    this.timerSeconds = typeof event === 'number' ? event : event.detail || 0;
+  onTimerUpdate(event: TimerUpdateEvent | number) {
+    this.timerSeconds = typeof event === 'number' ? event : (event.detail || 0);
     console.log('Timer updated:', this.timerSeconds);
   }
 

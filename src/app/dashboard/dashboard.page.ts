@@ -7,6 +7,20 @@ import { PlanService } from '../services/plan.service';
 import { TimerService } from '../services/timer.service';
 import { User, Plan, WorkoutTimer } from '../models';
 
+// Define interface para o histórico de workouts
+interface WorkoutHistory {
+  id: string;
+  name: string;
+  date: Date;
+  duration: number;
+  exercises: number;
+  exerciseCount: number;
+  calories: number;
+  sets: number;
+  muscleGroups: string[];
+  primaryMuscle: string;
+}
+
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.page.html',
@@ -17,7 +31,7 @@ export class DashboardPage implements OnInit, OnDestroy {  currentUser: User | n
   activePlan: Plan | null = null;
   plans: Plan[] = [];
   workoutTimer: WorkoutTimer = { totalTime: 0, isRunning: false, isPaused: false };
-  recentWorkouts: any[] = [];
+  recentWorkouts: WorkoutHistory[] = [];
   
   private subscriptions: Subscription[] = [];
 
@@ -100,18 +114,19 @@ export class DashboardPage implements OnInit, OnDestroy {  currentUser: User | n
   }
 
   navigateToPlans() {
-    this.router.navigate(['/plans']);
+    this.router.navigate(['/tabs/exercises']);
   }
 
   navigateToWorkout() {
     if (this.activePlan) {
-      this.router.navigate(['/workout']);
+      this.router.navigate(['/tabs/training']);
     } else {
       this.showCreatePlanAlert();
-    }  }
+    }
+  }
 
   navigateToProfile() {
-    this.router.navigate(['/profile']);
+    this.router.navigate(['/tabs/profile']);
   }
 
   async createQuickPlan() {
@@ -235,23 +250,23 @@ export class DashboardPage implements OnInit, OnDestroy {  currentUser: User | n
 
   // Métodos de navegação
   showProfile(): void {
-    this.router.navigate(['/profile']);
+    this.router.navigate(['/tabs/profile']);
   }
 
   startWorkout(): void {
-    this.router.navigate(['/workout/start']);
+    this.router.navigate(['/tabs/training']);
   }
 
   quickStartWorkout(): void {
-    this.router.navigate(['/workout/quick']);
+    this.router.navigate(['/tabs/training']);
   }
 
   navigateToExercises(): void {
-    this.router.navigate(['/lista']);
+    this.router.navigate(['/tabs/exercises']);
   }
 
   navigateToProgress(): void {
-    this.router.navigate(['/progress']);
+    this.router.navigate(['/tabs/progress']);
   }
 
   navigateToNutrition(): void {
@@ -263,6 +278,6 @@ export class DashboardPage implements OnInit, OnDestroy {  currentUser: User | n
   }
 
   startFirstWorkout(): void {
-    this.router.navigate(['/workout/beginner']);
+    this.router.navigate(['/tabs/training']);
   }
 }

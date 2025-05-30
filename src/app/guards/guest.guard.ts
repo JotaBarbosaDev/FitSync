@@ -14,10 +14,20 @@ export class GuestGuard implements CanActivate {
   ) {}
 
   canActivate(): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
-    if (!this.authService.isAuthenticated()) {
+    console.log('GuestGuard: Verificando autenticação...');
+    
+    // Verificação simples baseada apenas no localStorage para evitar bloqueios
+    const savedUserId = localStorage.getItem('fitsync_current_user');
+    const isAuthenticated = !!savedUserId;
+    
+    console.log('GuestGuard: Usuário autenticado?', isAuthenticated, 'savedUserId:', !!savedUserId);
+    
+    if (!isAuthenticated) {
+      console.log('GuestGuard: Permitindo acesso (usuário não autenticado)');
       return true;
     } else {
-      this.router.navigate(['/dashboard']);
+      console.log('GuestGuard: Redirecionando para tabs/home (usuário já autenticado)');
+      this.router.navigate(['/tabs/home']);
       return false;
     }
   }
