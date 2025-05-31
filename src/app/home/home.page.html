@@ -1,285 +1,376 @@
-<ion-header [translucent]="true" class="header-modern">
-  <ion-toolbar color="primary">
-    <ion-title class="fitsync-text gradient">
-      <ion-icon name="fitness-outline" slot="start"></ion-icon>
-      FitSync
-    </ion-title>
-    <ion-buttons slot="end">
-      <ion-button (click)="navigateToProfile()" fill="clear">
-        <ion-icon name="person-circle-outline"></ion-icon>
+<!-- Header -->
+<ion-header class="header-modern fitsync-slide-down home-page">
+  <ion-toolbar class="toolbar-gradient">
+    <div class="header-content">
+      <div class="logo-section">
+        <img src="/assets/logo.png" alt="FitSync Logo" class="header-logo">
+      </div>
+      <ion-button fill="clear" class="profile-btn" (click)="navigateToProfile()">
+        <ion-icon name="person-circle" slot="icon-only"></ion-icon>
       </ion-button>
-    </ion-buttons>
+    </div>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true" class="home-content">
-  <!-- Loading state -->
-  <div *ngIf="isLoading" class="loading-container">
-    <ion-spinner name="dots" color="primary"></ion-spinner>
-    <p>Carregando dados...</p>
-  </div>
+<ion-content class="fitsync-fade-in">
+  <div class="content-container">
+    <!-- Loading state -->
+    <div *ngIf="isLoading" class="loading-container fitsync-slide-up">
+      <div class="loading-content">
+        <ion-spinner name="dots" color="primary"></ion-spinner>
+        <p class="body-medium">Carregando seus dados...</p>
+      </div>
+    </div>
 
-  <div *ngIf="!isLoading" class="home-container">
+    <div *ngIf="!isLoading" class="fitsync-container">
     
-    <!-- Comece Sua Jornada Section -->
-    <div class="journey-section">
-      <div class="hero-content">
-        <h1 class="fitsync-text hero primary">{{ getGreeting() }}, {{ userProfile.name }}!</h1>
-        <p class="fitsync-text large muted">Vamos continuar seu treino?</p>
+    <!-- Header with greeting -->
+    <div class="header-section fitsync-slide-right">
+      <div class="greeting-content">
+        <h1 class="display-medium text-gradient-primary">{{ getGreeting() }}, {{ userProfile.name }}! 👋</h1>
+        <p class="body-large">Vamos continuar sua jornada fitness?</p>
+      </div>
+      
+      <!-- User Stats Cards -->
+      <div class="stats-grid fitsync-slide-left">
+        <div class="fitsync-card fitsync-card--workout">
+          <div class="card-header">
+            <ion-icon name="flame" color="warning"></ion-icon>
+            <span class="stat-number">{{ userProfile.streak || 0 }}</span>
+          </div>
+          <p class="stat-label">Dias consecutivos</p>
+        </div>
         
-        <!-- User Stats -->
-        <div class="user-stats">
-          <div class="stat-card">
-            <ion-icon name="flame-outline" color="warning"></ion-icon>
-            <div>
-              <span class="stat-number">{{ userProfile.streak || 0 }}</span>
-              <span class="stat-label">Dias consecutivos</span>
-            </div>
+        <div class="fitsync-card fitsync-card--workout">
+          <div class="card-header">
+            <ion-icon name="trophy" color="warning"></ion-icon>
+            <span class="stat-number">{{ userProfile.level || 'Iniciante' }}</span>
           </div>
-          <div class="stat-card">
-            <ion-icon name="medal-outline" color="success"></ion-icon>
-            <div>
-              <span class="stat-number">{{ userProfile.level || 'Iniciante' }}</span>
-              <span class="stat-label">Nível atual</span>
-            </div>
-          </div>
+          <p class="stat-label">Nível atual</p>
         </div>
-      </div>
-
-      <!-- Comece sua jornada -->
-      <div class="journey-start" *ngIf="!activePlan">
-        <div class="fitsync-card glass">
-          <div class="empty-state">
-            <ion-icon name="fitness-outline" class="empty-icon"></ion-icon>
-            <h3 class="fitsync-text large primary">Comece Sua Jornada</h3>
-            <p class="fitsync-text muted">Escolha um plano de treino personalizado para atingir seus objetivos</p>
-            <ion-button expand="block" class="fitsync-btn primary" (click)="startQuickWorkout()">
-              <ion-icon name="rocket" slot="start"></ion-icon>
-              Começar Agora
-            </ion-button>
+        
+        <div class="fitsync-card fitsync-card--workout">
+          <div class="card-header">
+            <ion-icon name="fitness" color="success"></ion-icon>
+            <span class="stat-number">{{ recentWorkouts.length || 0 }}</span>
           </div>
-        </div>
-      </div>
-
-      <!-- Plano Ativo -->
-      <div class="active-plan" *ngIf="activePlan">
-        <div class="fitsync-card glass">
-          <div class="plan-info">
-            <h3 class="fitsync-text large primary">{{ activePlan.name }}</h3>
-            <p class="fitsync-text muted">{{ activePlan.description }}</p>
-            <div class="plan-progress">
-              <div class="progress-bar">
-                <div class="progress-fill" [style.width.%]="getPlanProgress()"></div>
-              </div>
-              <span class="fitsync-text medium primary">{{ getPlanProgress() }}%</span>
-            </div>
-          </div>
-          <div class="plan-actions">
-            <ion-button expand="block" class="fitsync-btn primary" (click)="startWorkout()">
-              <ion-icon name="play" slot="start"></ion-icon>
-              Continuar Treino
-            </ion-button>
-          </div>
+          <p class="stat-label">Treinos realizados</p>
         </div>
       </div>
     </div>
 
-    <!-- Quick Actions -->
-    <div class="quick-actions">
-      <h2 class="fitsync-text section-title primary">
-        <ion-icon name="flash-outline" slot="start"></ion-icon>
-        Ações Rápidas
-      </h2>
+    <!-- Journey Section -->
+    <div class="journey-section fitsync-slide-up">
+      <!-- Start Journey Card -->
+      <div class="journey-card" *ngIf="!activePlan">
+        <div class="fitsync-card">
+          <div class="empty-state">
+            <div class="empty-icon-wrapper">
+              <ion-icon name="rocket" class="empty-icon"></ion-icon>
+            </div>
+            <h3 class="headline-small text-primary">Comece Sua Jornada</h3>
+            <p class="body-medium">Escolha um plano personalizado para atingir seus objetivos</p>
+            <button class="fitsync-btn fitsync-btn--primary fitsync-btn--lg" (click)="startQuickWorkout()">
+              <ion-icon name="play" slot="start"></ion-icon>
+              Começar Agora
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Active Plan Card -->
+      <div class="active-plan-card" *ngIf="activePlan">
+        <div class="fitsync-card fitsync-card--workout">
+          <div class="card-header">
+            <div class="card-title">{{ activePlan.name }}</div>
+            <div class="card-badge">Ativo</div>
+          </div>
+          <div class="card-content">{{ activePlan.description }}</div>
+          <div class="progress-section">
+            <div class="progress-bar">
+              <div class="progress-fill" [style.width.%]="getPlanProgress()"></div>
+            </div>
+            <span class="progress-text">{{ getPlanProgress() }}% concluído</span>
+          </div>
+          <button class="fitsync-btn fitsync-btn--primary" (click)="startWorkout()">
+            <ion-icon name="play" slot="start"></ion-icon>
+            Continuar Treino
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Actions Section -->
+    <div class="quick-actions-section fitsync-slide-up">
+      <div class="section-header">
+        <h2 class="headline-medium">
+          <ion-icon name="flash" slot="start"></ion-icon>
+          Ações Rápidas
+        </h2>
+      </div>
       
       <div class="actions-grid">
-        <div class="fitsync-card glass action-card" (click)="navigateToExercisesList()">
-          <ion-icon name="list-outline" class="action-icon" color="primary"></ion-icon>
-          <h3 class="fitsync-text medium white">Exercícios</h3>
-          <p class="fitsync-text small muted">Explore nossa biblioteca</p>
+        <div class="action-card" (click)="navigateToExercisesList()">
+          <div class="fitsync-card">
+            <div class="action-icon-wrapper">
+              <ion-icon name="list" class="action-icon"></ion-icon>
+            </div>
+            <h3 class="title-medium text-weight-semibold">Exercícios</h3>
+            <p class="body-medium">Explore nossa biblioteca completa</p>
+          </div>
         </div>
 
-        <div class="fitsync-card glass action-card" (click)="createCustomWorkout()">
-          <ion-icon name="add-circle-outline" class="action-icon" color="secondary"></ion-icon>
-          <h3 class="fitsync-text medium white">Criar Treino</h3>
-          <p class="fitsync-text small muted">Personalize seu treino</p>
+        <div class="action-card" (click)="createCustomWorkout()">
+          <div class="fitsync-card">
+            <div class="action-icon-wrapper">
+              <ion-icon name="add-circle" class="action-icon"></ion-icon>
+            </div>
+            <h3 class="fitsync-text-lg fitsync-text-bold">Criar Treino</h3>
+            <p class="fitsync-text-base">Personalize seu treino</p>
+          </div>
         </div>
 
-        <div class="fitsync-card glass action-card" (click)="verDetalhe()">
-          <ion-icon name="eye-outline" class="action-icon" color="tertiary"></ion-icon>
-          <h3 class="fitsync-text medium white">Ver Exemplo</h3>
-          <p class="fitsync-text small muted">Demo de exercício</p>
+        <div class="action-card" (click)="verDetalhe()">
+          <div class="fitsync-card">
+            <div class="action-icon-wrapper">
+              <ion-icon name="eye" class="action-icon"></ion-icon>
+            </div>
+            <h3 class="fitsync-text-lg fitsync-text-bold">Ver Exemplo</h3>
+            <p class="fitsync-text-base">Demo de exercício</p>
+          </div>
         </div>
       </div>
     </div>
 
-    <!-- Featured Exercises -->
-    <div class="featured-exercises" *ngIf="featuredExercises.length > 0">
-      <h2 class="fitsync-text section-title primary">
-        <ion-icon name="star-outline" slot="start"></ion-icon>
-        Exercícios em Destaque
-      </h2>
+    <!-- Featured Exercises Section -->
+    <div class="featured-section fitsync-slide-up" *ngIf="featuredExercises.length > 0">
+      <div class="section-header">
+        <h2 class="fitsync-text-2xl fitsync-text-bold">
+          <ion-icon name="star" slot="start"></ion-icon>
+          Exercícios em Destaque
+        </h2>
+      </div>
       
       <div class="exercises-carousel">
-        <ion-card *ngFor="let exercise of featuredExercises" class="exercise-card" (click)="navigateToExercise(exercise.id)">
-          <img [src]="exercise.imageUrl || '/assets/images/exercise-placeholder.jpg'" [alt]="exercise.name" />
-          <ion-card-header>
-            <ion-card-subtitle>
-              <ion-chip [color]="getDifficultyColor(exercise.difficulty)" size="small">
-                <ion-label>{{ exercise.difficulty }}</ion-label>
-              </ion-chip>
-            </ion-card-subtitle>
-            <ion-card-title>{{ exercise.name }}</ion-card-title>
-          </ion-card-header>
-          <ion-card-content>
-            <p>{{ exercise.description }}</p>
-            <div class="exercise-meta">
-              <span class="meta-item">
-                <ion-icon name="time-outline" size="small"></ion-icon>
-                {{ exercise.duration || 'Variável' }}
-              </span>
-              <span class="meta-item">
-                <ion-icon name="fitness-outline" size="small"></ion-icon>
-                {{ exercise.muscleGroups?.[0] || 'Geral' }}
-              </span>
+        <div class="exercise-card" *ngFor="let exercise of featuredExercises" (click)="navigateToExercise(exercise.id)">
+          <div class="fitsync-card fitsync-card--exercise">
+            <div class="exercise-image">
+              <img *ngIf="exercise.imageUrl" [src]="exercise.imageUrl" [alt]="exercise.name" />
+              <div *ngIf="!exercise.imageUrl" class="exercise-placeholder">
+                <ion-icon name="fitness" size="large"></ion-icon>
+              </div>
+              <div class="difficulty-badge">
+                <span class="badge" [class]="'badge--' + exercise.difficulty">{{ exercise.difficulty }}</span>
+              </div>
             </div>
-          </ion-card-content>
-        </ion-card>
+            <div class="exercise-content">
+              <h3 class="fitsync-text-lg fitsync-text-bold">{{ exercise.name }}</h3>
+              <p class="fitsync-text-base">{{ exercise.description }}</p>
+              <div class="exercise-meta">
+                <div class="meta-item">
+                  <ion-icon name="time"></ion-icon>
+                  <span>{{ exercise.duration || 'Variável' }}</span>
+                </div>
+                <div class="meta-item">
+                  <ion-icon name="fitness"></ion-icon>
+                  <span>{{ exercise.muscleGroups?.[0] || 'Geral' }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 
-    <!-- Treinos Recentes -->
-    <div class="recent-workouts" *ngIf="recentWorkouts.length > 0">
-      <h2 class="fitsync-text section-title primary">
-        <ion-icon name="time-outline" slot="start"></ion-icon>
-        Treinos Recentes
-      </h2>
+    <!-- Recent Workouts Section -->
+    <div class="recent-workouts-section fitsync-slide-up" *ngIf="recentWorkouts.length > 0">
+      <div class="section-header">
+        <h2 class="fitsync-text-2xl fitsync-text-bold">
+          <ion-icon name="time" slot="start"></ion-icon>
+          Treinos Recentes
+        </h2>
+      </div>
       
       <div class="workouts-list">
-        <ion-item *ngFor="let workout of recentWorkouts" button class="workout-item fitsync-card">
-          <ion-avatar slot="start">
-            <ion-icon name="barbell-outline" size="large"></ion-icon>
-          </ion-avatar>
-          <ion-label>
-            <h3 class="fitsync-text medium white">{{ workout.name }}</h3>
-            <p class="fitsync-text small muted">{{ workout.date | date:'short' }}</p>
-            <p class="fitsync-text small muted">{{ workout.duration }}min • {{ workout.caloriesBurned }}cal</p>
-          </ion-label>
-          <ion-chip slot="end" [color]="workout.completed ? 'success' : 'warning'">
-            <ion-icon [name]="workout.completed ? 'checkmark-circle' : 'time'" slot="start"></ion-icon>
-            <ion-label>{{ workout.completed ? 'Concluído' : 'Em andamento' }}</ion-label>
-          </ion-chip>
-        </ion-item>
+        <div class="workout-item" *ngFor="let workout of recentWorkouts">
+          <div class="fitsync-card">
+            <div class="workout-header">
+              <div class="workout-avatar">
+                <ion-icon name="barbell"></ion-icon>
+              </div>
+              <div class="workout-info">
+                <h3 class="fitsync-text-lg fitsync-text-bold">{{ workout.name }}</h3>
+                <p class="fitsync-text-base">{{ workout.date | date:'short' }}</p>
+                <p class="fitsync-text-sm">{{ workout.duration }}min • {{ workout.caloriesBurned }}cal</p>
+              </div>
+              <div class="workout-status">
+                <span class="status-badge" [class]="workout.completed ? 'status-badge--success' : 'status-badge--warning'">
+                  <ion-icon [name]="workout.completed ? 'checkmark-circle' : 'time'"></ion-icon>
+                  {{ workout.completed ? 'Concluído' : 'Em andamento' }}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 
-    <!-- Dicas e Motivação -->
-    <div class="tips-section">
-      <h2 class="fitsync-text section-title primary">
-        <ion-icon name="bulb-outline" slot="start"></ion-icon>
-        Dica do Dia
-      </h2>
+    <!-- Daily Tip Section -->
+    <div class="tip-section fitsync-slide-up">
+      <div class="section-header">
+        <h2 class="fitsync-text-2xl fitsync-text-bold">
+          <ion-icon name="bulb" slot="start"></ion-icon>
+          Dica do Dia
+        </h2>
+      </div>
       
-      <div class="fitsync-card glass">
+      <div class="fitsync-card">
         <div class="tip-content">
-          <ion-icon name="bulb" class="tip-icon"></ion-icon>
+          <div class="tip-icon-wrapper">
+            <ion-icon name="bulb" class="tip-icon"></ion-icon>
+          </div>
           <div class="tip-text">
-            <h4 class="fitsync-text medium">💡 Dica Importante</h4>
-            <p class="fitsync-text muted">{{ getDailyTip() }}</p>
+            <h4 class="fitsync-text-lg fitsync-text-bold">💡 Dica Importante</h4>
+            <p class="fitsync-text-base">{{ getDailyTip() }}</p>
           </div>
         </div>
       </div>
     </div>
 
     <!-- Features Section -->
-    <div class="features-section">
-      <h2 class="fitsync-text section-title primary">
-        <ion-icon name="apps-outline" slot="start"></ion-icon>
-        Recursos do FitSync
-      </h2>
+    <div class="features-section fitsync-slide-up">
+      <div class="section-header">
+        <h2 class="fitsync-text-2xl fitsync-text-bold">
+          <ion-icon name="apps" slot="start"></ion-icon>
+          Recursos do FitSync
+        </h2>
+      </div>
       
       <div class="features-list">
-        <div class="fitsync-card feature-item" (click)="navigateToProgress()">
-          <ion-icon name="analytics-outline" class="feature-icon" color="primary"></ion-icon>
-          <div class="feature-info">
-            <h4 class="fitsync-text medium white">Análise de Progresso</h4>
-            <p class="fitsync-text small muted">Visualize sua evolução com gráficos detalhados</p>
+        <div class="feature-item" (click)="navigateToProgress()">
+          <div class="fitsync-card">
+            <div class="feature-content">
+              <div class="feature-icon-wrapper">
+                <ion-icon name="analytics" class="feature-icon"></ion-icon>
+              </div>
+              <div class="feature-info">
+                <h4 class="fitsync-text-lg fitsync-text-bold">Análise de Progresso</h4>
+                <p class="fitsync-text-base">Visualize sua evolução com gráficos detalhados</p>
+              </div>
+              <ion-icon name="chevron-forward" class="feature-arrow"></ion-icon>
+            </div>
           </div>
-          <ion-icon name="chevron-forward-outline" slot="end"></ion-icon>
         </div>
 
-        <div class="fitsync-card feature-item">
-          <ion-icon name="timer-outline" class="feature-icon" color="warning"></ion-icon>
-          <div class="feature-info">
-            <h4 class="fitsync-text medium white">Timer Inteligente</h4>
-            <p class="fitsync-text small muted">Controle seus tempos de treino e descanso</p>
+        <div class="feature-item">
+          <div class="fitsync-card">
+            <div class="feature-content">
+              <div class="feature-icon-wrapper">
+                <ion-icon name="timer" class="feature-icon"></ion-icon>
+              </div>
+              <div class="feature-info">
+                <h4 class="fitsync-text-lg fitsync-text-bold">Timer Inteligente</h4>
+                <p class="fitsync-text-base">Controle seus tempos de treino e descanso</p>
+              </div>
+              <ion-icon name="chevron-forward" class="feature-arrow"></ion-icon>
+            </div>
           </div>
-          <ion-icon name="chevron-forward-outline" slot="end"></ion-icon>
         </div>
 
-        <div class="fitsync-card feature-item">
-          <ion-icon name="cloud-upload-outline" class="feature-icon" color="success"></ion-icon>
-          <div class="feature-info">
-            <h4 class="fitsync-text medium white">Sincronização</h4>
-            <p class="fitsync-text small muted">Seus dados seguros na nuvem</p>
+        <div class="feature-item">
+          <div class="fitsync-card">
+            <div class="feature-content">
+              <div class="feature-icon-wrapper">
+                <ion-icon name="cloud-upload" class="feature-icon"></ion-icon>
+              </div>
+              <div class="feature-info">
+                <h4 class="fitsync-text-lg fitsync-text-bold">Sincronização</h4>
+                <p class="fitsync-text-base">Seus dados seguros na nuvem</p>
+              </div>
+              <ion-icon name="chevron-forward" class="feature-arrow"></ion-icon>
+            </div>
           </div>
-          <ion-icon name="chevron-forward-outline" slot="end"></ion-icon>
         </div>
 
-        <div class="fitsync-card feature-item">
-          <ion-icon name="people-outline" class="feature-icon" color="secondary"></ion-icon>
-          <div class="feature-info">
-            <h4 class="fitsync-text medium white">Comunidade</h4>
-            <p class="fitsync-text small muted">Conecte-se com outros atletas</p>
+        <div class="feature-item">
+          <div class="fitsync-card">
+            <div class="feature-content">
+              <div class="feature-icon-wrapper">
+                <ion-icon name="people" class="feature-icon"></ion-icon>
+              </div>
+              <div class="feature-info">
+                <h4 class="fitsync-text-lg fitsync-text-bold">Comunidade</h4>
+                <p class="fitsync-text-base">Conecte-se com outros atletas</p>
+              </div>
+              <ion-icon name="chevron-forward" class="feature-arrow"></ion-icon>
+            </div>
           </div>
-          <ion-icon name="chevron-forward-outline" slot="end"></ion-icon>
         </div>
       </div>
     </div>
 
-    <!-- Institution Info -->
-    <div class="institution-info">
-      <h2 class="fitsync-text section-title primary">
-        <ion-icon name="school-outline" slot="start"></ion-icon>
-        Sobre
-      </h2>
+    <!-- Institution Info Section -->
+    <div class="institution-section fitsync-slide-up">
+      <div class="section-header">
+        <h2 class="fitsync-text-2xl fitsync-text-bold">
+          <ion-icon name="school" slot="start"></ion-icon>
+          Sobre o Projeto
+        </h2>
+      </div>
       
       <div class="fitsync-card">
-        <ion-card-content>
-          <div class="institution-content">
-            <ion-icon name="business-outline" size="large" color="primary"></ion-icon>
-            <div>
-              <h3 class="fitsync-text medium white">{{ nomeInstituto }}</h3>
-              <p class="fitsync-text small muted">Desenvolvido como projeto acadêmico demonstrando:</p>
-              <ul class="features-checklist">
-                <li><ion-icon name="checkmark-circle" color="success"></ion-icon> Angular Router avançado</li>
-                <li><ion-icon name="checkmark-circle" color="success"></ion-icon> Ionic Storage</li>
-                <li><ion-icon name="checkmark-circle" color="success"></ion-icon> Integração JSON</li>
-                <li><ion-icon name="checkmark-circle" color="success"></ion-icon> Capacitor plugins</li>
-                <li><ion-icon name="checkmark-circle" color="success"></ion-icon> Componentes Ionic</li>
-              </ul>
+        <div class="institution-content">
+          <div class="institution-icon-wrapper">
+            <ion-icon name="business" class="institution-icon"></ion-icon>
+          </div>
+          <div class="institution-info">
+            <h3 class="fitsync-text-xl fitsync-text-bold">{{ nomeInstituto }}</h3>
+            <p class="fitsync-text-base">Desenvolvido como projeto acadêmico demonstrando:</p>
+            <div class="features-checklist">
+              <div class="checklist-item">
+                <ion-icon name="checkmark-circle" color="success"></ion-icon>
+                <span>Angular Router avançado</span>
+              </div>
+              <div class="checklist-item">
+                <ion-icon name="checkmark-circle" color="success"></ion-icon>
+                <span>Ionic Storage</span>
+              </div>
+              <div class="checklist-item">
+                <ion-icon name="checkmark-circle" color="success"></ion-icon>
+                <span>Integração JSON</span>
+              </div>
+              <div class="checklist-item">
+                <ion-icon name="checkmark-circle" color="success"></ion-icon>
+                <span>Capacitor plugins</span>
+              </div>
+              <div class="checklist-item">
+                <ion-icon name="checkmark-circle" color="success"></ion-icon>
+                <span>Componentes Ionic</span>
+              </div>
             </div>
           </div>
-        </ion-card-content>
+        </div>
       </div>
     </div>
 
   </div>
 
   <!-- Floating Action Button -->
-  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
-    <ion-fab-button color="primary" (click)="startQuickWorkout()">
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed" class="fab-modern">
+    <ion-fab-button color="primary" class="fab-main">
       <ion-icon name="add"></ion-icon>
     </ion-fab-button>
     <ion-fab-list side="top">
-      <ion-fab-button color="success" (click)="navigateToWorkouts()">
-        <ion-icon name="barbell-outline"></ion-icon>
+      <ion-fab-button color="success" (click)="navigateToWorkouts()" class="fab-item">
+        <ion-icon name="barbell"></ion-icon>
       </ion-fab-button>
-      <ion-fab-button color="warning" (click)="navigateToProgress()">
-        <ion-icon name="analytics-outline"></ion-icon>
+      <ion-fab-button color="warning" (click)="navigateToProgress()" class="fab-item">
+        <ion-icon name="analytics"></ion-icon>
       </ion-fab-button>
-      <ion-fab-button color="secondary" (click)="createCustomWorkout()">
-        <ion-icon name="create-outline"></ion-icon>
+      <ion-fab-button color="secondary" (click)="createCustomWorkout()" class="fab-item">
+        <ion-icon name="create"></ion-icon>
       </ion-fab-button>
     </ion-fab-list>
   </ion-fab>
+  </div> <!-- Fecha content-container -->
 </ion-content>

@@ -51,13 +51,13 @@ export class NavigationService {
   // Navigate to progress with date filter
   navigateToProgress(period?: 'week' | 'month' | 'year'): Promise<boolean> {
     const queryParams = period ? { period } : undefined;
-    return this.navigateWithParams('/tabs/progress', {}, queryParams);
+    return this.navigateWithParams('/tabs/progresso', {}, queryParams);
   }
 
   // Navigate to workout plans
   navigateToWorkoutPlans(difficulty?: string): Promise<boolean> {
     const queryParams = difficulty ? { difficulty } : undefined;
-    return this.navigateWithParams('/tabs/exercises', {}, queryParams);
+    return this.navigateWithParams('/tabs/lista', {}, queryParams);
   }
 
   // Navigate back
@@ -82,7 +82,7 @@ export class NavigationService {
 
   // Navigate to achievements
   navigateToAchievements(): Promise<boolean> {
-    return this.navigateTo('/tabs/progress');
+    return this.navigateTo('/tabs/progresso');
   }
 
   // Navigate with state
@@ -115,12 +115,12 @@ export class NavigationService {
 
   // Navigate to workout with muscle group filter
   navigateToWorkoutsWithFilter(muscleGroup: string): Promise<boolean> {
-    return this.navigateWithParams('/tabs/exercises', {}, { muscleGroup });
+    return this.navigateWithParams('/tabs/lista', {}, { muscleGroup });
   }
 
   // Navigate to profile settings
   navigateToProfile(): Promise<boolean> {
-    return this.navigateTo('/tabs/profile');
+    return this.navigateTo('/tabs/dashboard');
   }
 
   // Navigate to login
@@ -147,17 +147,17 @@ export class NavigationService {
 
   // Navigate to exercises list
   navigateToExercisesList(): Promise<boolean> {
-    return this.navigateTo('/tabs/exercises');
+    return this.navigateTo('/tabs/lista');
   }
 
   // Navigate to workouts
   navigateToWorkouts(): Promise<boolean> {
-    return this.navigateTo('/tabs/training');
+    return this.navigateTo('/tabs/detalhe');
   }
 
   // Navigate to quick workout
   navigateToQuickWorkout(): Promise<boolean> {
-    return this.navigateTo('/tabs/training');
+    return this.navigateTo('/tabs/detalhe');
   }
 
   // Navigate to workout creator

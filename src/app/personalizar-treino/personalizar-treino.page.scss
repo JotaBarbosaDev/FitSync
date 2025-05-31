@@ -350,6 +350,15 @@
           .selection-indicator {
             opacity: 1;
           }
+          
+          /* Garantir contraste adequado */
+          h3, h4, h5, h6, p, span, ion-label {
+            color: var(--fitsync-text-primary) !important;
+          }
+          
+          ion-icon {
+            color: var(--fitsync-primary) !important;
+          }
         }
       }
     }
@@ -391,6 +400,15 @@
         &.selected {
           background: rgba(255, 107, 53, 0.1);
           border-color: var(--fitsync-primary);
+          
+          /* Garantir contraste adequado */
+          h3, h4, h5, h6, p, span, ion-label {
+            color: var(--fitsync-text-primary) !important;
+          }
+          
+          ion-icon {
+            color: var(--fitsync-primary) !important;
+          }
         }
       }
     }
@@ -1184,7 +1202,12 @@
     background: var(--ion-color-primary-tint);
     
     ion-icon {
-      color: var(--ion-color-primary);
+      color: var(--fitsync-text-on-primary);
+    }
+    
+    ion-label,
+    h3, h4, h5, h6, p, span {
+      color: var(--fitsync-text-primary) !important;
     }
   }
   

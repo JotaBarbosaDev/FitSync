@@ -152,6 +152,19 @@ export class ListaPage implements OnInit {
     this.navigationService.navigateToQuickWorkout();
   }
 
+  // Filter and Sort Functions
+  async showFilterOptions() {
+    // Implementation for filter options modal/popover
+    console.log('Show filter options');
+    await this.showToast('Opções de filtro em desenvolvimento', 'primary');
+  }
+
+  async showSortOptions() {
+    // Implementation for sort options modal/popover
+    console.log('Show sort options');
+    await this.showToast('Opções de ordenação em desenvolvimento', 'primary');
+  }
+
   async showToast(message: string, color: string = 'primary') {
     const toast = await this.toastController.create({
       message,

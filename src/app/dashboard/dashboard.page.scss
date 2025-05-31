@@ -1,47 +1,105 @@
-// FitSync Dashboard - Modern Professional Design
+/* ===== DASHBOARD PAGE - MODERN FITSYNC DESIGN ===== */
+
+/* Main Content */
 .dashboard-content {
-  --background: linear-gradient(180deg, 
-    rgba(102, 126, 234, 0.05) 0%, 
-    rgba(118, 75, 162, 0.05) 100%);
+  --padding-top: 0;
+  --padding-bottom: 80px;
+  background: var(--fitsync-background-subtle);
 }
 
-// Hero Section
-.hero-section {
-  padding: 60px 20px 40px;
-  background: linear-gradient(135deg, var(--ion-color-primary) 0%, var(--ion-color-secondary) 100%);
-  position: relative;
-  overflow: hidden;
-  
-  &::before {
-    content: '';
-    position: absolute;
-    top: -50%;
-    right: -50%;
-    width: 200%;
-    height: 200%;
-    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="50" cy="50" r="1" fill="rgba(255,255,255,0.05)"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
-    opacity: 0.3;
-    animation: float 20s ease-in-out infinite;
+/* Header Styling */
+ion-header {
+  ion-toolbar {
+    --background: #141414;
+    --color: #FFFFFF;
+    --border-width: 0;
+    min-height: 56px;
+    
+    .header-content {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.5rem 1rem;
+      min-height: 56px;
+      
+      .header-left {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        flex: 1;
+        
+        ion-buttons {
+          margin: 0;
+          
+          ion-menu-button {
+            --color: #FFFFFF;
+          }
+        }
+        
+        .header-title {
+          h1 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #FFFFFF;
+            margin: 0;
+            line-height: 1.2;
+          }
+        }
+      }
+      
+      .header-actions {
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+        
+        .header-btn {
+          --color: #FFFFFF;
+          --background: rgba(255, 255, 255, 0.1);
+          --border-radius: 8px;
+          margin: 0;
+          
+          ion-avatar {
+            width: 32px;
+            height: 32px;
+            
+            img {
+              filter: none; // Manter logo original
+            }
+          }
+        }
+      }
+    }
   }
+}
+
+/* Hero Section */
+.hero-section {
+  padding: 2rem 1rem;
+  background: var(--fitsync-gradient-primary);
+  position: relative;
   
   .hero-content {
     position: relative;
     z-index: 2;
-  }
-  
-  .hero-title {
-    font-size: 1.8rem;
-    font-weight: 700;
-    color: white;
-    margin-bottom: 8px;
-    text-shadow: 0 2px 4px rgba(0,0,0,0.2);
-  }
-  
-  .hero-subtitle {
-    font-size: 1rem;
-    color: rgba(255, 255, 255, 0.9);
-    margin-bottom: 0;
-    font-weight: 400;
+    
+    .greeting-section {
+      .fitsync-text-hero {
+        font-size: 2rem;
+        font-weight: 800;
+        color: white;
+        margin-bottom: 0.5rem;
+        text-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        line-height: 1.2;
+      }
+      
+      .hero-subtitle {
+        font-size: 1rem;
+        color: rgba(255, 255, 255, 0.9);
+        margin-bottom: 0;
+        font-weight: 400;
+        line-height: 1.4;
+      }
+    }
   }
 }
 
@@ -50,19 +108,17 @@
   50% { transform: translateY(-20px) rotate(180deg); }
 }
 
-// Timer Hero
+/* Workout Timer Hero */
 .workout-timer-hero {
-  margin-top: 24px;
+  margin-top: 1.5rem;
   
-  .timer-display {
-    background: rgba(255, 255, 255, 0.2);
-    backdrop-filter: blur(10px);
-    border-radius: 16px;
-    padding: 16px;
+  .timer-card {
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
     display: flex;
     align-items: center;
-    gap: 12px;
-    border: 1px solid rgba(255, 255, 255, 0.3);
+    gap: 1rem;
     
     .timer-icon {
       font-size: 1.5rem;
@@ -73,337 +129,518 @@
       flex: 1;
       
       .timer-label {
-        display: block;
-        font-size: 0.8rem;
+        font-size: 0.75rem;
         color: rgba(255, 255, 255, 0.8);
-        margin-bottom: 4px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 0.25rem;
       }
       
       .timer-time {
-        font-size: 1.4rem;
+        font-size: 1.5rem;
         font-weight: 700;
         color: white;
+        line-height: 1;
       }
+    }
+    
+    ion-badge {
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
     }
   }
 }
 
-// Estatísticas Overview
+/* Stats Overview */
 .stats-overview {
-  padding: 32px 20px;
+  padding: 2rem 1rem;
+  
+  .section-title {
+    color: var(--fitsync-text-primary);
+    font-weight: 700;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    
+    &.primary {
+      color: var(--fitsync-primary);
+    }
+  }
   
   .stats-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: 16px;
-    margin-top: 16px;
+    gap: 1rem;
     
-    .stat-card {
-      padding: 20px;
+    .fitsync-card.stats {
       text-align: center;
-      background: white;
-      border-radius: 16px;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-      border: none;
-      transition: all 0.3s ease;
+      padding: 1.5rem 1rem;
       
-      &:hover {
-        transform: translateY(-4px);
-        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+      .stats-circle {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        background: var(--fitsync-gradient-primary);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1rem;
+        
+        .fitsync-text.number {
+          font-size: 1.5rem;
+          font-weight: 800;
+          color: white;
+          line-height: 1;
+          text-shadow: 0 1px 3px rgba(0,0,0,0.3);
+        }
+        
+        .fitsync-text.label {
+          font-size: 0.7rem;
+          color: rgba(255, 255, 255, 0.9);
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+          margin-top: 0.25rem;
+          font-weight: 600;
+        }
+        
+        &.muted {
+          color: rgba(255, 255, 255, 0.8);
+        }
       }
     }
   }
 }
 
-// Seções principais
+/* Section Layouts */
 .active-plan-section,
 .no-plan-section,
 .quick-actions-section,
 .recent-workouts-section,
 .tips-section {
-  padding: 0 20px 24px;
+  padding: 0 1rem 2rem;
+  
+  .section-title {
+    color: var(--fitsync-text-primary);
+    font-weight: 700;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    
+    &.primary {
+      color: var(--fitsync-primary);
+    }
+  }
 }
 
-// Plano ativo
-.plan-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 20px;
-  
-  .plan-info {
-    flex: 1;
-    
-    .plan-name {
-      font-size: 1.3rem;
-      font-weight: 700;
-      color: var(--ion-color-primary);
-      margin-bottom: 8px;
-    }
-    
-    .plan-description {
-      color: var(--ion-text-color-secondary);
-      font-size: 0.9rem;
-      margin-bottom: 12px;
-    }
-    
-    .plan-badges {
+/* Active Plan Section */
+.active-plan-section {
+  .fitsync-card.workout {
+    .plan-header {
       display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-    }
-  }
-  
-  .plan-progress-circle {
-    text-align: center;
-    
-    .progress-percentage {
-      display: block;
-      font-size: 1.1rem;
-      font-weight: 700;
-      color: var(--ion-color-primary);
-      margin-top: 8px;
-    }
-  }
-}
-
-.plan-actions {
-  margin-top: 20px;
-}
-
-// Estado vazio
-.empty-state {
-  text-align: center;
-  padding: 40px 20px;
-  
-  .empty-icon {
-    font-size: 4rem;
-    color: var(--ion-color-primary);
-    margin-bottom: 16px;
-    opacity: 0.6;
-  }
-  
-  h3 {
-    font-size: 1.2rem;
-    font-weight: 600;
-    color: var(--ion-text-color);
-    margin-bottom: 8px;
-  }
-  
-  p {
-    color: var(--ion-text-color-secondary);
-    margin-bottom: 24px;
-    line-height: 1.5;
-  }
-}
-
-// Ações rápidas
-.actions-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 16px;
-  margin-top: 16px;
-  
-  .action-item {
-    padding: 20px;
-    text-align: center;
-    background: white;
-    border-radius: 16px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-    border: none;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    
-    &:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
-    }
-    
-    .action-icon {
-      width: 48px;
-      height: 48px;
-      border-radius: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin: 0 auto 12px;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 1.5rem;
       
-      ion-icon {
-        font-size: 1.5rem;
-        color: white;
+      .plan-info {
+        flex: 1;
+        
+        .fitsync-text.large {
+          color: var(--fitsync-text-primary);
+          font-weight: 700;
+          margin-bottom: 0.5rem;
+          
+          &.primary {
+            color: var(--fitsync-primary);
+          }
+        }
+        
+        .fitsync-text.muted {
+          color: var(--fitsync-text-muted);
+          margin-bottom: 1rem;
+          line-height: 1.5;
+        }
+        
+        .plan-badges {
+          display: flex;
+          gap: 0.5rem;
+          flex-wrap: wrap;
+          
+          .fitsync-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 16px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            
+            &.secondary {
+              background: var(--fitsync-background-subtle);
+              color: var(--fitsync-text-secondary);
+              border: 1px solid var(--fitsync-border-light);
+            }
+          }
+        }
+      }
+      
+      .plan-progress-circle {
+        text-align: center;
+        
+        .fitsync-progress {
+          width: 60px;
+          height: 6px;
+          background: var(--fitsync-background-subtle);
+          border-radius: 3px;
+          overflow: hidden;
+          margin-bottom: 0.5rem;
+          
+          .progress-fill {
+            height: 100%;
+            background: var(--fitsync-primary);
+            border-radius: 3px;
+            transition: width 0.3s ease;
+          }
+          
+          &.primary .progress-fill {
+            background: var(--fitsync-gradient-primary);
+          }
+        }
+        
+        .fitsync-text.medium {
+          color: var(--fitsync-text-primary);
+          font-weight: 600;
+          
+          &.primary {
+            color: var(--fitsync-primary);
+          }
+        }
       }
     }
     
-    h4 {
-      font-size: 1rem;
-      font-weight: 600;
-      color: var(--ion-text-color);
-      margin-bottom: 4px;
+    .plan-actions {
+      margin-top: 1.5rem;
     }
+  }
+}
+
+/* No Plan Section */
+.no-plan-section {
+  .fitsync-card.glass {
+    .empty-state {
+      text-align: center;
+      padding: 2rem 1rem;
+      
+      .empty-icon {
+        font-size: 4rem;
+        color: var(--fitsync-primary);
+        margin-bottom: 1rem;
+        opacity: 0.6;
+      }
+      
+      .fitsync-text.large {
+        color: var(--fitsync-text-primary);
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        
+        &.primary {
+          color: var(--fitsync-primary);
+        }
+      }
+      
+      .fitsync-text.muted {
+        color: var(--fitsync-text-muted);
+        margin-bottom: 1.5rem;
+        line-height: 1.5;
+      }
+    }
+  }
+}
+
+/* Quick Actions Section */
+.quick-actions-section {
+  .actions-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
     
-    p {
-      font-size: 0.8rem;
-      color: var(--ion-text-color-secondary);
-      margin: 0;
+    .fitsync-card.action {
+      text-align: center;
+      padding: 1.5rem 1rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      
+      &:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--fitsync-shadow-hover);
+      }
+      
+      .action-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1rem;
+        
+        &.gradient-bg {
+          background: var(--fitsync-gradient-primary);
+        }
+        
+        &.gradient-success {
+          background: var(--fitsync-gradient-success);
+        }
+        
+        &.gradient-warning {
+          background: var(--fitsync-gradient-warning);
+        }
+        
+        &.gradient-danger {
+          background: var(--fitsync-gradient-danger);
+        }
+        
+        ion-icon {
+          font-size: 1.5rem;
+          color: white;
+        }
+      }
+      
+      .fitsync-text.medium {
+        color: var(--fitsync-text-primary);
+        font-weight: 600;
+        margin-bottom: 0.25rem;
+      }
+      
+      .fitsync-text.small {
+        color: var(--fitsync-text-muted);
+        
+        &.muted {
+          color: var(--fitsync-text-muted);
+        }
+      }
     }
   }
 }
 
-// Treinos recentes
-.section-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 16px;
-  
-  ion-button {
-    font-size: 0.9rem;
-    --color: var(--ion-color-primary);
-  }
-}
-
-.workouts-list {
-  .workout-summary {
+/* Recent Workouts Section */
+.recent-workouts-section {
+  .section-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    margin-bottom: 1rem;
     
-    .workout-info {
-      flex: 1;
+    .fitsync-text.section-title {
+      color: var(--fitsync-text-primary);
+      font-weight: 700;
       
-      h4 {
+      &.primary {
+        color: var(--fitsync-primary);
+      }
+    }
+    
+    .fitsync-btn.outline {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      
+      ion-icon {
         font-size: 1rem;
-        font-weight: 600;
-        color: var(--ion-text-color);
-        margin-bottom: 4px;
+      }
+    }
+  }
+  
+  .workouts-list {
+    .fitsync-card.exercise {
+      margin-bottom: 1rem;
+      transition: all 0.3s ease;
+      
+      &:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--fitsync-shadow-hover);
       }
       
-      p {
-        font-size: 0.8rem;
-        color: var(--ion-text-color-secondary);
-        margin-bottom: 8px;
-      }
-      
-      .workout-tags {
+      .workout-summary {
         display: flex;
-        gap: 4px;
+        justify-content: space-between;
+        align-items: center;
+        
+        .workout-info {
+          flex: 1;
+          
+          .fitsync-text.medium {
+            color: var(--fitsync-text-primary);
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+          }
+          
+          .fitsync-text.small {
+            color: var(--fitsync-text-muted);
+            margin-bottom: 0.5rem;
+            
+            &.muted {
+              color: var(--fitsync-text-muted);
+            }
+          }
+          
+          .workout-tags {
+            display: flex;
+            gap: 0.5rem;
+            
+            .fitsync-badge {
+              padding: 0.25rem 0.75rem;
+              border-radius: 16px;
+              font-size: 0.7rem;
+              font-weight: 600;
+            }
+          }
+        }
+        
+        .workout-stats {
+          text-align: center;
+          
+          .fitsync-text.large {
+            color: var(--fitsync-text-primary);
+            font-weight: 700;
+            font-size: 1.5rem;
+            line-height: 1;
+            
+            &.primary {
+              color: var(--fitsync-primary);
+            }
+          }
+          
+          .fitsync-text.small {
+            color: var(--fitsync-text-muted);
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            
+            &.muted {
+              color: var(--fitsync-text-muted);
+            }
+          }
+        }
       }
     }
     
-    .workout-stats {
+    .empty-workouts {
       text-align: center;
+      padding: 2rem 1rem;
       
-      .stat-value {
-        display: block;
-        font-size: 1.4rem;
-        font-weight: 700;
-        color: var(--ion-color-primary);
+      .empty-icon-small {
+        font-size: 2.5rem;
+        color: var(--fitsync-primary);
+        opacity: 0.4;
+        margin-bottom: 1rem;
       }
       
-      .stat-label {
-        font-size: 0.7rem;
-        color: var(--ion-text-color-secondary);
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
+      .fitsync-text.muted {
+        color: var(--fitsync-text-muted);
+        margin-bottom: 1rem;
       }
     }
   }
 }
 
-.empty-workouts {
-  text-align: center;
-  padding: 40px 20px;
-  
-  .empty-icon-small {
-    font-size: 2.5rem;
-    color: var(--ion-color-primary);
-    opacity: 0.4;
-    margin-bottom: 16px;
-  }
-  
-  p {
-    color: var(--ion-text-color-secondary);
-    margin-bottom: 16px;
-  }
-}
-
-// Dicas
-.tip-content {
-  display: flex;
-  align-items: flex-start;
-  gap: 16px;
-  padding: 20px;
-  
-  .tip-icon {
-    font-size: 1.5rem;
-    color: var(--ion-color-warning);
-    margin-top: 4px;
-  }
-  
-  .tip-text {
-    flex: 1;
-    
-    h4 {
-      font-size: 1rem;
-      font-weight: 600;
-      color: var(--ion-text-color);
-      margin-bottom: 8px;
-    }
-    
-    p {
-      font-size: 0.9rem;
-      color: var(--ion-text-color-secondary);
-      line-height: 1.5;
-      margin: 0;
+/* Tips Section */
+.tips-section {
+  .fitsync-card.glass {
+    .tip-content {
+      display: flex;
+      align-items: flex-start;
+      gap: 1rem;
+      
+      .tip-icon {
+        font-size: 1.5rem;
+        color: var(--fitsync-warning);
+        margin-top: 0.25rem;
+      }
+      
+      .tip-text {
+        flex: 1;
+        
+        .fitsync-text.medium {
+          color: var(--fitsync-text-primary);
+          font-weight: 600;
+          margin-bottom: 0.5rem;
+        }
+        
+        .fitsync-text.muted {
+          color: var(--fitsync-text-muted);
+          line-height: 1.5;
+          margin: 0;
+        }
+      }
     }
   }
 }
 
-// Header moderno
-.header-modern {
-  --background: linear-gradient(135deg, var(--ion-color-primary), var(--ion-color-secondary));
-  
-  ion-toolbar {
-    --background: transparent;
-    --color: white;
-  }
-  
-  ion-title {
-    font-weight: 700;
-    font-size: 1.3rem;
-  }
-  
-  .text-gradient-white {
-    background: linear-gradient(135deg, rgba(255,255,255,1), rgba(255,255,255,0.8));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    font-weight: 700;
-  }
-}
-
-// Responsividade
+/* Responsive Design */
 @media (max-width: 768px) {
   .hero-section {
-    padding: 40px 16px 24px;
+    padding: 1.5rem 1rem;
     
-    .hero-title {
-      font-size: 1.5rem;
-    }
-    
-    .hero-subtitle {
-      font-size: 0.9rem;
+    .hero-content .greeting-section {
+      .fitsync-text-hero {
+        font-size: 1.5rem;
+      }
+      
+      .hero-subtitle {
+        font-size: 0.875rem;
+      }
     }
   }
   
   .stats-overview {
-    padding: 24px 16px;
+    padding: 1.5rem 1rem;
     
     .stats-grid {
-      gap: 12px;
+      gap: 0.75rem;
       
-      .stat-card {
-        padding: 16px;
+      .fitsync-card.stats {
+        padding: 1rem;
+        
+        .stats-circle {
+          width: 60px;
+          height: 60px;
+          
+          .fitsync-text.number {
+            font-size: 1.2rem;
+          }
+          
+          .fitsync-text.label {
+            font-size: 0.6rem;
+          }
+        }
+      }
+    }
+  }
+  
+  .actions-grid {
+    gap: 0.75rem;
+    
+    .fitsync-card.action {
+      padding: 1rem;
+      
+      .action-icon {
+        width: 40px;
+        height: 40px;
+        margin-bottom: 0.75rem;
+        
+        ion-icon {
+          font-size: 1.2rem;
+        }
+      }
+      
+      .fitsync-text.medium {
+        font-size: 0.875rem;
+      }
+      
+      .fitsync-text.small {
+        font-size: 0.75rem;
       }
     }
   }
@@ -413,61 +650,74 @@
   .quick-actions-section,
   .recent-workouts-section,
   .tips-section {
-    padding: 0 16px 20px;
-  }
-  
-  .actions-grid {
-    gap: 12px;
-    
-    .action-item {
-      padding: 16px;
-      
-      .action-icon {
-        width: 40px;
-        height: 40px;
-        
-        ion-icon {
-          font-size: 1.2rem;
-        }
-      }
-      
-      h4 {
-        font-size: 0.9rem;
-      }
-      
-      p {
-        font-size: 0.75rem;
-      }
-    }
+    padding: 0 1rem 1.5rem;
   }
 }
 
 @media (max-width: 480px) {
   .stats-grid {
     grid-template-columns: 1fr 1fr !important;
-    gap: 8px;
+    gap: 0.5rem;
     
-    .stat-card {
-      padding: 12px;
+    .fitsync-card.stats {
+      padding: 0.75rem;
+      
+      .stats-circle {
+        width: 50px;
+        height: 50px;
+        margin-bottom: 0.75rem;
+        
+        .fitsync-text.number {
+          font-size: 1rem;
+        }
+        
+        .fitsync-text.label {
+          font-size: 0.55rem;
+        }
+      }
     }
   }
   
   .actions-grid {
     grid-template-columns: 1fr 1fr !important;
-    gap: 8px;
+    gap: 0.5rem;
+  }
+  
+  .plan-header {
+    flex-direction: column !important;
+    gap: 1rem;
+    
+    .plan-progress-circle {
+      align-self: flex-start;
+    }
   }
 }
 
-// Animações especiais
+/* Animation Classes */
+.fitsync-fade-in {
+  animation: fitsync-fade-in 0.5s ease-out;
+}
+
+.fitsync-slide-up {
+  animation: fitsync-slide-up 0.6s ease-out;
+}
+
 .animate-slide-up {
   animation: slideInUp 0.6s ease-out;
 }
 
-.animate-fade-in {
-  animation: fadeIn 0.8s ease-out;
+@keyframes fitsync-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-@keyframes slideInUp {
+@keyframes fitsync-slide-up {
   from {
     opacity: 0;
     transform: translateY(30px);
@@ -478,7 +728,13 @@
   }
 }
 
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }

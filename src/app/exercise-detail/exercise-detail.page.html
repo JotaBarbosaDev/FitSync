@@ -55,10 +55,13 @@
     <!-- Exercise image/video -->
     <div class="exercise-media">
       <img 
-        [src]="exercise.imageUrl || '/assets/images/exercise-placeholder.jpg'" 
+        *ngIf="exercise.imageUrl"
+        [src]="exercise.imageUrl" 
         [alt]="exercise.name"
-        (error)="onImageError($event)"
       />
+      <div *ngIf="!exercise.imageUrl" class="exercise-placeholder">
+        <ion-icon name="fitness" size="large"></ion-icon>
+      </div>
       <div class="media-overlay">
         <ion-button 
           *ngIf="exercise.videoUrl" 
@@ -247,7 +250,10 @@
               button 
               (click)="navigateToExercise(relatedExercise.id)">
               <ion-avatar slot="start">
-                <img [src]="relatedExercise.imageUrl || '/assets/images/exercise-placeholder.jpg'" />
+                <img *ngIf="relatedExercise.imageUrl" [src]="relatedExercise.imageUrl" />
+                <div *ngIf="!relatedExercise.imageUrl" class="exercise-placeholder-small">
+                  <ion-icon name="fitness"></ion-icon>
+                </div>
               </ion-avatar>
               <ion-label>
                 <h3>{{ relatedExercise.name }}</h3>
@@ -262,8 +268,8 @@
   </div>
 
   <!-- Floating action button -->
-  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
-    <ion-fab-button color="primary" (click)="toggleOrientationLock()">
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed" class="fab-modern">
+    <ion-fab-button color="primary" class="fab-main" (click)="toggleOrientationLock()">
       <ion-icon [name]="isOrientationLocked ? 'phone-portrait-outline' : 'phone-landscape-outline'"></ion-icon>
     </ion-fab-button>
   </ion-fab>

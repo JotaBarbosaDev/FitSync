@@ -81,10 +81,10 @@ export class AppComponent implements OnInit, OnDestroy {
     const tabsRoutes = {
       '/dashboard': '/tabs/home',
       '/home': '/tabs/home',
-      '/plans': '/tabs/exercises',
-      '/workout': '/tabs/training',
-      '/progress': '/tabs/progress',
-      '/profile': '/tabs/profile'
+      '/plans': '/tabs/lista',
+      '/workout': '/tabs/detalhe',
+      '/progress': '/tabs/progresso',
+      '/profile': '/tabs/dashboard'
     };
     
     const targetPath = tabsRoutes[path as keyof typeof tabsRoutes] || path;

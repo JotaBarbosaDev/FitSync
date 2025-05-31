@@ -1,4 +1,24 @@
 // Exercise Detail Page Styles - FitSync Design System
+
+/* Header Contrast Fixes */
+ion-header ion-toolbar[color="primary"] {
+  ion-title {
+    color: var(--fitsync-text-on-primary) !important;
+  }
+  
+  ion-button {
+    --color: var(--fitsync-text-on-primary) !important;
+    
+    ion-icon {
+      color: var(--fitsync-text-on-primary) !important;
+    }
+  }
+  
+  ion-back-button {
+    --color: var(--fitsync-text-on-primary) !important;
+  }
+}
+
 .loading-container {
   display: flex;
   flex-direction: column;
@@ -217,6 +237,37 @@
   }
 }
 
+/* Exercise Image Placeholders */
+.exercise-placeholder {
+  width: 100%;
+  height: 250px;
+  background: linear-gradient(135deg, var(--fitsync-primary-tint), var(--fitsync-secondary-tint));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  ion-icon {
+    color: var(--fitsync-primary);
+    opacity: 0.7;
+  }
+}
+
+.exercise-placeholder-small {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, var(--fitsync-primary-tint), var(--fitsync-secondary-tint));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+
+  ion-icon {
+    color: var(--fitsync-primary);
+    opacity: 0.7;
+    font-size: 1.2rem;
+  }
+}
+
 // Difficulty color helpers
 ion-chip {
   &[color="success"] {
@@ -280,7 +331,7 @@ ion-fab-button {
   --color: white;
   --box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
   --border-radius: 50%;
-  
+
   &:hover {
     transform: scale(1.05);
   }

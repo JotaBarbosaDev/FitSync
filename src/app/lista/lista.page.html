@@ -1,101 +1,144 @@
-<ion-header [translucent]="true" class="header-modern">
+<ion-head        <div class="header-title">
+          <h1 class="headline-small">Exercícios</h1>
+          <p class="body-small text-muted">Biblioteca Completa</p>
+        </div>translucent]="true">
   <ion-toolbar>
-    <ion-buttons slot="start">
-      <ion-back-button color="light" class="fitsync-btn icon"></ion-back-button>
-    </ion-buttons>
-    <ion-title class="fitsync-text gradient">Biblioteca de Exercícios</ion-title>
-    <ion-buttons slot="end">
-      <ion-button fill="clear" class="fitsync-btn icon" (click)="toggleFavorites()">
-        <ion-icon name="heart" color="light"></ion-icon>
-      </ion-button>
-    </ion-buttons>
+    <div class="header-content">
+      <div class="header-left">
+        <ion-buttons slot="start">
+          <ion-button fill="clear" class="fitsync-btn icon">
+            <ion-icon name="chevron-back"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+        <div class="header-title">
+          <h1>Exercícios</h1>
+          <p>Biblioteca completa</p>
+        </div>
+      </div>
+      
+      <div class="header-actions">
+        <ion-button fill="clear" class="fitsync-btn icon" (click)="toggleFavorites()">
+          <ion-icon name="heart"></ion-icon>
+        </ion-button>
+        <ion-button fill="clear" class="fitsync-btn icon" (click)="showFilterOptions()">
+          <ion-icon name="options"></ion-icon>
+        </ion-button>
+      </div>
+    </div>
   </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true" class="exercise-library-content">
-  <div class="search-section">
+  <!-- Search and Filter Section -->
+  <div class="search-filter-section fitsync-card">
     <div class="search-container">
-      <ion-searchbar 
-        [(ngModel)]="searchQuery" 
-        placeholder="Buscar exercícios..." 
-        (ionInput)="filterExercises()"
-        class="fitsync-input search">
-      </ion-searchbar>
+      <div class="search-input-wrapper">
+        <ion-icon name="search" class="search-icon"></ion-icon>
+        <ion-searchbar 
+          [(ngModel)]="searchQuery" 
+          placeholder="Buscar exercícios..." 
+          (ionInput)="filterExercises()"
+          class="fitsync-searchbar">
+        </ion-searchbar>
+      </div>
     </div>
     
     <div class="filter-chips">
       <ion-chip 
         *ngFor="let group of muscleGroups" 
         [class.active]="selectedMuscleGroup === group.id"
-        class="fitsync-badge"
-        [class]="selectedMuscleGroup === group.id ? 'fitsync-badge primary' : 'fitsync-badge'"
+        class="fitsync-chip"
         (click)="filterByMuscleGroup(group.id)">
         <ion-icon [name]="group.icon"></ion-icon>
         <ion-label>{{ group.name }}</ion-label>
       </ion-chip>
     </div>
+    
+    <!-- Filter/Sort buttons side by side -->
+    <div class="filter-sort-buttons">
+      <ion-button 
+        fill="outline" 
+        size="small" 
+        class="filter-sort-btn"
+        (click)="showSortOptions()">
+        <ion-icon name="swap-vertical" slot="start"></ion-icon>
+        Ordenar
+      </ion-button>
+      
+      <ion-button 
+        fill="outline" 
+        size="small" 
+        class="filter-sort-btn"
+        (click)="showFilterOptions()">
+        <ion-icon name="funnel" slot="start"></ion-icon>
+        Filtrar
+      </ion-button>
+    </div>
   </div>
 
-  <div class="exercises-grid">
-    <div class="fitsync-card exercise animated" 
-         *ngFor="let exercise of filteredExercises; trackBy: trackByExerciseId"
-         (click)="openExerciseDetail(exercise)">
-      <div class="exercise-image">
-        <img [src]="exercise.imageUrl" [alt]="exercise.name" />
-        <div class="exercise-overlay">
-          <ion-button 
-            fill="clear" 
-            size="small" 
-            class="fitsync-btn icon favorite-btn"
-            (click)="toggleFavorite(exercise, $event)">
-            <ion-icon 
-              [name]="isFavorite(exercise.id) ? 'heart' : 'heart-outline'" 
-              [color]="isFavorite(exercise.id) ? 'danger' : 'light'">
+  <!-- Exercise Grid -->
+  <div class="exercises-container">
+    <div class="exercises-grid">
+      <div class="fitsync-card fitsync-card--exercise" 
+           *ngFor="let exercise of filteredExercises; trackBy: trackByExerciseId"
+           (click)="openExerciseDetail(exercise)">
+        
+        <div class="exercise-image-container">
+          <img [src]="exercise.imageUrl" [alt]="exercise.name" class="exercise-image" />
+          <div class="exercise-difficulty-badge">
+            <span class="difficulty-text">{{ exercise.difficulty }}</span>
+          </div>
+          <button class="favorite-btn" (click)="toggleFavorite(exercise, $event)">
+            <ion-icon
+              [name]="isFavorite(exercise.id) ? 'heart' : 'heart'"
+              [class]="isFavorite(exercise.id) ? 'favorite-active' : 'favorite-inactive'">
             </ion-icon>
-          </ion-button>
+          </button>
+        </div>
+        
+        <div class="exercise-content">
+          <h3 class="exercise-name">{{ exercise.name }}</h3>
+          <p class="exercise-muscle-group">{{ getMuscleGroupName(exercise.muscleGroup) }}</p>
+          
+          <div class="exercise-stats">
+            <div class="stat-item">
+              <ion-icon name="time"></ion-icon>
+              <span>{{ exercise.duration }}min</span>
+            </div>
+            <div class="stat-item">
+              <ion-icon name="flame"></ion-icon>
+              <span>{{ exercise.calories }}kcal</span>
+            </div>
+          </div>
+          
+          <div class="exercise-equipment" *ngIf="exercise.equipment">
+            <div class="equipment-tag">
+              <ion-icon name="fitness"></ion-icon>
+              <span>{{ exercise.equipment }}</span>
+            </div>
+          </div>
         </div>
       </div>
-      
-      <div class="exercise-content">
-        <h3 class="fitsync-text large white">{{ exercise.name }}</h3>
-        <p class="fitsync-text muted light">{{ getMuscleGroupName(exercise.muscleGroup) }}</p>
-        
-        <div class="exercise-stats">
-          <div class="stat-item">
-            <ion-icon name="barbell-outline"></ion-icon>
-            <span class="fitsync-text small">{{ exercise.difficulty }}</span>
-          </div>
-          <div class="stat-item">
-            <ion-icon name="time-outline"></ion-icon>
-            <span class="fitsync-text small">{{ exercise.duration }}min</span>
-          </div>
-          <div class="stat-item">
-            <ion-icon name="flame-outline"></ion-icon>
-            <span class="fitsync-text small">{{ exercise.calories }}kcal</span>
-          </div>
+    </div>
+
+    <!-- Empty State -->
+    <div class="empty-state fitsync-card" *ngIf="filteredExercises.length === 0">
+      <div class="empty-content">
+        <div class="empty-icon">
+          <ion-icon name="search"></ion-icon>
         </div>
-        
-        <div class="exercise-equipment" *ngIf="exercise.equipment">
-          <ion-chip class="fitsync-badge equipment" size="small">
-            <ion-icon name="fitness-outline"></ion-icon>
-            <ion-label>{{ exercise.equipment }}</ion-label>
-          </ion-chip>
-        </div>
+        <h3 class="empty-title">Nenhum exercício encontrado</h3>
+        <p class="empty-subtitle">Tente ajustar seus filtros ou termo de busca</p>
+        <button class="fitsync-btn fitsync-btn--outline" (click)="clearFilters()">
+          Limpar Filtros
+        </button>
       </div>
     </div>
   </div>
 
-  <div class="empty-state" *ngIf="filteredExercises.length === 0">
-    <ion-icon name="search-outline" class="empty-icon"></ion-icon>
-    <h3 class="fitsync-text large white">Nenhum exercício encontrado</h3>
-    <p class="fitsync-text muted light">Tente ajustar seus filtros ou termo de busca</p>
-    <ion-button class="fitsync-btn outline" (click)="clearFilters()">
-      Limpar Filtros
-    </ion-button>
-  </div>
-
-  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
-    <ion-fab-button class="fitsync-btn primary" (click)="createCustomExercise()">
+  <!-- Floating Action Button -->
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed" class="fab-modern">
+    <ion-fab-button class="fab-main" (click)="createCustomExercise()">
       <ion-icon name="add"></ion-icon>
     </ion-fab-button>
   </ion-fab>

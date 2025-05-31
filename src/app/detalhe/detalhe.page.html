@@ -1,118 +1,166 @@
-<ion-header [translucent]="true" class="header-modern">
+<ion-header [translucent]="true">
   <ion-toolbar>
-    <ion-buttons slot="start">
-      <ion-back-button color="light" class="fitsync-btn icon"></ion-back-button>
-    </ion-buttons>
-    <ion-title class="fitsync-text gradient">{{ exercise?.name || 'Detalhes do Exercício' }}</ion-title>
-    <ion-buttons slot="end">
-      <ion-button fill="clear" class="fitsync-btn icon" (click)="toggleFavorite()" *ngIf="exercise">
-        <ion-icon 
-          [name]="isFavorite ? 'heart' : 'heart-outline'" 
-          [color]="isFavorite ? 'danger' : 'light'">
-        </ion-icon>
-      </ion-button>
-      <ion-button fill="clear" class="fitsync-btn icon" (click)="shareExercise()" *ngIf="exercise">
-        <ion-icon name="share-outline" color="light"></ion-icon>
-      </ion-button>
-    </ion-buttons>
+    <div class="header-content">
+      <div class="header-left">
+        <ion-buttons slot="start">
+          <ion-button fill="clear" class="fitsync-btn icon">
+            <ion-icon name="chevron-back"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+        <div class="header-title">
+          <h1 class="fitsync-text-title">{{ exercise?.name || 'Exercício' }}</h1>
+        </div>
+      </div>
+      
+      <div class="header-actions">
+        <ion-button fill="clear" class="fitsync-btn icon" (click)="toggleFavorite()" *ngIf="exercise">
+          <ion-icon 
+            [name]="isFavorite ? 'heart' : 'heart'"
+            [class]="isFavorite ? 'favorite-active' : 'favorite-inactive'">
+          </ion-icon>
+        </ion-button>
+        <ion-button fill="clear" class="fitsync-btn icon" (click)="shareExercise()" *ngIf="exercise">
+          <ion-icon name="share"></ion-icon>
+        </ion-button>
+      </div>
+    </div>
   </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true" class="exercise-detail-content" *ngIf="exercise">
-  <!-- Hero Image Section -->
+  <!-- Hero Section -->
   <div class="exercise-hero">
-    <img [src]="exercise.imageUrl || 'assets/placeholder-exercise.jpg'" [alt]="exercise.name" class="hero-image" />
-    <div class="hero-overlay">
-      <div class="exercise-title">
-        <h1 class="fitsync-text hero white">{{ exercise.name }}</h1>
-        <p class="fitsync-text large light">{{ getMuscleGroupName(exercise.muscleGroup || 'general') }}</p>
+    <div class="hero-image-container">
+      <img [src]="exercise.imageUrl || 'assets/placeholder-exercise.jpg'" 
+           [alt]="exercise.name" 
+           class="hero-image" />
+      <div class="hero-gradient-overlay"></div>
+    </div>
+    
+    <div class="hero-content">
+      <div class="exercise-info">
+        <h1 class="exercise-title">{{ exercise.name }}</h1>
+        <p class="exercise-category">{{ getMuscleGroupName(exercise.muscleGroup || 'general') }}</p>
       </div>
-      <div class="fitsync-badge difficulty" [class]="'difficulty-' + (exercise.difficulty || 'beginner').toLowerCase()">
-        {{ exercise.difficulty }}
+      
+      <div class="difficulty-badge" [class]="'difficulty-' + (exercise.difficulty || 'beginner').toLowerCase()">
+        <span>{{ exercise.difficulty }}</span>
       </div>
     </div>
   </div>
 
   <!-- Quick Stats -->
-  <div class="quick-stats">
-    <div class="fitsync-card metric">
-      <ion-icon name="time-outline" class="stat-icon"></ion-icon>
-      <div class="stat-info">
-        <span class="fitsync-text large white">{{ exercise.duration || 0 }}</span>
-        <span class="fitsync-text small muted">minutos</span>
+  <div class="stats-section">
+    <div class="stats-grid">
+      <div class="fitsync-card fitsync-card--workout stat-card">
+        <div class="stat-icon-wrapper">
+          <ion-icon name="time" class="stat-icon"></ion-icon>
+        </div>
+        <div class="stat-content">
+          <span class="stat-value">{{ exercise.duration || 0 }}</span>
+          <span class="stat-label">minutos</span>
+        </div>
       </div>
-    </div>
-    <div class="fitsync-card metric">
-      <ion-icon name="flame-outline" class="stat-icon"></ion-icon>
-      <div class="stat-info">
-        <span class="fitsync-text large white">{{ exercise.calories || 0 }}</span>
-        <span class="fitsync-text small muted">kcal</span>
+      
+      <div class="fitsync-card fitsync-card--workout stat-card">
+        <div class="stat-icon-wrapper">
+          <ion-icon name="flame" class="stat-icon"></ion-icon>
+        </div>
+        <div class="stat-content">
+          <span class="stat-value">{{ exercise.calories || 0 }}</span>
+          <span class="stat-label">kcal</span>
+        </div>
       </div>
-    </div>
-    <div class="fitsync-card metric" *ngIf="exercise?.equipment">
-      <ion-icon name="fitness-outline" class="stat-icon"></ion-icon>
-      <div class="stat-info">
-        <span class="fitsync-text large white">{{ exercise.equipment }}</span>
-        <span class="fitsync-text small muted">equipamento</span>
-      </div>
-    </div>
-  </div>
-
-  <!-- Description -->
-  <div class="content-section">
-    <h2 class="fitsync-text section-title primary">
-      <ion-icon name="information-circle-outline"></ion-icon>
-      Descrição
-    </h2>
-    <p class="fitsync-text medium">{{ exercise.description }}</p>
-  </div>
-
-  <!-- Instructions -->
-  <div class="content-section">
-    <h2 class="fitsync-text section-title primary">
-      <ion-icon name="list-outline"></ion-icon>
-      Como Executar
-    </h2>
-    <div class="instructions">
-      <div class="fitsync-card instruction-step" *ngFor="let instruction of exercise.instructions; let i = index">
-        <div class="step-number">{{ i + 1 }}</div>
-        <p class="fitsync-text medium">{{ instruction }}</p>
-      </div>
-    </div>
-  </div>
-
-  <!-- Workout Timer Section -->
-  <div class="content-section">
-    <h2 class="fitsync-text section-title primary">
-      <ion-icon name="timer-outline"></ion-icon>
-      Timer do Exercício
-    </h2>
-    <div class="fitsync-card glass timer-container">
-      <div class="timer-display">
-        <span class="fitsync-text hero primary">{{ formatTime(currentTime) }}</span>
-        <p class="fitsync-text large muted">{{ timerState === 'rest' ? 'Descanso' : 'Exercício' }}</p>
-      </div>
-      <div class="timer-controls">
-        <button 
-          (click)="startTimer()" 
-          [disabled]="isTimerRunning"
-          class="fitsync-btn primary large">
-          <ion-icon name="play-outline" slot="start"></ion-icon>
-          Iniciar Timer
-        </button>
-        <div class="timer-actions" *ngIf="isTimerRunning">
-          <button (click)="pauseTimer()" class="fitsync-btn outline">
-            <ion-icon name="pause-outline" slot="start"></ion-icon>
-            Pausar
-          </button>
-          <button (click)="resetTimer()" class="fitsync-btn ghost">
-            <ion-icon name="refresh-outline" slot="start"></ion-icon>
-            Reset
-          </button>
+      
+      <div class="fitsync-card fitsync-card--workout stat-card" *ngIf="exercise?.equipment">
+        <div class="stat-icon-wrapper">
+          <ion-icon name="fitness" class="stat-icon"></ion-icon>
+        </div>
+        <div class="stat-content">
+          <span class="stat-value">{{ exercise.equipment }}</span>
+          <span class="stat-label">equipamento</span>
         </div>
       </div>
     </div>
   </div>
+
+  <!-- Main Content -->
+  <div class="main-content">
+    <!-- Description Section -->
+    <div class="content-section">
+      <div class="section-header">
+        <div class="section-title">
+          <ion-icon name="information-circle" class="section-icon"></ion-icon>
+          <h2>Descrição</h2>
+        </div>
+      </div>
+      
+      <div class="fitsync-card description-card">
+        <p class="description-text">{{ exercise.description }}</p>
+      </div>
+    </div>
+
+    <!-- Instructions Section -->
+    <div class="content-section">
+      <div class="section-header">
+        <div class="section-title">
+          <ion-icon name="list" class="section-icon"></ion-icon>
+          <h2>Como Executar</h2>
+        </div>
+      </div>
+      
+      <div class="instructions-container">
+        <div class="fitsync-card instruction-card" 
+             *ngFor="let instruction of exercise.instructions; let i = index">
+          <div class="step-indicator">
+            <span class="step-number">{{ i + 1 }}</span>
+          </div>
+          <div class="instruction-content">
+            <p class="instruction-text">{{ instruction }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Timer Section -->
+    <div class="content-section">
+      <div class="section-header">
+        <div class="section-title">
+          <ion-icon name="timer" class="section-icon"></ion-icon>
+          <h2>Timer do Exercício</h2>
+        </div>
+      </div>
+      
+      <div class="fitsync-card timer-card">
+        <div class="timer-display">
+          <div class="timer-time">{{ formatTime(currentTime) }}</div>
+          <div class="timer-state">{{ timerState === 'rest' ? 'Descanso' : 'Exercício' }}</div>
+        </div>
+        
+        <div class="timer-controls">
+          <button 
+            (click)="startTimer()" 
+            [disabled]="isTimerRunning"
+            class="fitsync-btn fitsync-btn--primary timer-btn">
+            <ion-icon name="play" class="btn-icon"></ion-icon>
+            Iniciar Timer
+          </button>
+          
+          <div class="timer-actions" *ngIf="isTimerRunning">
+            <button (click)="pauseTimer()" class="fitsync-btn fitsync-btn--outline">
+              <ion-icon name="pause" class="btn-icon"></ion-icon>
+              Pausar
+            </button>
+            <button (click)="resetTimer()" class="fitsync-btn fitsync-btn--ghost">
+              <ion-icon name="refresh" class="btn-icon"></ion-icon>
+              Reset
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- Workout Tracking -->
   <div class="content-section">
     <h2 class="fitsync-text section-title primary">

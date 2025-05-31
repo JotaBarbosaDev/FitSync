@@ -13,11 +13,12 @@
 </ion-header>
 
 <ion-content [fullscreen]="true" class="progress-content">
-  <!-- Loading State -->
-  <div class="loading-container" *ngIf="isLoading">
-    <ion-spinner name="crescent"></ion-spinner>
-    <p class="fitsync-text muted">Carregando dados de progresso...</p>
-  </div>
+  <div class="content-container">
+    <!-- Loading State -->
+    <div class="loading-container" *ngIf="isLoading">
+      <ion-spinner name="crescent"></ion-spinner>
+      <p class="fitsync-text muted">Carregando dados de progresso...</p>
+    </div>
 
   <!-- Main Content -->
   <div class="progress-container" *ngIf="!isLoading">
@@ -264,4 +265,5 @@
       Novo Treino
     </ion-button>
   </div>
+  </div> <!-- Fecha content-container -->
 </ion-content>

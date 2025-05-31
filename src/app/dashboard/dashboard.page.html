@@ -1,37 +1,39 @@
-<ion-header [translucent]="true" class="header-modern">
+<ion-header [translucent]="true">
   <ion-toolbar>
-    <ion-buttons slot="start">
-      <ion-menu-button color="light"></ion-menu-button>
-    </ion-buttons>
-    <ion-title>
-      <span class="fitsync-text gradient">FitSync Pro</span>
-    </ion-title>
-    <ion-buttons slot="end">
-      <ion-button fill="clear" (click)="showProfile()" class="fitsync-btn icon">
-        <ion-avatar>
-          <img src="/assets/logo.png" alt="Profile">
-        </ion-avatar>
-      </ion-button>
-    </ion-buttons>
+    <div class="header-content">
+      <div class="header-left">
+        <ion-buttons slot="start">
+          <ion-menu-button></ion-menu-button>
+        </ion-buttons>
+        <div class="header-title">
+          <h1>FitSync Pro</h1>
+        </div>
+      </div>
+      <div class="header-actions">
+        <ion-button fill="clear" (click)="showProfile()" class="header-btn">
+          <ion-icon name="person-circle-outline"></ion-icon>
+        </ion-button>
+      </div>
+    </div>
   </ion-toolbar>
 </ion-header>
 
 <ion-content class="dashboard-content" [fullscreen]="true">
   <!-- Hero Section com Boas-vindas -->
-  <div class="hero-section gradient-bg animate-fade-in">
+  <div class="hero-section fitsync-slide-up">
     <div class="hero-content">
       <div class="greeting-section">
-        <h1 class="fitsync-text hero white">{{ getGreeting() }}, {{ getUserFirstName() }}!</h1>
-        <p class="fitsync-text large light">{{ getMotivationalMessage() }}</p>
+        <h1 class="display-medium text-gradient-primary">{{ getGreeting() }}, {{ getUserFirstName() }}!</h1>
+        <p class="body-large hero-subtitle">{{ getMotivationalMessage() }}</p>
       </div>
       
       <!-- Timer de Treino Ativo -->
       <div class="workout-timer-hero" *ngIf="workoutTimer.isRunning">
-        <div class="timer-display animate-pulse">
-          <ion-icon name="timer-outline" class="timer-icon"></ion-icon>
+        <div class="fitsync-card timer-card">
+          <ion-icon name="timer" class="timer-icon"></ion-icon>
           <div class="timer-info">
-            <span class="timer-label">Treino Ativo</span>
-            <span class="timer-time">{{ formatWorkoutTime() }}</span>
+            <span class="fitsync-text-small timer-label">Treino Ativo</span>
+            <span class="fitsync-text-large timer-time">{{ formatWorkoutTime() }}</span>
           </div>
           <ion-badge [color]="workoutTimer.isPaused ? 'warning' : 'success'">
             {{ workoutTimer.isPaused ? 'PAUSADO' : 'ATIVO' }}
@@ -43,7 +45,7 @@
 
   <!-- Estatísticas Principais -->
   <div class="stats-overview animate-slide-up">
-    <h2 class="fitsync-text section-title primary">Sua Performance</h2>
+    <h2 class="headline-large">Sua Performance</h2>
     <div class="stats-grid">
       <div class="fitsync-card stats">
         <div class="stats-circle">
@@ -77,12 +79,12 @@
 
   <!-- Plano Ativo -->
   <div class="active-plan-section" *ngIf="activePlan">
-    <h2 class="fitsync-text section-title primary">Plano Ativo</h2>
+    <h2 class="headline-medium">Plano Ativo</h2>
     <div class="fitsync-card workout animated">
       <div class="plan-header">
         <div class="plan-info">
-          <h3 class="fitsync-text large primary">{{ activePlan.name }}</h3>
-          <p class="fitsync-text muted">{{ activePlan.description }}</p>
+          <h3 class="title-large text-primary">{{ activePlan.name }}</h3>
+          <p class="body-medium text-muted">{{ activePlan.description }}</p>
           <div class="plan-badges">
             <span class="fitsync-badge {{ activePlan.primaryMuscle }}">
               {{ getMuscleGroupName(activePlan.primaryMuscle || 'general') }}
@@ -113,8 +115,8 @@
     <div class="fitsync-card glass">
       <div class="empty-state">
         <ion-icon name="fitness-outline" class="empty-icon"></ion-icon>
-        <h3 class="fitsync-text large primary">Comece Sua Jornada</h3>
-        <p class="fitsync-text muted">Escolha um plano de treino personalizado para atingir seus objetivos</p>
+        <h3 class="title-large text-primary">Comece Sua Jornada</h3>
+        <p class="body-medium text-muted">Escolha um plano de treino personalizado para atingir seus objetivos</p>
         <ion-button expand="block" class="fitsync-btn primary" (click)="navigateToPlans()">
           <ion-icon name="rocket" slot="start"></ion-icon>
           Explorar Planos
@@ -125,38 +127,38 @@
 
   <!-- Ações Rápidas -->
   <div class="quick-actions-section">
-    <h2 class="fitsync-text section-title primary">Ações Rápidas</h2>
+    <h2 class="headline-medium">Ações Rápidas</h2>
     <div class="actions-grid">
       <div class="fitsync-card action animated" (click)="quickStartWorkout()">
         <div class="action-icon gradient-bg">
           <ion-icon name="flash"></ion-icon>
         </div>
-        <h4 class="fitsync-text medium">Treino Rápido</h4>
-        <p class="fitsync-text small muted">15-30 min</p>
+        <h4 class="title-medium">Treino Rápido</h4>
+        <p class="body-small text-muted">15-30 min</p>
       </div>
       
       <div class="fitsync-card action animated" (click)="navigateToExercises()">
         <div class="action-icon gradient-success">
           <ion-icon name="barbell"></ion-icon>
         </div>
-        <h4 class="fitsync-text medium">Exercícios</h4>
-        <p class="fitsync-text small muted">Biblioteca</p>
+        <h4 class="title-medium">Exercícios</h4>
+        <p class="body-small text-muted">Biblioteca</p>
       </div>
       
       <div class="fitsync-card action animated" (click)="navigateToProgress()">
         <div class="action-icon gradient-warning">
           <ion-icon name="trending-up"></ion-icon>
         </div>
-        <h4 class="fitsync-text medium">Progresso</h4>
-        <p class="fitsync-text small muted">Estatísticas</p>
+        <h4 class="title-medium">Progresso</h4>
+        <p class="body-small text-muted">Estatísticas</p>
       </div>
       
       <div class="fitsync-card action animated" (click)="navigateToNutrition()">
         <div class="action-icon gradient-danger">
           <ion-icon name="nutrition"></ion-icon>
         </div>
-        <h4 class="fitsync-text medium">Nutrição</h4>
-        <p class="fitsync-text small muted">Dieta</p>
+        <h4 class="title-medium">Nutrição</h4>
+        <p class="body-small text-muted">Dieta</p>
       </div>
     </div>
   </div>
@@ -164,7 +166,7 @@
   <!-- Últimos Treinos -->
   <div class="recent-workouts-section">
     <div class="section-header">
-      <h2 class="fitsync-text section-title primary">Treinos Recentes</h2>
+      <h2 class="headline-medium">Treinos Recentes</h2>
       <ion-button fill="clear" class="fitsync-btn outline" (click)="navigateToHistory()">
         <span>Ver Todos</span>
         <ion-icon name="chevron-forward" slot="end"></ion-icon>
@@ -175,8 +177,8 @@
       <div class="fitsync-card exercise animated" *ngFor="let workout of recentWorkouts">
         <div class="workout-summary">
           <div class="workout-info">
-            <h4 class="fitsync-text medium">{{ workout.name }}</h4>
-            <p class="fitsync-text small muted">{{ workout.date | date:'dd/MM' }} • {{ workout.duration }} min</p>
+            <h4 class="title-medium">{{ workout.name }}</h4>
+            <p class="body-small text-muted">{{ workout.date | date:'dd/MM' }} • {{ workout.duration }} min</p>
             <div class="workout-tags">
               <span class="fitsync-badge {{ workout.primaryMuscle }}">
                 {{ getMuscleGroupName(workout.primaryMuscle) }}
@@ -193,7 +195,7 @@
       <!-- Estado vazio para treinos -->
       <div class="empty-workouts" *ngIf="!recentWorkouts || recentWorkouts.length === 0">
         <ion-icon name="calendar-outline" class="empty-icon-small"></ion-icon>
-        <p class="fitsync-text muted">Nenhum treino realizado ainda</p>
+        <p class="body-medium text-muted">Nenhum treino realizado ainda</p>
         <ion-button size="small" class="fitsync-btn outline" (click)="startFirstWorkout()">
           Fazer Primeiro Treino
         </ion-button>
@@ -207,8 +209,8 @@
       <div class="tip-content">
         <ion-icon name="bulb" class="tip-icon"></ion-icon>
         <div class="tip-text">
-          <h4 class="fitsync-text medium">💡 Dica do Dia</h4>
-          <p class="fitsync-text muted">{{ getDailyTip() }}</p>
+          <h4 class="title-medium">💡 Dica do Dia</h4>
+          <p class="body-medium text-muted">{{ getDailyTip() }}</p>
         </div>
       </div>
     </div>

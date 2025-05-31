@@ -389,13 +389,7 @@ export class ExerciseDetailPage implements OnInit, OnDestroy {
     return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   }
 
-  // Video and image methods
-  onImageError(event: Event) {
-    const target = event.target as HTMLImageElement;
-    if (target) {
-      target.src = '/assets/images/exercise-placeholder.jpg';
-    }
-  }
+  // Video methods
 
   playVideo() {
     // Simulate video play functionality

@@ -89,28 +89,19 @@
   --fitsync-muscle-core: #9D4EDD;
   --fitsync-muscle-cardio: #FF6B6B;
 
-  // Light Mode - Cores de fundo e superfície
-  --ion-background-color: #FFFFFF;
-  --ion-background-color-rgb: 255, 255, 255;
-  --ion-surface-color: #F8F9FA;
-  --ion-surface-variant: #F1F3F4;
-  --ion-card-background: #FFFFFF;
-
-  // Light Mode - Cores de texto
-  --ion-text-color: #141414;
-  --ion-text-color-rgb: 20, 20, 20;
-  --ion-text-color-secondary: #666666;
-  --ion-text-color-tertiary: #999999;
-  --ion-text-color-disabled: #CCCCCC;
-
-  // Light Mode - Bordas e separadores
-  --ion-border-color: #E1E5E9;
-  --ion-separator-color: #E1E5E9;
-
-  // Light Mode - Sombras
-  --ion-box-shadow-primary: 0 4px 16px rgba(230, 254, 88, 0.2);
-  --ion-box-shadow-secondary: 0 2px 8px rgba(20, 20, 20, 0.1);
-  --ion-box-shadow-card: 0 4px 12px rgba(0, 0, 0, 0.05);
+  // Variáveis FitSync para texto e componentes - LIGHT MODE
+  --fitsync-primary: #E6FE58;
+  --fitsync-secondary: #141414;
+  --fitsync-background: #FFFFFF;
+  --fitsync-background-subtle: #F8F9FA;
+  --fitsync-background-hover: rgba(230, 254, 88, 0.1);
+  --fitsync-text-primary: #141414;
+  --fitsync-text-secondary: #666666;
+  --fitsync-text-muted: #999999;
+  --fitsync-text-on-primary: #141414;
+  --fitsync-text-on-dark: #FFFFFF;
+  --fitsync-border: #E1E5E9;
+  --fitsync-primary-tint: rgba(230, 254, 88, 0.15);
 }
 
 // Dark Mode - Detecta automaticamente o tema do sistema
@@ -150,5 +141,19 @@
 
     // Dark Mode - Gradientes ajustados
     --fitsync-gradient-secondary: linear-gradient(135deg, #2A2A2A 0%, #3D3D3D 100%);
+
+    // Variáveis FitSync para texto e componentes - DARK MODE
+    --fitsync-primary: #E6FE58;
+    --fitsync-secondary: #2A2A2A;
+    --fitsync-background: #0D0D0D;
+    --fitsync-background-subtle: #1A1A1A;
+    --fitsync-background-hover: rgba(230, 254, 88, 0.15);
+    --fitsync-text-primary: #FFFFFF;
+    --fitsync-text-secondary: #CCCCCC;
+    --fitsync-text-muted: #999999;
+    --fitsync-text-on-primary: #141414;
+    --fitsync-text-on-dark: #FFFFFF;
+    --fitsync-border: #2A2A2A;
+    --fitsync-primary-tint: rgba(230, 254, 88, 0.2);
   }
 }

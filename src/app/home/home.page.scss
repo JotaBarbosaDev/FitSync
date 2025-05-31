@@ -1,83 +1,62 @@
-/* ===== HOME PAGE - SIMPLIFIED FITSYNC DESIGN ===== */
+/* ===== HOME PAGE - MODERN FITSYNC DESIGN ===== */
 .home-content {
   --padding-top: 0;
-  --padding-bottom: 80px; // Space for tabs
+  --padding-bottom: 80px;
+  background: var(--fitsync-background-subtle);
 }
 
-.home-container {
-  padding: 1rem;
-  max-width: 1200px;
-  margin: 0 auto;
-}
-
-/* Journey Section - Comece sua jornada */
-.journey-section {
-  margin-bottom: 2rem;
-  
-  .hero-content {
-    text-align: center;
-    padding: 2rem 0;
-    margin-bottom: 1.5rem;
-  }
-  
-  .user-stats {
-    display: flex;
-    gap: 1rem;
-    justify-content: center;
-    margin-top: 1.5rem;
-
-    .stat-card {
+/* Header Styling */
+ion-header {
+  ion-toolbar {
+    --background: var(--fitsync-gradient-primary);
+    --color: white;
+    --border-width: 0;
+    
+    .header-content {
       display: flex;
       align-items: center;
-      gap: 0.5rem;
-      padding: 1rem;
-      background: var(--ion-card-background);
-      border-radius: 12px;
-      box-shadow: var(--ion-box-shadow-subtle);
+      justify-content: space-between;
+      padding: 0.5rem 0;
       
-      .stat-number {
-        font-size: 1.25rem;
-        font-weight: 700;
-        color: var(--ion-color-primary);
-      }
-      
-      .stat-label {
-        font-size: 0.875rem;
-        color: var(--ion-text-color-secondary);
-      }
-    }
-  }
-  
-  .journey-start, .active-plan {
-    margin-top: 1.5rem;
-    
-    .empty-icon {
-      font-size: 4rem;
-      color: var(--ion-color-primary);
-      margin-bottom: 1rem;
-    }
-    
-    .plan-info {
-      margin-bottom: 1.5rem;
-      
-      .plan-progress {
+      .logo-section {
         display: flex;
         align-items: center;
-        gap: 1rem;
-        margin-top: 1rem;
+        gap: 0.75rem;
         
-        .progress-bar {
-          flex: 1;
-          height: 8px;
-          background: var(--ion-color-light);
-          border-radius: 4px;
-          overflow: hidden;
+        .logo-icon {
+          width: 32px;
+          height: 32px;
+          border-radius: 8px;
+          background: rgba(255, 255, 255, 0.15);
+          display: flex;
+          align-items: center;
+          justify-content: center;
           
-          .progress-fill {
-            height: 100%;
-            background: var(--fitsync-gradient-primary);
-            border-radius: 4px;
-            transition: width 0.3s ease;
+          ion-icon {
+            font-size: 1.2rem;
+            color: white;
+          }
+        }
+        
+        .logo-text {
+          font-size: 1.25rem;
+          font-weight: 700;
+          color: white;
+        }
+      }
+      
+      .header-actions {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        
+        ion-button {
+          --color: white;
+          --background: rgba(255, 255, 255, 0.1);
+          --border-radius: 8px;
+          
+          &:hover {
+            --background: rgba(255, 255, 255, 0.2);
           }
         }
       }
@@ -85,7 +64,199 @@
   }
 }
 
-/* Treinos Recentes */
+/* Loading State */
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 2rem;
+  text-align: center;
+  
+  ion-spinner {
+    --color: var(--fitsync-primary);
+    width: 3rem;
+    height: 3rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  p {
+    margin: 0;
+    color: var(--fitsync-text-secondary);
+    font-size: 1rem;
+    animation: fitsync-fade-in 0.5s ease-out;
+  }
+}
+
+/* Main Container */
+.home-container {
+  padding: 1.5rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Greeting Section */
+.greeting-section {
+  margin-bottom: 2rem;
+  
+  .greeting-header {
+    margin-bottom: 1.5rem;
+    
+    .greeting-title {
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: var(--fitsync-text-primary);
+      margin-bottom: 0.5rem;
+    }
+    
+    .greeting-subtitle {
+      color: var(--fitsync-text-secondary);
+      font-size: 1rem;
+    }
+  }
+  
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 1rem;
+    margin-top: 1.5rem;
+  }
+}
+
+/* Journey Section */
+.journey-section {
+  margin-bottom: 2rem;
+  
+  .empty-state {
+    text-align: center;
+    padding: 2rem;
+    
+    .empty-icon {
+      font-size: 4rem;
+      color: var(--fitsync-primary);
+      margin-bottom: 1rem;
+      animation: fitsync-fade-in 0.6s ease-out;
+    }
+    
+    .empty-title {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: var(--fitsync-text-primary);
+      margin-bottom: 0.5rem;
+    }
+    
+    .empty-subtitle {
+      color: var(--fitsync-text-secondary);
+      margin-bottom: 1.5rem;
+      line-height: 1.5;
+    }
+  }
+  
+  .active-plan {
+    .plan-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1rem;
+      
+      .plan-title {
+        font-size: 1.125rem;
+        font-weight: 600;
+        color: var(--fitsync-text-primary);
+      }
+      
+      .plan-badge {
+        background: var(--fitsync-primary-tint);
+        color: var(--fitsync-primary);
+        padding: 0.25rem 0.75rem;
+        border-radius: 12px;
+        font-size: 0.75rem;
+        font-weight: 600;
+      }
+    }
+    
+    .plan-progress {
+      margin: 1rem 0;
+      
+      .progress-info {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 0.5rem;
+        
+        .progress-label {
+          font-size: 0.875rem;
+          color: var(--fitsync-text-secondary);
+        }
+        
+        .progress-percent {
+          font-size: 0.875rem;
+          font-weight: 600;
+          color: var(--fitsync-primary);
+        }
+      }
+      
+      .progress-bar {
+        height: 8px;
+        background: var(--fitsync-background-subtle);
+        border-radius: 4px;
+        overflow: hidden;
+        
+        .progress-fill {
+          height: 100%;
+          background: var(--fitsync-gradient-primary);
+          border-radius: 4px;
+          transition: width 0.3s ease;
+        }
+      }
+    }
+  }
+}
+
+/* Quick Actions Grid */
+.quick-actions {
+  margin-bottom: 2rem;
+  
+  .actions-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+  }
+}
+
+/* Featured Exercises */
+.featured-exercises {
+  margin-bottom: 2rem;
+  
+  .exercises-carousel {
+    margin-top: 1rem;
+    
+    .exercise-card {
+      margin-right: 1rem;
+      min-width: 200px;
+      
+      .exercise-image {
+        position: relative;
+        margin-bottom: 1rem;
+        
+        .image-badge {
+          position: absolute;
+          top: 0.5rem;
+          right: 0.5rem;
+          background: rgba(0, 0, 0, 0.7);
+          color: white;
+          padding: 0.25rem 0.5rem;
+          border-radius: 12px;
+          font-size: 0.75rem;
+          font-weight: 500;
+        }
+      }
+    }
+  }
+}
+
+/* Recent Workouts */
 .recent-workouts {
   margin-bottom: 2rem;
   
@@ -93,171 +264,421 @@
     margin-top: 1rem;
     
     .workout-item {
-      margin-bottom: 0.5rem;
-      border-radius: 12px;
-      background: var(--ion-card-background);
-      --background: transparent;
-      --padding-start: 1rem;
-      --padding-end: 1rem;
+      margin-bottom: 0.75rem;
       
-      ion-avatar {
-        background: var(--ion-color-primary-tint);
+      .workout-content {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
         
-        ion-icon {
-          color: var(--ion-color-primary);
+        .workout-icon {
+          width: 48px;
+          height: 48px;
+          border-radius: 12px;
+          background: var(--fitsync-primary-tint);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          
+          ion-icon {
+            font-size: 1.5rem;
+            color: var(--fitsync-primary);
+          }
+        }
+        
+        .workout-info {
+          flex: 1;
+          
+          .workout-name {
+            font-weight: 600;
+            color: var(--fitsync-text-primary);
+            margin-bottom: 0.25rem;
+          }
+          
+          .workout-meta {
+            font-size: 0.875rem;
+            color: var(--fitsync-text-secondary);
+          }
+        }
+        
+        .workout-status {
+          .status-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            
+            &.completed {
+              background: var(--fitsync-success-tint);
+              color: var(--fitsync-success);
+            }
+            
+            &.pending {
+              background: var(--fitsync-warning-tint);
+              color: var(--fitsync-warning);
+            }
+            
+            &.skipped {
+              background: var(--fitsync-danger-tint);
+              color: var(--fitsync-danger);
+            }
+          }
         }
       }
     }
   }
 }
 
-/* Dicas e Motivação */
-.tips-section {
+/* Daily Tip */
+.daily-tip {
   margin-bottom: 2rem;
   
   .tip-content {
     display: flex;
     align-items: flex-start;
     gap: 1rem;
-    padding: 1.5rem;
     
-    .tip-icon {
-      font-size: 2rem;
-      color: var(--ion-color-warning);
-      margin-top: 0.25rem;
+    .tip-icon-wrapper {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      background: var(--fitsync-warning-tint);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      
+      ion-icon {
+        font-size: 1.5rem;
+        color: var(--fitsync-warning);
+      }
     }
     
     .tip-text {
       flex: 1;
       
-      h4 {
-        margin: 0 0 0.5rem 0;
-        color: var(--ion-text-color);
+      .tip-title {
+        font-weight: 600;
+        color: var(--fitsync-text-primary);
+        margin-bottom: 0.5rem;
       }
       
-      p {
-        margin: 0;
+      .tip-description {
+        color: var(--fitsync-text-secondary);
         line-height: 1.5;
+        margin: 0;
       }
     }
   }
 }
 
-/* Loading container */
-.loading-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 3rem;
-  text-align: center;
-
-  p {
+/* Features List */
+.features-list {
+  margin-bottom: 2rem;
+  
+  .features-container {
     margin-top: 1rem;
-    color: var(--ion-color-medium);
+    
+    .feature-item {
+      margin-bottom: 0.5rem;
+      
+      .feature-content {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        
+        .feature-info {
+          display: flex;
+          align-items: center;
+          gap: 1rem;
+          
+          .feature-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            background: var(--fitsync-primary-tint);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            
+            ion-icon {
+              font-size: 1.25rem;
+              color: var(--fitsync-primary);
+            }
+          }
+          
+          .feature-details {
+            .feature-title {
+              font-weight: 600;
+              color: var(--fitsync-text-primary);
+              margin-bottom: 0.25rem;
+            }
+            
+            .feature-description {
+              font-size: 0.875rem;
+              color: var(--fitsync-text-secondary);
+              margin: 0;
+            }
+          }
+        }
+        
+        .feature-arrow {
+          color: var(--fitsync-text-tertiary);
+          font-size: 1.25rem;
+        }
+      }
+    }
+  }
+}
+
+/* Institution Info */
+.institution-info {
+  margin-bottom: 2rem;
+  
+  .institution-content {
+    .institution-header {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1rem;
+      
+      .institution-logo {
+        width: 48px;
+        height: 48px;
+        border-radius: 12px;
+        background: var(--fitsync-primary-tint);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        
+        ion-icon {
+          font-size: 1.5rem;
+          color: var(--fitsync-primary);
+        }
+      }
+      
+      .institution-details {
+        .institution-name {
+          font-weight: 600;
+          color: var(--fitsync-text-primary);
+          margin-bottom: 0.25rem;
+        }
+        
+        .institution-type {
+          font-size: 0.875rem;
+          color: var(--fitsync-text-secondary);
+          margin: 0;
+        }
+      }
+    }
+    
+    .checklist {
+      .checklist-item {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.5rem 0;
+        
+        .check-icon {
+          width: 20px;
+          height: 20px;
+          border-radius: 50%;
+          background: var(--fitsync-success);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          
+          ion-icon {
+            font-size: 0.75rem;
+            color: white;
+          }
+        }
+        
+        .check-text {
+          font-size: 0.875rem;
+          color: var(--fitsync-text-secondary);
+        }
+      }
+    }
   }
 }
 
 /* Floating Action Button */
 ion-fab {
   ion-fab-button {
-    --background: var(--ion-color-primary);
-    --color: var(--ion-color-primary-contrast);
-    box-shadow: 0 4px 16px rgba(230, 254, 88, 0.4);
+    --background: var(--fitsync-gradient-primary);
+    --color: var(--fitsync-text-on-primary);
+    --border-radius: 16px;
+    --box-shadow: 0 8px 24px rgba(46, 47, 66, 0.15);
+    width: 56px;
+    height: 56px;
     
     &:hover {
       transform: scale(1.05);
+      --box-shadow: 0 12px 32px rgba(46, 47, 66, 0.2);
+    }
+    
+    ion-icon {
+      font-size: 1.5rem;
+      color: var(--fitsync-text-on-primary) !important;
     }
   }
   
   ion-fab-list {
     ion-fab-button {
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+      --background: white;
+      --color: var(--fitsync-text-primary);
+      --box-shadow: 0 4px 16px rgba(46, 47, 66, 0.1);
+      width: 48px;
+      height: 48px;
+      
+      &:hover {
+        --background: var(--fitsync-background-subtle);
+      }
+      
+      ion-icon {
+        color: var(--fitsync-text-primary) !important;
+      }
     }
   }
 }
 
-/* Section titles */
+/* Section Titles */
 .section-title {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.75rem;
   margin-bottom: 1rem;
-  font-weight: 600;
-
+  
   ion-icon {
-    font-size: 1.2rem;
+    font-size: 1.25rem;
+    color: var(--fitsync-primary);
+  }
+  
+  .title-text {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--fitsync-text-primary);
   }
 }
 
-/* Header styling */
-ion-header {
-  ion-toolbar {
-    --background: var(--ion-color-primary);
-    --color: white;
+/* Exercise Image Placeholders */
+.exercise-placeholder {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, var(--fitsync-primary-tint), var(--fitsync-secondary-tint));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  
+  ion-icon {
+    color: var(--fitsync-primary);
+    opacity: 0.7;
+  }
+}
 
-    ion-title {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      font-weight: 600;
-    }
-
-    ion-button {
-      --color: white;
-    }
+.exercise-placeholder-small {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, var(--fitsync-primary-tint), var(--fitsync-secondary-tint));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  
+  ion-icon {
+    color: var(--fitsync-primary);
+    opacity: 0.7;
+    font-size: 1.2rem;
   }
 }
 
 /* Responsive Design */
 @media (max-width: 768px) {
   .home-container {
-    padding: 0.75rem;
+    padding: 1rem;
   }
   
-  .user-stats {
-    flex-direction: column;
-    align-items: center;
-    
-    .stat-card {
-      width: 100%;
-      max-width: 280px;
-      justify-content: center;
+  .stats-grid {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+  
+  .actions-grid {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+  
+  .exercises-carousel {
+    .exercise-card {
+      min-width: 160px;
     }
   }
   
-  .hero-content {
-    padding: 1.5rem 0 !important;
+  .header-content {
+    .logo-section {
+      .logo-text {
+        font-size: 1.125rem !important;
+      }
+    }
   }
 }
 
 @media (max-width: 480px) {
   .home-container {
-    padding: 0.5rem;
+    padding: 0.75rem;
   }
-
-  .user-stats {
-    .stat-card {
-      padding: 0.5rem;
+  
+  .greeting-section {
+    .greeting-title {
+      font-size: 1.5rem !important;
+    }
+    
+    .greeting-subtitle {
+      font-size: 0.875rem !important;
+    }
+  }
+  
+  .feature-content {
+    .feature-info {
+      gap: 0.75rem !important;
       
-      .stat-number {
-        font-size: 1rem;
-      }
-      
-      .stat-label {
-        font-size: 0.7rem;
+      .feature-icon {
+        width: 36px !important;
+        height: 36px !important;
       }
     }
   }
 }
 
-/* Dark Mode Support */
-@media (prefers-color-scheme: dark) {
-  .journey-section .user-stats .stat-card {
-    background: var(--ion-color-dark-shade);
+/* Animations */
+.fitsync-fade-in {
+  animation: fitsync-fade-in 0.5s ease-out;
+}
+
+.fitsync-slide-up {
+  animation: fitsync-slide-up 0.6s ease-out;
+}
+
+@keyframes fitsync-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
   }
-  
-  .tips-section .tip-content {
-    background: var(--ion-color-dark-shade);
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fitsync-slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }

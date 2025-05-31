@@ -1,0 +1,317 @@
+/**
+ * FitSync - Correções de Contraste e Acessibilidade
+ * ================================================================
+ * Este arquivo contém correções para problemas de contraste visual
+ * onde elementos brancos ficam invisíveis em fundos verdes/claros
+ * e elementos pretos ficam invisíveis em fundos escuros.
+ */
+
+/* ===== CORREÇÕES GERAIS DE CONTRASTE ===== */
+
+/* Botões primários - garantir texto sempre visível */
+ion-button[color="primary"] {
+  --color: var(--fitsync-text-on-primary) !important;
+  
+  ion-icon {
+    color: var(--fitsync-text-on-primary) !important;
+  }
+}
+
+/* Elementos selecionados - garantir contraste adequado */
+.selected,
+[aria-selected="true"],
+.tab-selected {
+  ion-icon {
+    color: var(--fitsync-text-on-primary) !important;
+  }
+  
+  ion-label {
+    color: var(--fitsync-text-on-primary) !important;
+  }
+}
+
+/* Tabs selecionadas */
+ion-tab-button.tab-selected {
+  --color: var(--fitsync-text-primary) !important;
+  
+  ion-icon {
+    color: var(--fitsync-primary) !important;
+  }
+  
+  ion-label {
+    color: var(--fitsync-primary) !important;
+  }
+}
+
+/* Segmentos selecionados */
+ion-segment-button.segment-button-checked {
+  --color: var(--fitsync-text-on-primary) !important;
+  --background: var(--fitsync-primary) !important;
+  --border-color: var(--fitsync-primary) !important;
+  
+  ion-icon {
+    color: var(--fitsync-text-on-primary) !important;
+  }
+}
+
+/* Cards selecionados */
+.fitsync-card.selected,
+.fitsync-card--selected,
+ion-card.selected {
+  .card-title,
+  .card-header,
+  h1, h2, h3, h4, h5, h6 {
+    color: var(--fitsync-text-primary) !important;
+  }
+  
+  .card-content,
+  p, span, ion-text {
+    color: var(--fitsync-text-secondary) !important;
+  }
+  
+  ion-icon {
+    color: var(--fitsync-primary) !important;
+  }
+}
+
+/* Itens de lista selecionados */
+ion-item.selected,
+ion-item[aria-selected="true"] {
+  --color: var(--fitsync-text-primary) !important;
+  
+  ion-icon {
+    color: var(--fitsync-primary) !important;
+  }
+  
+  ion-label {
+    color: var(--fitsync-text-primary) !important;
+  }
+}
+
+/* Chips/badges selecionados */
+.chip.selected,
+.badge.selected,
+ion-chip.selected {
+  background: var(--fitsync-primary) !important;
+  color: var(--fitsync-text-on-primary) !important;
+  
+  ion-icon {
+    color: var(--fitsync-text-on-primary) !important;
+  }
+}
+
+/* ===== CORREÇÕES ESPECÍFICAS PARA MODO ESCURO ===== */
+@media (prefers-color-scheme: dark) {
+  
+  /* Texto em fundos escuros */
+  .dark-background,
+  [style*="background: #141414"],
+  [style*="background-color: #141414"],
+  [style*="background: var(--ion-color-secondary)"] {
+    color: var(--fitsync-text-on-dark) !important;
+    
+    h1, h2, h3, h4, h5, h6 {
+      color: var(--fitsync-text-on-dark) !important;
+    }
+    
+    p, span, ion-text {
+      color: var(--fitsync-text-secondary) !important;
+    }
+    
+    ion-icon {
+      color: var(--fitsync-text-on-dark) !important;
+    }
+  }
+  
+  /* Botões em modo escuro */
+  ion-button[color="secondary"] {
+    --color: var(--fitsync-text-on-dark) !important;
+    
+    ion-icon {
+      color: var(--fitsync-text-on-dark) !important;
+    }
+  }
+}
+
+/* ===== CORREÇÕES ESPECÍFICAS PARA MODO CLARO ===== */
+@media (prefers-color-scheme: light) {
+  
+  /* Texto em fundos claros */
+  .light-background,
+  [style*="background: #FFFFFF"],
+  [style*="background-color: #FFFFFF"],
+  [style*="background: white"] {
+    color: var(--fitsync-text-primary) !important;
+    
+    h1, h2, h3, h4, h5, h6 {
+      color: var(--fitsync-text-primary) !important;
+    }
+    
+    p, span, ion-text {
+      color: var(--fitsync-text-secondary) !important;
+    }
+    
+    ion-icon {
+      color: var(--fitsync-text-primary) !important;
+    }
+  }
+}
+
+/* ===== CORREÇÕES PARA ELEMENTOS PRIMÁRIOS ===== */
+
+/* Elementos com fundo primário (verde) */
+[style*="background: var(--ion-color-primary)"],
+[style*="background-color: var(--ion-color-primary)"],
+[style*="background: #E6FE58"],
+[style*="background-color: #E6FE58"],
+.primary-background {
+  color: var(--fitsync-text-on-primary) !important;
+  
+  h1, h2, h3, h4, h5, h6 {
+    color: var(--fitsync-text-on-primary) !important;
+  }
+  
+  p, span, ion-text {
+    color: var(--fitsync-text-on-primary) !important;
+  }
+  
+  ion-icon {
+    color: var(--fitsync-text-on-primary) !important;
+  }
+  
+  ion-label {
+    color: var(--fitsync-text-on-primary) !important;
+  }
+}
+
+/* ===== CORREÇÕES PARA FAB E BOTÕES FLUTUANTES ===== */
+ion-fab-button {
+  --color: var(--fitsync-text-on-primary) !important;
+  
+  ion-icon {
+    color: var(--fitsync-text-on-primary) !important;
+  }
+}
+
+/* ===== CORREÇÕES PARA TOOLBAR E HEADER ===== */
+ion-toolbar {
+  ion-title {
+    color: var(--fitsync-text-on-dark) !important;
+  }
+  
+  ion-button {
+    --color: var(--fitsync-text-on-dark) !important;
+    
+    ion-icon {
+      color: var(--fitsync-text-on-dark) !important;
+    }
+  }
+}
+
+/* Header com gradiente primário */
+ion-header ion-toolbar[style*="--background: var(--fitsync-gradient-primary)"] {
+  ion-title {
+    color: var(--fitsync-text-on-primary) !important;
+  }
+  
+  ion-button {
+    --color: var(--fitsync-text-on-primary) !important;
+    
+    ion-icon {
+      color: var(--fitsync-text-on-primary) !important;
+    }
+  }
+}
+
+/* ===== CORREÇÕES PARA BADGES E INDICADORES ===== */
+.badge,
+.badge--primary,
+.difficulty-badge,
+.card-badge {
+  color: var(--fitsync-text-on-primary) !important;
+}
+
+.badge--secondary {
+  color: var(--fitsync-text-on-dark) !important;
+}
+
+/* ===== UTILITIES PARA FORÇAR CONTRASTE ===== */
+.force-contrast-light {
+  color: var(--fitsync-text-primary) !important;
+}
+
+.force-contrast-dark {
+  color: var(--fitsync-text-on-dark) !important;
+}
+
+.force-contrast-primary {
+  color: var(--fitsync-text-on-primary) !important;
+}
+
+/* ===== CORREÇÕES PARA ELEMENTOS ESPECÍFICOS DO FITSYNC ===== */
+
+/* Exercícios selecionados */
+.exercise-card.selected,
+.exercise-item.selected {
+  .exercise-name,
+  .exercise-title {
+    color: var(--fitsync-text-primary) !important;
+  }
+  
+  .exercise-description,
+  .exercise-details {
+    color: var(--fitsync-text-secondary) !important;
+  }
+  
+  .exercise-difficulty,
+  .difficulty-badge {
+    color: var(--fitsync-text-on-primary) !important;
+  }
+}
+
+/* Cartões de treino */
+.workout-card.selected,
+.fitsync-card--workout.selected {
+  .card-title {
+    color: var(--fitsync-text-primary) !important;
+  }
+  
+  .card-content {
+    color: var(--fitsync-text-secondary) !important;
+  }
+  
+  .stat-value {
+    color: var(--fitsync-primary) !important;
+  }
+}
+
+/* Elementos de progresso */
+.progress-indicator,
+.progress-bar {
+  .progress-text,
+  .progress-label {
+    color: var(--fitsync-text-primary) !important;
+  }
+  
+  .progress-value {
+    color: var(--fitsync-primary) !important;
+  }
+}
+
+/* ===== DEBUGGING - REMOVER EM PRODUÇÃO ===== */
+.debug-contrast {
+  border: 2px solid red !important;
+  position: relative;
+  
+  &::after {
+    content: "CONTRASTE";
+    position: absolute;
+    top: 0;
+    right: 0;
+    background: red;
+    color: white;
+    padding: 2px 4px;
+    font-size: 10px;
+    z-index: 9999;
+  }
+}

@@ -4,11 +4,12 @@ ion-menu {
   
   ion-toolbar {
     --background: var(--ion-color-primary);
-    --color: white;
+    --color: var(--fitsync-text-on-primary);
     
     ion-title {
       font-weight: 700;
       font-size: 1.2rem;
+      color: var(--fitsync-text-on-primary) !important;
     }
   }
   
