@@ -1,25 +1,25 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
+<ion-header [translucent]="true" class="ion-no-border">
+  <ion-toolbar class="header-gradient">
     <div class="header-content">
       <div class="header-left">
         <ion-buttons slot="start">
-          <ion-button fill="clear" class="fitsync-btn icon">
+          <ion-button fill="clear" class="icon-container icon-container--ghost">
             <ion-icon name="chevron-back"></ion-icon>
           </ion-button>
         </ion-buttons>
         <div class="header-title">
-          <h1 class="fitsync-text-title">{{ exercise?.name || 'Exercício' }}</h1>
+          <h1 class="hero-medium gradient-text">{{ exercise?.name || 'Exercício' }}</h1>
         </div>
       </div>
       
       <div class="header-actions">
-        <ion-button fill="clear" class="fitsync-btn icon" (click)="toggleFavorite()" *ngIf="exercise">
+        <ion-button fill="clear" class="icon-container icon-container--ghost" (click)="toggleFavorite()" *ngIf="exercise">
           <ion-icon 
             [name]="isFavorite ? 'heart' : 'heart'"
             [class]="isFavorite ? 'favorite-active' : 'favorite-inactive'">
           </ion-icon>
         </ion-button>
-        <ion-button fill="clear" class="fitsync-btn icon" (click)="shareExercise()" *ngIf="exercise">
+        <ion-button fill="clear" class="icon-container icon-container--ghost" (click)="shareExercise()" *ngIf="exercise">
           <ion-icon name="share"></ion-icon>
         </ion-button>
       </div>
@@ -39,12 +39,12 @@
     
     <div class="hero-content">
       <div class="exercise-info">
-        <h1 class="exercise-title">{{ exercise.name }}</h1>
-        <p class="exercise-category">{{ getMuscleGroupName(exercise.muscleGroup || 'general') }}</p>
+        <h1 class="hero-large gradient-text">{{ exercise.name }}</h1>
+        <p class="modern-subtitle text-secondary">{{ getMuscleGroupName(exercise.muscleGroup || 'general') }}</p>
       </div>
       
       <div class="difficulty-badge" [class]="'difficulty-' + (exercise.difficulty || 'beginner').toLowerCase()">
-        <span>{{ exercise.difficulty }}</span>
+        <span class="data-display-label">{{ exercise.difficulty }}</span>
       </div>
     </div>
   </div>
@@ -53,32 +53,32 @@
   <div class="stats-section">
     <div class="stats-grid">
       <div class="fitsync-card fitsync-card--workout stat-card">
-        <div class="stat-icon-wrapper">
+        <div class="icon-container icon-container--gradient icon-container--primary">
           <ion-icon name="time" class="stat-icon"></ion-icon>
         </div>
         <div class="stat-content">
-          <span class="stat-value">{{ exercise.duration || 0 }}</span>
-          <span class="stat-label">minutos</span>
+          <span class="data-display-number text-primary">{{ exercise.duration || 0 }}</span>
+          <span class="data-display-label text-secondary">minutos</span>
         </div>
       </div>
       
       <div class="fitsync-card fitsync-card--workout stat-card">
-        <div class="stat-icon-wrapper">
+        <div class="icon-container icon-container--gradient icon-container--danger">
           <ion-icon name="flame" class="stat-icon"></ion-icon>
         </div>
         <div class="stat-content">
-          <span class="stat-value">{{ exercise.calories || 0 }}</span>
-          <span class="stat-label">kcal</span>
+          <span class="data-display-number text-danger">{{ exercise.calories || 0 }}</span>
+          <span class="data-display-label text-secondary">kcal</span>
         </div>
       </div>
       
       <div class="fitsync-card fitsync-card--workout stat-card" *ngIf="exercise?.equipment">
-        <div class="stat-icon-wrapper">
+        <div class="icon-container icon-container--gradient icon-container--accent">
           <ion-icon name="fitness" class="stat-icon"></ion-icon>
         </div>
         <div class="stat-content">
-          <span class="stat-value">{{ exercise.equipment }}</span>
-          <span class="stat-label">equipamento</span>
+          <span class="modern-body text-accent">{{ exercise.equipment }}</span>
+          <span class="data-display-label text-secondary">equipamento</span>
         </div>
       </div>
     </div>
@@ -90,13 +90,15 @@
     <div class="content-section">
       <div class="section-header">
         <div class="section-title">
-          <ion-icon name="information-circle" class="section-icon"></ion-icon>
-          <h2>Descrição</h2>
+          <div class="icon-container icon-container--outline icon-container--primary">
+            <ion-icon name="information-circle" class="section-icon"></ion-icon>
+          </div>
+          <h2 class="modern-title text-primary">Descrição</h2>
         </div>
       </div>
       
       <div class="fitsync-card description-card">
-        <p class="description-text">{{ exercise.description }}</p>
+        <p class="modern-body">{{ exercise.description }}</p>
       </div>
     </div>
 
@@ -104,8 +106,10 @@
     <div class="content-section">
       <div class="section-header">
         <div class="section-title">
-          <ion-icon name="list" class="section-icon"></ion-icon>
-          <h2>Como Executar</h2>
+          <div class="icon-container icon-container--outline icon-container--accent">
+            <ion-icon name="list" class="section-icon"></ion-icon>
+          </div>
+          <h2 class="modern-title text-accent">Como Executar</h2>
         </div>
       </div>
       
@@ -113,10 +117,10 @@
         <div class="fitsync-card instruction-card" 
              *ngFor="let instruction of exercise.instructions; let i = index">
           <div class="step-indicator">
-            <span class="step-number">{{ i + 1 }}</span>
+            <span class="code-medium">{{ i + 1 }}</span>
           </div>
           <div class="instruction-content">
-            <p class="instruction-text">{{ instruction }}</p>
+            <p class="modern-body">{{ instruction }}</p>
           </div>
         </div>
       </div>
@@ -126,15 +130,17 @@
     <div class="content-section">
       <div class="section-header">
         <div class="section-title">
-          <ion-icon name="timer" class="section-icon"></ion-icon>
-          <h2>Timer do Exercício</h2>
+          <div class="icon-container icon-container--outline icon-container--success">
+            <ion-icon name="timer" class="section-icon"></ion-icon>
+          </div>
+          <h2 class="modern-title text-success">Timer do Exercício</h2>
         </div>
       </div>
       
       <div class="fitsync-card timer-card">
         <div class="timer-display">
-          <div class="timer-time">{{ formatTime(currentTime) }}</div>
-          <div class="timer-state">{{ timerState === 'rest' ? 'Descanso' : 'Exercício' }}</div>
+          <div class="data-display-number text-primary">{{ formatTime(currentTime) }}</div>
+          <div class="modern-subtitle text-secondary">{{ timerState === 'rest' ? 'Descanso' : 'Exercício' }}</div>
         </div>
         
         <div class="timer-controls">
@@ -142,18 +148,24 @@
             (click)="startTimer()" 
             [disabled]="isTimerRunning"
             class="fitsync-btn fitsync-btn--primary timer-btn">
-            <ion-icon name="play" class="btn-icon"></ion-icon>
-            Iniciar Timer
+            <div class="icon-container icon-container--ghost">
+              <ion-icon name="play" class="btn-icon"></ion-icon>
+            </div>
+            <span class="ui-element-button">Iniciar Timer</span>
           </button>
           
           <div class="timer-actions" *ngIf="isTimerRunning">
             <button (click)="pauseTimer()" class="fitsync-btn fitsync-btn--outline">
-              <ion-icon name="pause" class="btn-icon"></ion-icon>
-              Pausar
+              <div class="icon-container icon-container--ghost">
+                <ion-icon name="pause" class="btn-icon"></ion-icon>
+              </div>
+              <span class="label-md">Pausar</span>
             </button>
             <button (click)="resetTimer()" class="fitsync-btn fitsync-btn--ghost">
-              <ion-icon name="refresh" class="btn-icon"></ion-icon>
-              Reset
+              <div class="icon-container icon-container--ghost">
+                <ion-icon name="refresh" class="btn-icon"></ion-icon>
+              </div>
+              <span class="label-md">Reset</span>
             </button>
           </div>
         </div>
@@ -163,19 +175,25 @@
 
   <!-- Workout Tracking -->
   <div class="content-section">
-    <h2 class="fitsync-text section-title primary">
-      <ion-icon name="barbell-outline"></ion-icon>
-      Registrar Treino
-    </h2>
+    <div class="section-header">
+      <div class="section-title">
+        <div class="icon-container icon-container--gradient icon-container--warning">
+          <ion-icon name="barbell-outline"></ion-icon>
+        </div>
+        <h2 class="headline-md gradient-text">Registrar Treino</h2>
+      </div>
+    </div>
     
     <!-- Performance History -->
     <div class="performance-history" *ngIf="exerciseHistory.length > 0">
-      <h3 class="fitsync-text large primary">Histórico de Performance</h3>
+      <h3 class="title-lg text-primary">Histórico de Performance</h3>
       <div class="fitsync-card glass">
         <div class="chart-placeholder">
-          <ion-icon name="analytics-outline"></ion-icon>
-          <p class="fitsync-text medium">Último treino: {{ getLastWorkoutDate() }}</p>
-          <p class="fitsync-text medium">Melhor série: {{ getBestSet() }}</p>
+          <div class="icon-container icon-container--outline icon-container--accent">
+            <ion-icon name="analytics-outline"></ion-icon>
+          </div>
+          <p class="body-md">Último treino: {{ getLastWorkoutDate() }}</p>
+          <p class="body-md">Melhor série: {{ getBestSet() }}</p>
         </div>
       </div>
     </div>
@@ -183,15 +201,15 @@
     <div class="workout-tracking">
       <!-- Target Zone -->
       <div class="target-zone" *ngIf="getRecommendedWeight() > 0">
-        <h4 class="fitsync-text large primary">Zona Alvo Recomendada</h4>
+        <h4 class="title-lg text-primary">Zona Alvo Recomendada</h4>
         <div class="fitsync-card recommendation-card">
           <div class="rec-item">
-            <span class="fitsync-text medium muted">Peso:</span>
-            <span class="fitsync-text large primary">{{ getRecommendedWeight() }}kg</span>
+            <span class="body-md text-secondary">Peso:</span>
+            <span class="title-lg text-primary">{{ getRecommendedWeight() }}kg</span>
           </div>
           <div class="rec-item">
-            <span class="fitsync-text medium muted">Repetições:</span>
-            <span class="fitsync-text large primary">{{ getRecommendedReps() }}</span>
+            <span class="body-md text-secondary">Repetições:</span>
+            <span class="title-lg text-primary">{{ getRecommendedReps() }}</span>
           </div>
         </div>
       </div>
@@ -199,19 +217,19 @@
       <div class="sets-container">
         <div class="fitsync-card set-input" *ngFor="let set of workoutSets; let i = index">
           <div class="set-header">
-            <span class="fitsync-text large primary">Série {{ i + 1 }}</span>
+            <span class="title-lg text-primary">Série {{ i + 1 }}</span>
             <div class="set-status">
               <ion-checkbox 
                 [(ngModel)]="set.completed"
                 (ionChange)="onSetCompleted(i)"
                 color="success">
               </ion-checkbox>
-              <span class="fitsync-text medium">Completa</span>
+              <span class="body-md">Completa</span>
             </div>
           </div>
           <div class="input-row">
             <div class="fitsync-input small">
-              <label class="input-label">Reps</label>
+              <label class="label-sm text-secondary">Reps</label>
               <ion-input 
                 [(ngModel)]="set.reps" 
                 placeholder="12" 
@@ -220,7 +238,7 @@
               </ion-input>
             </div>
             <div class="fitsync-input small">
-              <label class="input-label">Peso (kg)</label>
+              <label class="label-sm text-secondary">Peso (kg)</label>
               <ion-input 
                 [(ngModel)]="set.weight" 
                 placeholder="20" 
@@ -230,7 +248,7 @@
               </ion-input>
             </div>
             <div class="fitsync-input small">
-              <label class="input-label">RPE</label>
+              <label class="label-sm text-secondary">RPE</label>
               <ion-input 
                 [(ngModel)]="set.rpe" 
                 placeholder="8" 
@@ -242,20 +260,22 @@
             </div>
             <button 
               (click)="removeSet(i)" 
-              class="fitsync-btn icon ghost">
-                            <ion-icon name="trash-outline"></ion-icon>
+              class="icon-container icon-container--ghost icon-container--danger">
+              <ion-icon name="trash-outline"></ion-icon>
             </button>
           </div>
           <!-- Rest Timer for each set -->
           <div class="set-rest-timer" *ngIf="set.completed && !isLastSet(i)">
             <div class="mini-timer">
-              <ion-icon name="time-outline"></ion-icon>
-              <span class="fitsync-text small">Descanso: {{ formatTime(getRestTimeForSet(i)) }}</span>
+              <div class="icon-container icon-container--outline icon-container--primary">
+                <ion-icon name="time-outline"></ion-icon>
+              </div>
+              <span class="body-sm">Descanso: {{ formatTime(getRestTimeForSet(i)) }}</span>
               <button 
                 class="fitsync-btn outline small"
                 (click)="startRestTimer(i)"
                 [disabled]="restTimers[i].running">
-                {{ restTimers[i].running ? 'Executando' : 'Iniciar' }}
+                <span class="label-sm">{{ restTimers[i].running ? 'Executando' : 'Iniciar' }}</span>
               </button>
             </div>
           </div>
@@ -264,23 +284,23 @@
       
       <!-- Workout Summary -->
       <div class="fitsync-card glass workout-summary" *ngIf="hasCompletedSets()">
-        <h4 class="fitsync-text large primary">Resumo do Treino</h4>
+        <h4 class="title-lg text-primary">Resumo do Treino</h4>
         <div class="summary-stats">
           <div class="stat-item">
-            <span class="fitsync-text large primary">{{ getCompletedSets() }}</span>
-            <span class="fitsync-text small muted">Séries</span>
+            <span class="title-lg text-primary">{{ getCompletedSets() }}</span>
+            <span class="body-sm text-secondary">Séries</span>
           </div>
           <div class="stat-item">
-            <span class="fitsync-text large primary">{{ getTotalReps() }}</span>
-            <span class="fitsync-text small muted">Repetições</span>
+            <span class="title-lg text-primary">{{ getTotalReps() }}</span>
+            <span class="body-sm text-secondary">Repetições</span>
           </div>
           <div class="stat-item">
-            <span class="fitsync-text large primary">{{ getTotalVolume() }}</span>
-            <span class="fitsync-text small muted">Volume (kg)</span>
+            <span class="title-lg text-primary">{{ getTotalVolume() }}</span>
+            <span class="body-sm text-secondary">Volume (kg)</span>
           </div>
           <div class="stat-item">
-            <span class="fitsync-text large primary">{{ getAverageRPE() }}</span>
-            <span class="fitsync-text small muted">RPE Médio</span>
+            <span class="title-lg text-primary">{{ getAverageRPE() }}</span>
+            <span class="body-sm text-secondary">RPE Médio</span>
           </div>
         </div>
       </div>
@@ -289,15 +309,19 @@
         <button 
           (click)="addSet()" 
           class="fitsync-btn outline large">
-          <ion-icon name="add-outline" slot="start"></ion-icon>
-          Adicionar Série
+          <div class="icon-container icon-container--ghost">
+            <ion-icon name="add-outline" slot="start"></ion-icon>
+          </div>
+          <span class="label-md">Adicionar Série</span>
         </button>
         <button 
           (click)="saveWorkout()" 
           class="fitsync-btn primary large"
           [disabled]="!hasCompletedSets()">
-          <ion-icon name="checkmark-outline" slot="start"></ion-icon>
-          Salvar Treino
+          <div class="icon-container icon-container--ghost">
+            <ion-icon name="checkmark-outline" slot="start"></ion-icon>
+          </div>
+          <span class="label-md">Salvar Treino</span>
         </button>
       </div>
     </div>
@@ -305,18 +329,22 @@
 
   <!-- Related Exercises -->
   <div class="content-section" *ngIf="relatedExercises.length > 0">
-    <h2 class="fitsync-text section-title primary">
-      <ion-icon name="fitness-outline"></ion-icon>
-      Exercícios Relacionados
-    </h2>
+    <div class="section-header">
+      <div class="section-title">
+        <div class="icon-container icon-container--gradient icon-container--secondary">
+          <ion-icon name="fitness-outline"></ion-icon>
+        </div>
+        <h2 class="headline-md gradient-text">Exercícios Relacionados</h2>
+      </div>
+    </div>
     <div class="related-exercises">
       <div class="fitsync-card exercise related-card" 
            *ngFor="let related of relatedExercises" 
            (click)="openRelatedExercise(related)">
         <img [src]="related.imageUrl" [alt]="related.name" />
         <div class="related-info">
-          <h4 class="fitsync-text medium white">{{ related.name }}</h4>
-          <p class="fitsync-text small muted">{{ getMuscleGroupName(related.muscleGroup) }}</p>
+          <h4 class="body-lg text-white">{{ related.name }}</h4>
+          <p class="body-sm text-secondary">{{ getMuscleGroupName(related.muscleGroup) }}</p>
         </div>
       </div>
     </div>
@@ -326,6 +354,6 @@
 <ion-content [fullscreen]="true" class="loading-content" *ngIf="!exercise">
   <div class="loading-container">
     <ion-spinner name="crescent"></ion-spinner>
-    <p class="fitsync-text medium">Carregando exercício...</p>
+    <p class="body-md">Carregando exercício...</p>
   </div>
 </ion-content>

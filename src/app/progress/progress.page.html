@@ -1,12 +1,18 @@
 <ion-header [translucent]="true" class="header-modern">
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-back-button color="light" class="fitsync-btn icon"></ion-back-button>
+      <ion-button fill="clear" class="fitsync-btn icon">
+        <div class="icon-container icon-container-md icon-container-light">
+          <ion-icon name="chevron-back" class="icon icon-md icon-hover"></ion-icon>
+        </div>
+      </ion-button>
     </ion-buttons>
-    <ion-title class="fitsync-text gradient">Progresso & Analytics</ion-title>
+    <ion-title class="headline-medium text-gradient-primary">Progresso & Analytics</ion-title>
     <ion-buttons slot="end">
       <ion-button fill="clear" class="fitsync-btn icon" (click)="openWorkoutHistory()">
-        <ion-icon name="calendar-outline" color="light"></ion-icon>
+        <div class="icon-container icon-container-sm icon-container-primary">
+          <ion-icon name="calendar-outline" class="icon icon-sm"></ion-icon>
+        </div>
       </ion-button>
     </ion-buttons>
   </ion-toolbar>
@@ -16,8 +22,10 @@
   <div class="content-container">
     <!-- Loading State -->
     <div class="loading-container" *ngIf="isLoading">
-      <ion-spinner name="crescent"></ion-spinner>
-      <p class="fitsync-text muted">Carregando dados de progresso...</p>
+      <div class="icon-container icon-container-xl icon-container-primary">
+        <ion-spinner name="crescent" class="icon icon-xl"></ion-spinner>
+      </div>
+      <p class="body-medium text-muted">Carregando dados de progresso...</p>
     </div>
 
   <!-- Main Content -->
@@ -25,49 +33,59 @@
     
     <!-- Performance Overview -->
     <div class="performance-overview" *ngIf="performanceMetrics">
-      <h2 class="fitsync-text section-title primary">
-        <ion-icon name="analytics-outline"></ion-icon>
+      <h2 class="headline-small text-gradient-primary">
+        <div class="icon-container icon-container-sm icon-container-gradient" style="display: inline-flex; margin-right: 8px;">
+          <ion-icon name="analytics-outline" class="icon icon-sm"></ion-icon>
+        </div>
         Visão Geral
       </h2>
       
       <div class="metrics-grid">
         <div class="fitsync-card metric primary">
           <div class="metric-icon">
-            <ion-icon name="barbell-outline"></ion-icon>
+            <div class="icon-container icon-container-md icon-container-primary">
+              <ion-icon name="barbell-outline" class="icon icon-md"></ion-icon>
+            </div>
           </div>
           <div class="metric-info">
-            <span class="fitsync-text large primary">{{ performanceMetrics.totalWorkouts || 0 }}</span>
-            <span class="fitsync-text small muted">Treinos Realizados</span>
+            <span class="title-large text-emphasis">{{ performanceMetrics.totalWorkouts || 0 }}</span>
+            <span class="body-small text-muted">Treinos Realizados</span>
           </div>
         </div>
         
         <div class="fitsync-card metric success">
           <div class="metric-icon">
-            <ion-icon name="trending-up-outline"></ion-icon>
+            <div class="icon-container icon-container-md icon-container-success">
+              <ion-icon name="trending-up-outline" class="icon icon-md"></ion-icon>
+            </div>
           </div>
           <div class="metric-info">
-            <span class="fitsync-text large primary">{{ formatVolume(performanceMetrics.totalVolume || 0) }}kg</span>
-            <span class="fitsync-text small muted">Volume Total</span>
+            <span class="title-large text-emphasis">{{ formatVolume(performanceMetrics.totalVolume || 0) }}kg</span>
+            <span class="body-small text-muted">Volume Total</span>
           </div>
         </div>
         
         <div class="metric-card warning">
           <div class="metric-icon">
-            <ion-icon name="time-outline"></ion-icon>
+            <div class="icon-container icon-container-md icon-container-warning">
+              <ion-icon name="time-outline" class="icon icon-md icon-rotate"></ion-icon>
+            </div>
           </div>
           <div class="metric-info">
-            <span class="metric-value">{{ performanceMetrics.averageWorkoutDuration || 0 }}</span>
-            <span class="metric-label">Min. Médio</span>
+            <span class="title-large text-emphasis">{{ performanceMetrics.averageWorkoutDuration || 0 }}</span>
+            <span class="body-small text-muted">Min. Médio</span>
           </div>
         </div>
         
         <div class="metric-card" [ngClass]="getConsistencyColor()">
           <div class="metric-icon">
-            <ion-icon name="checkmark-circle-outline"></ion-icon>
+            <div class="icon-container icon-container-md" [class.icon-container-success]="getConsistencyColor() === 'success'" [class.icon-container-warning]="getConsistencyColor() === 'warning'" [class.icon-container-danger]="getConsistencyColor() === 'danger'">
+              <ion-icon name="checkmark-circle-outline" class="icon icon-md"></ion-icon>
+            </div>
           </div>
           <div class="metric-info">
-            <span class="metric-value">{{ performanceMetrics.consistencyScore || 0 }}%</span>
-            <span class="metric-label">Consistência</span>
+            <span class="title-large text-emphasis">{{ performanceMetrics.consistencyScore || 0 }}%</span>
+            <span class="body-small text-muted">Consistência</span>
           </div>
         </div>
       </div>
@@ -75,10 +93,12 @@
       <!-- Progress Description -->
       <div class="progress-description">
         <div class="description-card">
-          <ion-icon name="trophy-outline"></ion-icon>
+          <div class="icon-container icon-container-md icon-container-warning">
+            <ion-icon name="trophy-outline" class="icon icon-md"></ion-icon>
+          </div>
           <div>
-            <h4>{{ getProgressDescription() }}</h4>
-            <p>Progresso semanal: +{{ performanceMetrics.weeklyProgress || 0 }}%</p>
+            <h4 class="title-medium text-emphasis">{{ getProgressDescription() }}</h4>
+            <p class="body-medium text-muted">Progresso semanal: <span class="text-success">+{{ performanceMetrics.weeklyProgress || 0 }}%</span></p>
           </div>
         </div>
       </div>
@@ -88,10 +108,12 @@
   <!-- Overview Charts Section -->
   <div class="section">
     <div class="section-header">
-      <h2>Visão Geral dos Gráficos</h2>
+      <h2 class="headline-small text-gradient-primary">Visão Geral dos Gráficos</h2>
       <ion-button fill="clear" size="small" (click)="openWorkoutHistory()">
-        <ion-icon name="analytics-outline" slot="start"></ion-icon>
-        Ver Detalhes
+        <div class="icon-container icon-container-sm icon-container-primary">
+          <ion-icon name="analytics-outline" class="icon icon-sm" slot="start"></ion-icon>
+        </div>
+        <span class="label-medium">Ver Detalhes</span>
       </ion-button>
     </div>
 
@@ -121,12 +143,14 @@
   <!-- Achievements Section -->
   <div class="achievements-section" *ngIf="achievements.length > 0">
     <div class="section-header">
-      <h2 class="section-title">
-        <ion-icon name="trophy-outline"></ion-icon>
+      <h2 class="headline-small text-gradient-primary">
+        <div class="icon-container icon-container-sm icon-container-warning" style="display: inline-flex; margin-right: 8px;">
+          <ion-icon name="trophy-outline" class="icon icon-sm"></ion-icon>
+        </div>
         Conquistas Recentes
       </h2>
       <ion-button fill="clear" size="small" (click)="openAchievements()">
-        Ver Todas
+        <span class="label-medium text-accent">Ver Todas</span>
       </ion-button>
     </div>
     
@@ -135,12 +159,14 @@
            *ngFor="let achievement of achievements.slice(0, 3)" 
            [ngClass]="achievement.category">
         <div class="achievement-icon">
-          <ion-icon [name]="achievement.icon"></ion-icon>
+          <div class="icon-container icon-container-lg icon-container-gradient">
+            <ion-icon [name]="achievement.icon" class="icon icon-lg"></ion-icon>
+          </div>
         </div>
         <div class="achievement-info">
-          <h4>{{ achievement.title }}</h4>
-          <p>{{ achievement.description }}</p>
-          <span class="achievement-date">{{ formatDate(achievement.dateEarned) }}</span>
+          <h4 class="title-medium text-emphasis">{{ achievement.title }}</h4>
+          <p class="body-small text-muted">{{ achievement.description }}</p>
+          <span class="label-small text-accent">{{ formatDate(achievement.dateEarned) }}</span>
         </div>
       </div>
     </div>
@@ -148,22 +174,24 @@
 
   <!-- Filters -->
   <div class="filters-section">
-    <h2 class="section-title">
-      <ion-icon name="filter-outline"></ion-icon>
+    <h2 class="headline-small text-gradient-primary">
+      <div class="icon-container icon-container-sm icon-container-secondary" style="display: inline-flex; margin-right: 8px;">
+        <ion-icon name="filter-outline" class="icon icon-sm"></ion-icon>
+      </div>
       Análise de Exercícios
     </h2>
     
     <div class="filter-controls">
       <!-- Time Range Filter -->
       <div class="filter-group">
-        <span class="filter-label">Período:</span>
+        <span class="label-medium text-emphasis">Período:</span>
         <div class="filter-chips">
           <ion-chip 
             *ngFor="let range of ['week', 'month', 'quarter', 'year']"
             [class.active]="selectedTimeRange === range"
             (click)="onTimeRangeChange(range)"
             [color]="selectedTimeRange === range ? 'primary' : 'medium'">
-            <ion-label>
+            <ion-label class="label-medium">
               {{ range === 'week' ? 'Semana' : 
                  range === 'month' ? 'Mês' : 
                  range === 'quarter' ? 'Trimestre' : 'Ano' }}
@@ -174,15 +202,17 @@
       
       <!-- Muscle Group Filter -->
       <div class="filter-group">
-        <span class="filter-label">Grupo Muscular:</span>
+        <span class="label-medium text-emphasis">Grupo Muscular:</span>
         <div class="filter-chips">
           <ion-chip 
             *ngFor="let group of muscleGroups"
             [class.active]="selectedMuscleGroup === group.id"
             (click)="onMuscleGroupChange(group.id)"
             [color]="selectedMuscleGroup === group.id ? 'primary' : 'medium'">
-            <ion-icon [name]="group.icon"></ion-icon>
-            <ion-label>{{ group.name }}</ion-label>
+            <div class="icon-container icon-container-xs" [class.icon-container-primary]="selectedMuscleGroup === group.id" [class.icon-container-light]="selectedMuscleGroup !== group.id">
+              <ion-icon [name]="group.icon" class="icon icon-xs"></ion-icon>
+            </div>
+            <ion-label class="label-medium">{{ group.name }}</ion-label>
           </ion-chip>
         </div>
       </div>
@@ -199,36 +229,38 @@
         <!-- Exercise Header -->
         <div class="exercise-header">
           <div class="exercise-info">
-            <h3>{{ exercise.exerciseName }}</h3>
+            <h3 class="title-medium text-emphasis">{{ exercise.exerciseName }}</h3>
             <span class="muscle-badge" [ngClass]="exercise.muscleGroup">
-              {{ getMuscleGroupName(exercise.muscleGroup) }}
+              <span class="label-small">{{ getMuscleGroupName(exercise.muscleGroup) }}</span>
             </span>
           </div>
           <div class="trend-indicator">
-            <ion-icon 
-              [name]="getTrendIcon(exercise.progressTrend)" 
-              [color]="getTrendColor(exercise.progressTrend)">
-            </ion-icon>
+            <div class="icon-container icon-container-sm" [class.icon-container-success]="getTrendColor(exercise.progressTrend) === 'success'" [class.icon-container-warning]="getTrendColor(exercise.progressTrend) === 'warning'" [class.icon-container-danger]="getTrendColor(exercise.progressTrend) === 'danger'">
+              <ion-icon 
+                [name]="getTrendIcon(exercise.progressTrend)" 
+                class="icon icon-sm">
+              </ion-icon>
+            </div>
           </div>
         </div>
         
         <!-- Progress Stats -->
         <div class="progress-stats">
           <div class="stat-item">
-            <span class="stat-value">{{ exercise.bestSet.weight }}kg</span>
-            <span class="stat-label">Melhor Peso</span>
+            <span class="title-small text-emphasis">{{ exercise.bestSet.weight }}kg</span>
+            <span class="label-small text-muted">Melhor Peso</span>
           </div>
           <div class="stat-item">
-            <span class="stat-value">{{ exercise.bestSet.reps }}</span>
-            <span class="stat-label">Repetições</span>
+            <span class="title-small text-emphasis">{{ exercise.bestSet.reps }}</span>
+            <span class="label-small text-muted">Repetições</span>
           </div>
           <div class="stat-item">
-            <span class="stat-value">{{ formatVolume(exercise.totalVolume) }}</span>
-            <span class="stat-label">Volume Total</span>
+            <span class="title-small text-emphasis">{{ formatVolume(exercise.totalVolume) }}</span>
+            <span class="label-small text-muted">Volume Total</span>
           </div>
           <div class="stat-item">
-            <span class="stat-value">{{ exercise.averageRPE.toFixed(1) }}</span>
-            <span class="stat-label">RPE Médio</span>
+            <span class="title-small text-emphasis">{{ exercise.averageRPE.toFixed(1) }}</span>
+            <span class="label-small text-muted">RPE Médio</span>
           </div>        </div>
         
         <!-- Mini Chart -->
@@ -238,7 +270,7 @@
             [config]="{ type: 'line', color: getTrendColor(exercise.progressTrend) === 'success' ? '#10dc60' : getTrendColor(exercise.progressTrend) === 'danger' ? '#f04141' : '#ffce00', showPoints: false, showGrid: false, height: 80 }"
             [title]="">
           </app-progress-chart>
-          <span class="sessions-count">{{ exercise.sessions.length }} sessões</span>
+          <span class="label-small text-muted">{{ exercise.sessions.length }} sessões</span>
         </div>
       </div>
     </div>
@@ -251,8 +283,10 @@
       fill="outline" 
       (click)="openWorkoutHistory()"
       class="action-btn">
-      <ion-icon name="calendar-outline" slot="start"></ion-icon>
-      Ver Histórico Completo
+      <div class="icon-container icon-container-sm icon-container-primary">
+        <ion-icon name="calendar-outline" class="icon icon-sm" slot="start"></ion-icon>
+      </div>
+      <span class="label-medium">Ver Histórico Completo</span>
     </ion-button>
     
     <ion-button 
@@ -261,8 +295,10 @@
       color="primary"
       (click)="router.navigate(['/lista'])"
       class="action-btn">
-      <ion-icon name="add-outline" slot="start"></ion-icon>
-      Novo Treino
+      <div class="icon-container icon-container-sm icon-container-light">
+        <ion-icon name="add-outline" class="icon icon-sm" slot="start"></ion-icon>
+      </div>
+      <span class="label-medium">Novo Treino</span>
     </ion-button>
   </div>
   </div> <!-- Fecha content-container -->

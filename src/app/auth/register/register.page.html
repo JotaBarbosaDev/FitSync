@@ -3,13 +3,15 @@
     <!-- Header com logo e título -->
     <div class="header-section fitsync-slide-right">
       <ion-button fill="clear" class="back-btn" (click)="goToLogin()">
-        <ion-icon name="arrow-back" slot="icon-only"></ion-icon>
+        <div class="icon-container icon-container--outlined">
+          <ion-icon name="arrow-back" class="icon-md icon-secondary"></ion-icon>
+        </div>
       </ion-button>
       
       <div class="logo-section">
-        <img src="/src/assets/logo.png" alt="FitSync Logo" class="logo">
-        <h1 class="fitsync-text-4xl fitsync-text-center">Criar Conta</h1>
-        <p class="fitsync-text-lg fitsync-text-center">Junte-se à nossa comunidade fitness</p>
+        <img src="assets/logo.png" alt="FitSync Logo" class="logo">
+        <h1 class="hero-large text-gradient text-center">Criar Conta</h1>
+        <p class="personality-friendly text-muted text-center">Junte-se à nossa comunidade fitness</p>
       </div>
     </div>
 
@@ -39,13 +41,13 @@
       <!-- Step 1: Dados Básicos -->
       <div class="form-step" [hidden]="currentStep !== 1">
         <div class="step-header">
-          <h2 class="fitsync-text-2xl fitsync-text-bold">Dados Básicos</h2>
-          <p class="fitsync-text-base">Preencha suas informações pessoais</p>
+          <h2 class="modern-title text-emphasis">Dados Básicos</h2>
+          <p class="modern-body text-muted">Preencha suas informações pessoais</p>
         </div>
 
         <div class="form-section">
           <div class="fitsync-input">
-            <label class="input-label">Nome Completo</label>
+            <label class="input-label ui-element-input text-emphasis">Nome Completo</label>
             <div class="input-wrapper">
               <ion-input
                 type="text"
@@ -56,12 +58,14 @@
                 required
                 clearInput="true">
               </ion-input>
-              <ion-icon name="person" class="input-icon"></ion-icon>
+              <div class="icon-container icon-container--outlined">
+                <ion-icon name="person" class="icon-sm icon-primary"></ion-icon>
+              </div>
             </div>
           </div>
 
           <div class="fitsync-input">
-            <label class="input-label">Email</label>
+            <label class="input-label ui-element-input text-emphasis">Email</label>
             <div class="input-wrapper">
               <ion-input
                 type="email"
@@ -72,12 +76,14 @@
                 required
                 clearInput="true">
               </ion-input>
-              <ion-icon name="mail" class="input-icon"></ion-icon>
+              <div class="icon-container icon-container--outlined">
+                <ion-icon name="mail" class="icon-sm icon-primary"></ion-icon>
+              </div>
             </div>
           </div>
 
           <div class="fitsync-input">
-            <label class="input-label">Senha</label>
+            <label class="input-label ui-element-input text-emphasis">Senha</label>
             <div class="input-wrapper">
               <ion-input
                 [type]="showPassword ? 'text' : 'password'"
@@ -91,10 +97,12 @@
                 fill="clear" 
                 (click)="togglePasswordVisibility()"
                 class="password-toggle">
-                <ion-icon 
-                  [name]="showPassword ? 'eye-off' : 'eye'" 
-                  slot="icon-only">
-                </ion-icon>
+                <div class="icon-container icon-container--ghost">
+                  <ion-icon 
+                    [name]="showPassword ? 'eye-off' : 'eye'" 
+                    class="icon-sm icon-secondary">
+                  </ion-icon>
+                </div>
               </ion-button>
             </div>
             <div class="password-strength" *ngIf="registerData.password">
@@ -106,7 +114,7 @@
           </div>
 
           <div class="fitsync-input">
-            <label class="input-label">Confirmar Senha</label>
+            <label class="input-label label-md text-emphasis">Confirmar Senha</label>
             <div class="input-wrapper">
               <ion-input
                 [type]="showConfirmPassword ? 'text' : 'password'"
@@ -120,15 +128,19 @@
                 fill="clear" 
                 (click)="toggleConfirmPasswordVisibility()"
                 class="password-toggle">
-                <ion-icon 
-                  [name]="showConfirmPassword ? 'eye-off' : 'eye'" 
-                  slot="icon-only">
-                </ion-icon>
+                <div class="icon-container icon-container--ghost">
+                  <ion-icon 
+                    [name]="showConfirmPassword ? 'eye-off' : 'eye'" 
+                    class="icon-sm icon-secondary">
+                  </ion-icon>
+                </div>
               </ion-button>
             </div>
             <div class="validation-message" *ngIf="confirmPassword && !passwordsMatch()">
-              <ion-icon name="alert-circle" color="danger"></ion-icon>
-              <span>As senhas não coincidem</span>
+              <div class="icon-container icon-container--ghost">
+                <ion-icon name="alert-circle" class="icon-xs icon-danger"></ion-icon>
+              </div>
+              <span class="body-sm text-danger">As senhas não coincidem</span>
             </div>
           </div>
         </div>
@@ -140,7 +152,9 @@
             [disabled]="!isStep1Valid()"
             (click)="nextStep()">
             Continuar
-            <ion-icon name="arrow-forward" slot="end"></ion-icon>
+            <div class="icon-container icon-container--ghost">
+              <ion-icon name="arrow-forward" class="icon-sm icon-white"></ion-icon>
+            </div>
           </button>
         </div>
       </div>
@@ -148,14 +162,14 @@
       <!-- Step 2: Perfil Físico -->
       <div class="form-step" [hidden]="currentStep !== 2">
         <div class="step-header">
-          <h2 class="fitsync-text-2xl fitsync-text-bold">Perfil Físico</h2>
-          <p class="fitsync-text-base">Ajude-nos a personalizar sua experiência</p>
+          <h2 class="headline-md text-emphasis">Perfil Físico</h2>
+          <p class="body-md text-muted">Ajude-nos a personalizar sua experiência</p>
         </div>
 
         <div class="form-section">
           <div class="input-row">
             <div class="fitsync-input">
-              <label class="input-label">Altura (cm)</label>
+              <label class="input-label label-md text-emphasis">Altura (cm)</label>
               <div class="input-wrapper">
                 <ion-input
                   type="number"
@@ -166,12 +180,14 @@
                   min="100"
                   max="250">
                 </ion-input>
-                <ion-icon name="resize" class="input-icon"></ion-icon>
+                <div class="icon-container icon-container--outlined">
+                  <ion-icon name="resize" class="icon-sm icon-primary"></ion-icon>
+                </div>
               </div>
             </div>
 
             <div class="fitsync-input">
-              <label class="input-label">Peso (kg)</label>
+              <label class="input-label label-md text-emphasis">Peso (kg)</label>
               <div class="input-wrapper">
                 <ion-input
                   type="number"
@@ -182,39 +198,47 @@
                   min="30"
                   max="300">
                 </ion-input>
-                <ion-icon name="fitness" class="input-icon"></ion-icon>
+                <div class="icon-container icon-container--outlined">
+                  <ion-icon name="fitness" class="icon-sm icon-primary"></ion-icon>
+                </div>
               </div>
             </div>
           </div>
 
           <div class="fitsync-input">
-            <label class="input-label">Nível de Condicionamento</label>
+            <label class="input-label label-md text-emphasis">Nível de Condicionamento</label>
             <ion-radio-group [value]="registerData.fitnessLevel" (ionChange)="updateField('fitnessLevel', $event)">
               <div class="fitness-levels">
                 <div class="fitness-level-card" [class.selected]="registerData.fitnessLevel === 'beginner'">
                   <ion-radio value="beginner"></ion-radio>
                   <div class="level-content">
-                    <ion-icon name="walk" class="level-icon"></ion-icon>
-                    <h3>Iniciante</h3>
-                    <p>Pouca ou nenhuma experiência</p>
+                    <div class="icon-container icon-container--filled">
+                      <ion-icon name="walk" class="icon-lg icon-success"></ion-icon>
+                    </div>
+                    <h3 class="title-sm text-emphasis">Iniciante</h3>
+                    <p class="body-sm text-muted">Pouca ou nenhuma experiência</p>
                   </div>
                 </div>
 
                 <div class="fitness-level-card" [class.selected]="registerData.fitnessLevel === 'intermediate'">
                   <ion-radio value="intermediate"></ion-radio>
                   <div class="level-content">
-                    <ion-icon name="bicycle" class="level-icon"></ion-icon>
-                    <h3>Intermediário</h3>
-                    <p>Experiência moderada</p>
+                    <div class="icon-container icon-container--filled">
+                      <ion-icon name="bicycle" class="icon-lg icon-primary"></ion-icon>
+                    </div>
+                    <h3 class="title-sm text-emphasis">Intermediário</h3>
+                    <p class="body-sm text-muted">Experiência moderada</p>
                   </div>
                 </div>
 
                 <div class="fitness-level-card" [class.selected]="registerData.fitnessLevel === 'advanced'">
                   <ion-radio value="advanced"></ion-radio>
                   <div class="level-content">
-                    <ion-icon name="barbell" class="level-icon"></ion-icon>
-                    <h3>Avançado</h3>
-                    <p>Experiência extensa</p>
+                    <div class="icon-container icon-container--filled">
+                      <ion-icon name="barbell" class="icon-lg icon-accent"></ion-icon>
+                    </div>
+                    <h3 class="title-sm text-emphasis">Avançado</h3>
+                    <p class="body-sm text-muted">Experiência extensa</p>
                   </div>
                 </div>
               </div>
@@ -227,7 +251,9 @@
             type="button"
             class="fitsync-btn fitsync-btn--outline"
             (click)="previousStep()">
-            <ion-icon name="arrow-back" slot="start"></ion-icon>
+            <div class="icon-container icon-container--ghost">
+              <ion-icon name="arrow-back" class="icon-sm icon-secondary"></ion-icon>
+            </div>
             Voltar
           </button>
           
@@ -236,7 +262,9 @@
             class="fitsync-btn fitsync-btn--primary"
             (click)="nextStep()">
             Continuar
-            <ion-icon name="arrow-forward" slot="end"></ion-icon>
+            <div class="icon-container icon-container--ghost">
+              <ion-icon name="arrow-forward" class="icon-sm icon-white"></ion-icon>
+            </div>
           </button>
         </div>
       </div>
@@ -244,8 +272,8 @@
       <!-- Step 3: Objetivos -->
       <div class="form-step" [hidden]="currentStep !== 3">
         <div class="step-header">
-          <h2 class="fitsync-text-2xl fitsync-text-bold">Seus Objetivos</h2>
-          <p class="fitsync-text-base">Selecione seus objetivos fitness</p>
+          <h2 class="headline-md text-emphasis">Seus Objetivos</h2>
+          <p class="body-md text-muted">Selecione seus objetivos fitness</p>
         </div>
 
         <div class="form-section">
@@ -258,9 +286,11 @@
                 (ionChange)="onGoalChange('lose_weight', $event)">
               </ion-checkbox>
               <div class="goal-content">
-                <ion-icon name="scale" class="goal-icon"></ion-icon>
-                <h3>Perder Peso</h3>
-                <p>Reduzir gordura corporal</p>
+                <div class="icon-container icon-container--gradient">
+                  <ion-icon name="scale" class="icon-xl icon-primary"></ion-icon>
+                </div>
+                <h3 class="title-sm text-emphasis">Perder Peso</h3>
+                <p class="body-sm text-muted">Reduzir gordura corporal</p>
               </div>
             </div>
 
@@ -272,9 +302,11 @@
                 (ionChange)="onGoalChange('gain_muscle', $event)">
               </ion-checkbox>
               <div class="goal-content">
-                <ion-icon name="body" class="goal-icon"></ion-icon>
-                <h3>Ganhar Músculo</h3>
-                <p>Aumentar massa muscular</p>
+                <div class="icon-container icon-container--gradient">
+                  <ion-icon name="body" class="icon-xl icon-secondary"></ion-icon>
+                </div>
+                <h3 class="title-sm text-emphasis">Ganhar Músculo</h3>
+                <p class="body-sm text-muted">Aumentar massa muscular</p>
               </div>
             </div>
 
@@ -286,9 +318,11 @@
                 (ionChange)="onGoalChange('build_strength', $event)">
               </ion-checkbox>
               <div class="goal-content">
-                <ion-icon name="barbell" class="goal-icon"></ion-icon>
-                <h3>Aumentar Força</h3>
-                <p>Desenvolver força física</p>
+                <div class="icon-container icon-container--gradient">
+                  <ion-icon name="barbell" class="icon-xl icon-accent"></ion-icon>
+                </div>
+                <h3 class="title-sm text-emphasis">Aumentar Força</h3>
+                <p class="body-sm text-muted">Desenvolver força física</p>
               </div>
             </div>
 
@@ -300,9 +334,11 @@
                 (ionChange)="onGoalChange('improve_endurance', $event)">
               </ion-checkbox>
               <div class="goal-content">
-                <ion-icon name="heart" class="goal-icon"></ion-icon>
-                <h3>Resistência</h3>
-                <p>Melhorar condição cardiovascular</p>
+                <div class="icon-container icon-container--gradient">
+                  <ion-icon name="heart" class="icon-xl icon-danger"></ion-icon>
+                </div>
+                <h3 class="title-sm text-emphasis">Resistência</h3>
+                <p class="body-sm text-muted">Melhorar condição cardiovascular</p>
               </div>
             </div>
 
@@ -314,9 +350,11 @@
                 (ionChange)="onGoalChange('general_fitness', $event)">
               </ion-checkbox>
               <div class="goal-content">
-                <ion-icon name="fitness" class="goal-icon"></ion-icon>
-                <h3>Saúde Geral</h3>
-                <p>Bem-estar e qualidade de vida</p>
+                <div class="icon-container icon-container--gradient">
+                  <ion-icon name="fitness" class="icon-xl icon-success"></ion-icon>
+                </div>
+                <h3 class="title-sm text-emphasis">Saúde Geral</h3>
+                <p class="body-sm text-muted">Bem-estar e qualidade de vida</p>
               </div>
             </div>
 
@@ -328,9 +366,11 @@
                 (ionChange)="onGoalChange('tone_body', $event)">
               </ion-checkbox>
               <div class="goal-content">
-                <ion-icon name="diamond" class="goal-icon"></ion-icon>
-                <h3>Definição</h3>
-                <p>Tonificar e definir músculos</p>
+                <div class="icon-container icon-container--gradient">
+                  <ion-icon name="diamond" class="icon-xl icon-warning"></ion-icon>
+                </div>
+                <h3 class="title-sm text-emphasis">Definição</h3>
+                <p class="body-sm text-muted">Tonificar e definir músculos</p>
               </div>
             </div>
           </div>
@@ -341,7 +381,9 @@
             type="button"
             class="fitsync-btn fitsync-btn--outline"
             (click)="previousStep()">
-            <ion-icon name="arrow-back" slot="start"></ion-icon>
+            <div class="icon-container icon-container--ghost">
+              <ion-icon name="arrow-back" class="icon-sm icon-secondary"></ion-icon>
+            </div>
             Voltar
           </button>
           
@@ -350,7 +392,9 @@
             class="fitsync-btn fitsync-btn--primary fitsync-btn--lg"
             [class.fitsync-btn--disabled]="isLoading"
             [disabled]="isLoading || !isFormValid()">
-            <ion-spinner [hidden]="!isLoading" name="crescent"></ion-spinner>
+            <div class="icon-container icon-container--ghost" [hidden]="!isLoading">
+              <ion-spinner name="crescent" class="icon-sm"></ion-spinner>
+            </div>
             <span [hidden]="isLoading">Criar Conta</span>
           </button>
         </div>
@@ -359,7 +403,7 @@
 
     <!-- Login link -->
     <div class="login-section">
-      <p class="fitsync-text-base fitsync-text-center">
+      <p class="body-md text-center text-muted">
         Já tem uma conta? 
         <button 
           type="button"

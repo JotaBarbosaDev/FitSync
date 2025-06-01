@@ -1,17 +1,23 @@
-<ion-header [translucent]="true">
+<ion-header [translucent]="true" class="header-modern">
   <ion-toolbar>
     <div class="header-content">
       <div class="header-left">
         <ion-buttons slot="start">
-          <ion-back-button color="light"></ion-back-button>
+          <ion-back-button color="light">
+            <div class="icon-container icon-container--ghost">
+              <ion-icon name="arrow-back" class="icon-md"></ion-icon>
+            </div>
+          </ion-back-button>
         </ion-buttons>
         <div class="header-title">
-          <h1 class="headline-small">Meu Progresso</h1>
+          <h1 class="headline-md text-gradient">Meu Progresso</h1>
         </div>
       </div>
       <div class="header-actions">
         <ion-button fill="clear" (click)="toggleView()" class="header-btn">
-          <ion-icon [name]="viewMode === 'charts' ? 'list' : 'analytics'" color="light"></ion-icon>
+          <div class="icon-container icon-container--ghost">
+            <ion-icon [name]="viewMode === 'charts' ? 'list' : 'analytics'" class="icon-md"></ion-icon>
+          </div>
         </ion-button>
       </div>
     </div>
@@ -24,7 +30,7 @@
     <div class="loading-overlay" *ngIf="loading">
       <div class="loading-content">
         <ion-spinner name="crescent" color="primary"></ion-spinner>
-        <p class="body-medium">Carregando progresso...</p>
+        <p class="body-lg text-muted">Carregando progresso...</p>
       </div>
     </div>
 
@@ -32,13 +38,13 @@
   <div class="period-selector fitsync-slide-up">
     <ion-segment [(ngModel)]="selectedPeriod" (ionChange)="changePeriod()" class="fitsync-segment">
       <ion-segment-button value="week">
-        <ion-label class="label-medium">Semana</ion-label>
+        <ion-label class="label-lg">Semana</ion-label>
       </ion-segment-button>
       <ion-segment-button value="month">
-        <ion-label class="label-medium">Mês</ion-label>
+        <ion-label class="label-lg">Mês</ion-label>
       </ion-segment-button>
       <ion-segment-button value="year">
-        <ion-label class="label-medium">Ano</ion-label>
+        <ion-label class="label-lg">Ano</ion-label>
       </ion-segment-button>
     </ion-segment>
   </div>
@@ -47,45 +53,53 @@
   <div class="overview-stats fitsync-slide-up">
     <div class="fitsync-card stats-card">
       <div class="stat-icon">
-        <ion-icon name="fitness"></ion-icon>
+        <div class="icon-container icon-container--gradient icon-container--primary">
+          <ion-icon name="fitness" class="icon-lg"></ion-icon>
+        </div>
       </div>
       <div class="stat-content">
-        <h3 class="title-large text-primary">{{ totalWorkouts }}</h3>
-        <p class="body-small text-muted">Treinos</p>
-        <span class="trend positive body-small">+{{ weeklyChange }}%</span>
+        <h3 class="hero-medium">{{ totalWorkouts }}</h3>
+        <p class="modern-caption">Treinos</p>
+        <span class="trend positive code-small">+{{ weeklyChange }}%</span>
       </div>
     </div>
     
     <div class="fitsync-card stats-card">
       <div class="stat-icon">
-        <ion-icon name="flame"></ion-icon>
+        <div class="icon-container icon-container--gradient icon-container--warning">
+          <ion-icon name="flame" class="icon-lg"></ion-icon>
+        </div>
       </div>
       <div class="stat-content">
-        <h3 class="title-large text-primary">{{ totalCalories }}</h3>
-        <p class="body-small text-muted">Calorias</p>
-        <span class="trend positive body-small">+{{ calorieChange }}%</span>
+        <h3 class="hero-medium">{{ totalCalories }}</h3>
+        <p class="modern-caption">Calorias</p>
+        <span class="trend positive code-small">+{{ calorieChange }}%</span>
       </div>
     </div>
     
     <div class="fitsync-card stats-card">
       <div class="stat-icon">
-        <ion-icon name="time"></ion-icon>
+        <div class="icon-container icon-container--gradient icon-container--accent">
+          <ion-icon name="time" class="icon-lg"></ion-icon>
+        </div>
       </div>
       <div class="stat-content">
-        <h3 class="title-large text-primary">{{ totalMinutes }}</h3>
-        <p class="body-small text-muted">Minutos</p>
-        <span class="trend neutral body-small">={{ timeChange }}%</span>
+        <h3 class="hero-medium">{{ totalMinutes }}</h3>
+        <p class="modern-caption">Minutos</p>
+        <span class="trend neutral code-small">={{ timeChange }}%</span>
       </div>
     </div>
     
     <div class="fitsync-card stats-card">
       <div class="stat-icon">
-        <ion-icon name="trophy"></ion-icon>
+        <div class="icon-container icon-container--gradient icon-container--secondary">
+          <ion-icon name="trophy" class="icon-lg"></ion-icon>
+        </div>
       </div>
       <div class="stat-content">
-        <h3 class="title-large text-primary">{{ currentStreak }}</h3>
-        <p class="body-small text-muted">Sequência</p>
-        <span class="trend positive body-small">+{{ streakChange }}</span>
+        <h3 class="hero-medium">{{ currentStreak }}</h3>
+        <p class="modern-caption">Sequência</p>
+        <span class="trend positive code-small">+{{ streakChange }}</span>
       </div>
     </div>
   </div>
@@ -95,8 +109,10 @@
     <!-- Weight Progress Chart -->
     <div class="chart-section">
       <div class="section-header">
-        <h2 class="headline-medium">
-          <ion-icon name="trending-up"></ion-icon>
+        <h2 class="hero-large">
+          <div class="icon-container icon-container--ghost">
+            <ion-icon name="trending-up" class="icon-md"></ion-icon>
+          </div>
           Progresso de Peso
         </h2>
       </div>
@@ -105,11 +121,11 @@
         <div class="chart-legend">
           <div class="legend-item">
             <div class="legend-color weight"></div>
-            <span class="body-small">Peso Corporal</span>
+            <span class="label-md text-muted">Peso Corporal</span>
           </div>
           <div class="legend-item">
             <div class="legend-color target"></div>
-            <span class="body-small">Meta</span>
+            <span class="label-md text-muted">Meta</span>
           </div>
         </div>
       </div>
@@ -118,8 +134,10 @@
     <!-- Workout Frequency Chart -->
     <div class="chart-section">
       <div class="section-header">
-        <h2 class="headline-medium">
-          <ion-icon name="bar-chart"></ion-icon>
+        <h2 class="headline-lg text-white">
+          <div class="icon-container icon-container--ghost">
+            <ion-icon name="bar-chart" class="icon-md"></ion-icon>
+          </div>
           Frequência de Treinos
         </h2>
       </div>
@@ -131,8 +149,10 @@
     <!-- Muscle Group Distribution -->
     <div class="chart-section">
       <div class="section-header">
-        <h2 class="fitsync-text-large">
-          <ion-icon name="pie-chart"></ion-icon>
+        <h2 class="headline-lg text-white">
+          <div class="icon-container icon-container--ghost">
+            <ion-icon name="pie-chart" class="icon-md"></ion-icon>
+          </div>
           Grupos Musculares
         </h2>
       </div>
@@ -140,11 +160,13 @@
         <div class="fitsync-card muscle-card" *ngFor="let group of muscleGroupStats">
           <div class="muscle-header">
             <div class="muscle-icon">
-              <ion-icon [name]="group.icon" [color]="group.color"></ion-icon>
+              <div class="icon-container icon-container--filled" [class]="'icon-container--' + group.color">
+                <ion-icon [name]="group.icon" class="icon-md"></ion-icon>
+              </div>
             </div>
             <div class="muscle-content">
-              <span class="fitsync-text-medium">{{ group.name }}</span>
-              <span class="fitsync-text-small muted">{{ group.percentage }}%</span>
+              <span class="title-md text-white">{{ group.name }}</span>
+              <span class="body-sm text-muted">{{ group.percentage }}%</span>
             </div>
           </div>
           <div class="muscle-progress">
@@ -162,26 +184,30 @@
     <!-- Recent Achievements -->
     <div class="achievements-section">
       <div class="section-header">
-        <h2 class="fitsync-text-large">
-          <ion-icon name="medal"></ion-icon>
+        <h2 class="headline-lg text-white">
+          <div class="icon-container icon-container--ghost">
+            <ion-icon name="medal" class="icon-md"></ion-icon>
+          </div>
           Conquistas Recentes
         </h2>
       </div>
       <div class="achievements-grid">
         <div class="fitsync-card achievement-card" *ngFor="let achievement of achievements" [class.unlocked]="achievement.unlocked">
           <div class="achievement-icon">
-            <ion-icon [name]="achievement.icon"></ion-icon>
+            <div class="icon-container icon-container--gradient" [class]="achievement.unlocked ? 'icon-container--success' : 'icon-container--muted'">
+              <ion-icon [name]="achievement.icon" class="icon-lg"></ion-icon>
+            </div>
           </div>
           <div class="achievement-content">
-            <h4 class="fitsync-text-medium">{{ achievement.title }}</h4>
-            <p class="fitsync-text-small muted">{{ achievement.description }}</p>
+            <h4 class="title-md text-white">{{ achievement.title }}</h4>
+            <p class="body-sm text-muted">{{ achievement.description }}</p>
             <div class="achievement-progress" *ngIf="!achievement.unlocked">
               <div class="fitsync-progress">
                 <div class="progress-fill" [style.width.%]="achievement.progress"></div>
               </div>
-              <span class="fitsync-text-small muted">{{ achievement.current }}/{{ achievement.target }}</span>
+              <span class="label-sm text-muted">{{ achievement.current }}/{{ achievement.target }}</span>
             </div>
-            <span class="fitsync-text-small primary" *ngIf="achievement.unlocked">{{ achievement.unlockedDate | date:'dd/MM' }}</span>
+            <span class="label-sm text-success" *ngIf="achievement.unlocked">{{ achievement.unlockedDate | date:'dd/MM' }}</span>
           </div>
         </div>
       </div>
@@ -190,35 +216,43 @@
     <!-- Workout History -->
     <div class="history-section">
       <div class="section-header">
-        <h2 class="fitsync-text-large">
-          <ion-icon name="calendar"></ion-icon>
+        <h2 class="headline-lg text-white">
+          <div class="icon-container icon-container--ghost">
+            <ion-icon name="calendar" class="icon-md"></ion-icon>
+          </div>
           Histórico de Treinos
         </h2>
       </div>
       <div class="workout-timeline">
         <div class="timeline-item" *ngFor="let workout of workoutHistory">
           <div class="timeline-date">
-            <span class="fitsync-text-medium">{{ workout.date | date:'dd' }}</span>
-            <span class="fitsync-text-small muted">{{ workout.date | date:'MMM' }}</span>
+            <span class="title-lg text-white">{{ workout.date | date:'dd' }}</span>
+            <span class="body-sm text-muted">{{ workout.date | date:'MMM' }}</span>
           </div>
           <div class="timeline-content">
             <div class="fitsync-card workout-card">
               <div class="workout-header">
-                <h4 class="fitsync-text-medium">{{ workout.name }}</h4>
-                <span class="fitsync-text-small muted">{{ workout.duration }}min</span>
+                <h4 class="title-md text-white">{{ workout.name }}</h4>
+                <span class="label-md text-muted">{{ workout.duration }}min</span>
               </div>
               <div class="workout-stats">
                 <div class="stat-item">
-                  <ion-icon name="fitness"></ion-icon>
-                  <span class="fitsync-text-small">{{ workout.exercises }} exercícios</span>
+                  <div class="icon-container icon-container--ghost">
+                    <ion-icon name="fitness" class="icon-xs"></ion-icon>
+                  </div>
+                  <span class="label-sm text-light">{{ workout.exercises }} exercícios</span>
                 </div>
                 <div class="stat-item">
-                  <ion-icon name="flame"></ion-icon>
-                  <span class="fitsync-text-small">{{ workout.calories }} kcal</span>
+                  <div class="icon-container icon-container--ghost">
+                    <ion-icon name="flame" class="icon-xs"></ion-icon>
+                  </div>
+                  <span class="label-sm text-light">{{ workout.calories }} kcal</span>
                 </div>
                 <div class="stat-item">
-                  <ion-icon name="barbell"></ion-icon>
-                  <span class="fitsync-text-small">{{ workout.sets }} séries</span>
+                  <div class="icon-container icon-container--ghost">
+                    <ion-icon name="barbell" class="icon-xs"></ion-icon>
+                  </div>
+                  <span class="label-sm text-light">{{ workout.sets }} séries</span>
                 </div>
               </div>
               <div class="workout-tags">
@@ -237,24 +271,28 @@
     <!-- Personal Records -->
     <div class="records-section">
       <div class="section-header">
-        <h2 class="fitsync-text-large">
-          <ion-icon name="trophy"></ion-icon>
+        <h2 class="headline-lg text-white">
+          <div class="icon-container icon-container--ghost">
+            <ion-icon name="trophy" class="icon-md"></ion-icon>
+          </div>
           Recordes Pessoais
         </h2>
       </div>
       <div class="records-grid">
         <div class="fitsync-card record-card" *ngFor="let record of personalRecords">
           <div class="record-icon">
-            <ion-icon [name]="record.icon"></ion-icon>
+            <div class="icon-container icon-container--gradient icon-container--success">
+              <ion-icon [name]="record.icon" class="icon-lg"></ion-icon>
+            </div>
           </div>
           <div class="record-content">
-            <h4 class="fitsync-text-medium">{{ record.exercise }}</h4>
+            <h4 class="title-md text-white">{{ record.exercise }}</h4>
             <div class="record-value">
-              <span class="fitsync-text-large">{{ record.value }}</span>
-              <span class="fitsync-text-small muted">{{ record.unit }}</span>
+              <span class="headline-md text-primary">{{ record.value }}</span>
+              <span class="body-sm text-muted">{{ record.unit }}</span>
             </div>
-            <p class="fitsync-text-small muted">{{ record.date | date:'dd/MM/yyyy' }}</p>
-            <span class="fitsync-text-small primary" *ngIf="record.improvement">
+            <p class="label-sm text-muted">{{ record.date | date:'dd/MM/yyyy' }}</p>
+            <span class="label-sm text-success" *ngIf="record.improvement">
               +{{ record.improvement }}{{ record.unit }} desde o último
             </span>
           </div>
@@ -263,19 +301,28 @@
     </div>
   </div>
 
-  <!-- Floating Action Button -->  <ion-fab vertical="bottom" horizontal="end" slot="fixed" class="fab-modern">
+  <!-- Floating Action Button -->
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed" class="fab-modern">
     <ion-fab-button (click)="presentActionSheet()" class="fab-main">
-      <ion-icon name="add"></ion-icon>
+      <div class="icon-container icon-container--ghost">
+        <ion-icon name="add" class="icon-md"></ion-icon>
+      </div>
     </ion-fab-button>
     <ion-fab-list side="top">
       <ion-fab-button (click)="addWeight()" color="primary" class="fab-item">
-        <ion-icon name="scale"></ion-icon>
+        <div class="icon-container icon-container--ghost">
+          <ion-icon name="scale" class="icon-sm"></ion-icon>
+        </div>
       </ion-fab-button>
       <ion-fab-button (click)="addMeasurement()" color="secondary" class="fab-item">
-        <ion-icon name="resize"></ion-icon>
+        <div class="icon-container icon-container--ghost">
+          <ion-icon name="resize" class="icon-sm"></ion-icon>
+        </div>
       </ion-fab-button>
       <ion-fab-button (click)="addGoal()" color="tertiary" class="fab-item">
-        <ion-icon name="flag"></ion-icon>
+        <div class="icon-container icon-container--ghost">
+          <ion-icon name="flag" class="icon-sm"></ion-icon>
+        </div>
       </ion-fab-button>
     </ion-fab-list>
   </ion-fab>

@@ -1,27 +1,30 @@
-<ion-head        <div class="header-title">
-          <h1 class="headline-small">Exercícios</h1>
-          <p class="body-small text-muted">Biblioteca Completa</p>
-        </div>translucent]="true">
+<ion-header [translucent]="true">
   <ion-toolbar>
     <div class="header-content">
       <div class="header-left">
         <ion-buttons slot="start">
           <ion-button fill="clear" class="fitsync-btn icon">
-            <ion-icon name="chevron-back"></ion-icon>
+            <div class="icon-container icon-container--md icon-container--primary">
+              <ion-icon name="chevron-back" class="icon icon-md icon-hover"></ion-icon>
+            </div>
           </ion-button>
         </ion-buttons>
         <div class="header-title">
-          <h1>Exercícios</h1>
-          <p>Biblioteca completa</p>
+          <h1 class="headline-medium text-gradient-primary">Exercícios</h1>
+          <p class="body-medium text-muted">Biblioteca Completa • {{ filteredExercises.length }} itens</p>
         </div>
       </div>
       
       <div class="header-actions">
         <ion-button fill="clear" class="fitsync-btn icon" (click)="toggleFavorites()">
-          <ion-icon name="heart"></ion-icon>
+          <div class="icon-container icon-container--sm icon-container--light">
+            <ion-icon name="heart" class="icon icon-sm" style="color: #E74C3C;"></ion-icon>
+          </div>
         </ion-button>
         <ion-button fill="clear" class="fitsync-btn icon" (click)="showFilterOptions()">
-          <ion-icon name="options"></ion-icon>
+          <div class="icon-container icon-container--sm icon-container--dark">
+            <ion-icon name="options" class="icon icon-sm icon-hover"></ion-icon>
+          </div>
         </ion-button>
       </div>
     </div>
@@ -33,7 +36,9 @@
   <div class="search-filter-section fitsync-card">
     <div class="search-container">
       <div class="search-input-wrapper">
-        <ion-icon name="search" class="search-icon"></ion-icon>
+        <div class="icon-container icon-container--sm icon-container--primary">
+          <ion-icon name="search" class="icon icon-sm"></ion-icon>
+        </div>
         <ion-searchbar 
           [(ngModel)]="searchQuery" 
           placeholder="Buscar exercícios..." 
@@ -43,15 +48,18 @@
       </div>
     </div>
     
-    <div class="filter-chips">
-      <ion-chip 
-        *ngFor="let group of muscleGroups" 
-        [class.active]="selectedMuscleGroup === group.id"
-        class="fitsync-chip"
-        (click)="filterByMuscleGroup(group.id)">
-        <ion-icon [name]="group.icon"></ion-icon>
-        <ion-label>{{ group.name }}</ion-label>
-      </ion-chip>
+    <div class="filter-chips">        <ion-chip 
+          *ngFor="let group of muscleGroups" 
+          [class.active]="selectedMuscleGroup === group.id"
+          class="fitsync-chip"
+          (click)="filterByMuscleGroup(group.id)">
+          <div class="icon-container icon-container--sm" 
+               [class.icon-container--gradient]="selectedMuscleGroup === group.id" 
+               [class.icon-container--light]="selectedMuscleGroup !== group.id">
+            <ion-icon [name]="group.icon" class="icon icon-sm"></ion-icon>
+          </div>
+          <ion-label class="personality-playful">{{ group.name }}</ion-label>
+        </ion-chip>
     </div>
     
     <!-- Filter/Sort buttons side by side -->
@@ -61,8 +69,10 @@
         size="small" 
         class="filter-sort-btn"
         (click)="showSortOptions()">
-        <ion-icon name="swap-vertical" slot="start"></ion-icon>
-        Ordenar
+        <div class="icon-container icon-container--sm icon-container--primary">
+          <ion-icon name="swap-vertical" class="icon icon-sm"></ion-icon>
+        </div>
+        <span class="ui-element-button">Ordenar</span>
       </ion-button>
       
       <ion-button 
@@ -70,8 +80,10 @@
         size="small" 
         class="filter-sort-btn"
         (click)="showFilterOptions()">
-        <ion-icon name="funnel" slot="start"></ion-icon>
-        Filtrar
+        <div class="icon-container icon-container--sm icon-container--dark">
+          <ion-icon name="funnel" class="icon icon-sm"></ion-icon>
+        </div>
+        <span class="body-medium">Filtrar</span>
       </ion-button>
     </div>
   </div>
@@ -86,35 +98,43 @@
         <div class="exercise-image-container">
           <img [src]="exercise.imageUrl" [alt]="exercise.name" class="exercise-image" />
           <div class="exercise-difficulty-badge">
-            <span class="difficulty-text">{{ exercise.difficulty }}</span>
+            <span class="code-small">{{ exercise.difficulty }}</span>
           </div>
           <button class="favorite-btn" (click)="toggleFavorite(exercise, $event)">
-            <ion-icon
-              [name]="isFavorite(exercise.id) ? 'heart' : 'heart'"
-              [class]="isFavorite(exercise.id) ? 'favorite-active' : 'favorite-inactive'">
-            </ion-icon>
+            <div class="icon-container icon-container--sm" [class.icon-container--danger]="isFavorite(exercise.id)" [class.icon-container--light]="!isFavorite(exercise.id)">
+              <ion-icon
+                name="heart"
+                class="icon icon-sm">
+              </ion-icon>
+            </div>
           </button>
         </div>
         
         <div class="exercise-content">
-          <h3 class="exercise-name">{{ exercise.name }}</h3>
-          <p class="exercise-muscle-group">{{ getMuscleGroupName(exercise.muscleGroup) }}</p>
+          <h3 class="modern-title">{{ exercise.name }}</h3>
+          <p class="personality-friendly">{{ getMuscleGroupName(exercise.muscleGroup) }}</p>
           
           <div class="exercise-stats">
             <div class="stat-item">
-              <ion-icon name="time"></ion-icon>
-              <span>{{ exercise.duration }}min</span>
+              <div class="icon-container icon-container--xs icon-container--primary">
+                <ion-icon name="time" class="icon icon-xs"></ion-icon>
+              </div>
+              <span class="label-medium text-accent">{{ exercise.duration }}min</span>
             </div>
             <div class="stat-item">
-              <ion-icon name="flame"></ion-icon>
-              <span>{{ exercise.calories }}kcal</span>
+              <div class="icon-container icon-container--xs icon-container--warning">
+                <ion-icon name="flame" class="icon icon-xs"></ion-icon>
+              </div>
+              <span class="label-medium text-accent">{{ exercise.calories }}kcal</span>
             </div>
           </div>
           
           <div class="exercise-equipment" *ngIf="exercise.equipment">
             <div class="equipment-tag">
-              <ion-icon name="fitness"></ion-icon>
-              <span>{{ exercise.equipment }}</span>
+              <div class="icon-container icon-container--xs icon-container--secondary">
+                <ion-icon name="fitness" class="icon icon-xs"></ion-icon>
+              </div>
+              <span class="label-small text-muted">{{ exercise.equipment }}</span>
             </div>
           </div>
         </div>
@@ -125,12 +145,17 @@
     <div class="empty-state fitsync-card" *ngIf="filteredExercises.length === 0">
       <div class="empty-content">
         <div class="empty-icon">
-          <ion-icon name="search"></ion-icon>
+          <div class="icon-container icon-container--xl icon-container--muted">
+            <ion-icon name="search" class="icon icon-xl"></ion-icon>
+          </div>
         </div>
-        <h3 class="empty-title">Nenhum exercício encontrado</h3>
-        <p class="empty-subtitle">Tente ajustar seus filtros ou termo de busca</p>
+        <h3 class="hero-medium">Nenhum exercício encontrado</h3>
+        <p class="personality-friendly">Tente ajustar seus filtros ou termo de busca</p>
         <button class="fitsync-btn fitsync-btn--outline" (click)="clearFilters()">
-          Limpar Filtros
+          <div class="icon-container icon-container--sm icon-container--primary">
+            <ion-icon name="refresh" class="icon icon-sm"></ion-icon>
+          </div>
+          <span class="ui-element-button">Limpar Filtros</span>
         </button>
       </div>
     </div>
@@ -139,7 +164,9 @@
   <!-- Floating Action Button -->
   <ion-fab vertical="bottom" horizontal="end" slot="fixed" class="fab-modern">
     <ion-fab-button class="fab-main" (click)="createCustomExercise()">
-      <ion-icon name="add"></ion-icon>
+      <div class="icon-container icon-container--md icon-container--gradient">
+        <ion-icon name="add" class="icon icon-md"></ion-icon>
+      </div>
     </ion-fab-button>
   </ion-fab>
 </ion-content>

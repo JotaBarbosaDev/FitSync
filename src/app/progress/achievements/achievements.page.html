@@ -1,11 +1,11 @@
-<ion-header [translucent]="true" class="header-modern">
-  <ion-toolbar>
+<ion-header [translucent]="true" class="ion-no-border">
+  <ion-toolbar class="header-gradient">
     <ion-buttons slot="start">
-      <ion-back-button (click)="goBack()"></ion-back-button>
+      <ion-back-button class="icon-container icon-container--ghost" (click)="goBack()"></ion-back-button>
     </ion-buttons>
-    <ion-title class="fitsync-text gradient">Conquistas</ion-title>
+    <ion-title class="headline-lg gradient-text">Conquistas</ion-title>
     <ion-buttons slot="end">
-      <ion-button fill="clear" (click)="onFilterToggle()">
+      <ion-button fill="clear" class="icon-container icon-container--ghost" (click)="onFilterToggle()">
         <ion-icon [name]="showUnlockedOnly ? 'eye-outline' : 'eye-off-outline'"></ion-icon>
       </ion-button>
     </ion-buttons>
@@ -16,16 +16,16 @@
   <!-- Progress Header -->
   <div class="progress-header">
     <div class="fitsync-card glass">
-      <div class="trophy-icon">
+      <div class="icon-container icon-container--gradient icon-container--warning">
         <ion-icon name="trophy" color="warning"></ion-icon>
       </div>
       <div class="progress-info">
-        <h2 class="fitsync-text large primary">{{ getUnlockedCount() }} / {{ getTotalCount() }}</h2>
-        <p class="fitsync-text medium muted">Conquistas Desbloqueadas</p>
+        <h2 class="title-xl text-primary">{{ getUnlockedCount() }} / {{ getTotalCount() }}</h2>
+        <p class="body-md text-secondary">Conquistas Desbloqueadas</p>
         <div class="fitsync-progress primary">
           <div class="progress-fill" [style.width.%]="getProgressPercentage()"></div>
         </div>
-        <span class="fitsync-text small muted">{{ getProgressPercentage() }}% Completo</span>
+        <span class="body-sm text-secondary">{{ getProgressPercentage() }}% Completo</span>
       </div>
     </div>
   </div>
@@ -38,8 +38,10 @@
         *ngFor="let category of categories"
         [class]="selectedCategory === category.id ? 'fitsync-badge--primary' : 'fitsync-badge--outline'"
         (click)="onCategoryChange(category.id)">
-        <ion-icon [name]="category.icon"></ion-icon>
-        {{ category.name }}
+        <div class="icon-container icon-container--ghost">
+          <ion-icon [name]="category.icon"></ion-icon>
+        </div>
+        <span class="label-md">{{ category.name }}</span>
       </span>
     </div>
   </div>
@@ -54,39 +56,44 @@
       
       <!-- Achievement Icon -->
       <div class="achievement-icon">
-        <div class="icon-container" [attr.data-category]="achievement.category">
+        <div class="icon-container icon-container--gradient" 
+             [class]="achievement.isUnlocked ? 'icon-container--' + getCategoryColor(achievement.category) : 'icon-container--secondary'">
           <ion-icon 
             [name]="achievement.icon" 
             [color]="achievement.isUnlocked ? getCategoryColor(achievement.category) : 'medium'">
           </ion-icon>
         </div>
-        <div class="status-badge" *ngIf="achievement.isUnlocked">
+        <div class="icon-container icon-container--filled icon-container--success" *ngIf="achievement.isUnlocked">
           <ion-icon name="checkmark" color="success"></ion-icon>
         </div>
       </div>
 
       <!-- Achievement Info -->
       <div class="achievement-info">
-        <h3 class="fitsync-text medium" [class.faded]="!achievement.isUnlocked">{{ achievement.title }}</h3>
-        <p class="fitsync-text small muted" [class.faded]="!achievement.isUnlocked">{{ achievement.description }}</p>
+        <h3 class="title-md" [class]="achievement.isUnlocked ? 'text-primary' : 'text-secondary'">{{ achievement.title }}</h3>
+        <p class="body-sm text-secondary" [class.faded]="!achievement.isUnlocked">{{ achievement.description }}</p>
         
         <!-- Unlock Date -->
         <div class="unlock-info" *ngIf="achievement.isUnlocked">
           <div class="unlock-date">
-            <ion-icon name="calendar-outline"></ion-icon>
-            <span class="fitsync-text small primary">{{ formatDate(achievement.dateEarned) }}</span>
+            <div class="icon-container icon-container--outline icon-container--primary">
+              <ion-icon name="calendar-outline"></ion-icon>
+            </div>
+            <span class="body-sm text-primary">{{ formatDate(achievement.dateEarned) }}</span>
           </div>
         </div>
         
         <!-- Locked State -->
         <div class="locked-state" *ngIf="!achievement.isUnlocked">
-          <ion-icon name="lock-closed-outline" color="medium"></ion-icon>
-          <span class="fitsync-text small muted">Bloqueada</span>
+          <div class="icon-container icon-container--outline icon-container--secondary">
+            <ion-icon name="lock-closed-outline" color="medium"></ion-icon>
+          </div>
+          <span class="body-sm text-secondary">Bloqueada</span>
         </div>
       </div>
 
       <!-- Category Badge -->
-      <div class="category-badge" [attr.data-category]="achievement.category">
+      <div class="icon-container icon-container--ghost" [attr.data-category]="achievement.category">
         <ion-icon [name]="getCategoryIcon(achievement.category)"></ion-icon>
       </div>
     </div>
@@ -95,9 +102,11 @@
   <!-- Empty State -->
   <div class="empty-state" *ngIf="filteredAchievements.length === 0">
     <div class="fitsync-card glass" style="text-align: center;">
-      <ion-icon name="trophy-outline" color="medium" size="large"></ion-icon>
-      <h3 class="fitsync-text large muted">Nenhuma conquista encontrada</h3>
-      <p class="fitsync-text medium muted">{{ showUnlockedOnly ? 'Você ainda não desbloqueou conquistas nesta categoria.' : 'Tente ajustar os filtros.' }}</p>
+      <div class="icon-container icon-container--outline icon-container--secondary">
+        <ion-icon name="trophy-outline" color="medium" size="large"></ion-icon>
+      </div>
+      <h3 class="title-lg text-secondary">Nenhuma conquista encontrada</h3>
+      <p class="body-md text-secondary">{{ showUnlockedOnly ? 'Você ainda não desbloqueou conquistas nesta categoria.' : 'Tente ajustar os filtros.' }}</p>
     </div>
   </div>
 </ion-content>

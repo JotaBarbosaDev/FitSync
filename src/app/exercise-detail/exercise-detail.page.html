@@ -1,18 +1,29 @@
 <ion-header [translucent]="true">
   <ion-toolbar color="primary">
     <ion-buttons slot="start">
-      <ion-back-button defaultHref="/home" (click)="goBack()"></ion-back-button>
+      <ion-button fill="clear" (click)="goBack()">
+        <div class="icon-container icon-container--md icon-container--light">
+          <ion-icon name="chevron-back" class="icon icon-md icon-hover"></ion-icon>
+        </div>
+      </ion-button>
     </ion-buttons>
-    <ion-title>{{ exercise?.name || 'Detalhe do Exercício' }}</ion-title>
+    <ion-title class="modern-title text-gradient-light">{{ exercise?.name || 'Detalhe do Exercício' }}</ion-title>
     <ion-buttons slot="end">
       <ion-button (click)="toggleFavorite()" fill="clear">
-        <ion-icon 
-          [name]="isFavorite ? 'heart' : 'heart-outline'" 
-          [color]="isFavorite ? 'danger' : 'medium'">
-        </ion-icon>
+        <div class="icon-container icon-container--sm" 
+             [class.icon-container--danger]="isFavorite" 
+             [class.icon-container--light]="!isFavorite">
+          <ion-icon 
+            [name]="isFavorite ? 'heart' : 'heart-outline'" 
+            class="icon icon-sm"
+            [class.icon-pulse-subtle]="isFavorite">
+          </ion-icon>
+        </div>
       </ion-button>
       <ion-button (click)="shareExercise()" fill="clear">
-        <ion-icon name="share-outline" color="medium"></ion-icon>
+        <div class="icon-container icon-container--sm icon-container--light">
+          <ion-icon name="share-outline" class="icon icon-sm icon-hover"></ion-icon>
+        </div>
       </ion-button>
     </ion-buttons>
   </ion-toolbar>
@@ -22,15 +33,17 @@
   <!-- Header colapsável -->
   <ion-header collapse="condense">
     <ion-toolbar>
-      <ion-title size="large">{{ exercise?.name || 'Detalhe do Exercício' }}</ion-title>
+      <ion-title size="large" class="hero-large text-gradient-primary">{{ exercise?.name || 'Detalhe do Exercício' }}</ion-title>
     </ion-toolbar>
   </ion-header>
 
   <!-- Loading state -->
   <div *ngIf="isLoading" class="loading-container">
-    <ion-spinner name="dots" color="primary"></ion-spinner>
+    <div class="icon-container icon-container--xl icon-container--primary">
+      <ion-spinner name="dots" class="icon icon-xl loading-only"></ion-spinner>
+    </div>
     <ion-text>
-      <p>Carregando exercício...</p>
+      <p class="modern-body text-muted">Carregando exercício...</p>
     </ion-text>
   </div>
 
@@ -38,12 +51,16 @@
   <ion-card *ngIf="!isLoading && !exercise" color="danger">
     <ion-card-content>
       <div class="error-content">
-        <ion-icon name="alert-circle-outline" size="large"></ion-icon>
-        <h2>Exercício não encontrado</h2>
-        <p>O exercício solicitado não foi encontrado. Verifique o ID e tente novamente.</p>
+        <div class="icon-container icon-container--xl icon-container--danger">
+          <ion-icon name="alert-circle-outline" class="icon icon-xl"></ion-icon>
+        </div>
+        <h2 class="personality-friendly text-emphasis">Exercício não encontrado</h2>
+        <p class="modern-body text-muted">O exercício solicitado não foi encontrado. Verifique o ID e tente novamente.</p>
         <ion-button (click)="goBack()" fill="outline" color="light">
-          <ion-icon name="arrow-back-outline" slot="start"></ion-icon>
-          Voltar
+          <div class="icon-container icon-container--sm icon-container--light">
+            <ion-icon name="arrow-back-outline" class="icon icon-sm" slot="start"></ion-icon>
+          </div>
+          <span class="ui-element-button">Voltar</span>
         </ion-button>
       </div>
     </ion-card-content>
@@ -58,9 +75,12 @@
         *ngIf="exercise.imageUrl"
         [src]="exercise.imageUrl" 
         [alt]="exercise.name"
+        loading="lazy"
       />
       <div *ngIf="!exercise.imageUrl" class="exercise-placeholder">
-        <ion-icon name="fitness" size="large"></ion-icon>
+        <div class="icon-container icon-container--2xl icon-container--muted">
+          <ion-icon name="fitness" class="icon icon-2xl"></ion-icon>
+        </div>
       </div>
       <div class="media-overlay">
         <ion-button 
@@ -69,7 +89,9 @@
           fill="clear" 
           size="large"
           class="play-button">
-          <ion-icon name="play-circle" size="large" color="light"></ion-icon>
+          <div class="icon-container icon-container--xl icon-container--light">
+            <ion-icon name="play-circle" class="icon icon-xl"></ion-icon>
+          </div>
         </ion-button>
       </div>
     </div>
@@ -78,35 +100,45 @@
     <div class="exercise-info">
       <ion-card>
         <ion-card-header>
-          <ion-card-title>{{ exercise.name }}</ion-card-title>
+          <ion-card-title class="modern-title text-emphasis">{{ exercise.name }}</ion-card-title>
           <ion-card-subtitle>
             <ion-chip [color]="getDifficultyColor(exercise.difficulty)">
-              <ion-icon [name]="getDifficultyIcon(exercise.difficulty)" slot="start"></ion-icon>
-              <ion-label>{{ exercise.difficulty | titlecase }}</ion-label>
+              <div class="icon-container icon-container--xs" [class.icon-container--success]="getDifficultyColor(exercise.difficulty) === 'success'" [class.icon-container--warning]="getDifficultyColor(exercise.difficulty) === 'warning'" [class.icon-container--danger]="getDifficultyColor(exercise.difficulty) === 'danger'">
+                <ion-icon [name]="getDifficultyIcon(exercise.difficulty)" class="icon icon-xs" slot="start"></ion-icon>
+              </div>
+              <ion-label class="data-display-label">{{ exercise.difficulty | titlecase }}</ion-label>
             </ion-chip>
             <ion-chip color="secondary" *ngFor="let muscle of exercise.muscleGroups">
-              <ion-icon name="fitness-outline" slot="start"></ion-icon>
-              <ion-label>{{ muscle }}</ion-label>
+              <div class="icon-container icon-container--xs icon-container--secondary">
+                <ion-icon name="fitness-outline" class="icon icon-xs" slot="start"></ion-icon>
+              </div>
+              <ion-label class="data-display-label">{{ muscle }}</ion-label>
             </ion-chip>
           </ion-card-subtitle>
         </ion-card-header>
 
         <ion-card-content>
-          <p>{{ exercise.description }}</p>
+          <p class="modern-body text-muted">{{ exercise.description }}</p>
 
           <!-- Exercise stats -->
           <div class="exercise-stats">
             <div class="stat-item">
-              <ion-icon name="time-outline" color="primary"></ion-icon>
-              <span>{{ exercise.duration || 'Variável' }}</span>
+              <div class="icon-container icon-container--sm icon-container--primary">
+                <ion-icon name="time-outline" class="icon icon-sm"></ion-icon>
+              </div>
+              <span class="data-display-label text-accent">{{ exercise.duration || 'Variável' }}</span>
             </div>
             <div class="stat-item">
-              <ion-icon name="flame-outline" color="warning"></ion-icon>
-              <span>{{ exercise.calories || 'N/A' }} cal</span>
+              <div class="icon-container icon-container--sm icon-container--warning">
+                <ion-icon name="flame-outline" class="icon icon-sm"></ion-icon>
+              </div>
+              <span class="data-display-label text-accent">{{ exercise.calories || 'N/A' }} cal</span>
             </div>
             <div class="stat-item">
-              <ion-icon name="barbell-outline" color="success"></ion-icon>
-              <span>{{ exercise.equipment || 'Peso corporal' }}</span>
+              <div class="icon-container icon-container--sm icon-container--success">
+                <ion-icon name="barbell-outline" class="icon icon-sm"></ion-icon>
+              </div>
+              <span class="data-display-label text-accent">{{ exercise.equipment || 'Peso corporal' }}</span>
             </div>
           </div>
         </ion-card-content>
@@ -115,16 +147,18 @@
       <!-- Instructions -->
       <ion-card>
         <ion-card-header>
-          <ion-card-title>
-            <ion-icon name="list-outline" slot="start"></ion-icon>
+          <ion-card-title class="modern-subtitle text-emphasis">
+            <div class="icon-container icon-container--sm icon-container--primary" style="display: inline-flex; margin-right: 8px;">
+              <ion-icon name="list-outline" class="icon icon-sm" slot="start"></ion-icon>
+            </div>
             Instruções
           </ion-card-title>
         </ion-card-header>
         <ion-card-content>
           <ol class="instructions-list">
             <li *ngFor="let instruction of exercise.instructions; let i = index">
-              <span class="step-number">{{ i + 1 }}</span>
-              {{ instruction }}
+              <span class="code-small text-emphasis">{{ i + 1 }}</span>
+              <span class="modern-body text-muted">{{ instruction }}</span>
             </li>
           </ol>
         </ion-card-content>
@@ -133,15 +167,19 @@
       <!-- Tips -->
       <ion-card *ngIf="exercise.tips && exercise.tips.length > 0">
         <ion-card-header>
-          <ion-card-title>
-            <ion-icon name="bulb-outline" slot="start"></ion-icon>
+          <ion-card-title class="modern-subtitle text-emphasis">
+            <div class="icon-container icon-container--sm icon-container--warning" style="display: inline-flex; margin-right: 8px;">
+              <ion-icon name="bulb-outline" class="icon icon-sm" slot="start"></ion-icon>
+            </div>
             Dicas
           </ion-card-title>
         </ion-card-header>
         <ion-card-content>
           <ion-item *ngFor="let tip of exercise.tips" lines="none">
-            <ion-icon name="checkmark-circle-outline" slot="start" color="success"></ion-icon>
-            <ion-label class="ion-text-wrap">{{ tip }}</ion-label>
+            <div class="icon-container icon-container--sm icon-container--success" slot="start">
+              <ion-icon name="checkmark-circle-outline" class="icon icon-sm"></ion-icon>
+            </div>
+            <ion-label class="ion-text-wrap modern-body text-muted">{{ tip }}</ion-label>
           </ion-item>
         </ion-card-content>
       </ion-card>
@@ -149,15 +187,19 @@
       <!-- Common mistakes -->
       <ion-card *ngIf="exercise.commonMistakes && exercise.commonMistakes.length > 0">
         <ion-card-header>
-          <ion-card-title>
-            <ion-icon name="warning-outline" slot="start"></ion-icon>
+          <ion-card-title class="modern-subtitle text-emphasis">
+            <div class="icon-container icon-container--sm icon-container--danger" style="display: inline-flex; margin-right: 8px;">
+              <ion-icon name="warning-outline" class="icon icon-sm" slot="start"></ion-icon>
+            </div>
             Erros Comuns
           </ion-card-title>
         </ion-card-header>
         <ion-card-content>
           <ion-item *ngFor="let mistake of exercise.commonMistakes" lines="none">
-            <ion-icon name="close-circle-outline" slot="start" color="danger"></ion-icon>
-            <ion-label class="ion-text-wrap">{{ mistake }}</ion-label>
+            <div class="icon-container icon-container--sm icon-container--danger" slot="start">
+              <ion-icon name="close-circle-outline" class="icon icon-sm"></ion-icon>
+            </div>
+            <ion-label class="ion-text-wrap modern-body text-muted">{{ mistake }}</ion-label>
           </ion-item>
         </ion-card-content>
       </ion-card>
@@ -165,8 +207,10 @@
       <!-- Workout timer -->
       <ion-card>
         <ion-card-header>
-          <ion-card-title>
-            <ion-icon name="stopwatch-outline" slot="start"></ion-icon>
+          <ion-card-title class="modern-subtitle text-emphasis">
+            <div class="icon-container icon-container--sm icon-container--accent" style="display: inline-flex; margin-right: 8px;">
+              <ion-icon name="stopwatch-outline" class="icon icon-sm" slot="start"></ion-icon>
+            </div>
             Timer de Treino
           </ion-card-title>
         </ion-card-header>
@@ -184,42 +228,48 @@
       <!-- Add to workout -->
       <ion-card>
         <ion-card-header>
-          <ion-card-title>
-            <ion-icon name="add-circle-outline" slot="start"></ion-icon>
+          <ion-card-title class="modern-subtitle text-emphasis">
+            <div class="icon-container icon-container--sm icon-container--success" style="display: inline-flex; margin-right: 8px;">
+              <ion-icon name="add-circle-outline" class="icon icon-sm" slot="start"></ion-icon>
+            </div>
             Adicionar ao Treino
           </ion-card-title>
         </ion-card-header>
         <ion-card-content>
           <div class="workout-form">
             <ion-item>
-              <ion-label position="stacked">Séries</ion-label>
+              <ion-label position="stacked" class="ui-element-input text-emphasis">Séries</ion-label>
               <ion-input 
                 type="number" 
                 [(ngModel)]="workoutData.sets" 
-                placeholder="3">
+                placeholder="3"
+                class="modern-body">
               </ion-input>
             </ion-item>
             <ion-item>
-              <ion-label position="stacked">Repetições</ion-label>
+              <ion-label position="stacked" class="ui-element-input text-emphasis">Repetições</ion-label>
               <ion-input 
                 type="number" 
                 [(ngModel)]="workoutData.reps" 
-                placeholder="12">
+                placeholder="12"
+                class="modern-body">
               </ion-input>
             </ion-item>
             <ion-item>
-              <ion-label position="stacked">Peso (kg)</ion-label>
+              <ion-label position="stacked" class="ui-element-input text-emphasis">Peso (kg)</ion-label>
               <ion-input 
                 type="number" 
                 [(ngModel)]="workoutData.weight" 
-                placeholder="0">
+                placeholder="0"
+                class="modern-body">
               </ion-input>
             </ion-item>
             <ion-item>
-              <ion-label position="stacked">Observações</ion-label>
+              <ion-label position="stacked" class="ui-element-input text-emphasis">Observações</ion-label>
               <ion-textarea 
                 [(ngModel)]="workoutData.notes" 
-                placeholder="Adicione suas observações...">
+                placeholder="Adicione suas observações..."
+                class="modern-body">
               </ion-textarea>
             </ion-item>
             <ion-button 
@@ -228,8 +278,10 @@
               fill="solid" 
               color="primary"
               class="add-workout-button">
-              <ion-icon name="fitness-outline" slot="start"></ion-icon>
-              Adicionar ao Treino
+              <div class="icon-container icon-container--sm icon-container--light">
+                <ion-icon name="fitness-outline" class="icon icon-sm" slot="start"></ion-icon>
+              </div>
+              <span class="ui-element-button">Adicionar ao Treino</span>
             </ion-button>
           </div>
         </ion-card-content>
@@ -238,8 +290,10 @@
       <!-- Related exercises -->
       <ion-card *ngIf="relatedExercises.length > 0">
         <ion-card-header>
-          <ion-card-title>
-            <ion-icon name="trending-up-outline" slot="start"></ion-icon>
+          <ion-card-title class="modern-subtitle text-emphasis">
+            <div class="icon-container icon-container--sm icon-container--secondary" style="display: inline-flex; margin-right: 8px;">
+              <ion-icon name="trending-up-outline" class="icon icon-sm" slot="start"></ion-icon>
+            </div>
             Exercícios Relacionados
           </ion-card-title>
         </ion-card-header>
@@ -252,14 +306,18 @@
               <ion-avatar slot="start">
                 <img *ngIf="relatedExercise.imageUrl" [src]="relatedExercise.imageUrl" />
                 <div *ngIf="!relatedExercise.imageUrl" class="exercise-placeholder-small">
-                  <ion-icon name="fitness"></ion-icon>
+                  <div class="icon-container icon-container--sm icon-container--muted">
+                    <ion-icon name="fitness" class="icon icon-sm"></ion-icon>
+                  </div>
                 </div>
               </ion-avatar>
               <ion-label>
-                <h3>{{ relatedExercise.name }}</h3>
-                <p>{{ relatedExercise.difficulty | titlecase }}</p>
+                <h3 class="modern-title text-emphasis">{{ relatedExercise.name }}</h3>
+                <p class="modern-caption text-muted">{{ relatedExercise.difficulty | titlecase }}</p>
               </ion-label>
-              <ion-icon name="chevron-forward-outline" slot="end"></ion-icon>
+              <div class="icon-container icon-container--sm icon-container--light" slot="end">
+                <ion-icon name="chevron-forward-outline" class="icon icon-sm"></ion-icon>
+              </div>
             </ion-item>
           </div>
         </ion-card-content>
@@ -270,7 +328,9 @@
   <!-- Floating action button -->
   <ion-fab vertical="bottom" horizontal="end" slot="fixed" class="fab-modern">
     <ion-fab-button color="primary" class="fab-main" (click)="toggleOrientationLock()">
-      <ion-icon [name]="isOrientationLocked ? 'phone-portrait-outline' : 'phone-landscape-outline'"></ion-icon>
+      <div class="icon-container icon-container--md icon-container--light">
+        <ion-icon [name]="isOrientationLocked ? 'phone-portrait-outline' : 'phone-landscape-outline'" class="icon icon-md"></ion-icon>
+      </div>
     </ion-fab-button>
   </ion-fab>
 </ion-content>

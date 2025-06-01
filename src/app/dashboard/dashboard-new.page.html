@@ -1,3 +1,7 @@
+<!-- 
+  ⚠️ AVISO: Esta é uma versão alternativa do dashboard (dashboard-new).
+  Considere consolidar com a versão principal para evitar manutenção duplicada.
+-->
 <ion-header [translucent]="true" class="header-modern">
   <ion-toolbar>
     <ion-buttons slot="start">
@@ -9,7 +13,7 @@
     <ion-buttons slot="end">
       <ion-button fill="clear" (click)="showProfile()">
         <ion-avatar>
-          <img src="/assets/logo.png" alt="Profile">
+          <img src="assets/logo.png" alt="Profile">
         </ion-avatar>
       </ion-button>
     </ion-buttons>
@@ -21,17 +25,17 @@
   <div class="hero-section gradient-bg animate-fade-in">
     <div class="hero-content">
       <div class="greeting-section">
-        <h1 class="hero-title">{{ getGreeting() }}, {{ getUserFirstName() }}!</h1>
-        <p class="hero-subtitle">{{ getMotivationalMessage() }}</p>
+        <h1 class="hero-xl personality-warm">{{ getGreeting() }}, {{ getUserFirstName() }}!</h1>
+        <p class="modern-subtitle personality-friendly">{{ getMotivationalMessage() }}</p>
       </div>
       
       <!-- Timer de Treino Ativo -->
       <div class="workout-timer-hero" *ngIf="workoutTimer.isRunning">
-        <div class="timer-display animate-pulse">
+        <div class="timer-display gentle-scale">
           <ion-icon name="timer-outline" class="timer-icon"></ion-icon>
           <div class="timer-info">
-            <span class="timer-label">Treino Ativo</span>
-            <span class="timer-time">{{ formatWorkoutTime() }}</span>
+            <span class="ui-element-label">Treino Ativo</span>
+            <span class="data-display-number">{{ formatWorkoutTime() }}</span>
           </div>
           <ion-badge [color]="workoutTimer.isPaused ? 'warning' : 'success'">
             {{ workoutTimer.isPaused ? 'PAUSADO' : 'ATIVO' }}
@@ -43,33 +47,33 @@
 
   <!-- Estatísticas Principais -->
   <div class="stats-overview animate-slide-up">
-    <h2 class="section-title">Sua Performance</h2>
+    <h2 class="modern-title emphasis-strong">Sua Performance</h2>
     <div class="stats-grid">
-      <div class="stat-card modern-card">
+      <div class="stat-card modern-card subtle-hover">
         <div class="stats-circle">
-          <span class="number">{{ getWeeklyWorkouts() }}</span>
-          <span class="label">Esta Semana</span>
+          <span class="data-display-number">{{ getWeeklyWorkouts() }}</span>
+          <span class="data-display-label">Esta Semana</span>
         </div>
       </div>
       
-      <div class="stat-card modern-card">
+      <div class="stat-card modern-card subtle-hover">
         <div class="stats-circle" style="background: var(--fitsync-gradient-success);">
-          <span class="number">{{ getTotalWorkouts() }}</span>
-          <span class="label">Total</span>
+          <span class="data-display-number">{{ getTotalWorkouts() }}</span>
+          <span class="data-display-label">Total</span>
         </div>
       </div>
       
-      <div class="stat-card modern-card">
+      <div class="stat-card modern-card subtle-hover">
         <div class="stats-circle" style="background: var(--fitsync-gradient-warning);">
-          <span class="number">{{ getStreakDays() }}</span>
-          <span class="label">Sequência</span>
+          <span class="data-display-number">{{ getStreakDays() }}</span>
+          <span class="data-display-label">Sequência</span>
         </div>
       </div>
       
-      <div class="stat-card modern-card">
+      <div class="stat-card modern-card subtle-hover">
         <div class="stats-circle" style="background: var(--fitsync-gradient-danger);">
-          <span class="number">{{ getCaloriesBurned() }}</span>
-          <span class="label">Calorias</span>
+          <span class="data-display-number">{{ getCaloriesBurned() }}</span>
+          <span class="data-display-label">Calorias</span>
         </div>
       </div>
     </div>
@@ -77,12 +81,12 @@
 
   <!-- Plano Ativo -->
   <div class="active-plan-section" *ngIf="activePlan">
-    <h2 class="section-title">Plano Ativo</h2>
-    <div class="workout-card-modern animate-slide-up">
+    <h2 class="modern-title emphasis-strong">Plano Ativo</h2>
+    <div class="workout-card-modern animate-slide-up subtle-hover">
       <div class="plan-header">
         <div class="plan-info">
-          <h3 class="plan-name">{{ activePlan.name }}</h3>
-          <p class="plan-description">{{ activePlan.description }}</p>
+          <h3 class="modern-subtitle personality-warm">{{ activePlan.name }}</h3>
+          <p class="modern-caption personality-friendly">{{ activePlan.description }}</p>
           <div class="plan-badges">
             <span class="muscle-badge {{ activePlan.primaryMuscle }}">
               {{ getMuscleGroupName(activePlan.primaryMuscle) }}
@@ -95,14 +99,14 @@
           <div class="progress-modern">
             <div class="progress-fill" [style.width.%]="getPlanProgress()"></div>
           </div>
-          <span class="progress-percentage">{{ getPlanProgress() }}%</span>
+          <span class="data-display-change">{{ getPlanProgress() }}%</span>
         </div>
       </div>
       
       <div class="plan-actions">
-        <ion-button expand="block" class="btn-modern" (click)="startWorkout()">
+        <ion-button expand="block" class="btn-modern subtle-hover" (click)="startWorkout()">
           <ion-icon name="play" slot="start"></ion-icon>
-          Continuar Treino
+          <span class="ui-element-button">Continuar Treino</span>
         </ion-button>
       </div>
     </div>
@@ -110,14 +114,14 @@
 
   <!-- Sem Plano Ativo -->
   <div class="no-plan-section" *ngIf="!activePlan">
-    <div class="modern-card">
+    <div class="modern-card subtle-hover">
       <div class="empty-state">
         <ion-icon name="fitness-outline" class="empty-icon"></ion-icon>
-        <h3>Comece Sua Jornada</h3>
-        <p>Escolha um plano de treino personalizado para atingir seus objetivos</p>
-        <ion-button expand="block" class="btn-modern" (click)="navigateToPlans()">
+        <h3 class="hero-medium personality-warm">Comece Sua Jornada</h3>
+        <p class="modern-body personality-friendly">Escolha um plano de treino personalizado para atingir seus objetivos</p>
+        <ion-button expand="block" class="btn-modern subtle-hover" (click)="navigateToPlans()">
           <ion-icon name="rocket" slot="start"></ion-icon>
-          Explorar Planos
+          <span class="ui-element-button">Explorar Planos</span>
         </ion-button>
       </div>
     </div>
@@ -125,38 +129,38 @@
 
   <!-- Ações Rápidas -->
   <div class="quick-actions-section">
-    <h2 class="section-title">Ações Rápidas</h2>
+    <h2 class="modern-title emphasis-strong">Ações Rápidas</h2>
     <div class="actions-grid">
-      <div class="action-item modern-card" (click)="quickStartWorkout()">
+      <div class="action-item modern-card subtle-hover" (click)="quickStartWorkout()">
         <div class="action-icon gradient-bg">
           <ion-icon name="flash"></ion-icon>
         </div>
-        <h4>Treino Rápido</h4>
-        <p>15-30 min</p>
+        <h4 class="interactive-primary">Treino Rápido</h4>
+        <p class="modern-caption">15-30 min</p>
       </div>
       
-      <div class="action-item modern-card" (click)="navigateToExercises()">
+      <div class="action-item modern-card subtle-hover" (click)="navigateToExercises()">
         <div class="action-icon gradient-success">
           <ion-icon name="barbell"></ion-icon>
         </div>
-        <h4>Exercícios</h4>
-        <p>Biblioteca</p>
+        <h4 class="interactive-primary">Exercícios</h4>
+        <p class="modern-caption">Biblioteca</p>
       </div>
       
-      <div class="action-item modern-card" (click)="navigateToProgress()">
+      <div class="action-item modern-card subtle-hover" (click)="navigateToProgress()">
         <div class="action-icon gradient-warning">
           <ion-icon name="trending-up"></ion-icon>
         </div>
-        <h4>Progresso</h4>
-        <p>Estatísticas</p>
+        <h4 class="interactive-primary">Progresso</h4>
+        <p class="modern-caption">Estatísticas</p>
       </div>
       
-      <div class="action-item modern-card" (click)="navigateToNutrition()">
+      <div class="action-item modern-card subtle-hover" (click)="navigateToNutrition()">
         <div class="action-icon gradient-danger">
           <ion-icon name="nutrition"></ion-icon>
         </div>
-        <h4>Nutrição</h4>
-        <p>Dieta</p>
+        <h4 class="interactive-primary">Nutrição</h4>
+        <p class="modern-caption">Dieta</p>
       </div>
     </div>
   </div>
@@ -164,19 +168,19 @@
   <!-- Últimos Treinos -->
   <div class="recent-workouts-section">
     <div class="section-header">
-      <h2 class="section-title">Treinos Recentes</h2>
-      <ion-button fill="clear" (click)="navigateToHistory()">
-        <span>Ver Todos</span>
+      <h2 class="modern-title emphasis-strong">Treinos Recentes</h2>
+      <ion-button fill="clear" class="subtle-hover" (click)="navigateToHistory()">
+        <span class="interactive-secondary">Ver Todos</span>
         <ion-icon name="chevron-forward" slot="end"></ion-icon>
       </ion-button>
     </div>
     
     <div class="workouts-list">
-      <div class="exercise-card-modern" *ngFor="let workout of recentWorkouts">
+      <div class="exercise-card-modern subtle-hover" *ngFor="let workout of recentWorkouts">
         <div class="workout-summary">
           <div class="workout-info">
-            <h4>{{ workout.name }}</h4>
-            <p>{{ workout.date | date:'dd/MM' }} • {{ workout.duration }} min</p>
+            <h4 class="modern-body emphasis-highlight">{{ workout.name }}</h4>
+            <p class="modern-caption">{{ workout.date | date:'dd/MM' }} • {{ workout.duration }} min</p>
             <div class="workout-tags">
               <span class="muscle-badge {{ workout.primaryMuscle }}">
                 {{ getMuscleGroupName(workout.primaryMuscle) }}
@@ -184,8 +188,8 @@
             </div>
           </div>
           <div class="workout-stats">
-            <span class="stat-value">{{ workout.exerciseCount }}</span>
-            <span class="stat-label">exercícios</span>
+            <span class="data-display-number">{{ workout.exerciseCount }}</span>
+            <span class="data-display-label">exercícios</span>
           </div>
         </div>
       </div>
@@ -193,9 +197,9 @@
       <!-- Estado vazio para treinos -->
       <div class="empty-workouts" *ngIf="!recentWorkouts || recentWorkouts.length === 0">
         <ion-icon name="calendar-outline" class="empty-icon-small"></ion-icon>
-        <p>Nenhum treino realizado ainda</p>
-        <ion-button size="small" fill="outline" (click)="startFirstWorkout()">
-          Fazer Primeiro Treino
+        <p class="personality-friendly">Nenhum treino realizado ainda</p>
+        <ion-button size="small" fill="outline" class="subtle-hover" (click)="startFirstWorkout()">
+          <span class="ui-element-button">Fazer Primeiro Treino</span>
         </ion-button>
       </div>
     </div>
@@ -203,12 +207,12 @@
 
   <!-- Dicas e Motivação -->
   <div class="tips-section">
-    <div class="modern-card">
+    <div class="modern-card subtle-hover">
       <div class="tip-content">
         <ion-icon name="bulb" class="tip-icon"></ion-icon>
         <div class="tip-text">
-          <h4>💡 Dica do Dia</h4>
-          <p>{{ getDailyTip() }}</p>
+          <h4 class="personality-playful">💡 Dica do Dia</h4>
+          <p class="personality-friendly">{{ getDailyTip() }}</p>
         </div>
       </div>
     </div>

@@ -2,20 +2,24 @@
   <ion-toolbar class="header-toolbar">
     <ion-buttons slot="start">
       <ion-button class="back-button" (click)="voltar()" fill="clear">
-        <ion-icon name="arrow-back" size="large"></ion-icon>
+        <div class="icon-container icon-container--outlined">
+          <ion-icon name="arrow-back" class="icon-lg icon-secondary"></ion-icon>
+        </div>
       </ion-button>
     </ion-buttons>
     
     <ion-title class="header-title">
       <div class="title-content">
-        <span class="title-text">Personalizar Treino</span>
-        <span class="step-indicator">Passo {{ currentStep }} de {{ totalSteps }}</span>
+        <span class="headline-sm text-gradient">Personalizar Treino</span>
+        <span class="body-sm text-muted">Passo {{ currentStep }} de {{ totalSteps }}</span>
       </div>
     </ion-title>
     
     <ion-buttons slot="end">
       <ion-button class="reset-button" (click)="reiniciarWizard()" fill="clear">
-        <ion-icon name="refresh-outline" size="large"></ion-icon>
+        <div class="icon-container icon-container--outlined">
+          <ion-icon name="refresh-outline" class="icon-lg icon-accent"></ion-icon>
+        </div>
       </ion-button>
     </ion-buttons>
   </ion-toolbar>
@@ -36,15 +40,13 @@
         (click)="irParaPasso(step)">
         
         <div class="dot-inner">
-          <ion-icon 
-            *ngIf="step < currentStep" 
-            name="checkmark" 
-            class="step-icon">
-          </ion-icon>
-          <span *ngIf="step >= currentStep" class="step-number">{{ step }}</span>
+          <div class="icon-container icon-container--filled" *ngIf="step < currentStep">
+            <ion-icon name="checkmark" class="icon-sm icon-success"></ion-icon>
+          </div>
+          <span *ngIf="step >= currentStep" class="code-medium">{{ step }}</span>
         </div>
         
-        <span class="step-label">{{ getStepLabel(step) }}</span>
+        <span class="personality-playful">{{ getStepLabel(step) }}</span>
       </div>
     </div>
   </div>
@@ -56,10 +58,12 @@
   <div *ngIf="currentStep === 1" class="wizard-step step-info">
     <div class="step-hero">
       <div class="hero-icon">
-        <ion-icon name="information-circle" class="hero-icon-main"></ion-icon>
+        <div class="icon-container icon-container--gradient">
+          <ion-icon name="information-circle" class="icon-2xl icon-primary"></ion-icon>
+        </div>
       </div>
-      <h1 class="hero-title">Informações Básicas</h1>
-      <p class="hero-subtitle">Vamos começar definindo o básico do seu treino personalizado</p>
+      <h1 class="display-sm text-gradient text-center">Informações Básicas</h1>
+      <p class="body-lg text-muted text-center">Vamos começar definindo o básico do seu treino personalizado</p>
     </div>
 
     <div class="step-content">
@@ -68,8 +72,10 @@
         <!-- Nome do Treino -->
         <div class="form-section">
           <div class="input-group glass-card">
-            <label class="form-label">
-              <ion-icon name="create-outline" class="label-icon"></ion-icon>
+            <label class="form-label label-md text-emphasis">
+              <div class="icon-container icon-container--ghost">
+                <ion-icon name="create-outline" class="icon-sm icon-primary"></ion-icon>
+              </div>
               Nome do Treino
             </label>
             <ion-input 
@@ -84,8 +90,10 @@
         
         <!-- Objetivo -->
         <div class="form-section">
-          <h3 class="section-title">
-            <ion-icon name="target-outline" class="section-icon"></ion-icon>
+          <h3 class="headline-xs text-emphasis">
+            <div class="icon-container icon-container--ghost">
+              <ion-icon name="target-outline" class="icon-md icon-accent"></ion-icon>
+            </div>
             Objetivo Principal
           </h3>
           
@@ -98,11 +106,15 @@
               
               <div class="option-content">
                 <div class="option-icon">
-                  <ion-icon [name]="objetivo.icon" class="objective-icon"></ion-icon>
+                  <div class="icon-container icon-container--filled">
+                    <ion-icon [name]="objetivo.icon" class="icon-lg icon-primary"></ion-icon>
+                  </div>
                 </div>
-                <h4 class="option-title">{{ objetivo.label }}</h4>
+                <h4 class="title-sm text-emphasis">{{ objetivo.label }}</h4>
                 <div class="selection-indicator">
-                  <ion-icon name="checkmark-circle" class="check-icon"></ion-icon>
+                  <div class="icon-container icon-container--gradient">
+                    <ion-icon name="checkmark-circle" class="icon-md icon-success"></ion-icon>
+                  </div>
                 </div>
               </div>
             </div>
@@ -111,8 +123,10 @@
 
         <!-- Nível -->
         <div class="form-section">
-          <h3 class="section-title">
-            <ion-icon name="trending-up-outline" class="section-icon"></ion-icon>
+          <h3 class="headline-xs text-emphasis">
+            <div class="icon-container icon-container--ghost">
+              <ion-icon name="trending-up-outline" class="icon-md icon-accent"></ion-icon>
+            </div>
             Nível de Experiência
           </h3>
           
@@ -125,8 +139,8 @@
               
               <div class="level-content">
                 <div class="level-info">
-                  <h4 class="level-title">{{ nivel.label }}</h4>
-                  <p class="level-description">{{ nivel.description }}</p>
+                  <h4 class="title-sm text-emphasis">{{ nivel.label }}</h4>
+                  <p class="body-sm text-muted">{{ nivel.description }}</p>
                 </div>
                 <div class="level-indicator">
                   <ion-radio 
@@ -141,8 +155,10 @@
 
         <!-- Tempo Disponível -->
         <div class="form-section">
-          <h3 class="section-title">
-            <ion-icon name="time-outline" class="section-icon"></ion-icon>
+          <h3 class="headline-xs text-emphasis">
+            <div class="icon-container icon-container--ghost">
+              <ion-icon name="time-outline" class="icon-md icon-accent"></ion-icon>
+            </div>
             Tempo Disponível por Sessão
           </h3>
           
@@ -152,7 +168,7 @@
                 *ngFor="let tempo of tempos" 
                 [value]="tempo.value"
                 class="time-option">
-                <ion-label class="time-label">{{ tempo.label }}</ion-label>
+                <ion-label class="label-md">{{ tempo.label }}</ion-label>
               </ion-segment-button>
             </ion-segment>
           </div>
@@ -166,10 +182,12 @@
   <div *ngIf="currentStep === 2" class="wizard-step step-schedule">
     <div class="step-hero">
       <div class="hero-icon">
-        <ion-icon name="calendar" class="hero-icon-main"></ion-icon>
+        <div class="icon-container icon-container--gradient">
+          <ion-icon name="calendar" class="icon-2xl icon-primary"></ion-icon>
+        </div>
       </div>
-      <h1 class="hero-title">Dias da Semana</h1>
-      <p class="hero-subtitle">Quando você pretende treinar durante a semana?</p>
+      <h1 class="display-sm text-gradient text-center">Dias da Semana</h1>
+      <p class="body-lg text-muted text-center">Quando você pretende treinar durante a semana?</p>
     </div>
 
     <div class="step-content">
@@ -182,8 +200,8 @@
             (click)="toggleDiaSemana(dia.value)">
             
             <div class="day-content">
-              <h3 class="day-short">{{ dia.short }}</h3>
-              <p class="day-full">{{ dia.label }}</p>
+              <h3 class="title-lg text-emphasis">{{ dia.short }}</h3>
+              <p class="body-sm text-muted">{{ dia.label }}</p>
               <div class="day-checkbox">
                 <ion-checkbox 
                   [checked]="informacoesForm.get('diasSemana')?.value.includes(dia.value)"
@@ -197,13 +215,15 @@
         <div class="selection-summary glass-card">
           <div class="summary-content">
             <div class="summary-icon">
-              <ion-icon name="calendar-number" class="summary-icon-main"></ion-icon>
+              <div class="icon-container icon-container--filled">
+                <ion-icon name="calendar-number" class="icon-lg icon-accent"></ion-icon>
+              </div>
             </div>
             <div class="summary-text">
-              <h4 class="summary-title">
+              <h4 class="title-md text-emphasis">
                 {{ informacoesForm.get('diasSemana')?.value.length || 0 }} dia(s) selecionado(s)
               </h4>
-              <p class="summary-subtitle">
+              <p class="body-sm text-muted">
                 {{ getTrainingFrequencyAdvice() }}
               </p>
             </div>
@@ -217,10 +237,12 @@
   <div *ngIf="currentStep === 3" class="wizard-step step-exercises">
     <div class="step-hero">
       <div class="hero-icon">
-        <ion-icon name="barbell" class="hero-icon-main"></ion-icon>
+        <div class="icon-container icon-container--gradient">
+          <ion-icon name="barbell" class="icon-2xl icon-primary"></ion-icon>
+        </div>
       </div>
-      <h1 class="hero-title">Exercícios</h1>
-      <p class="hero-subtitle">Escolha os exercícios que farão parte do seu treino</p>
+      <h1 class="display-sm text-gradient text-center">Exercícios</h1>
+      <p class="body-lg text-muted text-center">Escolha os exercícios que farão parte do seu treino</p>
     </div>
 
     <div class="step-content">
@@ -229,18 +251,22 @@
       <div class="smart-suggestion glass-card">
         <div class="suggestion-content">
           <div class="suggestion-icon">
-            <ion-icon name="bulb" class="bulb-icon"></ion-icon>
+            <div class="icon-container icon-container--gradient">
+              <ion-icon name="bulb" class="icon-lg icon-warning"></ion-icon>
+            </div>
           </div>
           <div class="suggestion-text">
-            <h3 class="suggestion-title">Sugestão Inteligente</h3>
-            <p class="suggestion-subtitle">Baseado no seu objetivo e nível de experiência</p>
+            <h3 class="title-md text-emphasis">Sugestão Inteligente</h3>
+            <p class="body-sm text-muted">Baseado no seu objetivo e nível de experiência</p>
           </div>
           <ion-button 
             class="suggestion-button"
             fill="outline" 
             color="warning"
             (click)="aplicarSugestaoInteligente()">
-            <ion-icon name="auto-fix" slot="start"></ion-icon>
+            <div class="icon-container icon-container--ghost">
+              <ion-icon name="auto-fix" class="icon-sm icon-warning"></ion-icon>
+            </div>
             Aplicar
           </ion-button>
         </div>
@@ -248,28 +274,34 @@
 
       <!-- Filtros -->
       <div class="filters-section glass-card">
-        <h4 class="filters-title">
-          <ion-icon name="funnel-outline" class="filter-icon"></ion-icon>
+        <h4 class="title-md text-emphasis">
+          <div class="icon-container icon-container--ghost">
+            <ion-icon name="funnel-outline" class="icon-md icon-accent"></ion-icon>
+          </div>
           Categorias
         </h4>
         <ion-segment [(ngModel)]="filtroCategoria" class="category-filter" mode="md">
           <ion-segment-button value="" class="filter-button">
-            <ion-label>Todos</ion-label>
+            <ion-label class="label-sm">Todos</ion-label>
           </ion-segment-button>
           <ion-segment-button 
             *ngFor="let categoria of categorias" 
             [value]="categoria.value"
             class="filter-button">
-            <ion-icon [name]="categoria.icon" class="category-icon"></ion-icon>
-            <ion-label>{{ categoria.label }}</ion-label>
+            <div class="icon-container icon-container--ghost">
+              <ion-icon [name]="categoria.icon" class="icon-xs icon-secondary"></ion-icon>
+            </div>
+            <ion-label class="label-sm">{{ categoria.label }}</ion-label>
           </ion-segment-button>
         </ion-segment>
       </div>
 
       <!-- Lista de Exercícios -->
       <div class="exercises-section">
-        <h4 class="section-subtitle">
-          <ion-icon name="list-outline" class="subtitle-icon"></ion-icon>
+        <h4 class="title-md text-emphasis">
+          <div class="icon-container icon-container--ghost">
+            <ion-icon name="list-outline" class="icon-md icon-accent"></ion-icon>
+          </div>
           Exercícios Disponíveis
         </h4>
         
@@ -283,14 +315,16 @@
             <div class="exercise-content">
               <div class="exercise-info">
                 <div class="exercise-icon">
-                  <ion-icon [name]="getCategoriaIcon(exercicio.category)" class="category-icon"></ion-icon>
+                  <div class="icon-container icon-container--filled">
+                    <ion-icon [name]="getCategoriaIcon(exercicio.category)" class="icon-md icon-primary"></ion-icon>
+                  </div>
                 </div>
                 <div class="exercise-details">
-                  <h4 class="exercise-name">{{ exercicio.name }}</h4>
+                  <h4 class="title-sm text-emphasis">{{ exercicio.name }}</h4>
                   <ion-chip 
                     [color]="getDificuldadeCor(exercicio.difficulty)" 
                     class="difficulty-chip">
-                    {{ getDifficultyLabel(exercicio.difficulty) }}
+                    <span class="label-xs">{{ getDifficultyLabel(exercicio.difficulty) }}</span>
                   </ion-chip>
                 </div>
               </div>
@@ -307,8 +341,10 @@
 
       <!-- Exercícios Selecionados -->
       <div *ngIf="exerciciosSelecionados.length > 0" class="selected-exercises-section">
-        <h4 class="section-subtitle selected-title">
-          <ion-icon name="checkmark-circle" class="subtitle-icon selected-icon"></ion-icon>
+        <h4 class="title-md text-emphasis">
+          <div class="icon-container icon-container--filled">
+            <ion-icon name="checkmark-circle" class="icon-md icon-success"></ion-icon>
+          </div>
           Exercícios Selecionados ({{ exerciciosSelecionados.length }})
         </h4>
         
@@ -319,21 +355,25 @@
             
             <div class="selected-exercise-header">
               <div class="exercise-number">{{ i + 1 }}</div>
-              <h4 class="selected-exercise-name">{{ exercicio.name }}</h4>
+              <h4 class="title-sm text-emphasis">{{ exercicio.name }}</h4>
               <ion-button 
                 fill="clear" 
                 color="danger" 
                 class="remove-button"
                 (click)="removerExercicio(exercicio.id)">
-                <ion-icon name="close-circle" size="small"></ion-icon>
+                <div class="icon-container icon-container--ghost">
+                  <ion-icon name="close-circle" class="icon-sm icon-danger"></ion-icon>
+                </div>
               </ion-button>
             </div>
             
             <div class="exercise-parameters">
               <div class="param-row">
                 <div class="param-group">
-                  <label class="param-label">
-                    <ion-icon name="layers-outline" class="param-icon"></ion-icon>
+                  <label class="param-label label-sm text-emphasis">
+                    <div class="icon-container icon-container--ghost">
+                      <ion-icon name="layers-outline" class="icon-xs icon-secondary"></ion-icon>
+                    </div>
                     Séries
                   </label>
                   <ion-input 
@@ -343,13 +383,15 @@
                     fill="outline"
                     min="1"
                     max="10"
-                    (ionInput)="atualizarExercicio(exercicio.id, 'sets', $event.target.value)">
+                    (ionInput)="atualizarExercicio(exercicio.id, 'sets', $event.target.value || 0)">
                   </ion-input>
                 </div>
                 
                 <div class="param-group" *ngIf="exercicio.category !== 'cardio'">
-                  <label class="param-label">
-                    <ion-icon name="repeat-outline" class="param-icon"></ion-icon>
+                  <label class="param-label label-sm text-emphasis">
+                    <div class="icon-container icon-container--ghost">
+                      <ion-icon name="repeat-outline" class="icon-xs icon-secondary"></ion-icon>
+                    </div>
                     Repetições
                   </label>
                   <ion-input 
@@ -359,13 +401,15 @@
                     fill="outline"
                     min="1"
                     max="50"
-                    (ionInput)="atualizarExercicio(exercicio.id, 'reps', $event.target.value)">
+                    (ionInput)="atualizarExercicio(exercicio.id, 'reps', $event.target.value || 0)">
                   </ion-input>
                 </div>
                 
                 <div class="param-group" *ngIf="exercicio.category === 'cardio'">
-                  <label class="param-label">
-                    <ion-icon name="time-outline" class="param-icon"></ion-icon>
+                  <label class="param-label label-sm text-emphasis">
+                    <div class="icon-container icon-container--ghost">
+                      <ion-icon name="time-outline" class="icon-xs icon-secondary"></ion-icon>
+                    </div>
                     Duração (min)
                   </label>
                   <ion-input 
@@ -375,13 +419,15 @@
                     fill="outline"
                     min="1"
                     max="120"
-                    (ionInput)="atualizarExercicio(exercicio.id, 'duration', $event.target.value)">
+                    (ionInput)="atualizarExercicio(exercicio.id, 'duration', $event.target.value || 0)">
                   </ion-input>
                 </div>
                 
                 <div class="param-group">
-                  <label class="param-label">
-                    <ion-icon name="pause-outline" class="param-icon"></ion-icon>
+                  <label class="param-label label-sm text-emphasis">
+                    <div class="icon-container icon-container--ghost">
+                      <ion-icon name="pause-outline" class="icon-xs icon-secondary"></ion-icon>
+                    </div>
                     Descanso (seg)
                   </label>
                   <ion-input 
@@ -391,7 +437,7 @@
                     fill="outline"
                     min="15"
                     max="300"
-                    (ionInput)="atualizarExercicio(exercicio.id, 'restTime', $event.target.value)">
+                    (ionInput)="atualizarExercicio(exercicio.id, 'restTime', $event.target.value || 0)">
                   </ion-input>
                 </div>
               </div>
@@ -406,10 +452,12 @@
   <div *ngIf="currentStep === 4" class="wizard-step step-review">
     <div class="step-hero">
       <div class="hero-icon">
-        <ion-icon name="checkmark-circle" class="hero-icon-main"></ion-icon>
+        <div class="icon-container icon-container--gradient">
+          <ion-icon name="checkmark-circle" class="icon-2xl icon-success"></ion-icon>
+        </div>
       </div>
-      <h1 class="hero-title">Revisar Treino</h1>
-      <p class="hero-subtitle">Confirme os detalhes do seu treino personalizado</p>
+      <h1 class="display-sm text-gradient text-center">Revisar Treino</h1>
+      <p class="body-lg text-muted text-center">Confirme os detalhes do seu treino personalizado</p>
     </div>
 
     <div class="step-content">
@@ -418,18 +466,20 @@
       <div class="summary-card glass-card">
         <div class="summary-header">
           <div class="summary-icon">
-            <ion-icon [name]="getObjetivoIcon(informacoesForm.get('objetivo')?.value)" class="summary-main-icon"></ion-icon>
+            <div class="icon-container icon-container--gradient">
+              <ion-icon [name]="getObjetivoIcon(informacoesForm.get('objetivo')?.value)" class="icon-xl icon-primary"></ion-icon>
+            </div>
           </div>
           <div class="summary-info">
-            <h2 class="summary-name">{{ informacoesForm.get('nome')?.value }}</h2>
+            <h2 class="headline-md text-emphasis">{{ informacoesForm.get('nome')?.value }}</h2>
             <div class="summary-tags">
               <ion-chip 
                 [color]="getDificuldadeCor(informacoesForm.get('nivel')?.value)"
                 class="level-chip">
-                {{ getNivelLabel() }}
+                <span class="label-sm">{{ getNivelLabel() }}</span>
               </ion-chip>
               <ion-chip color="primary" class="objective-chip">
-                {{ getObjetivoLabel() }}
+                <span class="label-sm">{{ getObjetivoLabel() }}</span>
               </ion-chip>
             </div>
           </div>
@@ -438,41 +488,49 @@
         <div class="summary-stats">
           <div class="stat-item">
             <div class="stat-icon">
-              <ion-icon name="time" class="stat-icon-main"></ion-icon>
+              <div class="icon-container icon-container--filled">
+                <ion-icon name="time" class="icon-md icon-primary"></ion-icon>
+              </div>
             </div>
             <div class="stat-info">
-              <span class="stat-value">{{ getTempoLabel() }}</span>
-              <span class="stat-label">por sessão</span>
+              <span class="title-md text-emphasis">{{ getTempoLabel() }}</span>
+              <span class="body-sm text-muted">por sessão</span>
             </div>
           </div>
           
           <div class="stat-item">
             <div class="stat-icon">
-              <ion-icon name="calendar" class="stat-icon-main"></ion-icon>
+              <div class="icon-container icon-container--filled">
+                <ion-icon name="calendar" class="icon-md icon-secondary"></ion-icon>
+              </div>
             </div>
             <div class="stat-info">
-              <span class="stat-value">{{ getDiasSemanaCount() }}</span>
-              <span class="stat-label">dias por semana</span>
+              <span class="title-md text-emphasis">{{ getDiasSemanaCount() }}</span>
+              <span class="body-sm text-muted">dias por semana</span>
             </div>
           </div>
           
           <div class="stat-item">
             <div class="stat-icon">
-              <ion-icon name="barbell" class="stat-icon-main"></ion-icon>
+              <div class="icon-container icon-container--filled">
+                <ion-icon name="barbell" class="icon-md icon-accent"></ion-icon>
+              </div>
             </div>
             <div class="stat-info">
-              <span class="stat-value">{{ exerciciosSelecionados.length }}</span>
-              <span class="stat-label">exercícios</span>
+              <span class="title-md text-emphasis">{{ exerciciosSelecionados.length }}</span>
+              <span class="body-sm text-muted">exercícios</span>
             </div>
           </div>
           
           <div class="stat-item">
             <div class="stat-icon">
-              <ion-icon name="flame" class="stat-icon-main"></ion-icon>
+              <div class="icon-container icon-container--filled">
+                <ion-icon name="flame" class="icon-md icon-warning"></ion-icon>
+              </div>
             </div>
             <div class="stat-info">
-              <span class="stat-value">{{ getEstimatedCalories() }}</span>
-              <span class="stat-label">cal estimadas</span>
+              <span class="title-md text-emphasis">{{ getEstimatedCalories() }}</span>
+              <span class="body-sm text-muted">cal estimadas</span>
             </div>
           </div>
         </div>
@@ -480,8 +538,10 @@
 
       <!-- Cronograma Semanal -->
       <div class="schedule-preview glass-card">
-        <h3 class="preview-title">
-          <ion-icon name="calendar-outline" class="preview-icon"></ion-icon>
+        <h3 class="title-md text-emphasis">
+          <div class="icon-container icon-container--ghost">
+            <ion-icon name="calendar-outline" class="icon-md icon-accent"></ion-icon>
+          </div>
           Cronograma Semanal
         </h3>
         
@@ -492,17 +552,19 @@
             [class.active]="informacoesForm.get('diasSemana')?.value.includes(dia.value)">
             
             <div class="day-indicator">
-              <span class="day-letter">{{ dia.short.charAt(0) }}</span>
+              <span class="label-md text-emphasis">{{ dia.short.charAt(0) }}</span>
             </div>
-            <span class="day-name">{{ dia.short }}</span>
+            <span class="body-xs text-muted">{{ dia.short }}</span>
           </div>
         </div>
       </div>
 
       <!-- Lista de Exercícios Final -->
       <div class="final-exercises-section">
-        <h3 class="preview-title">
-          <ion-icon name="list" class="preview-icon"></ion-icon>
+        <h3 class="title-md text-emphasis">
+          <div class="icon-container icon-container--ghost">
+            <ion-icon name="list" class="icon-md icon-accent"></ion-icon>
+          </div>
           Exercícios do Treino
         </h3>
         
@@ -516,34 +578,42 @@
               
               <div class="exercise-main-info">
                 <div class="exercise-name-section">
-                  <h4 class="final-exercise-name">{{ exercicio.name }}</h4>
+                  <h4 class="title-sm text-emphasis">{{ exercicio.name }}</h4>
                   <ion-chip 
                     [color]="getDificuldadeCor(exercicio.difficulty)" 
                     class="exercise-difficulty">
-                    {{ getDifficultyLabel(exercicio.difficulty) }}
+                    <span class="label-xs">{{ getDifficultyLabel(exercicio.difficulty) }}</span>
                   </ion-chip>
                 </div>
                 
                 <div class="exercise-specs">
                   <div class="spec-item" *ngIf="exercicio.category !== 'cardio'">
-                    <ion-icon name="layers-outline" class="spec-icon"></ion-icon>
-                    <span>{{ exercicio.sets }} séries × {{ exercicio.reps }} reps</span>
+                    <div class="icon-container icon-container--ghost">
+                      <ion-icon name="layers-outline" class="icon-xs icon-secondary"></ion-icon>
+                    </div>
+                    <span class="body-sm text-muted">{{ exercicio.sets }} séries × {{ exercicio.reps }} reps</span>
                   </div>
                   
                   <div class="spec-item" *ngIf="exercicio.category === 'cardio'">
-                    <ion-icon name="time-outline" class="spec-icon"></ion-icon>
-                    <span>{{ exercicio.sets }} séries × {{ exercicio.duration }} min</span>
+                    <div class="icon-container icon-container--ghost">
+                      <ion-icon name="time-outline" class="icon-xs icon-secondary"></ion-icon>
+                    </div>
+                    <span class="body-sm text-muted">{{ exercicio.sets }} séries × {{ exercicio.duration }} min</span>
                   </div>
                   
                   <div class="spec-item">
-                    <ion-icon name="pause-outline" class="spec-icon"></ion-icon>
-                    <span>{{ exercicio.restTime }}s descanso</span>
+                    <div class="icon-container icon-container--ghost">
+                      <ion-icon name="pause-outline" class="icon-xs icon-secondary"></ion-icon>
+                    </div>
+                    <span class="body-sm text-muted">{{ exercicio.restTime }}s descanso</span>
                   </div>
                 </div>
               </div>
               
               <div class="exercise-category-icon">
-                <ion-icon [name]="getCategoriaIcon(exercicio.category)" class="category-badge"></ion-icon>
+                <div class="icon-container icon-container--filled">
+                  <ion-icon [name]="getCategoriaIcon(exercicio.category)" class="icon-md icon-primary"></ion-icon>
+                </div>
               </div>
             </div>
           </div>
@@ -562,7 +632,9 @@
         fill="outline"
         size="large"
         (click)="passoAnterior()">
-        <ion-icon name="chevron-back" slot="start"></ion-icon>
+        <div class="icon-container icon-container--ghost">
+          <ion-icon name="chevron-back" class="icon-sm icon-secondary"></ion-icon>
+        </div>
         Anterior
       </ion-button>
       
@@ -574,7 +646,9 @@
         [disabled]="!validarPassoAtual()"
         (click)="proximoPasso()">
         Próximo
-        <ion-icon name="chevron-forward" slot="end"></ion-icon>
+        <div class="icon-container icon-container--ghost">
+          <ion-icon name="chevron-forward" class="icon-sm icon-white"></ion-icon>
+        </div>
       </ion-button>
       
       <ion-button 
@@ -585,17 +659,19 @@
         color="success"
         [disabled]="exerciciosSelecionados.length === 0"
         (click)="finalizarTreino()">
-        <ion-icon name="checkmark-circle" slot="start"></ion-icon>
+        <div class="icon-container icon-container--ghost">
+          <ion-icon name="checkmark-circle" class="icon-sm icon-white"></ion-icon>
+        </div>
         Criar Treino
       </ion-button>
     </div>
     
     <!-- Progress Indicator -->
     <div class="progress-info">
-      <div class="progress-text">
+      <div class="progress-text body-md text-emphasis">
         Passo {{ currentStep }} de {{ totalSteps }}
       </div>
-      <div class="progress-percentage">
+      <div class="progress-percentage body-sm text-muted">
         {{ Math.round((currentStep / totalSteps) * 100) }}% concluído
       </div>
     </div>

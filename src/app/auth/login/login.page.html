@@ -2,16 +2,16 @@
   <div class="fitsync-container">
     <!-- Logo e título -->
     <div class="logo-section fitsync-slide-right">
-      <img src="/src/assets/logo.png" alt="FitSync Logo" class="logo">
-      <h1 class="fitsync-text-4xl fitsync-text-center">FitSync</h1>
-      <p class="fitsync-text-lg fitsync-text-center">Sua jornada fitness começa aqui</p>
+      <img src="assets/logo.png" alt="FitSync Logo" class="logo">
+      <h1 class="hero-xl text-gradient-primary fitsync-text-center">FitSync</h1>
+      <p class="personality-friendly text-muted fitsync-text-center">Sua jornada fitness começa aqui</p>
     </div>
 
     <!-- Formulário de login -->
     <form class="login-form fitsync-slide-left" (ngSubmit)="onLogin()">
       <div class="form-section">
         <div class="fitsync-input">
-          <label class="input-label">Email</label>
+          <label class="ui-element-input text-emphasis">Email</label>
           <div class="input-wrapper">
             <ion-input
               type="email"
@@ -20,14 +20,19 @@
               name="email"
               placeholder="Digite seu email"
               required
-              clearInput="true">
+              clearInput="true"
+              class="modern-body"
+              aria-label="Campo de email"
+              autocomplete="email">
             </ion-input>
-            <ion-icon name="mail" class="input-icon"></ion-icon>
+            <div class="icon-container icon-container--sm icon-container--primary">
+              <ion-icon name="mail" class="icon icon-sm input-icon"></ion-icon>
+            </div>
           </div>
         </div>
 
         <div class="fitsync-input">
-          <label class="input-label">Senha</label>
+          <label class="ui-element-input text-emphasis">Senha</label>
           <div class="input-wrapper">
             <ion-input
               [type]="showPassword ? 'text' : 'password'"
@@ -35,16 +40,23 @@
               (ionInput)="updateField('password', $event)"
               name="password"
               placeholder="Digite sua senha"
-              required>
+              required
+              class="modern-body"
+              aria-label="Campo de senha"
+              autocomplete="current-password">
             </ion-input>
             <ion-button 
               fill="clear" 
               (click)="togglePasswordVisibility()"
-              class="password-toggle">
-              <ion-icon 
-                [name]="showPassword ? 'eye-off' : 'eye'" 
-                slot="icon-only">
-              </ion-icon>
+              class="password-toggle"
+              aria-label="Mostrar ou esconder senha">
+              <div class="icon-container icon-container--sm icon-container--muted">
+                <ion-icon 
+                  [name]="showPassword ? 'eye-off' : 'eye'" 
+                  class="icon icon-sm"
+                  slot="icon-only">
+                </ion-icon>
+              </div>
             </ion-button>
           </div>
         </div>
@@ -57,33 +69,35 @@
           class="fitsync-btn fitsync-btn--primary fitsync-btn--lg"
           [class.fitsync-btn--disabled]="isLoading"
           [disabled]="isLoading">
-          <ion-spinner [hidden]="!isLoading" name="crescent"></ion-spinner>
-          <span [hidden]="isLoading">Entrar</span>
+          <div class="icon-container icon-container--sm icon-container--light" [hidden]="!isLoading">
+            <ion-spinner name="crescent" class="icon icon-sm"></ion-spinner>
+          </div>
+          <span class="ui-element-button" [hidden]="isLoading">Entrar</span>
         </button>
 
         <button 
           type="button"
           class="fitsync-btn fitsync-btn--ghost"
           (click)="forgotPassword()">
-          Esqueceu a senha?
+          <span class="interactive-secondary">Esqueceu a senha?</span>
         </button>
       </div>
     </form>
 
     <!-- Divisor -->
     <div class="divider">
-      <span class="fitsync-text-sm">ou</span>
+      <span class="modern-caption text-muted">ou</span>
     </div>
 
     <!-- Registro -->
     <div class="register-section">
-      <p class="fitsync-text-base fitsync-text-center">Não tem uma conta?</p>
+      <p class="modern-body text-muted fitsync-text-center">Não tem uma conta?</p>
       <button 
         type="button"
         class="fitsync-btn fitsync-btn--outline fitsync-btn--lg"
         (click)="goToRegister()"
         [disabled]="isLoading">
-        Criar Conta
+        <span class="ui-element-button">Criar Conta</span>
       </button>
     </div>
 
@@ -91,13 +105,15 @@
     <div class="demo-section">
       <div class="fitsync-card fitsync-card--glass">
         <div class="card-header">
-          <ion-icon name="information-circle" class="demo-icon"></ion-icon>
-          <h3 class="fitsync-text-lg fitsync-text-bold">Conta Demo</h3>
+          <div class="icon-container icon-container--md icon-container--accent">
+            <ion-icon name="information-circle" class="icon icon-md demo-icon"></ion-icon>
+          </div>
+          <h3 class="modern-title text-emphasis fitsync-text-bold">Conta Demo</h3>
         </div>
         <div class="card-content">
-          <p class="fitsync-text-sm">
-            <strong>Email:</strong> demo&#64;fitsync.app<br>
-            <strong>Senha:</strong> demo123
+          <p class="modern-caption text-muted">
+            <strong class="emphasis-strong">Email:</strong> demo&#64;fitsync.app<br>
+            <strong class="emphasis-strong">Senha:</strong> demo123
           </p>
         </div>
       </div>

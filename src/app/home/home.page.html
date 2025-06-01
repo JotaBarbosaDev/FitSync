@@ -6,7 +6,9 @@
         <img src="/assets/logo.png" alt="FitSync Logo" class="header-logo">
       </div>
       <ion-button fill="clear" class="profile-btn" (click)="navigateToProfile()">
-        <ion-icon name="person-circle" slot="icon-only"></ion-icon>
+        <div class="icon-container icon-container-md icon-container-primary">
+          <ion-icon name="person-circle" class="icon icon-md icon-hover"></ion-icon>
+        </div>
       </ion-button>
     </div>
   </ion-toolbar>
@@ -17,8 +19,10 @@
     <!-- Loading state -->
     <div *ngIf="isLoading" class="loading-container fitsync-slide-up">
       <div class="loading-content">
-        <ion-spinner name="dots" color="primary"></ion-spinner>
-        <p class="body-medium">Carregando seus dados...</p>
+        <div class="icon-container icon-container-xl icon-container-gradient">
+          <ion-spinner name="dots" class="icon icon-xl loading-only"></ion-spinner>
+        </div>
+        <p class="body-large text-muted">Carregando seus dados...</p>
       </div>
     </div>
 
@@ -27,34 +31,41 @@
     <!-- Header with greeting -->
     <div class="header-section fitsync-slide-right">
       <div class="greeting-content">
-        <h1 class="display-medium text-gradient-primary">{{ getGreeting() }}, {{ userProfile.name }}! 👋</h1>
-        <p class="body-large">Vamos continuar sua jornada fitness?</p>
+        <h1 class="display-large">{{ getGreeting() }}, {{ userProfile.name }}! 👋</h1>
+        <p class="body-large text-muted">Vamos continuar sua jornada fitness?</p>
+        <div class="motivation-indicator">
+          <span class="label-large text-accent">🔥 ENERGIA MÁXIMA</span>
+        </div>
       </div>
       
       <!-- User Stats Cards -->
       <div class="stats-grid fitsync-slide-left">
         <div class="fitsync-card fitsync-card--workout">
           <div class="card-header">
-            <ion-icon name="flame" color="warning"></ion-icon>
-            <span class="stat-number">{{ userProfile.streak || 0 }}</span>
+            <div class="icon-container icon-container-lg icon-container-light">
+              <ion-icon name="flame" class="icon icon-lg icon-glow" style="color: #FF6B35;"></ion-icon>
+            </div>
+            <span class="headline-medium text-warning">{{ userProfile.streak || 0 }}</span>
           </div>
-          <p class="stat-label">Dias consecutivos</p>
+          <p class="label-large text-muted">Dias consecutivos</p>
         </div>
         
         <div class="fitsync-card fitsync-card--workout">
           <div class="card-header">
-            <ion-icon name="trophy" color="warning"></ion-icon>
-            <span class="stat-number">{{ userProfile.level || 'Iniciante' }}</span>
+            <div class="icon-container icon-container-lg icon-container-gradient">
+              <ion-icon name="trophy" class="icon icon-lg"></ion-icon>
+            </div>
+            <span class="emphasis-strong">{{ userProfile.level || 'Iniciante' }}</span>
           </div>
-          <p class="stat-label">Nível atual</p>
+          <p class="personality-playful">Nível atual</p>
         </div>
         
         <div class="fitsync-card fitsync-card--workout">
           <div class="card-header">
             <ion-icon name="fitness" color="success"></ion-icon>
-            <span class="stat-number">{{ recentWorkouts.length || 0 }}</span>
+            <span class="data-display-number">{{ recentWorkouts.length || 0 }}</span>
           </div>
-          <p class="stat-label">Treinos realizados</p>
+          <p class="data-display-label">Treinos realizados</p>
         </div>
       </div>
     </div>
@@ -65,14 +76,16 @@
       <div class="journey-card" *ngIf="!activePlan">
         <div class="fitsync-card">
           <div class="empty-state">
-            <div class="empty-icon-wrapper">
-              <ion-icon name="rocket" class="empty-icon"></ion-icon>
+            <div class="icon-container icon-container-2xl icon-container-gradient">
+              <ion-icon name="rocket" class="icon icon-2xl"></ion-icon>
             </div>
-            <h3 class="headline-small text-primary">Comece Sua Jornada</h3>
-            <p class="body-medium">Escolha um plano personalizado para atingir seus objetivos</p>
+            <h3 class="headline-medium text-gradient-primary">Comece Sua Jornada</h3>
+            <p class="body-large text-muted">Escolha um plano personalizado para atingir seus objetivos</p>
             <button class="fitsync-btn fitsync-btn--primary fitsync-btn--lg" (click)="startQuickWorkout()">
-              <ion-icon name="play" slot="start"></ion-icon>
-              Começar Agora
+              <div class="icon-container icon-container-sm icon-container-light">
+                <ion-icon name="play" class="icon icon-sm"></ion-icon>
+              </div>
+              <span class="title-medium">Começar Agora</span>
             </button>
           </div>
         </div>
@@ -82,19 +95,30 @@
       <div class="active-plan-card" *ngIf="activePlan">
         <div class="fitsync-card fitsync-card--workout">
           <div class="card-header">
-            <div class="card-title">{{ activePlan.name }}</div>
-            <div class="card-badge">Ativo</div>
+            <div class="plan-title-section">
+              <h3 class="title-large text-emphasis">{{ activePlan.name }}</h3>
+              <div class="plan-badge">
+                <span class="label-medium text-accent">ATIVO</span>
+              </div>
+            </div>
           </div>
-          <div class="card-content">{{ activePlan.description }}</div>
+          <div class="card-content">
+            <p class="body-medium text-muted">{{ activePlan.description }}</p>
+          </div>
           <div class="progress-section">
+            <div class="progress-info">
+              <span class="body-small text-muted">Progresso</span>
+              <span class="title-small text-accent">{{ getPlanProgress() }}%</span>
+            </div>
             <div class="progress-bar">
               <div class="progress-fill" [style.width.%]="getPlanProgress()"></div>
             </div>
-            <span class="progress-text">{{ getPlanProgress() }}% concluído</span>
           </div>
           <button class="fitsync-btn fitsync-btn--primary" (click)="startWorkout()">
-            <ion-icon name="play" slot="start"></ion-icon>
-            Continuar Treino
+            <div class="icon-container icon-container-sm icon-container-light">
+              <ion-icon name="play" class="icon icon-sm"></ion-icon>
+            </div>
+            <span class="title-medium">Continuar Treino</span>
           </button>
         </div>
       </div>
@@ -103,40 +127,58 @@
     <!-- Quick Actions Section -->
     <div class="quick-actions-section fitsync-slide-up">
       <div class="section-header">
-        <h2 class="headline-medium">
-          <ion-icon name="flash" slot="start"></ion-icon>
+        <h2 class="headline-medium text-gradient-dark">
+          <div class="icon-container icon-container-md icon-container-primary">
+            <ion-icon name="flash" class="icon icon-md icon-glow"></ion-icon>
+          </div>
           Ações Rápidas
         </h2>
+        <p class="body-medium text-muted">Acesso direto às principais funcionalidades</p>
       </div>
       
       <div class="actions-grid">
         <div class="action-card" (click)="navigateToExercisesList()">
           <div class="fitsync-card">
             <div class="action-icon-wrapper">
-              <ion-icon name="list" class="action-icon"></ion-icon>
+              <div class="icon-container icon-container-xl icon-container-primary">
+                <ion-icon name="list" class="icon icon-xl icon-hover"></ion-icon>
+              </div>
             </div>
-            <h3 class="title-medium text-weight-semibold">Exercícios</h3>
-            <p class="body-medium">Explore nossa biblioteca completa</p>
+            <div class="action-content">
+              <h3 class="title-large text-emphasis">Exercícios</h3>
+              <p class="body-medium text-muted">Explore nossa biblioteca completa</p>
+              <span class="label-medium text-accent">EXPLORAR</span>
+            </div>
           </div>
         </div>
 
         <div class="action-card" (click)="createCustomWorkout()">
           <div class="fitsync-card">
             <div class="action-icon-wrapper">
-              <ion-icon name="add-circle" class="action-icon"></ion-icon>
+              <div class="icon-container icon-container-xl icon-container-gradient">
+                <ion-icon name="add-circle" class="icon icon-xl"></ion-icon>
+              </div>
             </div>
-            <h3 class="fitsync-text-lg fitsync-text-bold">Criar Treino</h3>
-            <p class="fitsync-text-base">Personalize seu treino</p>
+            <div class="action-content">
+              <h3 class="title-large text-emphasis">Criar Treino</h3>
+              <p class="body-medium text-muted">Personalize seu treino</p>
+              <span class="label-medium text-accent">CRIAR</span>
+            </div>
           </div>
         </div>
 
         <div class="action-card" (click)="verDetalhe()">
           <div class="fitsync-card">
             <div class="action-icon-wrapper">
-              <ion-icon name="eye" class="action-icon"></ion-icon>
+              <div class="icon-container icon-container-xl icon-container-light">
+                <ion-icon name="eye" class="icon icon-xl"></ion-icon>
+              </div>
             </div>
-            <h3 class="fitsync-text-lg fitsync-text-bold">Ver Exemplo</h3>
-            <p class="fitsync-text-base">Demo de exercício</p>
+            <div class="action-content">
+              <h3 class="title-large text-emphasis">Ver Exemplo</h3>
+              <p class="body-medium text-muted">Demo de exercício</p>
+              <span class="label-medium text-accent">VISUALIZAR</span>
+            </div>
           </div>
         </div>
       </div>
@@ -145,10 +187,13 @@
     <!-- Featured Exercises Section -->
     <div class="featured-section fitsync-slide-up" *ngIf="featuredExercises.length > 0">
       <div class="section-header">
-        <h2 class="fitsync-text-2xl fitsync-text-bold">
-          <ion-icon name="star" slot="start"></ion-icon>
+        <h2 class="headline-medium text-gradient-dark">
+          <div class="icon-container icon-container-md icon-container-gradient">
+            <ion-icon name="star" class="icon icon-md icon-rotate"></ion-icon>
+          </div>
           Exercícios em Destaque
         </h2>
+        <p class="body-medium text-muted">Os mais populares desta semana</p>
       </div>
       
       <div class="exercises-carousel">
