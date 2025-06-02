@@ -242,7 +242,7 @@
   }
   
   &-gradient-dark {
-    background: linear-gradient(135deg, #141414 0%, #2D2D2D 100%);
+    background: linear-gradient(135deg, #ffffff 0%, #e0e0e0 100%);
     background-clip: text;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -263,7 +263,7 @@
   
   &-emphasis {
     font-weight: var(--font-weight-bold);
-    color: var(--ion-color-dark);
+    color: var(--ion-color-light);
   }
   
   &-success {
@@ -854,7 +854,7 @@
   }
   
   .input-hint {
-    color: var(--ion-text-color-tertiary);
+    color: var(--ion-text-color-terciary);
     font-size: 0.875rem;
     margin-top: 4px;
   }
@@ -2245,6 +2245,8 @@ ion-content:not(.auth-content):not(.login-content):not(.register-content) {
   .stats-circle {
     background: linear-gradient(135deg, 
  
+      
+ 
       rgba(230, 254, 88, 0.15) 0%, 
       rgba(184, 230, 54, 0.12) 50%, 
       rgba(230, 254, 88, 0.10) 100%) !important;
@@ -2279,6 +2281,67 @@ ion-content:not(.auth-content):not(.login-content):not(.register-content) {
       background: linear-gradient(135deg, 
         rgba(230, 254, 88, 0.8) 0%, 
         rgba(184, 230, 54, 0.9) 100%) !important;
+    }
+  }
+}
+
+/* ===== FLOATING ACTION BUTTON (FAB) - CORREÇÃO GLOBAL ===== */
+/* Garantir que os FABs permaneçam fixos e tenham estilo consistente */
+ion-fab[slot="fixed"] {
+  position: fixed !important;
+  z-index: 1000 !important;
+  
+  &[vertical="bottom"] {
+    bottom: 20px !important;
+  }
+  
+  &[horizontal="end"] {
+    right: 20px !important;
+  }
+  
+  &[horizontal="start"] {
+    left: 20px !important;
+  }
+  
+  ion-fab-button {
+    --background: var(--fitsync-gradient-primary) !important;
+    --color: var(--fitsync-text-on-primary) !important;
+    --border-radius: 16px !important;
+    --box-shadow: 0 8px 24px rgba(46, 47, 66, 0.15) !important;
+    width: 56px !important;
+    height: 56px !important;
+    transition: all 0.3s ease;
+    
+    &:hover {
+      transform: scale(1.05);
+      --box-shadow: 0 12px 32px rgba(46, 47, 66, 0.2) !important;
+    }
+    
+    ion-icon {
+      font-size: 1.5rem !important;
+      color: var(--fitsync-text-on-primary) !important;
+    }
+  }
+  
+  // Botões secundários no FAB list
+  ion-fab-list {
+    ion-fab-button {
+      --background: white !important;
+      --color: var(--fitsync-text-primary) !important;
+      --border-radius: 12px !important;
+      --box-shadow: 0 4px 16px rgba(46, 47, 66, 0.1) !important;
+      width: 48px !important;
+      height: 48px !important;
+      
+      &:hover {
+        --background: var(--fitsync-background-subtle) !important;
+        --box-shadow: 0 6px 20px rgba(46, 47, 66, 0.15) !important;
+        transform: scale(1.05);
+      }
+      
+      ion-icon {
+        color: var(--fitsync-text-primary) !important;
+      }
     }
   }
 }

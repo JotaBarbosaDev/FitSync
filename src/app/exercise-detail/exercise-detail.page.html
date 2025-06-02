@@ -106,13 +106,13 @@
               <div class="icon-container icon-container--xs" [class.icon-container--success]="getDifficultyColor(exercise.difficulty) === 'success'" [class.icon-container--warning]="getDifficultyColor(exercise.difficulty) === 'warning'" [class.icon-container--danger]="getDifficultyColor(exercise.difficulty) === 'danger'">
                 <ion-icon [name]="getDifficultyIcon(exercise.difficulty)" class="icon icon-xs" slot="start"></ion-icon>
               </div>
-              <ion-label class="data-display-label">{{ exercise.difficulty | titlecase }}</ion-label>
+              <ion-label class="data-display-label">{{ getDifficultyLabel(exercise.difficulty) }}</ion-label>
             </ion-chip>
             <ion-chip color="secondary" *ngFor="let muscle of exercise.muscleGroups">
               <div class="icon-container icon-container--xs icon-container--secondary">
                 <ion-icon name="fitness-outline" class="icon icon-xs" slot="start"></ion-icon>
               </div>
-              <ion-label class="data-display-label">{{ muscle }}</ion-label>
+              <ion-label class="data-display-label">{{ translateMuscleGroup(muscle) }}</ion-label>
             </ion-chip>
           </ion-card-subtitle>
         </ion-card-header>
@@ -313,7 +313,7 @@
               </ion-avatar>
               <ion-label>
                 <h3 class="modern-title text-emphasis">{{ relatedExercise.name }}</h3>
-                <p class="modern-caption text-muted">{{ relatedExercise.difficulty | titlecase }}</p>
+                <p class="modern-caption text-muted">{{ getDifficultyLabel(relatedExercise.difficulty) }}</p>
               </ion-label>
               <div class="icon-container icon-container--sm icon-container--light" slot="end">
                 <ion-icon name="chevron-forward-outline" class="icon icon-sm"></ion-icon>

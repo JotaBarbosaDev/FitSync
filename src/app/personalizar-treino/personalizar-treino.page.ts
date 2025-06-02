@@ -5,6 +5,7 @@ import { AlertController, LoadingController, ToastController } from '@ionic/angu
 import { JsonDataService, ExerciseData } from '../services/json-data.service';
 import { NavigationService } from '../services/navigation.service';
 import { StorageService } from '../services/storage.service';
+import { TranslationService } from '../services/translation.service';
 
 interface ExercicioPersonalizado {
   id: string;
@@ -102,7 +103,8 @@ export class PersonalizarTreinoPage implements OnInit {
     private toastController: ToastController,
     private jsonDataService: JsonDataService,
     private navigationService: NavigationService,
-    private storageService: StorageService
+    private storageService: StorageService,
+    private translationService: TranslationService
   ) {
     this.inicializarForm();
     this.inicializarTreinoPersonalizado();
@@ -405,6 +407,9 @@ export class PersonalizarTreinoPage implements OnInit {
       // Salvar treino - converter para WorkoutPlan
       const treinosSalvos = await this.storageService.get('workout-plans') || [];
       
+      // Garantir que treinosSalvos é um array
+      const treinosArray = Array.isArray(treinosSalvos) ? treinosSalvos : [];
+      
       // Converter TreinoPersonalizado para WorkoutPlan
       const workoutPlan = {
         id: this.treinoPersonalizado.id,
@@ -422,8 +427,8 @@ export class PersonalizarTreinoPage implements OnInit {
         duration: this.treinoPersonalizado.tempo
       };
       
-      treinosSalvos.push(workoutPlan);
-      await this.storageService.set('workout-plans', treinosSalvos);
+      treinosArray.push(workoutPlan);
+      await this.storageService.set('workout-plans', treinosArray);
 
       await loading.dismiss();
       
@@ -514,12 +519,37 @@ export class PersonalizarTreinoPage implements OnInit {
   }
 
   getDificuldadeCor(dificuldade: string): string {
-    switch (dificuldade) {
+    // Normalizar dificuldade para valores padrão
+    const normalizedDifficulty = this.normalizeDifficulty(dificuldade);
+    
+    switch (normalizedDifficulty) {
       case 'beginner': return 'success';
       case 'intermediate': return 'warning';
       case 'advanced': return 'danger';
       default: return 'medium';
     }
+  }
+
+  private normalizeDifficulty(difficulty: string): string {
+    if (!difficulty) return 'intermediate';
+    
+    const normalized = difficulty.toLowerCase().trim();
+    
+    // Mapeamento de português para inglês
+    const mappings: { [key: string]: string } = {
+      'iniciante': 'beginner',
+      'fácil': 'beginner',
+      'easy': 'beginner',
+      'médio': 'intermediate',
+      'intermediário': 'intermediate',
+      'medium': 'intermediate',
+      'difícil': 'advanced',
+      'avançado': 'advanced',
+      'hard': 'advanced',
+      'difficult': 'advanced'
+    };
+    
+    return mappings[normalized] || normalized;
   }
 
   getStepLabel(step: number): string {
@@ -543,12 +573,7 @@ export class PersonalizarTreinoPage implements OnInit {
   }
 
   getDifficultyLabel(difficulty: string): string {
-    const labels = {
-      'beginner': 'Iniciante',
-      'intermediate': 'Intermediário',
-      'advanced': 'Avançado'
-    };
-    return labels[difficulty as keyof typeof labels] || difficulty;
+    return this.translationService.getDifficultyLabel(difficulty);
   }
 
   getEstimatedCalories(): number {

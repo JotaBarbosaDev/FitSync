@@ -500,24 +500,48 @@
 // Floating action buttons
 ion-fab {
   .fitsync-fab {
-    --background: var(--fitsync-primary);
-    --color: white;
+    --background: var(--fitsync-gradient-primary);
+    --color: var(--fitsync-text-on-primary);
     --border-radius: 16px;
-    box-shadow: 0 8px 32px rgba(255, 107, 53, 0.3);
+    --box-shadow: 0 8px 24px rgba(46, 47, 66, 0.15);
+    width: 56px;
+    height: 56px;
+    
+    &:hover {
+      --box-shadow: 0 12px 32px rgba(46, 47, 66, 0.2);
+      transform: scale(1.05);
+    }
+    
+    ion-icon {
+      font-size: 1.5rem;
+      color: var(--fitsync-text-on-primary) !important;
+    }
     
     &.secondary {
-      --background: var(--fitsync-secondary);
-      box-shadow: 0 8px 32px rgba(247, 147, 30, 0.3);
+      --background: white;
+      --color: var(--fitsync-text-primary);
+      --box-shadow: 0 4px 16px rgba(46, 47, 66, 0.1);
+      width: 48px;
+      height: 48px;
+      
+      &:hover {
+        --background: var(--fitsync-background-subtle);
+        --box-shadow: 0 6px 20px rgba(46, 47, 66, 0.15);
+      }
+      
+      ion-icon {
+        color: var(--fitsync-text-primary) !important;
+      }
     }
     
     &.success {
       --background: var(--fitsync-success);
-      box-shadow: 0 8px 32px rgba(45, 211, 111, 0.3);
+      --box-shadow: 0 4px 16px rgba(45, 211, 111, 0.2);
     }
     
     &.warning {
       --background: var(--fitsync-warning);
-      box-shadow: 0 8px 32px rgba(255, 196, 9, 0.3);
+      --box-shadow: 0 4px 16px rgba(255, 196, 9, 0.2);
     }
     
     &:hover {

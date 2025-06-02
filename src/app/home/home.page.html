@@ -2,14 +2,10 @@
 <ion-header class="header-modern fitsync-slide-down home-page">
   <ion-toolbar class="toolbar-gradient">
     <div class="header-content">
-      <div class="logo-section">
-        <img src="/assets/logo.png" alt="FitSync Logo" class="header-logo">
+      <div class="header-title">
+        <h1 class="title-large text-gradient-primary">FitSync</h1>
       </div>
-      <ion-button fill="clear" class="profile-btn" (click)="navigateToProfile()">
-        <div class="icon-container icon-container-md icon-container-primary">
-          <ion-icon name="person-circle" class="icon icon-md icon-hover"></ion-icon>
-        </div>
-      </ion-button>
+      
     </div>
   </ion-toolbar>
 </ion-header>
@@ -31,7 +27,10 @@
     <!-- Header with greeting -->
     <div class="header-section fitsync-slide-right">
       <div class="greeting-content">
-        <h1 class="display-large">{{ getGreeting() }}, {{ userProfile.name }}! 👋</h1>
+        <h1 class="display-large">
+          {{ getGreeting() }}, {{ userProfile.name }}! 
+          <span style="-webkit-text-fill-color: initial; text-shadow: none;">👋</span>
+        </h1>
         <p class="body-large text-muted">Vamos continuar sua jornada fitness?</p>
         <div class="motivation-indicator">
           <span class="label-large text-accent">🔥 ENERGIA MÁXIMA</span>
@@ -400,6 +399,8 @@
 
   </div>
 
+  </div> <!-- Fecha content-container -->
+
   <!-- Floating Action Button -->
   <ion-fab vertical="bottom" horizontal="end" slot="fixed" class="fab-modern">
     <ion-fab-button color="primary" class="fab-main">
@@ -417,5 +418,4 @@
       </ion-fab-button>
     </ion-fab-list>
   </ion-fab>
-  </div> <!-- Fecha content-container -->
 </ion-content>

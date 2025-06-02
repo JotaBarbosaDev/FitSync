@@ -42,6 +42,7 @@ export class NavigationService {
 
   // Navigate to exercise detail
   navigateToExerciseDetail(exerciseId: string, params?: NavigationParams): Promise<boolean> {
+    console.log('🧭 NavigationService: Navegando para exercise-detail com ID:', exerciseId);
     if (params) {
       return this.navigateWithParams('/exercise-detail/:id', { id: exerciseId }, params);
     }

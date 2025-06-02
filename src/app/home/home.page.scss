@@ -505,6 +505,14 @@ ion-header {
 
 /* Floating Action Button */
 ion-fab {
+  // Garantir posicionamento fixo absoluto
+  &[slot="fixed"] {
+    position: fixed !important;
+    bottom: 20px !important;
+    right: 20px !important;
+    z-index: 1000 !important;
+  }
+  
   ion-fab-button {
     --background: var(--fitsync-gradient-primary);
     --color: var(--fitsync-text-on-primary);
@@ -534,6 +542,7 @@ ion-fab {
       
       &:hover {
         --background: var(--fitsync-background-subtle);
+        transform: scale(1.05);
       }
       
       ion-icon {

@@ -4,11 +4,13 @@ import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
 import { ProgressChartComponent } from './progress-chart/progress-chart.component';
 import { TimerComponent } from '../components/timer/timer.component';
+import { ExerciseCardComponent } from './components/exercise-card/exercise-card.component';
 
 @NgModule({
   declarations: [
     ProgressChartComponent,
-    TimerComponent
+    TimerComponent,
+    ExerciseCardComponent
   ],
   imports: [
     CommonModule,
@@ -20,7 +22,8 @@ import { TimerComponent } from '../components/timer/timer.component';
     FormsModule,
     IonicModule,
     ProgressChartComponent,
-    TimerComponent
+    TimerComponent,
+    ExerciseCardComponent
   ]
 })
 export class SharedModule { }

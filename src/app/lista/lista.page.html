@@ -61,84 +61,20 @@
           <ion-label class="personality-playful">{{ group.name }}</ion-label>
         </ion-chip>
     </div>
-    
-    <!-- Filter/Sort buttons side by side -->
-    <div class="filter-sort-buttons">
-      <ion-button 
-        fill="outline" 
-        size="small" 
-        class="filter-sort-btn"
-        (click)="showSortOptions()">
-        <div class="icon-container icon-container--sm icon-container--primary">
-          <ion-icon name="swap-vertical" class="icon icon-sm"></ion-icon>
-        </div>
-        <span class="ui-element-button">Ordenar</span>
-      </ion-button>
-      
-      <ion-button 
-        fill="outline" 
-        size="small" 
-        class="filter-sort-btn"
-        (click)="showFilterOptions()">
-        <div class="icon-container icon-container--sm icon-container--dark">
-          <ion-icon name="funnel" class="icon icon-sm"></ion-icon>
-        </div>
-        <span class="body-medium">Filtrar</span>
-      </ion-button>
-    </div>
+        
   </div>
 
   <!-- Exercise Grid -->
   <div class="exercises-container">
     <div class="exercises-grid">
-      <div class="fitsync-card fitsync-card--exercise" 
-           *ngFor="let exercise of filteredExercises; trackBy: trackByExerciseId"
-           (click)="openExerciseDetail(exercise)">
-        
-        <div class="exercise-image-container">
-          <img [src]="exercise.imageUrl" [alt]="exercise.name" class="exercise-image" />
-          <div class="exercise-difficulty-badge">
-            <span class="code-small">{{ exercise.difficulty }}</span>
-          </div>
-          <button class="favorite-btn" (click)="toggleFavorite(exercise, $event)">
-            <div class="icon-container icon-container--sm" [class.icon-container--danger]="isFavorite(exercise.id)" [class.icon-container--light]="!isFavorite(exercise.id)">
-              <ion-icon
-                name="heart"
-                class="icon icon-sm">
-              </ion-icon>
-            </div>
-          </button>
-        </div>
-        
-        <div class="exercise-content">
-          <h3 class="modern-title">{{ exercise.name }}</h3>
-          <p class="personality-friendly">{{ getMuscleGroupName(exercise.muscleGroup) }}</p>
-          
-          <div class="exercise-stats">
-            <div class="stat-item">
-              <div class="icon-container icon-container--xs icon-container--primary">
-                <ion-icon name="time" class="icon icon-xs"></ion-icon>
-              </div>
-              <span class="label-medium text-accent">{{ exercise.duration }}min</span>
-            </div>
-            <div class="stat-item">
-              <div class="icon-container icon-container--xs icon-container--warning">
-                <ion-icon name="flame" class="icon icon-xs"></ion-icon>
-              </div>
-              <span class="label-medium text-accent">{{ exercise.calories }}kcal</span>
-            </div>
-          </div>
-          
-          <div class="exercise-equipment" *ngIf="exercise.equipment">
-            <div class="equipment-tag">
-              <div class="icon-container icon-container--xs icon-container--secondary">
-                <ion-icon name="fitness" class="icon icon-xs"></ion-icon>
-              </div>
-              <span class="label-small text-muted">{{ exercise.equipment }}</span>
-            </div>
-          </div>
-        </div>
-      </div>
+      <app-exercise-card 
+        *ngFor="let exercise of filteredExercises; trackBy: trackByExerciseId"
+        [exercise]="convertToExerciseData(exercise)"
+        [isFavorite]="isFavorite(exercise.id)"
+        (exerciseClick)="openExerciseDetail(exercise)"
+        (favoriteToggle)="toggleFavorite(exercise, $event.event)"
+        layout="grid">
+      </app-exercise-card>
     </div>
 
     <!-- Empty State -->

@@ -28,6 +28,7 @@ export interface ExerciseData {
   calories?: number;
   muscleGroups?: string[];
   commonMistakes?: string[];
+  emoji?: string; // emoji representativo do exercício
 }
 
 export interface WorkoutPlan {

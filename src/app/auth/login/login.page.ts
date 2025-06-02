@@ -176,12 +176,17 @@ export class LoginPage implements OnInit {
   }
 
   async forgotPassword() {
-    const alert = await this.alertController.create({
-      header: 'Recuperar Senha',
-      message: 'Funcionalidade em desenvolvimento. Entre em contato com o suporte.',
-      buttons: ['OK']
-    });
-    await alert.present();
+    try {
+      await this.router.navigate(['/auth/forgot-password']);
+    } catch (error) {
+      console.error('Erro na navegação para recuperação de senha:', error);
+      const alert = await this.alertController.create({
+        header: 'Erro de Navegação',
+        message: 'Não foi possível abrir a página de recuperação de senha. Tente novamente.',
+        buttons: ['OK']
+      });
+      await alert.present();
+    }
   }
 
   updateField(field: string, event: Event) {

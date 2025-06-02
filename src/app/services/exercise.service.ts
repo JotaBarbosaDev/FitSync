@@ -12,6 +12,10 @@ export interface ExerciseLibraryItem {
   instructions: string;
   demonstration?: string;
   difficulty: 'beginner' | 'intermediate' | 'advanced';
+  duration?: number; // duração em minutos
+  calories?: number; // calorias queimadas estimadas
+  imageUrl?: string; // URL da imagem ou emoji
+  emoji?: string; // emoji representativo do exercício
 }
 
 @Injectable({
@@ -22,12 +26,29 @@ export class ExerciseService {
   public exerciseLibrary$ = this.exerciseLibrarySubject.asObservable();
 
   constructor(private dataService: DataService) {
-    this.loadExerciseLibrary();
+    this.initializeService();
+  }
+
+  private async initializeService(): Promise<void> {
+    console.log('ExerciseService: initializeService iniciado');
+    // Aguardar o DataService estar pronto
+    this.dataService.data$.subscribe(data => {
+      console.log('ExerciseService: data$ subscription recebeu dados:', data ? 'Dados presentes' : 'Dados nulos');
+      if (data) {
+        console.log('ExerciseService: Chamando loadExerciseLibrary e initializeDefaultExercises');
+        this.loadExerciseLibrary();
+        this.initializeDefaultExercises();
+      }
+    });
   }
   private loadExerciseLibrary(): void {
     const data = this.dataService.getCurrentData();
     if (data && data.exerciseLibrary) {
+      console.log('ExerciseService: Carregando', data.exerciseLibrary.length, 'exercícios do localStorage');
       this.exerciseLibrarySubject.next(data.exerciseLibrary);
+    } else {
+      console.log('ExerciseService: Nenhum exercício encontrado no localStorage');
+      this.exerciseLibrarySubject.next([]);
     }
   }
 
@@ -265,5 +286,105 @@ export class ExerciseService {
 
   private generateId(prefix: string = 'exercise'): string {
     return prefix + '_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+  }
+
+  // Função para inicializar exercícios padrão com emojis
+  initializeDefaultExercises(): void {
+    console.log('ExerciseService: initializeDefaultExercises iniciado');
+    const data = this.dataService.getCurrentData();
+    if (!data) {
+      console.log('ExerciseService: Dados não carregados ainda');
+      return;
+    }
+    
+    console.log('ExerciseService: Dados encontrados, verificando exerciseLibrary:', data.exerciseLibrary);
+    
+    if (!data.exerciseLibrary) {
+      console.log('ExerciseService: exerciseLibrary não existe, criando array vazio');
+      data.exerciseLibrary = [];
+    }
+    
+    // Se já existem exercícios, não adicionar duplicatas
+    if (data.exerciseLibrary.length > 0) {
+      console.log('ExerciseService: Exercícios já existem (' + data.exerciseLibrary.length + '), carregando lista atual');
+      this.exerciseLibrarySubject.next(data.exerciseLibrary);
+      return;
+    }
+    
+    console.log('ExerciseService: Criando exercícios padrão');
+    
+    const defaultExercises: ExerciseLibraryItem[] = [
+      {
+        id: 'default_push_up',
+        name: 'Flexão de Braço',
+        category: 'chest',
+        muscleGroups: ['chest', 'arms', 'shoulders'],
+        equipment: [],
+        instructions: 'Deite-se de bruços, apoie as mãos no chão na largura dos ombros e execute o movimento de flexão.',
+        difficulty: 'beginner',
+        duration: 15,
+        calories: 80,
+        emoji: '💪'
+      },
+      {
+        id: 'default_squat',
+        name: 'Agachamento',
+        category: 'legs',
+        muscleGroups: ['legs', 'glutes'],
+        equipment: [],
+        instructions: 'Fique em pé, pés na largura dos ombros, desça como se fosse sentar e retorne à posição inicial.',
+        difficulty: 'beginner',
+        duration: 15,
+        calories: 100,
+        emoji: '🦵'
+      },
+      {
+        id: 'default_plank',
+        name: 'Prancha',
+        category: 'core',
+        muscleGroups: ['core', 'shoulders'],
+        equipment: [],
+        instructions: 'Mantenha o corpo reto em posição de prancha, apoiado nos antebraços e pontas dos pés.',
+        difficulty: 'intermediate',
+        duration: 10,
+        calories: 60,
+        emoji: '🏋️'
+      },
+      {
+        id: 'default_burpee',
+        name: 'Burpee',
+        category: 'cardio',
+        muscleGroups: ['cardio', 'legs', 'chest', 'arms'],
+        equipment: [],
+        instructions: 'Agache, apoie as mãos no chão, salte para trás em prancha, faça flexão, volte ao agachamento e salte.',
+        difficulty: 'advanced',
+        duration: 20,
+        calories: 150,
+        emoji: '❤️'
+      },
+      {
+        id: 'default_pull_up',
+        name: 'Barra Fixa',
+        category: 'back',
+        muscleGroups: ['back', 'arms'],
+        equipment: ['barra'],
+        instructions: 'Pendure-se na barra com pegada pronada e puxe o corpo até o queixo passar da barra.',
+        difficulty: 'advanced',
+        duration: 15,
+        calories: 120,
+        emoji: '🔙'
+      }
+    ];
+    
+    data.exerciseLibrary = [...defaultExercises];
+    
+    this.dataService.saveData(data).then(success => {
+      if (success) {
+        console.log('ExerciseService: Exercícios padrão salvos com sucesso');
+        this.exerciseLibrarySubject.next(data.exerciseLibrary);
+      } else {
+        console.error('ExerciseService: Erro ao salvar exercícios padrão');
+      }
+    });
   }
 }

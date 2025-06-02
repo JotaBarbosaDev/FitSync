@@ -4,6 +4,7 @@ import { StorageService } from '../services/storage.service';
 import { JsonDataService } from '../services/json-data.service';
 import { NavigationService } from '../services/navigation.service';
 import { DeviceControlService } from '../services/device-control.service';
+import { TranslationService } from '../services/translation.service';
 import { AlertController, ToastController } from '@ionic/angular';
 
 // Interfaces locais para o HomePage
@@ -56,10 +57,10 @@ interface ActivePlan {
 export class HomePage implements OnInit {
   nomeInstituto: string;
   userProfile: UserProfile = {
-    name: 'Usuário FitSync',
+    name: 'João',
     level: 'Iniciante',
     streak: 0
-  };
+  };  
   recentWorkouts: WorkoutHistory[] = [];
   featuredExercises: Exercise[] = [];
   activePlan: ActivePlan | null = null;
@@ -89,6 +90,7 @@ export class HomePage implements OnInit {
     private jsonDataService: JsonDataService,
     private navigationService: NavigationService,
     private deviceControlService: DeviceControlService,
+    private translationService: TranslationService,
     private alertController: AlertController,
     private toastController: ToastController
   ) {
@@ -114,7 +116,7 @@ export class HomePage implements OnInit {
         };
       } else {
         this.userProfile = {
-          name: 'Usuário FitSync',
+          name: 'João',
           level: 'Iniciante',
           streak: 0
         };
@@ -304,19 +306,15 @@ export class HomePage implements OnInit {
   }
 
   public getDifficultyColor(difficulty: string): string {
-    switch (difficulty?.toLowerCase()) {
-      case 'fácil':
-      case 'easy':
-        return 'success';
-      case 'médio':
-      case 'medium':
-        return 'warning';
-      case 'difícil':
-      case 'hard':
-        return 'danger';
-      default:
-        return 'medium';
-    }
+    return this.translationService.getDifficultyColor(difficulty);
+  }
+
+  public getDifficultyLabel(difficulty: string): string {
+    return this.translationService.getDifficultyLabel(difficulty);
+  }
+
+  public getMuscleGroupLabel(muscleGroup: string): string {
+    return this.translationService.getMuscleGroupLabel(muscleGroup);
   }
 
   // Métodos chamados no template HTML

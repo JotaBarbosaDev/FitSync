@@ -1,9 +1,11 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { JsonDataService, ExerciseData } from '../services/json-data.service';
+import { ExerciseService, ExerciseLibraryItem } from '../services/exercise.service';
 import { NavigationService } from '../services/navigation.service';
 import { StorageService } from '../services/storage.service';
 import { DeviceControlService } from '../services/device-control.service';
+import { TranslationService } from '../services/translation.service';
 import { AlertController, ToastController, ActionSheetController } from '@ionic/angular';
 
 // Interfaces para tipagem
@@ -72,9 +74,11 @@ export class ExerciseDetailPage implements OnInit, OnDestroy {
   constructor(
     private route: ActivatedRoute,
     private jsonDataService: JsonDataService,
+    private exerciseService: ExerciseService,
     private navigationService: NavigationService,
     private storageService: StorageService,
     private deviceControlService: DeviceControlService,
+    private translationService: TranslationService,
     private alertController: AlertController,
     private toastController: ToastController,
     private actionSheetController: ActionSheetController
@@ -85,16 +89,16 @@ export class ExerciseDetailPage implements OnInit, OnDestroy {
     await this.deviceControlService.lockToPortrait();
     
     // Get exercise ID from route parameters
-    this.exerciseId = String(this.navigationService.getRouteParams(this.route)['id'] || '');
-    
-    // Get query parameters (for additional context)
-    const queryParams = this.navigationService.getQueryParams(this.route);
-    console.log('Query params:', queryParams);
-    
-    await this.loadExerciseData();
-    await this.checkIfFavorite();
-    await this.loadUserNotes();
-    await this.loadPersonalRecords();
+    this.route.paramMap.subscribe(params => {
+      this.exerciseId = params.get('id') || '';
+      console.log('Exercise ID from route:', this.exerciseId);
+      if (this.exerciseId) {
+        this.loadExerciseData();
+        this.checkIfFavorite();
+        this.loadUserNotes();
+        this.loadPersonalRecords();
+      }
+    });
   }
 
   async ngOnDestroy() {
@@ -107,8 +111,24 @@ export class ExerciseDetailPage implements OnInit, OnDestroy {
       this.loading = true;
       this.isLoading = true;
       
-      // Load exercise from JSON data service
+      console.log('🔍 Buscando exercício com ID:', this.exerciseId);
+      
+      // Primeiro, tentar buscar no JsonDataService (exercícios padrão)
       this.exercise = await this.jsonDataService.getExercise(this.exerciseId);
+      
+      // Se não encontrar, buscar no ExerciseService (exercícios personalizados)
+      if (!this.exercise) {
+        console.log('⚠️ Exercício não encontrado no JsonDataService, buscando no ExerciseService...');
+        const customExercise = this.exerciseService.getExerciseById(this.exerciseId);
+        
+        if (customExercise) {
+          console.log('✅ Exercício personalizado encontrado:', customExercise.name);
+          // Converter ExerciseLibraryItem para ExerciseData
+          this.exercise = this.convertToExerciseData(customExercise);
+        }
+      } else {
+        console.log('✅ Exercício padrão encontrado:', this.exercise.name);
+      }
       
       if (this.exercise) {
         // Load related exercises from same muscle group
@@ -118,6 +138,10 @@ export class ExerciseDetailPage implements OnInit, OnDestroy {
         
         // Remove current exercise from related
         this.relatedExercises = this.relatedExercises.filter(ex => ex.id !== this.exerciseId);
+        
+        console.log('📋 Exercícios relacionados carregados:', this.relatedExercises.length);
+      } else {
+        console.error('❌ Exercício não encontrado em nenhum service');
       }
       
     } catch (error) {
@@ -342,115 +366,42 @@ export class ExerciseDetailPage implements OnInit, OnDestroy {
     toast.present();
   }
 
+  // Convert ExerciseLibraryItem to ExerciseData for compatibility
+  private convertToExerciseData(item: ExerciseLibraryItem): ExerciseData {
+    return {
+      id: item.id,
+      name: item.name,
+      muscleGroup: item.category, // Mapear category para muscleGroup
+      equipment: item.equipment.join(', ') || 'Nenhum',
+      difficulty: item.difficulty,
+      instructions: [item.instructions], // Converter string para array
+      primaryMuscles: item.muscleGroups,
+      secondaryMuscles: [],
+      tips: [],
+      imageUrl: item.imageUrl,
+      description: item.instructions,
+      duration: item.duration?.toString() || '0',
+      calories: item.calories || 0,
+      muscleGroups: item.muscleGroups,
+      commonMistakes: [],
+      emoji: item.emoji
+    };
+  }
+
+  // Métodos para tradução e UI (usando serviço centralizado)
   getDifficultyColor(difficulty: string): string {
-    switch (difficulty) {
-      case 'Iniciante': return 'success';
-      case 'Intermediário': return 'warning';
-      case 'Avançado': return 'danger';
-      default: return 'medium';
-    }
+    return this.translationService.getDifficultyColor(difficulty);
   }
 
   getDifficultyIcon(difficulty: string): string {
-    switch (difficulty) {
-      case 'Iniciante': return 'flower-outline';
-      case 'Intermediário': return 'fitness-outline';
-      case 'Avançado': return 'flame-outline';
-      default: return 'help-outline';
-    }
+    return this.translationService.getDifficultyIcon(difficulty);
   }
 
-  // Timer methods
-  startTimer() {
-    this.isTimerRunning = true;
-    this.timerInterval = setInterval(() => {
-      this.timerSeconds++;
-    }, 1000);
+  getDifficultyLabel(difficulty: string): string {
+    return this.translationService.getDifficultyLabel(difficulty);
   }
 
-  pauseTimer() {
-    this.isTimerRunning = false;
-    if (this.timerInterval) {
-      clearInterval(this.timerInterval);
-    }
-  }
-
-  resetTimer() {
-    this.isTimerRunning = false;
-    this.timerSeconds = 0;
-    if (this.timerInterval) {
-      clearInterval(this.timerInterval);
-    }
-  }
-
-  formatTime(seconds: number): string {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-  }
-
-  // Video methods
-
-  playVideo() {
-    // Simulate video play functionality
-    this.showToast('Reproduzindo vídeo do exercício');
-  }
-
-  // Workout methods
-  async addToWorkout() {
-    try {
-      const workoutEntry = {
-        exerciseId: this.exerciseId,
-        exerciseName: this.exercise?.name,
-        sets: this.workoutData.sets,
-        reps: this.workoutData.reps,
-        weight: this.workoutData.weight,
-        notes: this.workoutData.notes,
-        date: new Date(),
-        completed: false
-      };
-
-      const currentWorkout = await this.storageService.get<WorkoutEntry[]>('currentWorkout') || [];
-      currentWorkout.push(workoutEntry);
-      await this.storageService.set('currentWorkout', currentWorkout);
-
-      await this.showToast('Exercício adicionado ao treino!');
-    } catch (error) {
-      console.error('Error adding to workout:', error);
-      await this.showErrorToast('Erro ao adicionar ao treino');
-    }
-  }
-
-  // Navigation methods
-  navigateToExercise(exerciseId: string) {
-    this.navigationService.navigateToExerciseDetail(exerciseId);
-  }
-
-  // Timer component event handlers
-  onTimerUpdate(event: TimerUpdateEvent | number) {
-    this.timerSeconds = typeof event === 'number' ? event : (event.detail || 0);
-    console.log('Timer updated:', this.timerSeconds);
-  }
-
-  onTimerComplete() {
-    console.log('Timer completed!');
-    this.showToast('Timer finalizado!');
-  }
-
-  // Device control methods
-  async toggleOrientationLock() {
-    try {
-      if (this.isOrientationLocked) {
-        await this.deviceControlService.unlockOrientation();
-        this.isOrientationLocked = false;
-        await this.showToast('Orientação desbloqueada');
-      } else {
-        await this.deviceControlService.lockToPortrait();
-        this.isOrientationLocked = true;
-        await this.showToast('Orientação bloqueada em retrato');
-      }
-    } catch (error) {
-      console.error('Error toggling orientation:', error);
-    }
+  translateMuscleGroup(muscleGroup: string): string {
+    return this.translationService.getMuscleGroupLabel(muscleGroup);
   }
 }

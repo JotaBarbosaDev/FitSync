@@ -57,6 +57,10 @@ const routes: Routes = [
     path: 'exercise-detail/:id',
     loadChildren: () => import('./exercise-detail/exercise-detail.module').then( m => m.ExerciseDetailPageModule)
   },
+  {
+    path: 'forgot-password',
+    loadChildren: () => import('./auth/forgot-password/forgot-password.module').then( m => m.ForgotPasswordPageModule)
+  },
 
 ];
 

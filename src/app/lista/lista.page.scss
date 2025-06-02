@@ -313,12 +313,21 @@ ion-header {
 /* FAB Button */
 ion-fab {
   ion-fab-button {
-    --background: linear-gradient(45deg, var(--ion-color-primary), var(--ion-color-secondary));
-    --color: #ffffff;
-    --box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+    --background: var(--fitsync-gradient-primary);
+    --color: var(--fitsync-text-on-primary);
+    --border-radius: 16px;
+    --box-shadow: 0 8px 24px rgba(46, 47, 66, 0.15);
+    width: 56px;
+    height: 56px;
     
     &:hover {
-      transform: scale(1.1);
+      transform: scale(1.05);
+      --box-shadow: 0 12px 32px rgba(46, 47, 66, 0.2);
+    }
+    
+    ion-icon {
+      font-size: 1.5rem;
+      color: var(--fitsync-text-on-primary) !important;
     }
   }
 }

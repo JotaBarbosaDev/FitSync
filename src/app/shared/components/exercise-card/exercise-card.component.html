@@ -7,12 +7,21 @@
   
   <!-- Grid Layout -->
   <div *ngIf="layout === 'grid'" class="grid-content">
-    <!-- Exercise Image -->
+    <!-- Exercise Emoji/Icon -->
     <div class="exercise-image">
+      <div class="exercise-emoji" *ngIf="exercise.emoji">
+        {{ exercise.emoji }}
+      </div>
       <img 
-        [src]="exercise.imageUrl || 'assets/placeholder-exercise.jpg'" 
+        *ngIf="!exercise.emoji && exercise.imageUrl"
+        [src]="exercise.imageUrl" 
         [alt]="exercise.name" 
         loading="lazy" />
+      <div 
+        *ngIf="!exercise.emoji && !exercise.imageUrl" 
+        class="exercise-placeholder">
+        <ion-icon name="fitness-outline" size="large"></ion-icon>
+      </div>
       
       <!-- Favorite Button -->
       <div class="exercise-overlay" *ngIf="showFavoriteButton">
@@ -23,7 +32,8 @@
           (click)="onFavoriteClick($event)">
           <ion-icon 
             [name]="isFavorite ? 'heart' : 'heart-outline'" 
-            [color]="isFavorite ? 'danger' : 'light'">
+            [color]="isFavorite ? 'danger' : 'light'"
+            size="small">
           </ion-icon>
         </ion-button>
       </div>
@@ -68,12 +78,21 @@
 
   <!-- List Layout -->
   <div *ngIf="layout === 'list'" class="list-content">
-    <!-- Exercise Avatar -->
+    <!-- Exercise Avatar/Emoji -->
     <div class="exercise-avatar">
+      <div class="exercise-emoji-avatar" *ngIf="exercise.emoji">
+        {{ exercise.emoji }}
+      </div>
       <img 
-        [src]="exercise.imageUrl || 'assets/placeholder-exercise.jpg'" 
+        *ngIf="!exercise.emoji && exercise.imageUrl"
+        [src]="exercise.imageUrl" 
         [alt]="exercise.name" 
         loading="lazy" />
+      <div 
+        *ngIf="!exercise.emoji && !exercise.imageUrl" 
+        class="exercise-placeholder-avatar">
+        <ion-icon name="fitness-outline" size="small"></ion-icon>
+      </div>
     </div>
 
     <!-- Exercise Info -->
@@ -88,7 +107,8 @@
           (click)="onFavoriteClick($event)">
           <ion-icon 
             [name]="isFavorite ? 'heart' : 'heart-outline'" 
-            [color]="isFavorite ? 'danger' : 'light'">
+            [color]="isFavorite ? 'danger' : 'light'"
+            size="small">
           </ion-icon>
         </ion-button>
       </div>
@@ -99,7 +119,7 @@
       <div class="stats-row" *ngIf="showStats">
         <div class="stat-badge" [attr.data-color]="getDifficultyColor(exercise.difficulty)">
           <ion-icon [name]="getDifficultyIcon(exercise.difficulty)" size="small"></ion-icon>
-          {{ exercise.difficulty }}
+          {{ getDifficultyLabel(exercise.difficulty) }}
         </div>
         <div class="stat-item" *ngIf="exercise.duration">
           <ion-icon name="time-outline" size="small"></ion-icon>

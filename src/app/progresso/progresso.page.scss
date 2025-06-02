@@ -595,32 +595,38 @@ ion-header {
   .fitsync-btn-fab {
     --background: var(--fitsync-gradient-primary);
     --color: var(--fitsync-text-on-primary);
-    --box-shadow: var(--fitsync-shadow-elevated);
+    --border-radius: 16px;
+    --box-shadow: 0 8px 24px rgba(46, 47, 66, 0.15);
     width: 56px;
     height: 56px;
     
     &:hover {
-      --box-shadow: var(--fitsync-shadow-hover);
+      --box-shadow: 0 12px 32px rgba(46, 47, 66, 0.2);
       transform: scale(1.05);
     }
     
     ion-icon {
+      font-size: 1.5rem;
       color: var(--fitsync-text-on-primary) !important;
     }
   }
   
   .fitsync-btn-fab-small {
-    --box-shadow: var(--fitsync-shadow-subtle);
+    --background: white;
+    --color: var(--fitsync-text-primary);
+    --border-radius: 12px;
+    --box-shadow: 0 4px 16px rgba(46, 47, 66, 0.1);
     width: 48px;
     height: 48px;
     
     &:hover {
-      --box-shadow: var(--fitsync-shadow-elevated);
+      --background: var(--fitsync-background-subtle);
+      --box-shadow: 0 6px 20px rgba(46, 47, 66, 0.15);
       transform: scale(1.05);
     }
     
     ion-icon {
-      color: var(--fitsync-text-on-primary) !important;
+      color: var(--fitsync-text-primary) !important;
     }
   }
 }

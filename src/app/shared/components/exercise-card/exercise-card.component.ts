@@ -1,5 +1,6 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { ExerciseData } from '../../../services/json-data.service';
+import { TranslationService } from '../../../services/translation.service';
 
 @Component({
   selector: 'app-exercise-card',
@@ -17,6 +18,8 @@ export class ExerciseCardComponent {
   @Output() exerciseClick = new EventEmitter<ExerciseData>();
   @Output() favoriteToggle = new EventEmitter<{ exercise: ExerciseData, event: Event }>();
 
+  constructor(private translationService: TranslationService) {}
+
   onExerciseClick() {
     this.exerciseClick.emit(this.exercise);
   }
@@ -27,48 +30,18 @@ export class ExerciseCardComponent {
   }
 
   getMuscleGroupName(groupId: string): string {
-    const muscleGroups: { [key: string]: string } = {
-      chest: 'Peito',
-      back: 'Costas',
-      shoulders: 'Ombros',
-      arms: 'Braços',
-      legs: 'Pernas',
-      core: 'Core',
-      cardio: 'Cardio',
-      general: 'Geral'
-    };
-    return muscleGroups[groupId] || groupId;
+    return this.translationService.getMuscleGroupLabel(groupId);
   }
 
   getDifficultyColor(difficulty: string): string {
-    switch (difficulty?.toLowerCase()) {
-      case 'iniciante':
-      case 'beginner':
-        return 'success';
-      case 'intermediário':
-      case 'intermediate':
-        return 'warning';
-      case 'avançado':
-      case 'advanced':
-        return 'danger';
-      default:
-        return 'medium';
-    }
+    return this.translationService.getDifficultyColor(difficulty);
   }
 
   getDifficultyIcon(difficulty: string): string {
-    switch (difficulty?.toLowerCase()) {
-      case 'iniciante':
-      case 'beginner':
-        return 'flower-outline';
-      case 'intermediário':
-      case 'intermediate':
-        return 'fitness-outline';
-      case 'avançado':
-      case 'advanced':
-        return 'flame-outline';
-      default:
-        return 'help-outline';
-    }
+    return this.translationService.getDifficultyIcon(difficulty);
+  }
+
+  getDifficultyLabel(difficulty: string): string {
+    return this.translationService.getDifficultyLabel(difficulty);
   }
 }

@@ -127,7 +127,7 @@ ion-header ion-toolbar[color="primary"] {
     span {
       font-size: 0.9rem;
       font-weight: 500;
-      color: var(--ion-color-dark);
+      color: var(--ion-color-light);
     }
   }
 }
@@ -324,16 +324,21 @@ ion-card {
 
 // Floating Action Button
 ion-fab-button {
-  --background: var(--fitsync-primary);
-  --background-activated: var(--fitsync-primary-dark);
-  --background-focused: var(--fitsync-primary);
-  --background-hover: var(--fitsync-primary-dark);
-  --color: white;
-  --box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
-  --border-radius: 50%;
+  --background: var(--fitsync-gradient-primary);
+  --color: var(--fitsync-text-on-primary);
+  --border-radius: 16px;
+  --box-shadow: 0 8px 24px rgba(46, 47, 66, 0.15);
+  width: 56px;
+  height: 56px;
 
   &:hover {
+    --box-shadow: 0 12px 32px rgba(46, 47, 66, 0.2);
     transform: scale(1.05);
+  }
+  
+  ion-icon {
+    font-size: 1.5rem;
+    color: var(--fitsync-text-on-primary) !important;
   }
 }
 
