@@ -10,14 +10,14 @@
           <p class="body-medium text-muted">Treinos Personalizados • {{ customWorkouts.length }} criados</p>
         </div>
       </div>
-      
+
       <div class="header-actions">
         <ion-button fill="clear" class="fitsync-btn icon" (click)="goToWeeklyPlan()">
           <div class="icon-container icon-container--sm icon-container--primary">
             <ion-icon name="calendar" class="icon icon-sm"></ion-icon>
           </div>
         </ion-button>
-        
+
         <ion-button fill="clear" class="fitsync-btn icon" (click)="goToWorkoutProgress()">
           <div class="icon-container icon-container--sm icon-container--accent">
             <ion-icon name="analytics" class="icon icon-sm"></ion-icon>
@@ -88,7 +88,7 @@
         Ações Rápidas
       </h2>
     </div>
-    
+
     <div class="actions-grid">
       <div class="action-card fitsync-card" (click)="createNewWorkout()">
         <div class="action-icon">
@@ -161,9 +161,8 @@
 
     <!-- Workouts Grid -->
     <div *ngIf="customWorkouts.length > 0" class="workouts-grid">
-      <div *ngFor="let workout of customWorkouts; trackBy: trackByWorkoutId" 
-           class="workout-card fitsync-card">
-        
+      <div *ngFor="let workout of customWorkouts; trackBy: trackByWorkoutId" class="workout-card fitsync-card">
+
         <!-- Workout Header -->
         <div class="workout-header">
           <div class="workout-info">
@@ -178,16 +177,16 @@
               </ion-chip>
             </div>
           </div>
-          
+
           <div class="workout-actions">
             <ion-button fill="clear" size="small" (click)="editWorkout(workout)">
               <ion-icon name="create" class="icon icon-sm icon-primary"></ion-icon>
             </ion-button>
-            
+
             <ion-button fill="clear" size="small" (click)="duplicateWorkout(workout)">
               <ion-icon name="copy" class="icon icon-sm icon-secondary"></ion-icon>
             </ion-button>
-            
+
             <ion-button fill="clear" size="small" (click)="deleteWorkout(workout)">
               <ion-icon name="trash" class="icon icon-sm icon-danger"></ion-icon>
             </ion-button>
@@ -200,7 +199,7 @@
           <p *ngIf="workout.description" class="body-sm text-muted workout-description">
             {{ workout.description }}
           </p>
-          
+
           <div class="workout-stats">
             <div class="stat-item">
               <div class="icon-container icon-container--xs icon-container--muted">
@@ -208,32 +207,30 @@
               </div>
               <span class="body-xs text-muted">{{ workout.exercises.length }} exercícios</span>
             </div>
-            
+
             <div class="stat-item">
               <div class="icon-container icon-container--xs icon-container--muted">
                 <ion-icon name="time" class="icon icon-xs"></ion-icon>
               </div>
               <span class="body-xs text-muted">{{ formatDuration(workout.estimatedDuration) }}</span>
             </div>
-            
+
             <div class="stat-item">
               <div class="icon-container icon-container--xs icon-container--muted">
                 <ion-icon name="flame" class="icon icon-xs"></ion-icon>
               </div>
-              <span class="body-xs text-muted">{{ workout.caloriesPerMinute * workout.estimatedDuration }} cal</span>
+              <span class="body-xs text-muted">{{ (workout.estimatedDuration * 5) }} cal</span>
             </div>
           </div>
 
           <!-- Target Muscle Groups -->
-          <div *ngIf="workout.targetMuscleGroups.length > 0" class="muscle-groups">
+          <div *ngIf="workout.muscleGroups.length > 0" class="muscle-groups">
             <div class="muscle-group-chips">
-              <ion-chip *ngFor="let group of workout.targetMuscleGroups.slice(0, 3)" 
-                       color="medium" 
-                       outline="true">
+              <ion-chip *ngFor="let group of workout.muscleGroups.slice(0, 3)" color="medium" outline="true">
                 <span class="body-xs">{{ getMuscleGroupName(group) }}</span>
               </ion-chip>
-              <span *ngIf="workout.targetMuscleGroups.length > 3" class="body-xs text-muted">
-                +{{ workout.targetMuscleGroups.length - 3 }} mais
+              <span *ngIf="workout.muscleGroups.length > 3" class="body-xs text-muted">
+                +{{ workout.muscleGroups.length - 3 }} mais
               </span>
             </div>
           </div>
@@ -246,12 +243,9 @@
               Criado: {{ formatDate(workout.createdAt) }}
             </span>
           </div>
-          
+
           <div class="workout-start">
-            <ion-button 
-              [disabled]="workout.exercises.length === 0"
-              color="primary" 
-              size="small"
+            <ion-button [disabled]="workout.exercises.length === 0" color="primary" size="small"
               (click)="startWorkout(workout); $event.stopPropagation()">
               <div class="icon-container icon-container--xs icon-container--white">
                 <ion-icon name="play" class="icon icon-xs"></ion-icon>
@@ -271,14 +265,14 @@
         <ion-icon name="add" class="icon icon-md icon-white"></ion-icon>
       </div>
     </ion-fab-button>
-    
+
     <ion-fab-list side="top">
       <ion-fab-button class="fab-secondary" (click)="goToWeeklyPlan()">
         <div class="icon-container icon-container--sm icon-container--primary">
           <ion-icon name="calendar" class="icon icon-sm icon-white"></ion-icon>
         </div>
       </ion-fab-button>
-      
+
       <ion-fab-button class="fab-secondary" (click)="goToWorkoutProgress()">
         <div class="icon-container icon-container--sm icon-container--accent">
           <ion-icon name="analytics" class="icon icon-sm icon-white"></ion-icon>

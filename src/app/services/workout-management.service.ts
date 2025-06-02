@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, map, combineLatest } from 'rxjs';
-import { 
-  CustomWorkout, 
-  WorkoutExercise, 
-  WeeklyPlan, 
-  WorkoutSession, 
+import {
+  CustomWorkout,
+  WorkoutExercise,
+  WeeklyPlan,
+  WorkoutSession,
   WorkoutProgress,
   ExerciseLibraryItem,
   DayPlan,
@@ -33,7 +33,7 @@ export class WorkoutManagementService {
   constructor(
     private dataService: DataService,
     private authService: AuthService
-  ) {}
+  ) { }
 
   // ===== CRIAÇÃO DE TREINOS =====
 
@@ -151,7 +151,7 @@ export class WorkoutManagementService {
         };
 
         data.weeklyPlans = data.weeklyPlans || [];
-        
+
         // Desativar outros planos se este for ativo
         if (newPlan.isActive) {
           data.weeklyPlans.forEach((p: WeeklyPlan) => {
@@ -174,7 +174,7 @@ export class WorkoutManagementService {
     ]).pipe(
       map(([data, user]) => {
         if (!data || !user) return null;
-        return (data.weeklyPlans || []).find((p: WeeklyPlan) => 
+        return (data.weeklyPlans || []).find((p: WeeklyPlan) =>
           p.userId === user.id && p.isActive
         ) || null;
       })
@@ -206,7 +206,7 @@ export class WorkoutManagementService {
         if (!plan) return { workout: null, isRestDay: false };
 
         const todayDayPlan = plan.days[todayDay as keyof typeof plan.days];
-        
+
         if (!todayDayPlan || todayDayPlan.type === 'rest' || todayDayPlan.isRestDay) {
           return { workout: null, isRestDay: true };
         }
@@ -217,6 +217,17 @@ export class WorkoutManagementService {
 
         const workout = workouts.find(w => w.id === todayDayPlan.workoutId);
         return { workout: workout || null, isRestDay: false };
+      })
+    );
+  }
+
+  // ===== GERENCIAMENTO DE TREINOS =====
+
+  getWorkoutById(workoutId: string): Observable<CustomWorkout | null> {
+    return this.dataService.data$.pipe(
+      map(data => {
+        if (!data) return null;
+        return (data.customWorkouts || []).find((w: CustomWorkout) => w.id === workoutId) || null;
       })
     );
   }
@@ -233,7 +244,7 @@ export class WorkoutManagementService {
 
         const today = new Date();
         const dayNames = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
-        
+
         const session: WorkoutSession = {
           id: this.dataService.generateId(),
           workoutId,
@@ -268,10 +279,10 @@ export class WorkoutManagementService {
         if (sessionIndex === -1) throw new Error('Sessão não encontrada');
 
         const session = data.workoutSessions2[sessionIndex];
-        
+
         // Atualizar ou adicionar exercício
         const exerciseIndex = session.exercises.findIndex((e: SessionExercise) => e.exerciseId === exerciseId);
-        
+
         if (exerciseIndex >= 0) {
           session.exercises[exerciseIndex].sets = sets;
           session.exercises[exerciseIndex].endTime = new Date();
@@ -284,6 +295,38 @@ export class WorkoutManagementService {
             endTime: new Date()
           });
         }
+
+        data.workoutSessions2[sessionIndex] = session;
+        this.dataService.saveData(data);
+
+        this.currentSessionSubject.next(session);
+        return session;
+      })
+    );
+  }
+
+  completeSet(sessionId: string, exerciseIndex: number, completedSet: CompletedSet): Observable<WorkoutSession> {
+    return this.dataService.data$.pipe(
+      map(data => {
+        if (!data) throw new Error('Dados não disponíveis');
+
+        const sessionIndex = (data.workoutSessions2 || []).findIndex((s: WorkoutSession) => s.id === sessionId);
+        if (sessionIndex === -1) throw new Error('Sessão não encontrada');
+
+        const session = data.workoutSessions2[sessionIndex];
+
+        // Garantir que o exercício existe
+        if (!session.exercises[exerciseIndex]) {
+          throw new Error('Exercício não encontrado na sessão');
+        }
+
+        // Adicionar o set completado
+        session.exercises[exerciseIndex].sets.push({
+          ...completedSet,
+          completed: true,
+          startTime: new Date(),
+          endTime: new Date()
+        });
 
         data.workoutSessions2[sessionIndex] = session;
         this.dataService.saveData(data);
@@ -382,7 +425,7 @@ export class WorkoutManagementService {
 
   private startSessionTimer(): void {
     this.stopSessionTimer(); // Garantir que não há timer duplicado
-    
+
     const startTime = new Date();
     this.sessionTimerSubject.next({
       startTime,
@@ -393,7 +436,7 @@ export class WorkoutManagementService {
     this.timerInterval = setInterval(() => {
       const now = new Date();
       const elapsed = Math.floor((now.getTime() - startTime.getTime()) / 1000); // segundos
-      
+
       this.sessionTimerSubject.next({
         startTime,
         elapsed,
@@ -426,7 +469,7 @@ export class WorkoutManagementService {
         if (!data || !user) return [];
         return (data.workoutSessions2 || [])
           .filter((s: WorkoutSession) => s.userId === user.id && s.status === 'completed')
-          .sort((a: WorkoutSession, b: WorkoutSession) => 
+          .sort((a: WorkoutSession, b: WorkoutSession) =>
             new Date(b.startTime).getTime() - new Date(a.startTime).getTime()
           );
       })
@@ -442,7 +485,7 @@ export class WorkoutManagementService {
         if (!data || !user) return [];
         return (data.workoutProgress || [])
           .filter((p: WorkoutProgress) => p.exerciseId === exerciseId)
-          .sort((a: WorkoutProgress, b: WorkoutProgress) => 
+          .sort((a: WorkoutProgress, b: WorkoutProgress) =>
             new Date(b.date).getTime() - new Date(a.date).getTime()
           );
       })
@@ -475,7 +518,7 @@ export class WorkoutManagementService {
             duration: bestSet.duration,
             distance: bestSet.distance
           },
-          totalVolume: completedSets.reduce((total, set) => 
+          totalVolume: completedSets.reduce((total, set) =>
             total + ((set.reps || 0) * (set.weight || 0)), 0
           ),
           personalRecord: false // TODO: calcular se é recorde
@@ -504,11 +547,11 @@ export class WorkoutManagementService {
         const startOfWeek = new Date(now.getFullYear(), now.getMonth(), now.getDate() - now.getDay());
         const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
 
-        const thisWeekSessions = sessions.filter(s => 
+        const thisWeekSessions = sessions.filter(s =>
           new Date(s.startTime) >= startOfWeek
         );
 
-        const thisMonthSessions = sessions.filter(s => 
+        const thisMonthSessions = sessions.filter(s =>
           new Date(s.startTime) >= startOfMonth
         );
 

@@ -1,4 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { IonicModule } from '@ionic/angular';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AlertController, ToastController, ModalController } from '@ionic/angular';
 import { WorkoutManagementService } from '../services/workout-management.service';
@@ -9,24 +12,26 @@ import { Subscription, interval } from 'rxjs';
   selector: 'app-workout-execution',
   templateUrl: './workout-execution.page.html',
   styleUrls: ['./workout-execution.page.scss'],
+  standalone: true,
+  imports: [CommonModule, FormsModule, IonicModule]
 })
 export class WorkoutExecutionPage implements OnInit, OnDestroy {
   workoutId: string = '';
   workout: CustomWorkout | null = null;
   session: WorkoutSession | null = null;
-  
+
   // Estado da execução
   currentExerciseIndex: number = 0;
   currentSetIndex: number = 0;
   isWorkoutStarted: boolean = false;
   isWorkoutPaused: boolean = false;
   isWorkoutCompleted: boolean = false;
-  
+
   // Timer
   workoutDuration: number = 0; // em segundos
   restTime: number = 0; // tempo de descanso restante em segundos
   isResting: boolean = false;
-  
+
   private timerSubscription?: Subscription;
   private restTimerSubscription?: Subscription;
 
@@ -81,7 +86,7 @@ export class WorkoutExecutionPage implements OnInit, OnDestroy {
 
   async pauseWorkout() {
     this.isWorkoutPaused = !this.isWorkoutPaused;
-    
+
     if (this.isWorkoutPaused) {
       this.stopTimers();
       await this.showToast('Treino pausado', 'warning');
@@ -152,7 +157,7 @@ export class WorkoutExecutionPage implements OnInit, OnDestroy {
     this.restTime = restDuration;
     this.isResting = true;
     this.startRestTimer(restDuration);
-    
+
     await this.showToast(`Descanso de ${restDuration}s iniciado`, 'medium');
   }
 
@@ -232,18 +237,18 @@ export class WorkoutExecutionPage implements OnInit, OnDestroy {
 
   getWorkoutProgress(): number {
     if (!this.workout) return 0;
-    
+
     const totalExercises = this.workout.exercises.length;
     const completedExercises = this.currentExerciseIndex;
     const currentExerciseProgress = this.getCurrentExerciseProgress();
-    
+
     return ((completedExercises + currentExerciseProgress) / totalExercises) * 100;
   }
 
   getCurrentExerciseProgress(): number {
     const exercise = this.getCurrentExercise();
     if (!exercise) return 0;
-    
+
     return this.currentSetIndex / exercise.sets;
   }
 
@@ -251,7 +256,7 @@ export class WorkoutExecutionPage implements OnInit, OnDestroy {
     if (this.timerSubscription) {
       this.timerSubscription.unsubscribe();
     }
-    
+
     this.timerSubscription = interval(1000).subscribe(() => {
       if (!this.isWorkoutPaused) {
         this.workoutDuration++;
@@ -263,11 +268,11 @@ export class WorkoutExecutionPage implements OnInit, OnDestroy {
     if (this.restTimerSubscription) {
       this.restTimerSubscription.unsubscribe();
     }
-    
+
     this.restTimerSubscription = interval(1000).subscribe(() => {
       if (!this.isWorkoutPaused && this.restTime > 0) {
         this.restTime--;
-        
+
         if (this.restTime === 0) {
           this.stopRestTimer();
           this.isResting = false;
@@ -294,7 +299,7 @@ export class WorkoutExecutionPage implements OnInit, OnDestroy {
     const hours = Math.floor(seconds / 3600);
     const minutes = Math.floor((seconds % 3600) / 60);
     const remainingSeconds = seconds % 60;
-    
+
     if (hours > 0) {
       return `${hours}h ${minutes}m`;
     }
@@ -337,7 +342,7 @@ export class WorkoutExecutionPage implements OnInit, OnDestroy {
           handler: (data) => {
             const reps = parseInt(data.reps);
             const weight = data.weight ? parseFloat(data.weight) : undefined;
-            
+
             if (reps && reps > 0) {
               this.completeSet(reps, weight);
             }

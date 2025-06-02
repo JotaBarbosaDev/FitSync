@@ -3,7 +3,8 @@ import { Router } from '@angular/router';
 import { AlertController, ToastController, ModalController } from '@ionic/angular';
 import { WorkoutManagementService } from '../services/workout-management.service';
 import { DataService } from '../services/data.service';
-import { CustomWorkout, WorkoutExercise, ExerciseLibraryItem } from '../models/workout-system.model';
+import { ExerciseService, ExerciseLibraryItem } from '../services/exercise.service';
+import { CustomWorkout, WorkoutExercise } from '../models/workout-system.model';
 
 @Component({
   selector: 'app-workout-management',
@@ -22,7 +23,8 @@ export class WorkoutManagementPage implements OnInit {
     private toastController: ToastController,
     private modalController: ModalController,
     private workoutManagementService: WorkoutManagementService,
-    private dataService: DataService
+    private dataService: DataService,
+    private exerciseService: ExerciseService
   ) { }
 
   async ngOnInit() {
@@ -36,8 +38,26 @@ export class WorkoutManagementPage implements OnInit {
   private async loadData() {
     this.isLoading = true;
     try {
-      this.customWorkouts = await this.workoutManagementService.getCustomWorkouts();
-      this.exercises = await this.dataService.getExercises();
+      // Carregar treinos personalizados via subscription
+      this.workoutManagementService.getCustomWorkouts().subscribe({
+        next: (workouts) => {
+          this.customWorkouts = workouts;
+        },
+        error: (error) => {
+          console.error('Erro ao carregar treinos:', error);
+        }
+      });
+
+      // Carregar exercícios da biblioteca via ExerciseService
+      this.exerciseService.getExerciseLibrary().subscribe({
+        next: (exercises) => {
+          this.exercises = exercises;
+        },
+        error: (error) => {
+          console.error('Erro ao carregar exercícios:', error);
+        }
+      });
+
     } catch (error) {
       console.error('Erro ao carregar dados:', error);
       await this.showToast('Erro ao carregar dados', 'danger');
@@ -89,24 +109,31 @@ export class WorkoutManagementPage implements OnInit {
 
   private async createWorkout(name: string, description: string) {
     try {
-      const workout: Omit<CustomWorkout, 'id' | 'createdAt' | 'updatedAt'> = {
+      const workout: Omit<CustomWorkout, 'id' | 'createdAt' | 'updatedAt' | 'createdBy'> = {
         name,
         description,
         exercises: [],
-        category: 'custom',
-        difficulty: 'beginner',
+        category: 'mixed',
+        difficulty: 'easy',
         estimatedDuration: 30,
-        targetMuscleGroups: [],
+        muscleGroups: [],
         equipment: [],
-        caloriesPerMinute: 5
+        isTemplate: false
       };
 
-      const created = await this.workoutManagementService.createCustomWorkout(workout);
-      await this.showToast('Treino criado com sucesso!', 'success');
-      this.customWorkouts.unshift(created);
-      
-      // Navegar para edição do treino
-      this.editWorkout(created);
+      this.workoutManagementService.createCustomWorkout(workout).subscribe({
+        next: (created) => {
+          this.showToast('Treino criado com sucesso!', 'success');
+          this.customWorkouts.unshift(created);
+
+          // Navegar para edição do treino
+          this.editWorkout(created);
+        },
+        error: (error) => {
+          console.error('Erro ao criar treino:', error);
+          this.showToast('Erro ao criar treino', 'danger');
+        }
+      });
     } catch (error) {
       console.error('Erro ao criar treino:', error);
       await this.showToast('Erro ao criar treino', 'danger');
@@ -152,9 +179,29 @@ export class WorkoutManagementPage implements OnInit {
 
   private async duplicateWorkoutAction(workout: CustomWorkout, newName: string) {
     try {
-      const duplicated = await this.workoutManagementService.duplicateCustomWorkout(workout.id, newName);
-      await this.showToast('Treino duplicado com sucesso!', 'success');
-      this.customWorkouts.unshift(duplicated);
+      // Create a duplicate by creating a new workout with the same properties
+      const duplicatedWorkout: Omit<CustomWorkout, 'id' | 'createdAt' | 'updatedAt' | 'createdBy'> = {
+        name: newName,
+        description: workout.description,
+        exercises: workout.exercises,
+        category: workout.category,
+        difficulty: workout.difficulty,
+        estimatedDuration: workout.estimatedDuration,
+        muscleGroups: workout.muscleGroups,
+        equipment: workout.equipment,
+        isTemplate: workout.isTemplate
+      };
+
+      this.workoutManagementService.createCustomWorkout(duplicatedWorkout).subscribe({
+        next: (created) => {
+          this.showToast('Treino duplicado com sucesso!', 'success');
+          this.customWorkouts.unshift(created);
+        },
+        error: (error) => {
+          console.error('Erro ao duplicar treino:', error);
+          this.showToast('Erro ao duplicar treino', 'danger');
+        }
+      });
     } catch (error) {
       console.error('Erro ao duplicar treino:', error);
       await this.showToast('Erro ao duplicar treino', 'danger');
@@ -211,18 +258,18 @@ export class WorkoutManagementPage implements OnInit {
 
   getDifficultyColor(difficulty: string): string {
     const colors = {
-      'beginner': 'success',
-      'intermediate': 'warning', 
-      'advanced': 'danger'
+      'easy': 'success',
+      'medium': 'warning',
+      'hard': 'danger'
     };
     return colors[difficulty as keyof typeof colors] || 'medium';
   }
 
   getDifficultyLabel(difficulty: string): string {
     const labels = {
-      'beginner': 'Iniciante',
-      'intermediate': 'Intermediário',
-      'advanced': 'Avançado'
+      'easy': 'Fácil',
+      'medium': 'Médio',
+      'hard': 'Difícil'
     };
     return labels[difficulty as keyof typeof labels] || difficulty;
   }
@@ -255,7 +302,7 @@ export class WorkoutManagementPage implements OnInit {
   }
 
   getActiveWorkouts(): number {
-    return this.customWorkouts.filter(w => w.exercises.length > 0).length;
+    return this.customWorkouts.length;
   }
 
   getTotalDuration(): number {
@@ -270,17 +317,18 @@ export class WorkoutManagementPage implements OnInit {
       'arms': 'Braços',
       'legs': 'Pernas',
       'core': 'Abdômen',
-      'cardio': 'Cardio'
+      'cardio': 'Cardio',
+      'full-body': 'Corpo Inteiro'
     };
     return groups[groupId as keyof typeof groups] || groupId;
   }
 
-  formatDate(dateString: string): string {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('pt-BR', { 
-      day: '2-digit', 
-      month: '2-digit', 
-      year: 'numeric' 
+  formatDate(date: string | Date): string {
+    const dateObj = typeof date === 'string' ? new Date(date) : date;
+    return dateObj.toLocaleDateString('pt-BR', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric'
     });
   }
 

@@ -13,8 +13,8 @@ import { WorkoutExecutionPage } from './workout-execution.page';
     CommonModule,
     FormsModule,
     IonicModule,
-    WorkoutExecutionPageRoutingModule
-  ],
-  declarations: [WorkoutExecutionPage]
+    WorkoutExecutionPageRoutingModule,
+    WorkoutExecutionPage
+  ]
 })
-export class WorkoutExecutionPageModule {}
+export class WorkoutExecutionPageModule { }

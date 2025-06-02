@@ -25,18 +25,18 @@
       <h2>Seus Números</h2>
       <p>Acompanhe sua evolução</p>
     </div>
-    
+
     <div class="stats-grid">
       <div class="stat-card primary">
         <div class="stat-icon">
           <ion-icon name="fitness-outline"></ion-icon>
         </div>
         <div class="stat-content">
-          <div class="stat-number">{{ stats.totalWorkouts }}</div>
+          <div class="stat-number">{{ stats?.totalWorkouts || 0 }}</div>
           <div class="stat-label">Treinos</div>
         </div>
       </div>
-      
+
       <div class="stat-card success">
         <div class="stat-icon">
           <ion-icon name="flame-outline"></ion-icon>
@@ -46,23 +46,23 @@
           <div class="stat-label">Sequência</div>
         </div>
       </div>
-      
+
       <div class="stat-card warning">
         <div class="stat-icon">
           <ion-icon name="time-outline"></ion-icon>
         </div>
         <div class="stat-content">
-          <div class="stat-number">{{ formatDuration(stats.totalDuration) }}</div>
+          <div class="stat-number">{{ formatDuration(stats?.totalDuration || 0) }}</div>
           <div class="stat-label">Tempo Total</div>
         </div>
       </div>
-      
+
       <div class="stat-card danger">
         <div class="stat-icon">
           <ion-icon name="flash-outline"></ion-icon>
         </div>
         <div class="stat-content">
-          <div class="stat-number">{{ stats.totalCalories }}</div>
+          <div class="stat-number">{{ stats?.totalCalories || 0 }}</div>
           <div class="stat-label">Calorias</div>
         </div>
       </div>
@@ -79,24 +79,20 @@
           <span>Treinos por Semana</span>
         </div>
         <div class="goal-progress">
-          <div class="progress-text">{{ stats.weeklyWorkouts }}/5</div>
-          <ion-progress-bar 
-            [value]="getProgressPercentage(stats.weeklyWorkouts, 5) / 100"
-            color="primary">
+          <div class="progress-text">{{ stats?.weeklyWorkouts || 0 }}/5</div>
+          <ion-progress-bar [value]="getProgressPercentage(stats?.weeklyWorkouts || 0, 5) / 100" color="primary">
           </ion-progress-bar>
         </div>
       </div>
-      
+
       <div class="goal-item">
         <div class="goal-info">
           <ion-icon name="time-outline" color="warning"></ion-icon>
           <span>Tempo Semanal</span>
         </div>
         <div class="goal-progress">
-          <div class="progress-text">{{ formatDuration(stats.weeklyDuration) }}/5h</div>
-          <ion-progress-bar 
-            [value]="getProgressPercentage(stats.weeklyDuration, 18000) / 100"
-            color="warning">
+          <div class="progress-text">{{ formatDuration(stats?.weeklyDuration || 0) }}/5h</div>
+          <ion-progress-bar [value]="getProgressPercentage(stats?.weeklyDuration || 0, 18000) / 100" color="warning">
           </ion-progress-bar>
         </div>
       </div>
@@ -118,7 +114,7 @@
         </ion-segment-button>
       </ion-segment>
     </div>
-    
+
     <div class="control-group">
       <ion-segment [(ngModel)]="selectedMetric" (ionChange)="onMetricChange()">
         <ion-segment-button value="frequency">
@@ -136,7 +132,8 @@
 
   <!-- Gráfico de Progresso -->
   <div class="chart-section">
-    <h3>{{ getMetricLabel() }} - {{ selectedPeriod === 'week' ? 'Última Semana' : selectedPeriod === 'month' ? 'Último Mês' : 'Último Ano' }}</h3>
+    <h3>{{ getMetricLabel() }} - {{ selectedPeriod === 'week' ? 'Última Semana' : selectedPeriod === 'month' ? 'Último
+      Mês' : 'Último Ano' }}</h3>
     <div class="chart-container">
       <canvas #progressChart></canvas>
     </div>
@@ -168,14 +165,14 @@
             {{ session.startTime | date:'dd/MM/yyyy' }}
           </div>
           <div class="session-details">
-            <span class="session-duration">{{ formatDuration(session.duration || 0) }}</span>
-            <span class="session-exercises">{{ session.exercises.length }} exercícios</span>
+            <span class="session-duration">{{ formatDuration((session.totalDuration || 0) * 60) }}</span>
+            <span class="session-exercises">{{ session.completedExercises.length }} exercícios</span>
           </div>
         </div>
         <div class="session-stats">
           <div class="session-calories">
             <ion-icon name="flame-outline"></ion-icon>
-            <span>{{ session.calories || 0 }} cal</span>
+            <span>{{ 0 }} cal</span>
           </div>
         </div>
       </div>
@@ -186,9 +183,8 @@
   <div class="achievements-section" *ngIf="getAchievements().length > 0">
     <h3>🏆 Conquistas</h3>
     <div class="achievements-grid">
-      <div class="achievement-card" 
-           *ngFor="let achievement of getAchievements()"
-           [class]="'achievement-' + achievement.color">
+      <div class="achievement-card" *ngFor="let achievement of getAchievements()"
+        [class]="'achievement-' + achievement.color">
         <div class="achievement-icon">
           <ion-icon [name]="achievement.icon"></ion-icon>
         </div>
@@ -211,15 +207,15 @@
       <div class="summary-stats">
         <div class="summary-stat">
           <ion-icon name="time-outline"></ion-icon>
-          <span>{{ formatDuration(recentSessions[0].duration || 0) }}</span>
+          <span>{{ formatDuration(recentSessions[0]?.totalDuration || 0) }}</span>
         </div>
         <div class="summary-stat">
           <ion-icon name="fitness-outline"></ion-icon>
-          <span>{{ recentSessions[0].exercises.length }} exercícios</span>
+          <span>{{ recentSessions[0]?.completedExercises?.length || 0 }} exercícios</span>
         </div>
         <div class="summary-stat">
           <ion-icon name="flame-outline"></ion-icon>
-          <span>{{ recentSessions[0].calories || 0 }} cal</span>
+          <span>{{ 0 }} cal</span>
         </div>
       </div>
     </div>
