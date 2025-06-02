@@ -38,7 +38,7 @@
       </div>
     </div>
     <div class="plan-info">
-      <h3>{{ currentPlan.name }}</h3>
+      <h3>{{ currentPlan?.name }}</h3>
       <p class="plan-description">Organize seus treinos ao longo da semana</p>
     </div>
   </div>
@@ -56,35 +56,30 @@
 
   <!-- Grid dos Dias da Semana -->
   <div class="days-grid" *ngIf="currentPlan">
-    <div class="day-card" 
-         *ngFor="let day of daysOfWeek" 
-         (click)="selectDayAction(day.key)"
-         [class.has-workout]="getDayPlan(day.key).type === 'workout'"
-         [class.rest-day]="getDayPlan(day.key).type === 'rest'">
-      
+    <div class="day-card" *ngFor="let day of daysOfWeek" (click)="selectDayAction(day.key)"
+      [class.has-workout]="getDayPlan(day.key).type === 'workout'"
+      [class.rest-day]="getDayPlan(day.key).type === 'rest'">
+
       <div class="day-header">
         <h4>{{ day.shortName }}</h4>
-        <ion-icon 
-          [name]="getDayStatusIcon(day.key)" 
-          [color]="getDayStatusColor(day.key)"
-          class="day-status-icon">
+        <ion-icon [name]="getDayStatusIcon(day.key)" [color]="getDayStatusColor(day.key)" class="day-status-icon">
         </ion-icon>
       </div>
-      
+
       <div class="day-content">
         <div class="day-name">{{ day.name }}</div>
-        
+
         <div class="day-plan" *ngIf="getDayPlan(day.key).type === 'workout'">
           <div class="workout-name">{{ getWorkoutName(getDayPlan(day.key).workoutId!) }}</div>
           <div class="workout-type">Treino</div>
         </div>
-        
+
         <div class="day-plan" *ngIf="getDayPlan(day.key).type === 'rest'">
           <div class="rest-label">Descanso</div>
           <div class="rest-description">Dia de recuperação</div>
         </div>
       </div>
-      
+
       <div class="day-actions">
         <ion-icon name="chevron-forward-outline" class="action-icon"></ion-icon>
       </div>
@@ -95,12 +90,7 @@
   <div class="quick-actions" *ngIf="currentPlan">
     <h3>Ações Rápidas</h3>
     <div class="action-buttons">
-      <ion-button 
-        expand="block" 
-        fill="outline" 
-        color="primary"
-        (click)="createNewPlan()"
-        class="action-btn">
+      <ion-button expand="block" fill="outline" color="primary" (click)="createNewPlan()" class="action-btn">
         <ion-icon name="duplicate-outline" slot="start"></ion-icon>
         Novo Plano
       </ion-button>

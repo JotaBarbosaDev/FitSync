@@ -1,5 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import { AlertController, ModalController, ToastController, ActionSheetController } from '@ionic/angular';
+import {
+  AlertController,
+  ModalController,
+  ToastController,
+  ActionSheetController
+} from '@ionic/angular';
 import { WorkoutManagementService } from '../services/workout-management.service';
 import { WeeklyPlan, DayPlan, CustomWorkout } from '../models/workout-system.model';
 
@@ -7,11 +12,12 @@ import { WeeklyPlan, DayPlan, CustomWorkout } from '../models/workout-system.mod
   selector: 'app-weekly-plan',
   templateUrl: './weekly-plan.page.html',
   styleUrls: ['./weekly-plan.page.scss'],
+  standalone: false
 })
 export class WeeklyPlanPage implements OnInit {
   currentPlan: WeeklyPlan | null = null;
   availableWorkouts: CustomWorkout[] = [];
-  
+
   daysOfWeek = [
     { key: 'monday', name: 'Segunda-feira', shortName: 'SEG' },
     { key: 'tuesday', name: 'Terça-feira', shortName: 'TER' },
@@ -43,7 +49,7 @@ export class WeeklyPlanPage implements OnInit {
       this.workoutService.getCurrentWeeklyPlan().subscribe(plan => {
         this.currentPlan = plan;
       });
-      
+
       this.workoutService.getAllWorkouts().subscribe(workouts => {
         this.availableWorkouts = workouts;
       });
@@ -55,21 +61,21 @@ export class WeeklyPlanPage implements OnInit {
 
   getDayPlan(dayKey: string): DayPlan {
     if (!this.currentPlan) {
-      return { 
+      return {
         date: new Date().toISOString().split('T')[0],
         type: 'rest',
         isRestDay: true,
         completed: false
       };
     }
-    
+
     const defaultDayPlan: DayPlan = {
       date: new Date().toISOString().split('T')[0],
       type: 'rest',
       isRestDay: true,
       completed: false
     };
-    
+
     return this.currentPlan.days[dayKey as keyof typeof this.currentPlan.days] || defaultDayPlan;
   }
 
@@ -120,8 +126,8 @@ export class WeeklyPlanPage implements OnInit {
     try {
       this.workoutService.updateDayPlan(
         this.currentPlan!.id,
-        dayKey as 'monday' | 'tuesday' | 'wednesday' | 'thursday' | 'friday' | 'saturday' | 'sunday', 
-        { 
+        dayKey as 'monday' | 'tuesday' | 'wednesday' | 'thursday' | 'friday' | 'saturday' | 'sunday',
+        {
           type: 'rest',
           date: new Date().toISOString().split('T')[0],
           isRestDay: true,
@@ -183,14 +189,14 @@ export class WeeklyPlanPage implements OnInit {
         isRestDay: false,
         completed: false
       };
-      
+
       this.workoutService.updateDayPlan(
         this.currentPlan!.id,
         dayKey as 'monday' | 'tuesday' | 'wednesday' | 'thursday' | 'friday' | 'saturday' | 'sunday',
         dayPlan
       ).subscribe(async () => {
         await this.loadData();
-        
+
         const workoutName = this.getWorkoutName(workoutId);
         await this.showToast(`${workoutName} atribuído para ${this.daysOfWeek.find(d => d.key === dayKey)?.name}!`, 'success');
       });
@@ -269,7 +275,7 @@ export class WeeklyPlanPage implements OnInit {
         this.workoutService.updateDayPlan(
           this.currentPlan!.id,
           day.key as 'monday' | 'tuesday' | 'wednesday' | 'thursday' | 'friday' | 'saturday' | 'sunday',
-          { 
+          {
             type: 'rest',
             date: new Date().toISOString().split('T')[0],
             isRestDay: true,

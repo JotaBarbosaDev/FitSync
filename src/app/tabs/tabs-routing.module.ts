@@ -16,8 +16,8 @@ const routes: Routes = [
         loadChildren: () => import('../lista/lista.module').then(m => m.ListaPageModule)
       },
       {
-        path: 'detalhe',
-        loadChildren: () => import('../detalhe/detalhe.module').then(m => m.DetalhePageModule)
+        path: 'workout-management',
+        loadChildren: () => import('../workout-management/workout-management.module').then(m => m.WorkoutManagementPageModule)
       },
       {
         path: 'progresso',
@@ -40,4 +40,4 @@ const routes: Routes = [
   imports: [RouterModule.forChild(routes)],
   exports: [RouterModule],
 })
-export class TabsPageRoutingModule {}
+export class TabsPageRoutingModule { }
