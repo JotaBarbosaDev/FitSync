@@ -1,7 +1,7 @@
-// Import base styles
-@import '../../theme/fitsync-styles.scss';
+// Import FitSync design system
+@use '../../styles/fitsync-styles.scss';
 
-// Page-specific styles
+// Page-specific styles for workout management
 .fitsync-container {
   background: linear-gradient(135deg, 
     var(--ion-color-primary-tint) 0%, 
@@ -279,6 +279,7 @@
           line-height: 1.4;
           display: -webkit-box;
           -webkit-line-clamp: 2;
+          line-clamp: 2;
           -webkit-box-orient: vertical;
           overflow: hidden;
         }

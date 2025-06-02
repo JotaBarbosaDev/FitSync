@@ -1,0 +1,104 @@
+// FitSync Theme - Design System
+// Core styles that can be imported by any component
+
+// Base design tokens
+:root {
+  // Brand Colors
+  --fitsync-primary: #E6FE58;
+  --fitsync-secondary: #141414;
+  --fitsync-accent: #40E0D0;
+  
+  // Text colors
+  --fitsync-text-primary: #141414;
+  --fitsync-text-secondary: #666666;
+  --fitsync-text-muted: #999999;
+  --fitsync-text-on-primary: #141414;
+  --fitsync-text-on-dark: #FFFFFF;
+  
+  // Background colors
+  --fitsync-background: #FFFFFF;
+  --fitsync-background-subtle: #F8F9FA;
+  --fitsync-background-hover: rgba(230, 254, 88, 0.1);
+  
+  // Muscle group colors
+  --fitsync-muscle-chest: #E6FE58;
+  --fitsync-muscle-back: #40E0D0;
+  --fitsync-muscle-legs: #10DC60;
+  --fitsync-muscle-shoulders: #FFB800;
+  --fitsync-muscle-arms: #F04141;
+  --fitsync-muscle-core: #9D4EDD;
+  
+  // Success/Warning/Danger
+  --fitsync-success: #10DC60;
+  --fitsync-warning: #FFB800;
+  --fitsync-danger: #F04141;
+  
+  // Gradients
+  --fitsync-gradient-primary: linear-gradient(135deg, #E6FE58 0%, #CBEF4D 100%);
+  --fitsync-gradient-secondary: linear-gradient(135deg, #141414 0%, #2C2C2C 100%);
+  
+  // Card styles
+  --fitsync-card-background: #FFFFFF;
+  --fitsync-border-subtle: #E1E5E9;
+  --fitsync-shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.1);
+  --fitsync-shadow-hover: 0 8px 24px rgba(0, 0, 0, 0.15);
+  
+  // Spacing
+  --fitsync-spacing-xs: 0.5rem;
+  --fitsync-spacing-sm: 1rem;
+  --fitsync-spacing-md: 1.5rem;
+  --fitsync-spacing-lg: 2rem;
+  --fitsync-spacing-xl: 3rem;
+}
+
+// Dark mode adjustments
+@media (prefers-color-scheme: dark) {
+  :root {
+    --fitsync-text-primary: #FFFFFF;
+    --fitsync-text-secondary: #CCCCCC;
+    --fitsync-text-muted: #999999;
+    --fitsync-background: #0D0D0D;
+    --fitsync-background-subtle: #1A1A1A;
+    --fitsync-card-background: #1A1A1A;
+    --fitsync-border-subtle: #2A2A2A;
+  }
+}
+
+// Utility classes
+.fitsync-text-primary { color: var(--fitsync-text-primary); }
+.fitsync-text-secondary { color: var(--fitsync-text-secondary); }
+.fitsync-text-muted { color: var(--fitsync-text-muted); }
+
+.fitsync-bg-primary { background: var(--fitsync-primary); }
+.fitsync-bg-secondary { background: var(--fitsync-secondary); }
+
+.fitsync-card {
+  background: var(--fitsync-card-background);
+  border-radius: 16px;
+  padding: 1rem;
+  border: 1px solid var(--fitsync-border-subtle);
+  box-shadow: var(--fitsync-shadow-sm);
+  transition: all 0.3s ease;
+  
+  &:hover {
+    box-shadow: var(--fitsync-shadow-hover);
+    transform: translateY(-2px);
+  }
+}
+
+.fitsync-btn {
+  border-radius: 12px;
+  padding: 0.75rem 1.5rem;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  
+  &--primary {
+    background: var(--fitsync-primary);
+    color: var(--fitsync-text-on-primary);
+  }
+  
+  &--secondary {
+    background: var(--fitsync-secondary);
+    color: var(--fitsync-text-on-dark);
+  }
+}

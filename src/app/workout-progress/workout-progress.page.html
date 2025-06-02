@@ -52,7 +52,7 @@
           <ion-icon name="time-outline"></ion-icon>
         </div>
         <div class="stat-content">
-          <div class="stat-number">{{ formatDuration(stats?.totalDuration || 0) }}</div>
+          <div class="stat-number">{{ formatDuration(stats?.weeklyDuration || 0) }}</div>
           <div class="stat-label">Tempo Total</div>
         </div>
       </div>
@@ -165,8 +165,8 @@
             {{ session.startTime | date:'dd/MM/yyyy' }}
           </div>
           <div class="session-details">
-            <span class="session-duration">{{ formatDuration((session.totalDuration || 0) * 60) }}</span>
-            <span class="session-exercises">{{ session.completedExercises.length }} exercícios</span>
+            <span class="session-duration">{{ formatDuration((session.duration || 0) * 60) }}</span>
+            <span class="session-exercises">{{ session.exercises?.length || 0 }} exercícios</span>
           </div>
         </div>
         <div class="session-stats">
@@ -207,11 +207,11 @@
       <div class="summary-stats">
         <div class="summary-stat">
           <ion-icon name="time-outline"></ion-icon>
-          <span>{{ formatDuration(recentSessions[0]?.totalDuration || 0) }}</span>
+          <span>{{ formatDuration(recentSessions[0]?.duration || 0) }}</span>
         </div>
         <div class="summary-stat">
           <ion-icon name="fitness-outline"></ion-icon>
-          <span>{{ recentSessions[0]?.completedExercises?.length || 0 }} exercícios</span>
+          <span>{{ recentSessions[0]?.exercises?.length || 0 }} exercícios</span>
         </div>
         <div class="summary-stat">
           <ion-icon name="flame-outline"></ion-icon>

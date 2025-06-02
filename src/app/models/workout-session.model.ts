@@ -1,14 +1,5 @@
-export interface WorkoutSession {
-  id: string;
-  userId: string;
-  workoutId: string;
-  startTime: Date;
-  endTime?: Date;
-  completedExercises: string[];
-  totalDuration?: number; // minutos
-  notes?: string;
-  rating?: number; // 1-5 estrelas
-}
+// DEPRECATED: Use WorkoutSession from workout-system.model.ts instead
+// This file is kept for compatibility with TimerState only
 
 export interface TimerState {
   isRunning: boolean;

@@ -46,8 +46,8 @@
           <div class="exercise-preview" *ngFor="let exercise of workout.exercises; let i = index">
             <div class="exercise-number">{{ i + 1 }}</div>
             <div class="exercise-info">
-              <div class="exercise-name">{{ exercise.name }}</div>
-              <div class="exercise-details">{{ exercise.sets }} séries • {{ exercise.reps }} reps</div>
+              <div class="exercise-name">{{ getCurrentExerciseName() }}</div>
+              <div class="exercise-details">{{ getTotalSets() }} séries • {{ getCurrentSetReps() }} reps</div>
             </div>
           </div>
         </div>
@@ -85,7 +85,7 @@
         <span>{{ formatDuration(workoutDuration) }}</span>
       </div>
       <div class="exercise-counter">
-        Exercício {{ currentExerciseIndex + 1 }} de {{ workout?.exercises.length }}
+        Exercício {{ currentExerciseIndex + 1 }} de {{ workout ? workout.exercises.length : 0 }}
       </div>
     </div>
 
@@ -106,7 +106,7 @@
     <!-- Exercício Atual -->
     <div class="current-exercise" *ngIf="!isResting && getCurrentExercise()">
       <div class="exercise-header">
-        <h2>{{ getCurrentExercise()?.name }}</h2>
+        <h2>{{ getCurrentExerciseName() }}</h2>
         <div class="set-info">
           Série {{ getCurrentSet() }} de {{ getTotalSets() }}
         </div>
@@ -117,15 +117,15 @@
           <ion-icon name="repeat-outline"></ion-icon>
           <div class="detail-content">
             <div class="detail-label">Repetições</div>
-            <div class="detail-value">{{ getCurrentExercise()?.reps }}</div>
+            <div class="detail-value">{{ getCurrentSetReps() }}</div>
           </div>
         </div>
 
-        <div class="detail-card" *ngIf="getCurrentExercise()?.weight">
+        <div class="detail-card" *ngIf="getCurrentSetWeight() > 0">
           <ion-icon name="barbell-outline"></ion-icon>
           <div class="detail-content">
             <div class="detail-label">Peso</div>
-            <div class="detail-value">{{ getCurrentExercise()?.weight }}kg</div>
+            <div class="detail-value">{{ getCurrentSetWeight() }}kg</div>
           </div>
         </div>
 
@@ -138,9 +138,9 @@
         </div>
       </div>
 
-      <div class="exercise-instructions" *ngIf="getCurrentExercise()?.instructions">
+      <div class="exercise-instructions" *ngIf="getCurrentExerciseInstructions()">
         <h4>📝 Instruções</h4>
-        <p>{{ getCurrentExercise()?.instructions }}</p>
+        <p>{{ getCurrentExerciseInstructions() }}</p>
       </div>
 
       <div class="action-buttons">
@@ -175,7 +175,7 @@
         <div class="stat-item">
           <ion-icon name="fitness-outline"></ion-icon>
           <div class="stat-content">
-            <div class="stat-value">{{ workout?.exercises.length }}</div>
+            <div class="stat-value">{{ workout ? workout.exercises.length : 0 }}</div>
             <div class="stat-label">Exercícios</div>
           </div>
         </div>

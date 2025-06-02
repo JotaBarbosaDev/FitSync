@@ -4,13 +4,13 @@ import {
   CustomWorkout,
   WorkoutExercise,
   WeeklyPlan,
-  WorkoutSession,
   WorkoutProgress,
   ExerciseLibraryItem,
   DayPlan,
   SessionExercise,
   CompletedSet
 } from '../models';
+import { WorkoutSession } from '../models/workout-system.model';
 import { DataService } from './data.service';
 import { AuthService } from './auth.service';
 
@@ -129,13 +129,13 @@ export class WorkoutManagementService {
             name: planOrName,
             isActive: true,
             days: {
-              monday: { type: 'rest', isRestDay: true },
-              tuesday: { type: 'rest', isRestDay: true },
-              wednesday: { type: 'rest', isRestDay: true },
-              thursday: { type: 'rest', isRestDay: true },
-              friday: { type: 'rest', isRestDay: true },
-              saturday: { type: 'rest', isRestDay: true },
-              sunday: { type: 'rest', isRestDay: true }
+              monday: { date: '', type: 'rest', isRestDay: true, completed: false },
+              tuesday: { date: '', type: 'rest', isRestDay: true, completed: false },
+              wednesday: { date: '', type: 'rest', isRestDay: true, completed: false },
+              thursday: { date: '', type: 'rest', isRestDay: true, completed: false },
+              friday: { date: '', type: 'rest', isRestDay: true, completed: false },
+              saturday: { date: '', type: 'rest', isRestDay: true, completed: false },
+              sunday: { date: '', type: 'rest', isRestDay: true, completed: false }
             }
           };
         } else {
@@ -222,6 +222,39 @@ export class WorkoutManagementService {
   }
 
   // ===== GERENCIAMENTO DE TREINOS =====
+
+  getAllWorkouts(): Observable<CustomWorkout[]> {
+    return this.dataService.data$.pipe(
+      map(data => {
+        if (!data) return [];
+        return data.customWorkouts || [];
+      })
+    );
+  }
+
+  getCurrentWeeklyPlan(): Observable<WeeklyPlan | null> {
+    return this.getActiveWeeklyPlan();
+  }
+
+  updateDayPlan(planId: string, day: keyof WeeklyPlan['days'], dayPlan: DayPlan): Observable<WeeklyPlan> {
+    return this.dataService.data$.pipe(
+      map(data => {
+        if (!data) throw new Error('Dados não disponíveis');
+
+        const planIndex = (data.weeklyPlans || []).findIndex((p: WeeklyPlan) => p.id === planId);
+        if (planIndex === -1) throw new Error('Plano não encontrado');
+
+        const plan = data.weeklyPlans[planIndex];
+        plan.days[day] = dayPlan;
+        plan.updatedAt = new Date();
+
+        data.weeklyPlans[planIndex] = plan;
+        this.dataService.saveData(data);
+
+        return plan;
+      })
+    );
+  }
 
   getWorkoutById(workoutId: string): Observable<CustomWorkout | null> {
     return this.dataService.data$.pipe(
@@ -498,12 +531,12 @@ export class WorkoutManagementService {
 
       data.workoutProgress = data.workoutProgress || [];
 
-      session.exercises.forEach(exercise => {
-        const completedSets = exercise.sets.filter(set => set.completed);
+      session.exercises.forEach((exercise: SessionExercise) => {
+        const completedSets = exercise.sets.filter((set: CompletedSet) => set.completed);
         if (completedSets.length === 0) return;
 
         // Encontrar o melhor set
-        const bestSet = completedSets.reduce((best, current) => {
+        const bestSet = completedSets.reduce((best: CompletedSet, current: CompletedSet) => {
           const currentVolume = (current.reps || 0) * (current.weight || 0);
           const bestVolume = (best.reps || 0) * (best.weight || 0);
           return currentVolume > bestVolume ? current : best;
@@ -518,7 +551,7 @@ export class WorkoutManagementService {
             duration: bestSet.duration,
             distance: bestSet.distance
           },
-          totalVolume: completedSets.reduce((total, set) =>
+          totalVolume: completedSets.reduce((total: number, set: CompletedSet) =>
             total + ((set.reps || 0) * (set.weight || 0)), 0
           ),
           personalRecord: false // TODO: calcular se é recorde

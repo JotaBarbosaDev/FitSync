@@ -5,11 +5,13 @@ export * from './day.model';
 export * from './workout.model';
 export * from './exercise.model';
 export * from './set.model';
-export * from './workout-session.model';
 export * from './workout-system.model';
 
+// Export TimerState from workout-session (for compatibility)
+export { TimerState } from './workout-session.model';
+
 // Export timer interfaces
-export { TimerState, WorkoutTimer } from '../services/timer.service';
+export { WorkoutTimer } from '../services/timer.service';
 
 // Export interfaces for data structure
 export interface AppData {

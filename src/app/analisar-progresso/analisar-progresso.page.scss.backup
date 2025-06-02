@@ -1,0 +1,973 @@
+// Design Tokens FitSync
+:root {
+  // Brand Colors
+  --fitsync-primary: #667eea;
+  --fitsync-primary-dark: #5a67d8;
+  --fitsync-secondary: #764ba2;
+  --fitsync-accent: #00d2ff;
+  --fitsync-accent-dark: #0fb5d6;
+  
+  // Gradients
+  --fitsync-gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  --fitsync-gradient-secondary: linear-gradient(135deg, #00d2ff 0%, #667eea 100%);
+  --fitsync-gradient-success: linear-gradient(135deg, #4ade80 0%, #22c55e 100%);
+  --fitsync-gradient-warning: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+  --fitsync-gradient-danger: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  
+  // Glass Morphism
+  --glass-bg: rgba(255, 255, 255, 0.25);
+  --glass-border: rgba(255, 255, 255, 0.18);
+  --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+  
+  // Semantic Colors
+  --success-color: #10b981;
+  --warning-color: #f59e0b;
+  --danger-color: #ef4444;
+  --info-color: #3b82f6;
+  
+  // Typography
+  --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --font-weight-light: 300;
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+  
+  // Spacing
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
+  --spacing-2xl: 48px;
+  
+  // Border Radius
+  --border-radius-sm: 8px;
+  --border-radius-md: 12px;
+  --border-radius-lg: 16px;
+  --border-radius-xl: 24px;
+  --border-radius-full: 50%;
+  
+  // Shadows
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+}
+
+// Page Content
+.analisar-progresso-content {
+  background: var(--fitsync-gradient-primary);
+  min-height: 100vh;
+  padding-bottom: var(--spacing-2xl);
+  
+  // Modern Header
+  .modern-header {
+    ion-toolbar {
+      --background: transparent;
+      --color: white;
+      
+      .back-button, .share-button {
+        --color: white;
+        --background: rgba(255, 255, 255, 0.1);
+        --border-radius: 12px;
+        margin: 0 var(--spacing-sm);
+        backdrop-filter: blur(10px);
+        
+        &:hover {
+          --background: rgba(255, 255, 255, 0.2);
+        }
+      }
+      
+      .header-title {
+        .title-content {
+          display: flex;
+          align-items: center;
+          gap: var(--spacing-sm);
+          font-weight: var(--font-weight-semibold);
+          
+          .title-icon {
+            font-size: 24px;
+          }
+        }
+      }
+    }
+  }
+  
+  // Hero Section
+  .hero-section {
+    position: relative;
+    padding: var(--spacing-2xl) var(--spacing-md);
+    text-align: center;
+    overflow: hidden;
+    
+    .hero-background {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: var(--fitsync-gradient-secondary);
+      opacity: 0.1;
+      z-index: 0;
+      
+      &::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+        animation: float 6s ease-in-out infinite;
+      }
+    }
+    
+    .hero-content {
+      position: relative;
+      z-index: 1;
+      
+      .hero-icon {
+        width: 80px;
+        height: 80px;
+        background: var(--glass-bg);
+        border: 1px solid var(--glass-border);
+        border-radius: var(--border-radius-full);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto var(--spacing-lg);
+        backdrop-filter: blur(10px);
+        box-shadow: var(--glass-shadow);
+        
+        ion-icon {
+          font-size: 40px;
+          color: white;
+        }
+      }
+      
+      h1 {
+        font-size: 32px;
+        font-weight: var(--font-weight-bold);
+        color: white;
+        margin: 0 0 var(--spacing-sm);
+        text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+      }
+      
+      p {
+        font-size: 16px;
+        color: rgba(255, 255, 255, 0.8);
+        margin: 0;
+        font-weight: var(--font-weight-normal);
+      }
+    }
+  }
+  
+  // Period Filter
+  .period-filter {
+    margin: var(--spacing-md);
+    
+    .filter-container {
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--border-radius-lg);
+      padding: var(--spacing-lg);
+      backdrop-filter: blur(10px);
+      box-shadow: var(--glass-shadow);
+      
+      h3 {
+        font-size: 18px;
+        font-weight: var(--font-weight-semibold);
+        color: white;
+        margin: 0 0 var(--spacing-xs);
+      }
+      
+      p {
+        font-size: 14px;
+        color: rgba(255, 255, 255, 0.7);
+        margin: 0 0 var(--spacing-md);
+      }
+      
+      .period-segment {
+        --background: rgba(255, 255, 255, 0.1);
+        border-radius: var(--border-radius-md);
+        
+        ion-segment-button {
+          --color: rgba(255, 255, 255, 0.7);
+          --color-checked: white;
+          --background-checked: var(--fitsync-accent);
+          --indicator-color: transparent;
+          font-size: 14px;
+          font-weight: var(--font-weight-medium);
+          border-radius: var(--border-radius-sm);
+          margin: 2px;
+          transition: all 0.3s ease;
+          
+          &.segment-button-checked {
+            background: var(--fitsync-accent);
+            color: white;
+            transform: scale(1.05);
+          }
+        }
+      }
+    }
+  }
+  
+  // Glass Card Base
+  .glass-card {
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--border-radius-lg);
+    backdrop-filter: blur(10px);
+    box-shadow: var(--glass-shadow);
+    margin: var(--spacing-md);
+    padding: var(--spacing-lg);
+    transition: all 0.3s ease;
+    
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 40px 0 rgba(31, 38, 135, 0.5);
+    }
+    
+    .card-header {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-md);
+      margin-bottom: var(--spacing-lg);
+      
+      .header-icon {
+        width: 48px;
+        height: 48px;
+        background: var(--fitsync-gradient-secondary);
+        border-radius: var(--border-radius-md);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        
+        ion-icon {
+          font-size: 24px;
+          color: white;
+        }
+      }
+      
+      .header-text {
+        flex: 1;
+        
+        h3 {
+          font-size: 20px;
+          font-weight: var(--font-weight-semibold);
+          color: white;
+          margin: 0 0 var(--spacing-xs);
+        }
+        
+        p {
+          font-size: 14px;
+          color: rgba(255, 255, 255, 0.7);
+          margin: 0;
+        }
+      }
+    }
+  }
+  
+  // Weekly Summary
+  .weekly-summary {
+    .summary-card {
+      .summary-content {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-xl);
+        
+        .progress-circle-container {
+          .progress-circle {
+            position: relative;
+            width: 120px;
+            height: 120px;
+            
+            .progress-svg {
+              width: 100%;
+              height: 100%;
+              transform: rotate(-90deg);
+              
+              .progress-bg {
+                fill: none;
+                stroke: rgba(255, 255, 255, 0.2);
+                stroke-width: 8;
+              }
+              
+              .progress-fill {
+                fill: none;
+                stroke: var(--fitsync-accent);
+                stroke-width: 8;
+                stroke-linecap: round;
+                transition: stroke-dasharray 1s ease-in-out;
+                filter: drop-shadow(0 0 8px rgba(0, 210, 255, 0.5));
+              }
+            }
+            
+            .progress-text {
+              position: absolute;
+              top: 50%;
+              left: 50%;
+              transform: translate(-50%, -50%);
+              text-align: center;
+              
+              .progress-value {
+                display: block;
+                font-size: 24px;
+                font-weight: var(--font-weight-bold);
+                color: white;
+              }
+              
+              .progress-label {
+                display: block;
+                font-size: 12px;
+                color: rgba(255, 255, 255, 0.7);
+                margin-top: var(--spacing-xs);
+              }
+            }
+          }
+        }
+        
+        .summary-stats {
+          flex: 1;
+          display: flex;
+          align-items: center;
+          gap: var(--spacing-lg);
+          
+          .stat-item {
+            text-align: center;
+            
+            .stat-number {
+              font-size: 32px;
+              font-weight: var(--font-weight-bold);
+              color: white;
+              margin-bottom: var(--spacing-xs);
+            }
+            
+            .stat-label {
+              font-size: 14px;
+              color: rgba(255, 255, 255, 0.7);
+            }
+          }
+          
+          .stat-divider {
+            width: 1px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.2);
+          }
+        }
+      }
+    }
+  }
+  
+  // Statistics Grid
+  .statistics-grid {
+    .stats-header {
+      margin: var(--spacing-md) var(--spacing-md) 0;
+      
+      h3 {
+        font-size: 20px;
+        font-weight: var(--font-weight-semibold);
+        color: white;
+        margin: 0 0 var(--spacing-xs);
+      }
+      
+      p {
+        font-size: 14px;
+        color: rgba(255, 255, 255, 0.7);
+        margin: 0 0 var(--spacing-lg);
+      }
+    }
+    
+    .stats-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: var(--spacing-md);
+      margin: 0 var(--spacing-md);
+      
+      .stat-card {
+        padding: var(--spacing-lg);
+        position: relative;
+        overflow: hidden;
+        
+        &::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          height: 4px;
+          background: var(--fitsync-gradient-secondary);
+        }
+        
+        .stat-icon {
+          margin-bottom: var(--spacing-md);
+          
+          ion-icon {
+            font-size: 32px;
+            
+            &.icon-primary { color: var(--fitsync-primary); }
+            &.icon-orange { color: #f59e0b; }
+            &.icon-blue { color: #3b82f6; }
+            &.icon-gold { color: #fbbf24; }
+          }
+        }
+        
+        .stat-content {
+          .stat-number {
+            font-size: 24px;
+            font-weight: var(--font-weight-bold);
+            color: white;
+            margin-bottom: var(--spacing-xs);
+          }
+          
+          .stat-label {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.7);
+            line-height: 1.4;
+          }
+        }
+        
+        .stat-trend {
+          position: absolute;
+          top: var(--spacing-md);
+          right: var(--spacing-md);
+          
+          .trend-up {
+            color: var(--success-color);
+            font-size: 20px;
+          }
+          
+          .trend-star {
+            color: #fbbf24;
+            font-size: 20px;
+          }
+        }
+      }
+    }
+  }
+  
+  // Physical Progress
+  .physical-progress {
+    .progress-card {
+      .progress-metrics {
+        .metric-item {
+          margin-bottom: var(--spacing-xl);
+          
+          &:last-child {
+            margin-bottom: 0;
+          }
+          
+          .metric-header {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+            margin-bottom: var(--spacing-md);
+            
+            .metric-icon {
+              width: 48px;
+              height: 48px;
+              border-radius: var(--border-radius-md);
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              
+              &.weight { background: var(--fitsync-gradient-primary); }
+              &.muscle { background: var(--fitsync-gradient-success); }
+              &.fat { background: var(--fitsync-gradient-warning); }
+              
+              ion-icon {
+                font-size: 24px;
+                color: white;
+              }
+            }
+            
+            .metric-info {
+              flex: 1;
+              
+              h4 {
+                font-size: 16px;
+                font-weight: var(--font-weight-semibold);
+                color: white;
+                margin: 0 0 var(--spacing-xs);
+              }
+              
+              .metric-values {
+                display: flex;
+                align-items: center;
+                gap: var(--spacing-md);
+                
+                .current-value {
+                  font-size: 20px;
+                  font-weight: var(--font-weight-bold);
+                  color: var(--fitsync-accent);
+                }
+                
+                .target-value {
+                  font-size: 12px;
+                  color: rgba(255, 255, 255, 0.7);
+                }
+              }
+            }
+            
+            .metric-percentage {
+              .percentage-badge {
+                padding: var(--spacing-xs) var(--spacing-sm);
+                border-radius: var(--border-radius-sm);
+                font-size: 12px;
+                font-weight: var(--font-weight-semibold);
+                
+                &.progress-excellent {
+                  background: var(--fitsync-gradient-success);
+                  color: white;
+                }
+                
+                &.progress-good {
+                  background: var(--fitsync-gradient-warning);
+                  color: white;
+                }
+                
+                &.progress-average {
+                  background: var(--fitsync-gradient-primary);
+                  color: white;
+                }
+                
+                &.progress-needs-work {
+                  background: var(--fitsync-gradient-danger);
+                  color: white;
+                }
+              }
+            }
+          }
+          
+          .metric-progress {
+            .progress-track {
+              height: 8px;
+              background: rgba(255, 255, 255, 0.2);
+              border-radius: var(--border-radius-sm);
+              overflow: hidden;
+              margin-bottom: var(--spacing-sm);
+              
+              .progress-fill {
+                height: 100%;
+                border-radius: var(--border-radius-sm);
+                transition: width 1s ease-in-out;
+                
+                &.progress-excellent { background: var(--fitsync-gradient-success); }
+                &.progress-good { background: var(--fitsync-gradient-warning); }
+                &.progress-average { background: var(--fitsync-gradient-primary); }
+                &.progress-needs-work { background: var(--fitsync-gradient-danger); }
+              }
+            }
+            
+            .progress-labels {
+              display: flex;
+              justify-content: space-between;
+              font-size: 12px;
+              color: rgba(255, 255, 255, 0.7);
+            }
+          }
+        }
+      }
+    }
+  }
+  
+  // Charts Section
+  .charts-section {
+    .chart-container {
+      .chart-header {
+        margin-bottom: var(--spacing-xl);
+      }
+      
+      // Weight Chart
+      .weight-chart {
+        .chart-area {
+          position: relative;
+          height: 200px;
+          margin-bottom: var(--spacing-md);
+          
+          .chart-svg {
+            width: 100%;
+            height: 100%;
+            
+            .chart-point {
+              cursor: pointer;
+              transition: all 0.3s ease;
+              
+              &:hover {
+                r: 6;
+                filter: drop-shadow(0 0 8px rgba(0, 210, 255, 0.8));
+              }
+            }
+          }
+        }
+        
+        .chart-labels {
+          .y-axis-labels {
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 160px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.7);
+          }
+          
+          .x-axis-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.7);
+            margin-top: var(--spacing-sm);
+            padding: 0 20px;
+          }
+        }
+      }
+      
+      // Workouts Chart
+      .workouts-chart {
+        .chart-bars {
+          display: flex;
+          justify-content: space-around;
+          align-items: end;
+          height: 150px;
+          gap: var(--spacing-md);
+          
+          .bar-item {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            max-width: 60px;
+            
+            .bar-wrapper {
+              height: 120px;
+              width: 40px;
+              display: flex;
+              align-items: end;
+              position: relative;
+              
+              .bar-fill {
+                width: 100%;
+                background: var(--fitsync-gradient-secondary);
+                border-radius: var(--border-radius-sm) var(--border-radius-sm) 0 0;
+                position: relative;
+                min-height: 20px;
+                transition: height 1s ease-in-out;
+                
+                .bar-value {
+                  position: absolute;
+                  top: -24px;
+                  left: 50%;
+                  transform: translateX(-50%);
+                  font-size: 12px;
+                  font-weight: var(--font-weight-semibold);
+                  color: white;
+                  background: var(--fitsync-accent);
+                  padding: 2px 6px;
+                  border-radius: var(--border-radius-sm);
+                  white-space: nowrap;
+                }
+              }
+            }
+            
+            .bar-label {
+              margin-top: var(--spacing-sm);
+              font-size: 12px;
+              color: rgba(255, 255, 255, 0.7);
+              text-align: center;
+            }
+          }
+        }
+      }
+    }
+  }
+  
+  // Achievements Section
+  .achievements-section {
+    .achievements-card {
+      .achievements-list {
+        .achievement-item {
+          display: flex;
+          align-items: center;
+          gap: var(--spacing-md);
+          padding: var(--spacing-md) 0;
+          border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+          
+          &:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+          }
+          
+          .achievement-icon {
+            width: 56px;
+            height: 56px;
+            background: var(--fitsync-gradient-secondary);
+            border-radius: var(--border-radius-full);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            
+            ion-icon {
+              font-size: 28px;
+              color: white;
+            }
+          }
+          
+          .achievement-content {
+            flex: 1;
+            
+            h4 {
+              font-size: 16px;
+              font-weight: var(--font-weight-semibold);
+              color: white;
+              margin: 0 0 var(--spacing-xs);
+            }
+            
+            p {
+              font-size: 14px;
+              color: rgba(255, 255, 255, 0.7);
+              margin: 0 0 var(--spacing-xs);
+              line-height: 1.4;
+            }
+            
+            .achievement-date {
+              display: flex;
+              align-items: center;
+              gap: var(--spacing-xs);
+              font-size: 12px;
+              color: rgba(255, 255, 255, 0.5);
+              
+              ion-icon {
+                font-size: 12px;
+              }
+            }
+          }
+          
+          .achievement-badge {
+            .badge-icon {
+              font-size: 24px;
+              color: var(--success-color);
+              filter: drop-shadow(0 0 8px rgba(16, 185, 129, 0.5));
+            }
+          }
+        }
+      }
+    }
+  }
+  
+  // Insights Section
+  .insights-section {
+    .insights-card {
+      .insights-list {
+        .insight-item {
+          display: flex;
+          gap: var(--spacing-md);
+          padding: var(--spacing-md) 0;
+          border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+          
+          &:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+          }
+          
+          .insight-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: var(--border-radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            
+            ion-icon {
+              font-size: 24px;
+              color: white;
+            }
+          }
+          
+          &.positive .insight-icon {
+            background: var(--fitsync-gradient-success);
+          }
+          
+          &.warning .insight-icon {
+            background: var(--fitsync-gradient-warning);
+          }
+          
+          &.info .insight-icon {
+            background: var(--fitsync-gradient-primary);
+          }
+          
+          .insight-content {
+            flex: 1;
+            
+            h4 {
+              font-size: 16px;
+              font-weight: var(--font-weight-semibold);
+              color: white;
+              margin: 0 0 var(--spacing-sm);
+            }
+            
+            p {
+              font-size: 14px;
+              color: rgba(255, 255, 255, 0.7);
+              margin: 0;
+              line-height: 1.5;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+// Animations
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// Responsive Design
+@media (max-width: 768px) {
+  .analisar-progresso-content {
+    .hero-section {
+      padding: var(--spacing-lg) var(--spacing-md);
+      
+      .hero-content {
+        .hero-icon {
+          width: 64px;
+          height: 64px;
+          
+          ion-icon {
+            font-size: 32px;
+          }
+        }
+        
+        h1 {
+          font-size: 24px;
+        }
+      }
+    }
+    
+    .weekly-summary {
+      .summary-card {
+        .summary-content {
+          flex-direction: column;
+          gap: var(--spacing-lg);
+          text-align: center;
+          
+          .progress-circle-container .progress-circle {
+            width: 100px;
+            height: 100px;
+          }
+        }
+      }
+    }
+    
+    .statistics-grid {
+      .stats-container {
+        grid-template-columns: repeat(2, 1fr);
+        gap: var(--spacing-sm);
+        
+        .stat-card {
+          padding: var(--spacing-md);
+          
+          .stat-content .stat-number {
+            font-size: 20px;
+          }
+        }
+      }
+    }
+    
+    .physical-progress {
+      .progress-card {
+        .progress-metrics {
+          .metric-item {
+            .metric-header {
+              .metric-icon {
+                width: 40px;
+                height: 40px;
+                
+                ion-icon {
+                  font-size: 20px;
+                }
+              }
+              
+              .metric-info {
+                .metric-values {
+                  flex-direction: column;
+                  align-items: flex-start;
+                  gap: var(--spacing-xs);
+                  
+                  .current-value {
+                    font-size: 18px;
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+    
+    .charts-section {
+      .chart-container {
+        .workouts-chart {
+          .chart-bars {
+            gap: var(--spacing-sm);
+            
+            .bar-item {
+              max-width: 40px;
+              
+              .bar-wrapper {
+                width: 30px;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .analisar-progresso-content {
+    .glass-card {
+      margin: var(--spacing-sm);
+      padding: var(--spacing-md);
+    }
+    
+    .period-filter {
+      margin: var(--spacing-sm);
+      
+      .filter-container {
+        padding: var(--spacing-md);
+        
+        .period-segment {
+          ion-segment-button {
+            font-size: 12px;
+          }
+        }
+      }
+    }
+    
+    .statistics-grid {
+      .stats-container {
+        grid-template-columns: 1fr;
+      }
+    }
+  }
+}

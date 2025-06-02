@@ -3,8 +3,7 @@ import { CommonModule, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
 import { WorkoutManagementService } from '../services/workout-management.service';
-import { WorkoutProgress } from '../models/workout-system.model';
-import { WorkoutSession } from '../models/workout-session.model';
+import { WorkoutProgress, WorkoutSession } from '../models/workout-system.model';
 import { Chart, ChartConfiguration, ChartType, registerables } from 'chart.js';
 
 Chart.register(...registerables);
@@ -92,7 +91,7 @@ export class WorkoutProgressPage implements OnInit {
             ...stats,
             currentStreak: this.calculateCurrentStreak(),
             weeklyWorkouts: weeklySessions.length,
-            weeklyDuration: weeklySessions.reduce((sum, s) => sum + (s.totalDuration || 0), 0)
+            weeklyDuration: weeklySessions.reduce((sum, s) => sum + (s.duration || 0), 0)
           };
         });
 
@@ -139,7 +138,7 @@ export class WorkoutProgressPage implements OnInit {
     return Array.from(sessionsByDate.entries()).map(([dateKey, daySessions]) => ({
       date: new Date(dateKey),
       workoutsCompleted: daySessions.length,
-      totalDuration: daySessions.reduce((sum, s) => sum + (s.totalDuration || 0), 0),
+      totalDuration: daySessions.reduce((sum, s) => sum + (s.duration || 0), 0),
       totalCalories: daySessions.reduce((sum, s) => sum + 0, 0) // WorkoutSession model doesn't have calories
     })).sort((a, b) => a.date.getTime() - b.date.getTime());
   }

@@ -40,8 +40,13 @@ export class WeeklyPlanPage implements OnInit {
 
   async loadData() {
     try {
-      this.currentPlan = await this.workoutService.getCurrentWeeklyPlan();
-      this.availableWorkouts = await this.workoutService.getAllWorkouts();
+      this.workoutService.getCurrentWeeklyPlan().subscribe(plan => {
+        this.currentPlan = plan;
+      });
+      
+      this.workoutService.getAllWorkouts().subscribe(workouts => {
+        this.availableWorkouts = workouts;
+      });
     } catch (error) {
       console.error('Erro ao carregar dados:', error);
       await this.showToast('Erro ao carregar dados', 'danger');
@@ -113,9 +118,19 @@ export class WeeklyPlanPage implements OnInit {
 
   async setRestDay(dayKey: string) {
     try {
-      await this.workoutService.updateDayPlan(dayKey, { type: 'rest' });
-      await this.loadData();
-      await this.showToast('Dia de descanso definido!', 'success');
+      this.workoutService.updateDayPlan(
+        this.currentPlan!.id,
+        dayKey as 'monday' | 'tuesday' | 'wednesday' | 'thursday' | 'friday' | 'saturday' | 'sunday', 
+        { 
+          type: 'rest',
+          date: new Date().toISOString().split('T')[0],
+          isRestDay: true,
+          completed: false
+        }
+      ).subscribe(async () => {
+        await this.loadData();
+        await this.showToast('Dia de descanso definido!', 'success');
+      });
     } catch (error) {
       console.error('Erro ao definir dia de descanso:', error);
       await this.showToast('Erro ao definir dia de descanso', 'danger');
@@ -163,14 +178,22 @@ export class WeeklyPlanPage implements OnInit {
     try {
       const dayPlan: DayPlan = {
         type: 'workout',
-        workoutId: workoutId
+        workoutId: workoutId,
+        date: new Date().toISOString().split('T')[0],
+        isRestDay: false,
+        completed: false
       };
       
-      await this.workoutService.updateDayPlan(dayKey, dayPlan);
-      await this.loadData();
-      
-      const workoutName = this.getWorkoutName(workoutId);
-      await this.showToast(`${workoutName} atribuído para ${this.daysOfWeek.find(d => d.key === dayKey)?.name}!`, 'success');
+      this.workoutService.updateDayPlan(
+        this.currentPlan!.id,
+        dayKey as 'monday' | 'tuesday' | 'wednesday' | 'thursday' | 'friday' | 'saturday' | 'sunday',
+        dayPlan
+      ).subscribe(async () => {
+        await this.loadData();
+        
+        const workoutName = this.getWorkoutName(workoutId);
+        await this.showToast(`${workoutName} atribuído para ${this.daysOfWeek.find(d => d.key === dayKey)?.name}!`, 'success');
+      });
     } catch (error) {
       console.error('Erro ao atribuir treino:', error);
       await this.showToast('Erro ao atribuir treino', 'danger');
@@ -243,7 +266,16 @@ export class WeeklyPlanPage implements OnInit {
   async clearPlan() {
     try {
       for (const day of this.daysOfWeek) {
-        await this.workoutService.updateDayPlan(day.key, { type: 'rest' });
+        this.workoutService.updateDayPlan(
+          this.currentPlan!.id,
+          day.key as 'monday' | 'tuesday' | 'wednesday' | 'thursday' | 'friday' | 'saturday' | 'sunday',
+          { 
+            type: 'rest',
+            date: new Date().toISOString().split('T')[0],
+            isRestDay: true,
+            completed: false
+          }
+        ).subscribe();
       }
       await this.loadData();
       await this.showToast('Plano limpo com sucesso!', 'success');

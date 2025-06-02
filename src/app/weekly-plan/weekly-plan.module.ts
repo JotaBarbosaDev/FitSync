@@ -13,8 +13,8 @@ import { WeeklyPlanPage } from './weekly-plan.page';
     CommonModule,
     FormsModule,
     IonicModule,
-    WeeklyPlanPageRoutingModule
-  ],
-  declarations: [WeeklyPlanPage]
+    WeeklyPlanPageRoutingModule,
+    WeeklyPlanPage
+  ]
 })
 export class WeeklyPlanPageModule {}
