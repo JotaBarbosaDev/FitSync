@@ -59,18 +59,14 @@ export class PlanService {
             data.plans.push(newPlan);
             
             return new Observable<Plan>(observer => {
-              this.dataService.saveData(data).then(success => {
-                if (success) {
-                  // Atualizar lista local
-                  const currentPlans = this.plansSubject.value;
-                  this.plansSubject.next([...currentPlans, newPlan]);
-                  observer.next(newPlan);
-                  observer.complete();
-                } else {
-                  observer.error(new Error('Erro ao salvar plano'));
-                }
+              this.dataService.saveData(data).then(() => {
+                // Atualizar lista local
+                const currentPlans = this.plansSubject.value;
+                this.plansSubject.next([...currentPlans, newPlan]);
+                observer.next(newPlan);
+                observer.complete();
               }).catch(error => {
-                observer.error(error);
+                observer.error(new Error('Erro ao salvar plano'));
               });
             });
           })
@@ -99,21 +95,17 @@ export class PlanService {
         updatedAt: new Date().toISOString()
       };
 
-      this.dataService.saveData(data).then(success => {
-        if (success) {
-          // Atualizar lista local
-          const currentPlans = this.plansSubject.value;
-          const updatedPlans = currentPlans.map((p: Plan) => 
-            p.id === planId ? data.plans[planIndex] : p
-          );
-          this.plansSubject.next(updatedPlans);
-          observer.next(data.plans[planIndex]);
-          observer.complete();
-        } else {
-          observer.error(new Error('Erro ao salvar plano'));
-        }
+      this.dataService.saveData(data).then(() => {
+        // Atualizar lista local
+        const currentPlans = this.plansSubject.value;
+        const updatedPlans = currentPlans.map((p: Plan) => 
+          p.id === planId ? data.plans[planIndex] : p
+        );
+        this.plansSubject.next(updatedPlans);
+        observer.next(data.plans[planIndex]);
+        observer.complete();
       }).catch(error => {
-        observer.error(error);
+        observer.error(new Error('Erro ao salvar plano'));
       });
     });
   }
@@ -143,18 +135,14 @@ export class PlanService {
       // Remover exercises associados aos workouts removidos
       data.exercises = data.exercises.filter((e: Exercise) => !removedWorkoutIds.includes(e.workoutId));
 
-      this.dataService.saveData(data).then(success => {
-        if (success) {
-          // Atualizar lista local
-          const currentPlans = this.plansSubject.value;
-          this.plansSubject.next(currentPlans.filter((p: Plan) => p.id !== planId));
-          observer.next();
-          observer.complete();
-        } else {
-          observer.error(new Error('Erro ao deletar plano'));
-        }
+      this.dataService.saveData(data).then(() => {
+        // Atualizar lista local
+        const currentPlans = this.plansSubject.value;
+        this.plansSubject.next(currentPlans.filter((p: Plan) => p.id !== planId));
+        observer.next();
+        observer.complete();
       }).catch(error => {
-        observer.error(error);
+        observer.error(new Error('Erro ao deletar plano'));
       });
     });
   }
@@ -203,23 +191,19 @@ export class PlanService {
             }
           });
 
-          this.dataService.saveData(data).then(success => {
-            if (success) {
-              // Atualizar lista local
-              const currentPlans = this.plansSubject.value;
-              const updatedPlans = currentPlans.map((p: Plan) => ({
-                ...p,
-                isActive: p.id === planId
-              }));
-              
-              this.plansSubject.next(updatedPlans);
-              observer.next();
-              observer.complete();
-            } else {
-              observer.error(new Error('Erro ao ativar plano'));
-            }
+          this.dataService.saveData(data).then(() => {
+            // Atualizar lista local
+            const currentPlans = this.plansSubject.value;
+            const updatedPlans = currentPlans.map((p: Plan) => ({
+              ...p,
+              isActive: p.id === planId
+            }));
+            
+            this.plansSubject.next(updatedPlans);
+            observer.next();
+            observer.complete();
           }).catch(error => {
-            observer.error(error);
+            observer.error(new Error('Erro ao ativar plano'));
           });
         },
         error: (error) => observer.error(error)

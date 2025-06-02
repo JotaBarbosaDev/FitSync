@@ -1,0 +1,121 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/workout-management"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Plano Semanal</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="clearAllDays()" color="danger" fill="clear">
+        <ion-icon name="trash-outline" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">Plano Semanal</ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  <!-- Estatísticas do Plano -->
+  <div class="stats-section" *ngIf="currentPlan">
+    <div class="stats-cards">
+      <div class="stat-card">
+        <ion-icon name="fitness-outline" class="stat-icon primary"></ion-icon>
+        <div class="stat-content">
+          <div class="stat-number">{{ getTotalWorkoutDays() }}</div>
+          <div class="stat-label">Dias de Treino</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <ion-icon name="bed-outline" class="stat-icon medium"></ion-icon>
+        <div class="stat-content">
+          <div class="stat-number">{{ getTotalRestDays() }}</div>
+          <div class="stat-label">Dias de Descanso</div>
+        </div>
+      </div>
+    </div>
+    <div class="plan-info">
+      <h3>{{ currentPlan.name }}</h3>
+      <p class="plan-description">Organize seus treinos ao longo da semana</p>
+    </div>
+  </div>
+
+  <!-- Mensagem quando não há plano -->
+  <div class="empty-state" *ngIf="!currentPlan">
+    <ion-icon name="calendar-outline" class="empty-icon"></ion-icon>
+    <h3>Nenhum Plano Semanal</h3>
+    <p>Crie um plano semanal para organizar seus treinos</p>
+    <ion-button expand="block" fill="solid" (click)="createNewPlan()" class="create-plan-btn">
+      <ion-icon name="add" slot="start"></ion-icon>
+      Criar Plano Semanal
+    </ion-button>
+  </div>
+
+  <!-- Grid dos Dias da Semana -->
+  <div class="days-grid" *ngIf="currentPlan">
+    <div class="day-card" 
+         *ngFor="let day of daysOfWeek" 
+         (click)="selectDayAction(day.key)"
+         [class.has-workout]="getDayPlan(day.key).type === 'workout'"
+         [class.rest-day]="getDayPlan(day.key).type === 'rest'">
+      
+      <div class="day-header">
+        <h4>{{ day.shortName }}</h4>
+        <ion-icon 
+          [name]="getDayStatusIcon(day.key)" 
+          [color]="getDayStatusColor(day.key)"
+          class="day-status-icon">
+        </ion-icon>
+      </div>
+      
+      <div class="day-content">
+        <div class="day-name">{{ day.name }}</div>
+        
+        <div class="day-plan" *ngIf="getDayPlan(day.key).type === 'workout'">
+          <div class="workout-name">{{ getWorkoutName(getDayPlan(day.key).workoutId!) }}</div>
+          <div class="workout-type">Treino</div>
+        </div>
+        
+        <div class="day-plan" *ngIf="getDayPlan(day.key).type === 'rest'">
+          <div class="rest-label">Descanso</div>
+          <div class="rest-description">Dia de recuperação</div>
+        </div>
+      </div>
+      
+      <div class="day-actions">
+        <ion-icon name="chevron-forward-outline" class="action-icon"></ion-icon>
+      </div>
+    </div>
+  </div>
+
+  <!-- Ações Rápidas -->
+  <div class="quick-actions" *ngIf="currentPlan">
+    <h3>Ações Rápidas</h3>
+    <div class="action-buttons">
+      <ion-button 
+        expand="block" 
+        fill="outline" 
+        color="primary"
+        (click)="createNewPlan()"
+        class="action-btn">
+        <ion-icon name="duplicate-outline" slot="start"></ion-icon>
+        Novo Plano
+      </ion-button>
+    </div>
+  </div>
+
+  <!-- Dicas -->
+  <div class="tips-section" *ngIf="currentPlan">
+    <h4>💡 Dicas para um bom plano</h4>
+    <ul class="tips-list">
+      <li>Inclua pelo menos 1-2 dias de descanso por semana</li>
+      <li>Alterne grupos musculares entre os dias</li>
+      <li>Considere sua disponibilidade de tempo</li>
+      <li>Seja realista com seus objetivos</li>
+    </ul>
+  </div>
+
+</ion-content>

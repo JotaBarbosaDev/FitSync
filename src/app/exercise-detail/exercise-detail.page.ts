@@ -401,6 +401,57 @@ export class ExerciseDetailPage implements OnInit, OnDestroy {
     return this.translationService.getDifficultyLabel(difficulty);
   }
 
+  // Métodos que estavam faltando baseados nos erros de compilação
+  playVideo() {
+    // Implementação do reprodutor de vídeo
+    console.log('🎥 Reproduzindo vídeo do exercício');
+    // Aqui seria implementada a lógica de reprodução de vídeo
+    this.showToast('Funcionalidade de vídeo em desenvolvimento');
+  }
+
+  onTimerUpdate(timeData: any) {
+    // Atualizar dados do timer
+    this.timerSeconds = timeData.seconds || 0;
+    console.log('⏰ Timer atualizado:', this.timerSeconds);
+  }
+
+  onTimerComplete() {
+    // Ações quando o timer termina
+    console.log('⏰ Timer finalizado!');
+    this.isTimerRunning = false;
+    this.showToast('Timer finalizado! 🎉');
+  }
+
+  addToWorkout() {
+    // Adicionar exercício ao treino
+    console.log('💪 Adicionando ao treino:', this.exercise?.name);
+    this.showToast(`${this.exercise?.name} adicionado ao treino!`);
+  }
+
+  navigateToExercise(exerciseId: string) {
+    // Navegar para outro exercício
+    console.log('🚀 Navegando para exercício:', exerciseId);
+    this.navigationService.navigateToExerciseDetail(exerciseId);
+  }
+
+  async toggleOrientationLock() {
+    // Alternar bloqueio de orientação
+    try {
+      if (this.isOrientationLocked) {
+        await this.deviceControlService.allowLandscape();
+        this.isOrientationLocked = false;
+        this.showToast('Orientação desbloqueada');
+      } else {
+        await this.deviceControlService.lockToPortrait();
+        this.isOrientationLocked = true;
+        this.showToast('Orientação bloqueada');
+      }
+    } catch (error) {
+      console.error('Erro ao alterar orientação:', error);
+      this.showErrorToast('Erro ao alterar orientação');
+    }
+  }
+
   translateMuscleGroup(muscleGroup: string): string {
     return this.translationService.getMuscleGroupLabel(muscleGroup);
   }

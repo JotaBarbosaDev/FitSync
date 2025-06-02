@@ -1,6 +1,7 @@
 export interface User {
   id: string;
   email: string;
+  password: string; // Adicionado campo password
   name: string;
   dateOfBirth?: Date;
   height?: number; // cm

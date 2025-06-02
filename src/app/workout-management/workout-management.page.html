@@ -1,0 +1,289 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <div class="header-content">
+      <div class="header-left">
+        <ion-buttons slot="start">
+          <ion-back-button defaultHref="/tabs/home"></ion-back-button>
+        </ion-buttons>
+        <div class="header-title">
+          <h1 class="headline-medium text-gradient-primary">Meus Treinos</h1>
+          <p class="body-medium text-muted">Treinos Personalizados • {{ customWorkouts.length }} criados</p>
+        </div>
+      </div>
+      
+      <div class="header-actions">
+        <ion-button fill="clear" class="fitsync-btn icon" (click)="goToWeeklyPlan()">
+          <div class="icon-container icon-container--sm icon-container--primary">
+            <ion-icon name="calendar" class="icon icon-sm"></ion-icon>
+          </div>
+        </ion-button>
+        
+        <ion-button fill="clear" class="fitsync-btn icon" (click)="goToWorkoutProgress()">
+          <div class="icon-container icon-container--sm icon-container--accent">
+            <ion-icon name="analytics" class="icon icon-sm"></ion-icon>
+          </div>
+        </ion-button>
+      </div>
+    </div>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="fitsync-container">
+  <!-- Loading -->
+  <div *ngIf="isLoading" class="loading-container">
+    <div class="loading-content">
+      <ion-spinner name="dots" color="primary"></ion-spinner>
+      <p class="body-medium text-muted">Carregando treinos...</p>
+    </div>
+  </div>
+
+  <!-- Header Statistics -->
+  <div *ngIf="!isLoading" class="stats-section fitsync-fade-in">
+    <div class="stats-grid">
+      <div class="stat-card fitsync-card glass">
+        <div class="stat-icon">
+          <div class="icon-container icon-container--lg icon-container--primary">
+            <ion-icon name="fitness" class="icon icon-lg"></ion-icon>
+          </div>
+        </div>
+        <div class="stat-content">
+          <h3 class="title-lg text-emphasis">{{ customWorkouts.length }}</h3>
+          <p class="body-sm text-muted">Treinos Criados</p>
+        </div>
+      </div>
+
+      <div class="stat-card fitsync-card glass">
+        <div class="stat-icon">
+          <div class="icon-container icon-container--lg icon-container--success">
+            <ion-icon name="checkmark-circle" class="icon icon-lg"></ion-icon>
+          </div>
+        </div>
+        <div class="stat-content">
+          <h3 class="title-lg text-emphasis">{{ getActiveWorkouts() }}</h3>
+          <p class="body-sm text-muted">Ativos</p>
+        </div>
+      </div>
+
+      <div class="stat-card fitsync-card glass">
+        <div class="stat-icon">
+          <div class="icon-container icon-container--lg icon-container--warning">
+            <ion-icon name="time" class="icon icon-lg"></ion-icon>
+          </div>
+        </div>
+        <div class="stat-content">
+          <h3 class="title-lg text-emphasis">{{ getTotalDuration() }}min</h3>
+          <p class="body-sm text-muted">Tempo Total</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quick Actions -->
+  <div *ngIf="!isLoading" class="quick-actions-section">
+    <div class="section-header">
+      <h2 class="headline-medium text-gradient-dark">
+        <div class="icon-container icon-container--md icon-container--primary">
+          <ion-icon name="flash" class="icon icon-md"></ion-icon>
+        </div>
+        Ações Rápidas
+      </h2>
+    </div>
+    
+    <div class="actions-grid">
+      <div class="action-card fitsync-card" (click)="createNewWorkout()">
+        <div class="action-icon">
+          <div class="icon-container icon-container--xl icon-container--primary">
+            <ion-icon name="add-circle" class="icon icon-xl"></ion-icon>
+          </div>
+        </div>
+        <div class="action-content">
+          <h4 class="title-md text-emphasis">Novo Treino</h4>
+          <p class="body-sm text-muted">Criar treino personalizado</p>
+        </div>
+      </div>
+
+      <div class="action-card fitsync-card" (click)="goToWeeklyPlan()">
+        <div class="action-icon">
+          <div class="icon-container icon-container--xl icon-container--secondary">
+            <ion-icon name="calendar" class="icon icon-xl"></ion-icon>
+          </div>
+        </div>
+        <div class="action-content">
+          <h4 class="title-md text-emphasis">Planejar Semana</h4>
+          <p class="body-sm text-muted">Organizar treinos semanais</p>
+        </div>
+      </div>
+
+      <div class="action-card fitsync-card" (click)="goToWorkoutProgress()">
+        <div class="action-icon">
+          <div class="icon-container icon-container--xl icon-container--accent">
+            <ion-icon name="trending-up" class="icon icon-xl"></ion-icon>
+          </div>
+        </div>
+        <div class="action-content">
+          <h4 class="title-md text-emphasis">Ver Progresso</h4>
+          <p class="body-sm text-muted">Análise de desempenho</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Custom Workouts List -->
+  <div *ngIf="!isLoading" class="workouts-section">
+    <div class="section-header">
+      <h2 class="headline-medium text-gradient-dark">
+        <div class="icon-container icon-container--md icon-container--accent">
+          <ion-icon name="library" class="icon icon-md"></ion-icon>
+        </div>
+        Meus Treinos
+      </h2>
+      <p class="body-medium text-muted">Gerencie seus treinos personalizados</p>
+    </div>
+
+    <!-- Empty State -->
+    <div *ngIf="customWorkouts.length === 0" class="empty-state">
+      <div class="empty-content">
+        <div class="empty-icon">
+          <div class="icon-container icon-container--xl icon-container--muted">
+            <ion-icon name="fitness" class="icon icon-xl"></ion-icon>
+          </div>
+        </div>
+        <h3 class="hero-medium">Nenhum treino criado</h3>
+        <p class="personality-friendly">Crie seu primeiro treino personalizado e comece a treinar!</p>
+        <button class="fitsync-btn fitsync-btn--primary" (click)="createNewWorkout()">
+          <div class="icon-container icon-container--sm icon-container--white">
+            <ion-icon name="add" class="icon icon-sm"></ion-icon>
+          </div>
+          <span class="ui-element-button">Criar Primeiro Treino</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Workouts Grid -->
+    <div *ngIf="customWorkouts.length > 0" class="workouts-grid">
+      <div *ngFor="let workout of customWorkouts; trackBy: trackByWorkoutId" 
+           class="workout-card fitsync-card">
+        
+        <!-- Workout Header -->
+        <div class="workout-header">
+          <div class="workout-info">
+            <div class="workout-category">
+              <div class="icon-container icon-container--sm icon-container--filled">
+                <ion-icon [name]="getCategoryIcon(workout.category)" class="icon-sm icon-white"></ion-icon>
+              </div>
+            </div>
+            <div class="workout-difficulty">
+              <ion-chip [color]="getDifficultyColor(workout.difficulty)" outline="true">
+                <span class="body-xs">{{ getDifficultyLabel(workout.difficulty) }}</span>
+              </ion-chip>
+            </div>
+          </div>
+          
+          <div class="workout-actions">
+            <ion-button fill="clear" size="small" (click)="editWorkout(workout)">
+              <ion-icon name="create" class="icon icon-sm icon-primary"></ion-icon>
+            </ion-button>
+            
+            <ion-button fill="clear" size="small" (click)="duplicateWorkout(workout)">
+              <ion-icon name="copy" class="icon icon-sm icon-secondary"></ion-icon>
+            </ion-button>
+            
+            <ion-button fill="clear" size="small" (click)="deleteWorkout(workout)">
+              <ion-icon name="trash" class="icon icon-sm icon-danger"></ion-icon>
+            </ion-button>
+          </div>
+        </div>
+
+        <!-- Workout Content -->
+        <div class="workout-content" (click)="editWorkout(workout)">
+          <h3 class="title-lg text-emphasis">{{ workout.name }}</h3>
+          <p *ngIf="workout.description" class="body-sm text-muted workout-description">
+            {{ workout.description }}
+          </p>
+          
+          <div class="workout-stats">
+            <div class="stat-item">
+              <div class="icon-container icon-container--xs icon-container--muted">
+                <ion-icon name="fitness" class="icon icon-xs"></ion-icon>
+              </div>
+              <span class="body-xs text-muted">{{ workout.exercises.length }} exercícios</span>
+            </div>
+            
+            <div class="stat-item">
+              <div class="icon-container icon-container--xs icon-container--muted">
+                <ion-icon name="time" class="icon icon-xs"></ion-icon>
+              </div>
+              <span class="body-xs text-muted">{{ formatDuration(workout.estimatedDuration) }}</span>
+            </div>
+            
+            <div class="stat-item">
+              <div class="icon-container icon-container--xs icon-container--muted">
+                <ion-icon name="flame" class="icon icon-xs"></ion-icon>
+              </div>
+              <span class="body-xs text-muted">{{ workout.caloriesPerMinute * workout.estimatedDuration }} cal</span>
+            </div>
+          </div>
+
+          <!-- Target Muscle Groups -->
+          <div *ngIf="workout.targetMuscleGroups.length > 0" class="muscle-groups">
+            <div class="muscle-group-chips">
+              <ion-chip *ngFor="let group of workout.targetMuscleGroups.slice(0, 3)" 
+                       color="medium" 
+                       outline="true">
+                <span class="body-xs">{{ getMuscleGroupName(group) }}</span>
+              </ion-chip>
+              <span *ngIf="workout.targetMuscleGroups.length > 3" class="body-xs text-muted">
+                +{{ workout.targetMuscleGroups.length - 3 }} mais
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Workout Footer -->
+        <div class="workout-footer">
+          <div class="workout-meta">
+            <span class="body-xs text-muted">
+              Criado: {{ formatDate(workout.createdAt) }}
+            </span>
+          </div>
+          
+          <div class="workout-start">
+            <ion-button 
+              [disabled]="workout.exercises.length === 0"
+              color="primary" 
+              size="small"
+              (click)="startWorkout(workout); $event.stopPropagation()">
+              <div class="icon-container icon-container--xs icon-container--white">
+                <ion-icon name="play" class="icon icon-xs"></ion-icon>
+              </div>
+              <span class="ui-element-button">Iniciar</span>
+            </ion-button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Floating Action Button -->
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed" class="fab-modern">
+    <ion-fab-button class="fab-main" (click)="createNewWorkout()">
+      <div class="icon-container icon-container--md icon-container--gradient">
+        <ion-icon name="add" class="icon icon-md icon-white"></ion-icon>
+      </div>
+    </ion-fab-button>
+    
+    <ion-fab-list side="top">
+      <ion-fab-button class="fab-secondary" (click)="goToWeeklyPlan()">
+        <div class="icon-container icon-container--sm icon-container--primary">
+          <ion-icon name="calendar" class="icon icon-sm icon-white"></ion-icon>
+        </div>
+      </ion-fab-button>
+      
+      <ion-fab-button class="fab-secondary" (click)="goToWorkoutProgress()">
+        <div class="icon-container icon-container--sm icon-container--accent">
+          <ion-icon name="analytics" class="icon icon-sm icon-white"></ion-icon>
+        </div>
+      </ion-fab-button>
+    </ion-fab-list>
+  </ion-fab>
+</ion-content>

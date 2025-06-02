@@ -70,18 +70,14 @@ export class WorkoutService {
 
       data.workouts.push(newWorkout);
       
-      this.dataService.saveData(data).then(success => {
-        if (success) {
-          // Atualizar lista local
-          const currentWorkouts = this.workoutsSubject.value;
-          this.workoutsSubject.next([...currentWorkouts, newWorkout]);
-          observer.next(newWorkout);
-          observer.complete();
-        } else {
-          observer.error(new Error('Erro ao salvar workout'));
-        }
+      this.dataService.saveData(data).then(() => {
+        // Atualizar lista local
+        const currentWorkouts = this.workoutsSubject.value;
+        this.workoutsSubject.next([...currentWorkouts, newWorkout]);
+        observer.next(newWorkout);
+        observer.complete();
       }).catch(error => {
-        observer.error(error);
+        observer.error(new Error('Erro ao salvar workout'));
       });
     });
   }

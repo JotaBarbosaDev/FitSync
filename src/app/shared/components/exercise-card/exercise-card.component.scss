@@ -73,6 +73,7 @@
           
           ion-icon {
             font-size: 18px;
+            color: white !important;
             
             &[color="danger"] {
               color: #E74C3C !important;
@@ -337,6 +338,132 @@
     }
   }
 
+  // Custom exercise actions
+  .custom-actions {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    z-index: 10;
+    display: flex;
+    gap: 4px;
+    
+    .action-btn {
+      --border-radius: 50%;
+      --background: rgba(0, 0, 0, 0.6);
+      --color: white;
+      width: 32px;
+      height: 32px;
+      backdrop-filter: blur(10px);
+      border: none;
+      
+      ion-icon {
+        font-size: 14px;
+        color: white !important;
+        
+        &[color="warning"] {
+          color: #FF9800 !important;
+        }
+        
+        &[color="danger"] {
+          color: #eb445a !important;
+        }
+      }
+      
+      &:hover {
+        --background: rgba(0, 0, 0, 0.8);
+        transform: scale(1.1);
+      }
+      
+      &.edit-btn {
+        ion-icon {
+          color: #FF9800 !important;
+        }
+        
+        &:hover {
+          --background: rgba(255, 152, 0, 0.8);
+          
+          ion-icon {
+            color: white !important;
+          }
+        }
+      }
+      
+      &.delete-btn {
+        ion-icon {
+          color: #eb445a !important;
+        }
+        
+        &:hover {
+          --background: rgba(235, 68, 90, 0.8);
+          
+          ion-icon {
+            color: white !important;
+          }
+        }
+      }
+    }
+  }
+
+  // List layout action buttons
+  &.list-layout {
+    .exercise-header {
+      .action-buttons {
+        display: flex;
+        gap: 4px;
+        align-items: center;
+        
+        .action-btn {
+          width: 28px;
+          height: 28px;
+          --background: transparent;
+          
+          ion-icon {
+            font-size: 14px;
+            color: white !important;
+            
+            &[color="warning"] {
+              color: #FF9800 !important;
+            }
+            
+            &[color="danger"] {
+              color: #eb445a !important;
+            }
+            
+            &[color="light"] {
+              color: rgba(255, 255, 255, 0.6) !important;
+            }
+          }
+          
+          &:hover {
+            transform: scale(1.1);
+          }
+          
+          &.edit-btn {
+            ion-icon {
+              color: #FF9800 !important;
+            }
+          }
+          
+          &.delete-btn {
+            ion-icon {
+              color: #eb445a !important;
+            }
+          }
+          
+          &.favorite-btn {
+            ion-icon[color="danger"] {
+              color: #E74C3C !important;
+            }
+            
+            ion-icon[color="light"] {
+              color: rgba(255, 255, 255, 0.6) !important;
+            }
+          }
+        }
+      }
+    }
+  }
+
   // Enhanced hover effects
   &:hover .exercise-image img {
     transform: scale(1.1);
@@ -491,5 +618,104 @@
         gap: 10px;
       }
     }
+  }
+}
+
+// Fix for icon colors - ensuring icons are always visible
+ion-icon {
+  color: inherit !important;
+  
+  &[name="heart"] {
+    color: #E74C3C !important;
+  }
+  
+  &[name="heart-outline"] {
+    color: rgba(255, 255, 255, 0.8) !important;
+  }
+  
+  &[name="create-outline"] {
+    color: #FF9800 !important;
+  }
+  
+  &[name="trash-outline"] {
+    color: #eb445a !important;
+  }
+  
+  &[name="fitness-outline"],
+  &[name="barbell-outline"],
+  &[name="time-outline"],
+  &[name="flame-outline"] {
+    color: var(--fitsync-primary) !important;
+  }
+}
+
+// Emoji icons styling
+.icon-emoji {
+  font-size: 16px;
+  line-height: 1;
+  display: inline-block;
+  text-align: center;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3));
+  
+  // Grid layout emoji sizes
+  .grid-layout & {
+    font-size: 18px;
+  }
+  
+  // List layout emoji sizes
+  .list-layout & {
+    font-size: 14px;
+  }
+  
+  // Action button emoji sizes
+  .action-btn & {
+    font-size: 14px;
+  }
+  
+  // Favorite button specific styling
+  .favorite-btn & {
+    font-size: 16px;
+  }
+}
+
+// Difficulty emoji styling
+.difficulty-emoji {
+  font-size: 12px;
+  margin-right: 4px;
+  display: inline-block;
+  line-height: 1;
+}
+
+// Stat emoji styling
+.stat-emoji {
+  font-size: 12px;
+  margin-right: 4px;
+  display: inline-block;
+  line-height: 1;
+}
+
+// Equipment emoji styling
+.equipment-emoji {
+  font-size: 14px;
+  margin-right: 4px;
+  display: inline-block;
+  line-height: 1;
+}
+
+// Navigation arrow
+.nav-arrow {
+  font-size: 18px;
+  font-weight: bold;
+  color: rgba(255, 255, 255, 0.5);
+  transition: all 0.2s ease;
+  
+  .exercise-card:hover & {
+    color: var(--fitsync-primary);
+    transform: translateX(4px);
   }
 }

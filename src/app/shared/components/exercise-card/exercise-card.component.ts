@@ -14,9 +14,12 @@ export class ExerciseCardComponent {
   @Input() showFavoriteButton: boolean = true;
   @Input() showStats: boolean = true;
   @Input() layout: 'grid' | 'list' = 'grid';
+  @Input() isCustomExercise: boolean = false; // Nova propriedade para identificar exercícios personalizados
 
   @Output() exerciseClick = new EventEmitter<ExerciseData>();
   @Output() favoriteToggle = new EventEmitter<{ exercise: ExerciseData, event: Event }>();
+  @Output() editExercise = new EventEmitter<ExerciseData>(); // Novo evento para editar
+  @Output() deleteExercise = new EventEmitter<ExerciseData>(); // Novo evento para excluir
 
   constructor(private translationService: TranslationService) {}
 
@@ -29,6 +32,16 @@ export class ExerciseCardComponent {
     this.favoriteToggle.emit({ exercise: this.exercise, event });
   }
 
+  onEditClick(event: Event) {
+    event.stopPropagation();
+    this.editExercise.emit(this.exercise);
+  }
+
+  onDeleteClick(event: Event) {
+    event.stopPropagation();
+    this.deleteExercise.emit(this.exercise);
+  }
+
   getMuscleGroupName(groupId: string): string {
     return this.translationService.getMuscleGroupLabel(groupId);
   }
@@ -39,6 +52,22 @@ export class ExerciseCardComponent {
 
   getDifficultyIcon(difficulty: string): string {
     return this.translationService.getDifficultyIcon(difficulty);
+  }
+
+  getDifficultyEmoji(difficulty: string): string {
+    switch (difficulty.toLowerCase()) {
+      case 'beginner':
+      case 'iniciante':
+        return '🟢';
+      case 'intermediate':
+      case 'intermediário':
+        return '🟡';
+      case 'advanced':
+      case 'avançado':
+        return '🔴';
+      default:
+        return '⚪';
+    }
   }
 
   getDifficultyLabel(difficulty: string): string {

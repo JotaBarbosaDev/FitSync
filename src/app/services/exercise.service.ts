@@ -10,6 +10,7 @@ export interface ExerciseLibraryItem {
   muscleGroups: string[];
   equipment: string[];
   instructions: string;
+  description?: string; // descrição do que fazer no exercício
   demonstration?: string;
   difficulty: 'beginner' | 'intermediate' | 'advanced';
   duration?: number; // duração em minutos
@@ -35,9 +36,10 @@ export class ExerciseService {
     this.dataService.data$.subscribe(data => {
       console.log('ExerciseService: data$ subscription recebeu dados:', data ? 'Dados presentes' : 'Dados nulos');
       if (data) {
-        console.log('ExerciseService: Chamando loadExerciseLibrary e initializeDefaultExercises');
+        console.log('ExerciseService: Chamando loadExerciseLibrary');
         this.loadExerciseLibrary();
-        this.initializeDefaultExercises();
+        // Não inicializar exercícios padrão - biblioteca começará vazia
+        console.log('ExerciseService: Biblioteca inicializada vazia - apenas exercícios personalizados');
       }
     });
   }
@@ -103,18 +105,14 @@ export class ExerciseService {
 
       data.exerciseLibrary.push(newExercise);
       
-      this.dataService.saveData(data).then(success => {
-        if (success) {
-          // Atualizar lista local
-          const currentLibrary = this.exerciseLibrarySubject.value;
-          this.exerciseLibrarySubject.next([...currentLibrary, newExercise]);
-          observer.next(newExercise);
-          observer.complete();
-        } else {
-          observer.error(new Error('Erro ao salvar exercício'));
-        }
+      this.dataService.saveData(data).then(() => {
+        // Atualizar lista local
+        const currentLibrary = this.exerciseLibrarySubject.value;
+        this.exerciseLibrarySubject.next([...currentLibrary, newExercise]);
+        observer.next(newExercise);
+        observer.complete();
       }).catch(error => {
-        observer.error(error);
+        observer.error(new Error('Erro ao salvar exercício'));
       });
     });
   }
@@ -142,21 +140,17 @@ export class ExerciseService {
         ...updates
       };
 
-      this.dataService.saveData(data).then(success => {
-        if (success) {
-          // Atualizar lista local
-          const currentLibrary = this.exerciseLibrarySubject.value;
-          const updatedLibrary = currentLibrary.map((e: ExerciseLibraryItem) => 
-            e.id === exerciseId ? data.exerciseLibrary![exerciseIndex] : e
-          );
-          this.exerciseLibrarySubject.next(updatedLibrary);
-          observer.next(data.exerciseLibrary[exerciseIndex]);
-          observer.complete();
-        } else {
-          observer.error(new Error('Erro ao atualizar exercício'));
-        }
+      this.dataService.saveData(data).then(() => {
+        // Atualizar lista local
+        const currentLibrary = this.exerciseLibrarySubject.value;
+        const updatedLibrary = currentLibrary.map((e: ExerciseLibraryItem) => 
+          e.id === exerciseId ? data.exerciseLibrary![exerciseIndex] : e
+        );
+        this.exerciseLibrarySubject.next(updatedLibrary);
+        observer.next(data.exerciseLibrary[exerciseIndex]);
+        observer.complete();
       }).catch(error => {
-        observer.error(error);
+        observer.error(new Error('Erro ao atualizar exercício'));
       });
     });
   }
@@ -175,18 +169,14 @@ export class ExerciseService {
 
       data.exerciseLibrary = data.exerciseLibrary.filter((e: ExerciseLibraryItem) => e.id !== exerciseId);
       
-      this.dataService.saveData(data).then(success => {
-        if (success) {
-          // Atualizar lista local
-          const currentLibrary = this.exerciseLibrarySubject.value;
-          this.exerciseLibrarySubject.next(currentLibrary.filter((e: ExerciseLibraryItem) => e.id !== exerciseId));
-          observer.next();
-          observer.complete();
-        } else {
-          observer.error(new Error('Erro ao deletar exercício'));
-        }
+      this.dataService.saveData(data).then(() => {
+        // Atualizar lista local
+        const currentLibrary = this.exerciseLibrarySubject.value;
+        this.exerciseLibrarySubject.next(currentLibrary.filter((e: ExerciseLibraryItem) => e.id !== exerciseId));
+        observer.next();
+        observer.complete();
       }).catch(error => {
-        observer.error(error);
+        observer.error(new Error('Erro ao deletar exercício'));
       });
     });
   }
@@ -262,15 +252,11 @@ export class ExerciseService {
       data.sets.push(...newSets);
       newExercise.sets = newSets;
 
-      this.dataService.saveData(data).then(success => {
-        if (success) {
-          observer.next(newExercise);
-          observer.complete();
-        } else {
-          observer.error(new Error('Erro ao criar exercício'));
-        }
+      this.dataService.saveData(data).then(() => {
+        observer.next(newExercise);
+        observer.complete();
       }).catch(error => {
-        observer.error(error);
+        observer.error(new Error('Erro ao criar exercício'));
       });
     });
   }
@@ -288,103 +274,30 @@ export class ExerciseService {
     return prefix + '_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
   }
 
-  // Função para inicializar exercícios padrão com emojis
-  initializeDefaultExercises(): void {
-    console.log('ExerciseService: initializeDefaultExercises iniciado');
-    const data = this.dataService.getCurrentData();
-    if (!data) {
-      console.log('ExerciseService: Dados não carregados ainda');
-      return;
-    }
-    
-    console.log('ExerciseService: Dados encontrados, verificando exerciseLibrary:', data.exerciseLibrary);
-    
-    if (!data.exerciseLibrary) {
-      console.log('ExerciseService: exerciseLibrary não existe, criando array vazio');
+  // Função para limpar todos os exercícios da biblioteca
+  clearAllExercises(): Observable<boolean> {
+    return new Observable(observer => {
+      const data = this.dataService.getCurrentData();
+      if (!data) {
+        console.error('ExerciseService: Dados não disponíveis');
+        observer.next(false);
+        observer.complete();
+        return;
+      }
+
+      console.log('ExerciseService: Limpando todos os exercícios da biblioteca');
       data.exerciseLibrary = [];
-    }
-    
-    // Se já existem exercícios, não adicionar duplicatas
-    if (data.exerciseLibrary.length > 0) {
-      console.log('ExerciseService: Exercícios já existem (' + data.exerciseLibrary.length + '), carregando lista atual');
-      this.exerciseLibrarySubject.next(data.exerciseLibrary);
-      return;
-    }
-    
-    console.log('ExerciseService: Criando exercícios padrão');
-    
-    const defaultExercises: ExerciseLibraryItem[] = [
-      {
-        id: 'default_push_up',
-        name: 'Flexão de Braço',
-        category: 'chest',
-        muscleGroups: ['chest', 'arms', 'shoulders'],
-        equipment: [],
-        instructions: 'Deite-se de bruços, apoie as mãos no chão na largura dos ombros e execute o movimento de flexão.',
-        difficulty: 'beginner',
-        duration: 15,
-        calories: 80,
-        emoji: '💪'
-      },
-      {
-        id: 'default_squat',
-        name: 'Agachamento',
-        category: 'legs',
-        muscleGroups: ['legs', 'glutes'],
-        equipment: [],
-        instructions: 'Fique em pé, pés na largura dos ombros, desça como se fosse sentar e retorne à posição inicial.',
-        difficulty: 'beginner',
-        duration: 15,
-        calories: 100,
-        emoji: '🦵'
-      },
-      {
-        id: 'default_plank',
-        name: 'Prancha',
-        category: 'core',
-        muscleGroups: ['core', 'shoulders'],
-        equipment: [],
-        instructions: 'Mantenha o corpo reto em posição de prancha, apoiado nos antebraços e pontas dos pés.',
-        difficulty: 'intermediate',
-        duration: 10,
-        calories: 60,
-        emoji: '🏋️'
-      },
-      {
-        id: 'default_burpee',
-        name: 'Burpee',
-        category: 'cardio',
-        muscleGroups: ['cardio', 'legs', 'chest', 'arms'],
-        equipment: [],
-        instructions: 'Agache, apoie as mãos no chão, salte para trás em prancha, faça flexão, volte ao agachamento e salte.',
-        difficulty: 'advanced',
-        duration: 20,
-        calories: 150,
-        emoji: '❤️'
-      },
-      {
-        id: 'default_pull_up',
-        name: 'Barra Fixa',
-        category: 'back',
-        muscleGroups: ['back', 'arms'],
-        equipment: ['barra'],
-        instructions: 'Pendure-se na barra com pegada pronada e puxe o corpo até o queixo passar da barra.',
-        difficulty: 'advanced',
-        duration: 15,
-        calories: 120,
-        emoji: '🔙'
-      }
-    ];
-    
-    data.exerciseLibrary = [...defaultExercises];
-    
-    this.dataService.saveData(data).then(success => {
-      if (success) {
-        console.log('ExerciseService: Exercícios padrão salvos com sucesso');
-        this.exerciseLibrarySubject.next(data.exerciseLibrary);
-      } else {
-        console.error('ExerciseService: Erro ao salvar exercícios padrão');
-      }
+      
+      this.dataService.saveData(data).then(() => {
+        console.log('ExerciseService: Todos os exercícios foram removidos com sucesso');
+        this.exerciseLibrarySubject.next([]);
+        observer.next(true);
+        observer.complete();
+      }).catch(error => {
+        console.error('ExerciseService: Erro ao limpar exercícios:', error);
+        observer.next(false);
+        observer.complete();
+      });
     });
   }
 }

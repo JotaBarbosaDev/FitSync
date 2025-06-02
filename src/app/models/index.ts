@@ -6,6 +6,7 @@ export * from './workout.model';
 export * from './exercise.model';
 export * from './set.model';
 export * from './workout-session.model';
+export * from './workout-system.model';
 
 // Export timer interfaces
 export { TimerState, WorkoutTimer } from '../services/timer.service';
@@ -22,6 +23,12 @@ export interface AppData {
   sets: any[];
   workoutSessions: any[];
   exerciseLibrary: any[];
+  // Novos dados para sistema de treinos
+  customWorkouts: any[];
+  weeklyPlans: any[];
+  workoutSessions2: any[]; // nova versão das sessões
+  workoutProgress: any[];
+  dayPlans: any[];
 }
 
 export interface ExerciseFilters {

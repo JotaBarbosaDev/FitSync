@@ -30,18 +30,32 @@
           size="small" 
           class="fitsync-btn icon favorite-btn"
           (click)="onFavoriteClick($event)">
-          <ion-icon 
-            [name]="isFavorite ? 'heart' : 'heart-outline'" 
-            [color]="isFavorite ? 'danger' : 'light'"
-            size="small">
-          </ion-icon>
+          <span class="icon-emoji">{{ isFavorite ? '❤️' : '🤍' }}</span>
+        </ion-button>
+      </div>
+
+      <!-- Custom Exercise Actions -->
+      <div class="custom-actions" *ngIf="isCustomExercise">
+        <ion-button 
+          fill="clear" 
+          size="small" 
+          class="fitsync-btn icon action-btn edit-btn"
+          (click)="onEditClick($event)">
+          <span class="icon-emoji">✏️</span>
+        </ion-button>
+        <ion-button 
+          fill="clear" 
+          size="small" 
+          class="fitsync-btn icon action-btn delete-btn"
+          (click)="onDeleteClick($event)">
+          <span class="icon-emoji">🗑️</span>
         </ion-button>
       </div>
 
       <!-- Difficulty Badge -->
       <div class="difficulty-badge" [attr.data-difficulty]="exercise.difficulty.toLowerCase()">
-        <ion-icon [name]="getDifficultyIcon(exercise.difficulty)" size="small"></ion-icon>
-        {{ exercise.difficulty }}
+        <span class="difficulty-emoji">{{ getDifficultyEmoji(exercise.difficulty) }}</span>
+        {{ getDifficultyLabel(exercise.difficulty) }}
       </div>
     </div>
     
@@ -53,15 +67,15 @@
       <!-- Exercise Stats -->
       <div class="exercise-stats" *ngIf="showStats">
         <div class="stat-item">
-          <ion-icon name="barbell-outline"></ion-icon>
-          <span class="fitsync-text small">{{ exercise.difficulty }}</span>
+          <span class="stat-emoji">💪</span>
+          <span class="fitsync-text small">{{ getDifficultyLabel(exercise.difficulty) }}</span>
         </div>
         <div class="stat-item" *ngIf="exercise.duration">
-          <ion-icon name="time-outline"></ion-icon>
+          <span class="stat-emoji">⏰</span>
           <span class="fitsync-text small">{{ exercise.duration }}min</span>
         </div>
         <div class="stat-item" *ngIf="exercise.calories">
-          <ion-icon name="flame-outline"></ion-icon>
+          <span class="stat-emoji">🔥</span>
           <span class="fitsync-text small">{{ exercise.calories }}kcal</span>
         </div>
       </div>
@@ -69,7 +83,7 @@
       <!-- Equipment Badge -->
       <div class="exercise-equipment" *ngIf="exercise.equipment">
         <ion-chip color="medium" outline="true">
-          <ion-icon name="fitness-outline"></ion-icon>
+          <span class="equipment-emoji">🏋️</span>
           <ion-label>{{ exercise.equipment }}</ion-label>
         </ion-chip>
       </div>
@@ -99,18 +113,34 @@
     <div class="exercise-info">
       <div class="exercise-header">
         <h4 class="fitsync-text medium white exercise-name">{{ exercise.name }}</h4>
-        <ion-button 
-          *ngIf="showFavoriteButton"
-          fill="clear" 
-          size="small" 
-          class="fitsync-btn icon favorite-btn"
-          (click)="onFavoriteClick($event)">
-          <ion-icon 
-            [name]="isFavorite ? 'heart' : 'heart-outline'" 
-            [color]="isFavorite ? 'danger' : 'light'"
-            size="small">
-          </ion-icon>
-        </ion-button>
+        <div class="action-buttons">
+          <ion-button 
+            *ngIf="showFavoriteButton"
+            fill="clear" 
+            size="small" 
+            class="fitsync-btn icon favorite-btn"
+            (click)="onFavoriteClick($event)">
+            <span class="icon-emoji">{{ isFavorite ? '❤️' : '🤍' }}</span>
+          </ion-button>
+          
+          <!-- Custom Exercise Actions in List Layout -->
+          <ion-button 
+            *ngIf="isCustomExercise"
+            fill="clear" 
+            size="small" 
+            class="fitsync-btn icon action-btn edit-btn"
+            (click)="onEditClick($event)">
+            <span class="icon-emoji">✏️</span>
+          </ion-button>
+          <ion-button 
+            *ngIf="isCustomExercise"
+            fill="clear" 
+            size="small" 
+            class="fitsync-btn icon action-btn delete-btn"
+            (click)="onDeleteClick($event)">
+            <span class="icon-emoji">🗑️</span>
+          </ion-button>
+        </div>
       </div>
       
       <p class="fitsync-text small muted exercise-muscle">{{ getMuscleGroupName(exercise.muscleGroup) }}</p>
@@ -118,21 +148,21 @@
       <!-- Stats Row -->
       <div class="stats-row" *ngIf="showStats">
         <div class="stat-badge" [attr.data-color]="getDifficultyColor(exercise.difficulty)">
-          <ion-icon [name]="getDifficultyIcon(exercise.difficulty)" size="small"></ion-icon>
+          <span class="difficulty-emoji">{{ getDifficultyEmoji(exercise.difficulty) }}</span>
           {{ getDifficultyLabel(exercise.difficulty) }}
         </div>
         <div class="stat-item" *ngIf="exercise.duration">
-          <ion-icon name="time-outline" size="small"></ion-icon>
+          <span class="stat-emoji">⏰</span>
           {{ exercise.duration }}min
         </div>
         <div class="stat-item" *ngIf="exercise.calories">
-          <ion-icon name="flame-outline" size="small"></ion-icon>
+          <span class="stat-emoji">🔥</span>
           {{ exercise.calories }}kcal
         </div>
       </div>
     </div>
 
     <!-- Navigation Arrow -->
-    <ion-icon name="chevron-forward-outline" class="nav-arrow"></ion-icon>
+    <span class="nav-arrow">→</span>
   </div>
 </div>

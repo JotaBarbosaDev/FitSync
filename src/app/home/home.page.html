@@ -69,56 +69,116 @@
       </div>
     </div>
 
-    <!-- Journey Section -->
-    <div class="journey-section fitsync-slide-up">
-      <!-- Start Journey Card -->
-      <div class="journey-card" *ngIf="!activePlan">
+    <!-- Today's Workout Section -->
+    <div class="today-workout-section fitsync-slide-up">
+      <!-- Loading state -->
+      <div *ngIf="!todayWorkout" class="workout-loading">
         <div class="fitsync-card">
-          <div class="empty-state">
+          <div class="loading-content">
+            <ion-skeleton-text animated style="width: 60%; height: 24px; margin-bottom: 16px;"></ion-skeleton-text>
+            <ion-skeleton-text animated style="width: 80%; height: 16px; margin-bottom: 8px;"></ion-skeleton-text>
+            <ion-skeleton-text animated style="width: 40%; height: 16px; margin-bottom: 16px;"></ion-skeleton-text>
+            <ion-skeleton-text animated style="width: 120px; height: 40px;"></ion-skeleton-text>
+          </div>
+        </div>
+      </div>
+
+      <!-- Rest Day Card -->
+      <div *ngIf="todayWorkout?.isRestDay" class="rest-day-card">
+        <div class="fitsync-card fitsync-card--rest">
+          <div class="rest-content">
             <div class="icon-container icon-container-2xl icon-container-gradient">
-              <ion-icon name="rocket" class="icon icon-2xl"></ion-icon>
+              <ion-icon name="bed" class="icon icon-2xl"></ion-icon>
             </div>
-            <h3 class="headline-medium text-gradient-primary">Comece Sua Jornada</h3>
-            <p class="body-large text-muted">Escolha um plano personalizado para atingir seus objetivos</p>
-            <button class="fitsync-btn fitsync-btn--primary fitsync-btn--lg" (click)="startQuickWorkout()">
+            <h3 class="headline-medium text-gradient-primary">Dia de Descanso</h3>
+            <p class="body-large text-muted">Aproveite para relaxar e se recuperar. O descanso é fundamental para seus resultados!</p>
+            <div class="rest-actions">
+              <button class="fitsync-btn fitsync-btn--secondary" (click)="navigateToWeeklyPlan()">
+                <div class="icon-container icon-container-sm icon-container-light">
+                  <ion-icon name="calendar" class="icon icon-sm"></ion-icon>
+                </div>
+                <span class="title-medium">Ver Plano Semanal</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Today's Workout Card -->
+      <div *ngIf="currentWorkout" class="today-workout-card">
+        <div class="fitsync-card fitsync-card--workout">
+          <div class="card-header">
+            <div class="workout-title-section">
+              <h3 class="title-large text-emphasis">{{ currentWorkout.name }}</h3>
+              <div class="workout-badge">
+                <span class="label-medium text-accent">HOJE</span>
+              </div>
+            </div>
+          </div>
+          <div class="card-content">
+            <p class="body-medium text-muted">{{ currentWorkout.description || 'Treino personalizado' }}</p>
+            <div class="workout-stats">
+              <div class="stat-item">
+                <div class="icon-container icon-container-sm icon-container-primary">
+                  <ion-icon name="fitness" class="icon icon-sm"></ion-icon>
+                </div>
+                <span class="label-medium">{{ workoutExercisesCount }} exercícios</span>
+              </div>
+              <div class="stat-item">
+                <div class="icon-container icon-container-sm icon-container-warning">
+                  <ion-icon name="time" class="icon icon-sm"></ion-icon>
+                </div>
+                <span class="label-medium">{{ workoutDurationDisplay }} min</span>
+              </div>
+              <div class="stat-item">
+                <div class="icon-container icon-container-sm icon-container-success">
+                  <ion-icon name="flame" class="icon icon-sm"></ion-icon>
+                </div>
+                <span class="label-medium">{{ workoutCaloriesDisplay }} cal</span>
+              </div>
+            </div>
+          </div>
+          <div class="workout-actions">
+            <button class="fitsync-btn fitsync-btn--primary fitsync-btn--lg" (click)="startTodayWorkout()">
               <div class="icon-container icon-container-sm icon-container-light">
                 <ion-icon name="play" class="icon icon-sm"></ion-icon>
               </div>
-              <span class="title-medium">Começar Agora</span>
+              <span class="title-medium">Começar Treino</span>
+            </button>
+            <button class="fitsync-btn fitsync-btn--secondary" (click)="viewWorkoutDetails()">
+              <div class="icon-container icon-container-sm icon-container-light">
+                <ion-icon name="eye" class="icon icon-sm"></ion-icon>
+              </div>
+              <span class="title-medium">Ver Detalhes</span>
             </button>
           </div>
         </div>
       </div>
 
-      <!-- Active Plan Card -->
-      <div class="active-plan-card" *ngIf="activePlan">
-        <div class="fitsync-card fitsync-card--workout">
-          <div class="card-header">
-            <div class="plan-title-section">
-              <h3 class="title-large text-emphasis">{{ activePlan.name }}</h3>
-              <div class="plan-badge">
-                <span class="label-medium text-accent">ATIVO</span>
-              </div>
+      <!-- No Workout Planned Card -->
+      <div *ngIf="todayWorkout && !currentWorkout && !todayWorkout.isRestDay" class="no-workout-card">
+        <div class="fitsync-card">
+          <div class="empty-state">
+            <div class="icon-container icon-container-2xl icon-container-gradient">
+              <ion-icon name="calendar-outline" class="icon icon-2xl"></ion-icon>
+            </div>
+            <h3 class="headline-medium text-gradient-primary">Nenhum Treino Planejado</h3>
+            <p class="body-large text-muted">Que tal criar um plano semanal ou fazer um treino rápido?</p>
+            <div class="quick-actions">
+              <button class="fitsync-btn fitsync-btn--primary" (click)="navigateToWeeklyPlan()">
+                <div class="icon-container icon-container-sm icon-container-light">
+                  <ion-icon name="calendar" class="icon icon-sm"></ion-icon>
+                </div>
+                <span class="title-medium">Planejar Semana</span>
+              </button>
+              <button class="fitsync-btn fitsync-btn--secondary" (click)="startQuickWorkout()">
+                <div class="icon-container icon-container-sm icon-container-light">
+                  <ion-icon name="flash" class="icon icon-sm"></ion-icon>
+                </div>
+                <span class="title-medium">Treino Rápido</span>
+              </button>
             </div>
           </div>
-          <div class="card-content">
-            <p class="body-medium text-muted">{{ activePlan.description }}</p>
-          </div>
-          <div class="progress-section">
-            <div class="progress-info">
-              <span class="body-small text-muted">Progresso</span>
-              <span class="title-small text-accent">{{ getPlanProgress() }}%</span>
-            </div>
-            <div class="progress-bar">
-              <div class="progress-fill" [style.width.%]="getPlanProgress()"></div>
-            </div>
-          </div>
-          <button class="fitsync-btn fitsync-btn--primary" (click)="startWorkout()">
-            <div class="icon-container icon-container-sm icon-container-light">
-              <ion-icon name="play" class="icon icon-sm"></ion-icon>
-            </div>
-            <span class="title-medium">Continuar Treino</span>
-          </button>
         </div>
       </div>
     </div>
@@ -151,31 +211,46 @@
           </div>
         </div>
 
-        <div class="action-card" (click)="createCustomWorkout()">
+        <div class="action-card" (click)="navigateToWorkoutManagement()">
           <div class="fitsync-card">
             <div class="action-icon-wrapper">
               <div class="icon-container icon-container-xl icon-container-gradient">
-                <ion-icon name="add-circle" class="icon icon-xl"></ion-icon>
+                <ion-icon name="barbell" class="icon icon-xl"></ion-icon>
               </div>
             </div>
             <div class="action-content">
-              <h3 class="title-large text-emphasis">Criar Treino</h3>
-              <p class="body-medium text-muted">Personalize seu treino</p>
-              <span class="label-medium text-accent">CRIAR</span>
+              <h3 class="title-large text-emphasis">Meus Treinos</h3>
+              <p class="body-medium text-muted">Gerencie seus treinos personalizados</p>
+              <span class="label-medium text-accent">GERENCIAR</span>
             </div>
           </div>
         </div>
 
-        <div class="action-card" (click)="verDetalhe()">
+        <div class="action-card" (click)="navigateToWeeklyPlan()">
           <div class="fitsync-card">
             <div class="action-icon-wrapper">
-              <div class="icon-container icon-container-xl icon-container-light">
-                <ion-icon name="eye" class="icon icon-xl"></ion-icon>
+              <div class="icon-container icon-container-xl icon-container-success">
+                <ion-icon name="calendar" class="icon icon-xl"></ion-icon>
               </div>
             </div>
             <div class="action-content">
-              <h3 class="title-large text-emphasis">Ver Exemplo</h3>
-              <p class="body-medium text-muted">Demo de exercício</p>
+              <h3 class="title-large text-emphasis">Plano Semanal</h3>
+              <p class="body-medium text-muted">Organize sua semana de treinos</p>
+              <span class="label-medium text-accent">PLANEJAR</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="action-card" (click)="navigateToWorkoutProgress()">
+          <div class="fitsync-card">
+            <div class="action-icon-wrapper">
+              <div class="icon-container icon-container-xl icon-container-warning">
+                <ion-icon name="analytics" class="icon icon-xl"></ion-icon>
+              </div>
+            </div>
+            <div class="action-content">
+              <h3 class="title-large text-emphasis">Progresso</h3>
+              <p class="body-medium text-muted">Acompanhe sua evolução</p>
               <span class="label-medium text-accent">VISUALIZAR</span>
             </div>
           </div>
@@ -407,7 +482,7 @@
       <ion-icon name="add"></ion-icon>
     </ion-fab-button>
     <ion-fab-list side="top">
-      <ion-fab-button color="success" (click)="navigateToWorkouts()" class="fab-item">
+      <ion-fab-button color="success" (click)="navigateToWorkoutManagement()" class="fab-item">
         <ion-icon name="barbell"></ion-icon>
       </ion-fab-button>
       <ion-fab-button color="warning" (click)="navigateToProgress()" class="fab-item">
@@ -415,6 +490,9 @@
       </ion-fab-button>
       <ion-fab-button color="secondary" (click)="createCustomWorkout()" class="fab-item">
         <ion-icon name="create"></ion-icon>
+      </ion-fab-button>
+      <ion-fab-button color="tertiary" (click)="navigateToWeeklyPlan()" class="fab-item">
+        <ion-icon name="calendar"></ion-icon>
       </ion-fab-button>
     </ion-fab-list>
   </ion-fab>

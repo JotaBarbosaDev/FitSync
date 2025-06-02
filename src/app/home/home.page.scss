@@ -95,6 +95,170 @@ ion-header {
   margin: 0 auto;
 }
 
+/* ===== TODAY'S WORKOUT SECTION ===== */
+.today-workout-section {
+  margin-bottom: 2rem;
+
+  .workout-loading {
+    .loading-content {
+      padding: 1.5rem;
+      text-align: center;
+    }
+  }
+
+  .rest-day-card {
+    .fitsync-card--rest {
+      background: linear-gradient(135deg, 
+        var(--fitsync-color-primary-light) 0%, 
+        var(--fitsync-color-secondary-light) 100%);
+      border: none;
+      
+      .rest-content {
+        text-align: center;
+        padding: 1.5rem;
+        
+        .icon-container {
+          margin-bottom: 1rem;
+        }
+        
+        h3 {
+          margin-bottom: 0.75rem;
+        }
+        
+        p {
+          margin-bottom: 1.5rem;
+        }
+        
+        .rest-actions {
+          display: flex;
+          justify-content: center;
+        }
+      }
+    }
+  }
+
+  .today-workout-card {
+    .workout-title-section {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1rem;
+      
+      .workout-badge {
+        background: var(--fitsync-color-accent);
+        padding: 0.25rem 0.75rem;
+        border-radius: 12px;
+        
+        .label-medium {
+          color: white;
+          font-weight: 600;
+        }
+      }
+    }
+    
+    .workout-stats {
+      display: flex;
+      gap: 1rem;
+      margin-top: 1rem;
+      flex-wrap: wrap;
+      
+      .stat-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: var(--fitsync-background-subtle);
+        padding: 0.5rem 0.75rem;
+        border-radius: 8px;
+        
+        .label-medium {
+          font-weight: 500;
+          color: var(--fitsync-text-primary);
+        }
+      }
+    }
+    
+    .workout-actions {
+      display: flex;
+      gap: 0.75rem;
+      margin-top: 1.5rem;
+      flex-wrap: wrap;
+      
+      .fitsync-btn--lg {
+        flex: 2;
+        min-width: 160px;
+      }
+      
+      .fitsync-btn--secondary {
+        flex: 1;
+        min-width: 120px;
+      }
+    }
+  }
+
+  .no-workout-card {
+    .empty-state {
+      text-align: center;
+      padding: 2rem 1.5rem;
+      
+      .icon-container {
+        margin-bottom: 1rem;
+      }
+      
+      h3 {
+        margin-bottom: 0.75rem;
+      }
+      
+      p {
+        margin-bottom: 1.5rem;
+      }
+      
+      .quick-actions {
+        display: flex;
+        gap: 0.75rem;
+        justify-content: center;
+        flex-wrap: wrap;
+        
+        .fitsync-btn {
+          min-width: 140px;
+        }
+      }
+    }
+  }
+}
+
+// Responsive design for workout section
+@media (max-width: 576px) {
+  .today-workout-section {
+    .today-workout-card {
+      .workout-actions {
+        flex-direction: column;
+        
+        .fitsync-btn {
+          width: 100%;
+        }
+      }
+    }
+    
+    .no-workout-card {
+      .quick-actions {
+        flex-direction: column;
+        
+        .fitsync-btn {
+          width: 100%;
+        }
+      }
+    }
+    
+    .rest-day-card {
+      .rest-actions {
+        .fitsync-btn {
+          width: 100%;
+        }
+      }
+    }
+  }
+}
+
 /* Greeting Section */
 .greeting-section {
   margin-bottom: 2rem;
@@ -219,9 +383,18 @@ ion-header {
   
   .actions-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    grid-template-columns: repeat(2, 1fr);
     gap: 1rem;
     margin-top: 1rem;
+    
+    @media (min-width: 768px) {
+      grid-template-columns: repeat(4, 1fr);
+    }
+    
+    @media (max-width: 576px) {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0.75rem;
+    }
   }
 }
 

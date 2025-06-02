@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { ToastController } from '@ionic/angular';
+import { Storage } from '@ionic/storage-angular';
 import { DeviceControlService } from './device-control.service';
 
 export type Theme = 'light' | 'dark' | 'auto';
@@ -12,15 +13,59 @@ export class ThemeService {
   private readonly THEME_KEY = 'fitsync-theme';
   private currentTheme = new BehaviorSubject<Theme>('auto');
   public theme$ = this.currentTheme.asObservable();
+  
+  private _storage: Storage | null = null;
 
   constructor(
     private toastController: ToastController,
-    private deviceControlService: DeviceControlService
+    private deviceControlService: DeviceControlService,
+    private storage: Storage
   ) {
-    this.initializeTheme();
+    this.initializeService();
   }
 
-  private initializeTheme(): void {
+  private async initializeService(): Promise<void> {
+    try {
+      // Inicializar o storage
+      const storage = await this.storage.create();
+      this._storage = storage;
+      
+      await this.initializeTheme();
+    } catch (error) {
+      console.error('ThemeService: Erro na inicialização:', error);
+      // Fallback para localStorage
+      this.initializeThemeFromLocalStorage();
+    }
+  }
+
+  private async initializeTheme(): Promise<void> {
+    try {
+      let savedTheme: Theme | null = null;
+      
+      if (this._storage) {
+        savedTheme = await this._storage.get(this.THEME_KEY);
+      }
+      
+      // Fallback para localStorage se não encontrar no Ionic Storage
+      if (!savedTheme) {
+        savedTheme = localStorage.getItem(this.THEME_KEY) as Theme;
+        
+        // Migrar para Ionic Storage se encontrado no localStorage
+        if (savedTheme && this._storage) {
+          await this._storage.set(this.THEME_KEY, savedTheme);
+          console.log('ThemeService: Tema migrado do localStorage para Ionic Storage');
+        }
+      }
+      
+      const theme = savedTheme || 'auto';
+      this.setTheme(theme);
+    } catch (error) {
+      console.error('ThemeService: Erro ao carregar tema:', error);
+      this.initializeThemeFromLocalStorage();
+    }
+  }
+
+  private initializeThemeFromLocalStorage(): void {
     const savedTheme = localStorage.getItem(this.THEME_KEY) as Theme;
     const theme = savedTheme || 'auto';
     this.setTheme(theme);
@@ -28,8 +73,25 @@ export class ThemeService {
 
   setTheme(theme: Theme): void {
     this.currentTheme.next(theme);
-    localStorage.setItem(this.THEME_KEY, theme);
+    this.saveTheme(theme);
     this.applyTheme(theme);
+  }
+
+  private async saveTheme(theme: Theme): Promise<void> {
+    try {
+      if (this._storage) {
+        await this._storage.set(this.THEME_KEY, theme);
+        console.log('ThemeService: Tema salvo no Ionic Storage');
+      } else {
+        // Fallback para localStorage
+        localStorage.setItem(this.THEME_KEY, theme);
+        console.log('ThemeService: Tema salvo no localStorage (fallback)');
+      }
+    } catch (error) {
+      console.error('ThemeService: Erro ao salvar tema:', error);
+      // Fallback final para localStorage
+      localStorage.setItem(this.THEME_KEY, theme);
+    }
   }
 
   getCurrentTheme(): Theme {

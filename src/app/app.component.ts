@@ -4,6 +4,8 @@ import { MenuController, AlertController, Platform } from '@ionic/angular';
 import { Subscription } from 'rxjs';
 import { filter } from 'rxjs/operators';
 import { AuthService } from './services/auth.service';
+import { DataService } from './services/data.service';
+import { ThemeService } from './services/theme.service';
 import { StorageService } from './services/storage.service';
 import { JsonDataService } from './services/json-data.service';
 import { DeviceControlService } from './services/device-control.service';
@@ -23,6 +25,8 @@ export class AppComponent implements OnInit, OnDestroy {
 
   constructor(
     private authService: AuthService,
+    private dataService: DataService,
+    private themeService: ThemeService,
     private router: Router,
     private menuController: MenuController,
     private alertController: AlertController,
@@ -39,6 +43,9 @@ export class AppComponent implements OnInit, OnDestroy {
     
     // Initialize storage
     await this.storageService.init();
+    
+    // Initialize migrated services with Ionic Storage
+    // Os serviços DataService, AuthService e ThemeService já se inicializam automaticamente
     
     // Initialize JSON data
     await this.jsonDataService.initializeAppData();

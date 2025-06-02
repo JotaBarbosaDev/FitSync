@@ -16,6 +16,12 @@
       </div>
       
       <div class="header-actions">
+        <!-- Botão temporário para limpar todos os exercícios -->
+        <ion-button fill="clear" class="fitsync-btn icon" (click)="clearAllExercises()">
+          <div class="icon-container icon-container--sm icon-container--danger">
+            <ion-icon name="trash" class="icon icon-sm" style="color: #eb445a;"></ion-icon>
+          </div>
+        </ion-button>
         <ion-button fill="clear" class="fitsync-btn icon" (click)="toggleFavorites()">
           <div class="icon-container icon-container--sm icon-container--light">
             <ion-icon name="heart" class="icon icon-sm" style="color: #E74C3C;"></ion-icon>
@@ -71,8 +77,11 @@
         *ngFor="let exercise of filteredExercises; trackBy: trackByExerciseId"
         [exercise]="convertToExerciseData(exercise)"
         [isFavorite]="isFavorite(exercise.id)"
+        [isCustomExercise]="isCustomExercise(exercise.id)"
         (exerciseClick)="openExerciseDetail(exercise)"
         (favoriteToggle)="toggleFavorite(exercise, $event.event)"
+        (editExercise)="editCustomExercise(exercise)"
+        (deleteExercise)="deleteCustomExercise(exercise)"
         layout="grid">
       </app-exercise-card>
     </div>
