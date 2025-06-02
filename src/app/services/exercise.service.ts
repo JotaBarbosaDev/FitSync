@@ -17,6 +17,7 @@ export interface ExerciseLibraryItem {
   calories?: number; // calorias queimadas estimadas
   imageUrl?: string; // URL da imagem ou emoji
   emoji?: string; // emoji representativo do exercício
+  selected?: boolean; // propriedade para seleção em modais
 }
 
 @Injectable({
@@ -33,7 +34,7 @@ export class ExerciseService {
 
   private async initializeService(): Promise<void> {
     if (this.initialized) return;
-    
+
     console.log('ExerciseService: initializeService iniciado');
     // Aguardar o DataService estar pronto - usar take(1) para evitar loop infinito
     this.dataService.data$.pipe(
@@ -69,13 +70,13 @@ export class ExerciseService {
   }
 
   getExercisesByMuscleGroup(muscleGroup: string): ExerciseLibraryItem[] {
-    return this.exerciseLibrarySubject.value.filter(exercise => 
+    return this.exerciseLibrarySubject.value.filter(exercise =>
       exercise.muscleGroups.includes(muscleGroup)
     );
   }
 
   getExercisesByEquipment(equipment: string): ExerciseLibraryItem[] {
-    return this.exerciseLibrarySubject.value.filter(exercise => 
+    return this.exerciseLibrarySubject.value.filter(exercise =>
       exercise.equipment.includes(equipment)
     );
   }
@@ -99,7 +100,7 @@ export class ExerciseService {
         observer.error(new Error('Dados não carregados'));
         return;
       }
-      
+
       if (!data.exerciseLibrary) {
         data.exerciseLibrary = [];
       }
@@ -110,7 +111,7 @@ export class ExerciseService {
       };
 
       data.exerciseLibrary.push(newExercise);
-      
+
       this.dataService.saveData(data).then(() => {
         // Atualizar lista local
         const currentLibrary = this.exerciseLibrarySubject.value;
@@ -129,7 +130,7 @@ export class ExerciseService {
         observer.error(new Error('Dados não carregados'));
         return;
       }
-      
+
       if (!data.exerciseLibrary) {
         observer.error(new Error('Biblioteca de exercícios não encontrada'));
         return;
@@ -149,7 +150,7 @@ export class ExerciseService {
       this.dataService.saveData(data).then(() => {
         // Atualizar lista local
         const currentLibrary = this.exerciseLibrarySubject.value;
-        const updatedLibrary = currentLibrary.map((e: ExerciseLibraryItem) => 
+        const updatedLibrary = currentLibrary.map((e: ExerciseLibraryItem) =>
           e.id === exerciseId ? data.exerciseLibrary![exerciseIndex] : e
         );
         this.exerciseLibrarySubject.next(updatedLibrary);
@@ -167,14 +168,14 @@ export class ExerciseService {
         observer.error(new Error('Dados não carregados'));
         return;
       }
-      
+
       if (!data.exerciseLibrary) {
         observer.error(new Error('Biblioteca de exercícios não encontrada'));
         return;
       }
 
       data.exerciseLibrary = data.exerciseLibrary.filter((e: ExerciseLibraryItem) => e.id !== exerciseId);
-      
+
       this.dataService.saveData(data).then(() => {
         // Atualizar lista local
         const currentLibrary = this.exerciseLibrarySubject.value;
@@ -195,7 +196,7 @@ export class ExerciseService {
     const allEquipment = this.exerciseLibrarySubject.value
       .flatMap(exercise => exercise.equipment)
       .filter((value, index, self) => self.indexOf(value) === index);
-    
+
     return allEquipment.sort();
   }
 
@@ -203,12 +204,12 @@ export class ExerciseService {
     const allMuscleGroups = this.exerciseLibrarySubject.value
       .flatMap(exercise => exercise.muscleGroups)
       .filter((value, index, self) => self.indexOf(value) === index);
-    
+
     return allMuscleGroups.sort();
   }
   createExerciseFromLibrary(
-    workoutId: string, 
-    libraryExerciseId: string, 
+    workoutId: string,
+    libraryExerciseId: string,
     sets: Omit<Set, 'id' | 'exerciseId'>[]
   ): Observable<Exercise> {
     return new Observable<Exercise>(observer => {
@@ -223,7 +224,7 @@ export class ExerciseService {
         observer.error(new Error('Dados não carregados'));
         return;
       }
-      
+
       // Verificar se o workout existe
       const workout = data.workouts.find((w: any) => w.id === workoutId);
       if (!workout) {
@@ -269,7 +270,7 @@ export class ExerciseService {
 
   getRecommendedExercises(targetMuscleGroups: string[], difficulty: string = 'intermediate'): ExerciseLibraryItem[] {
     return this.exerciseLibrarySubject.value
-      .filter(exercise => 
+      .filter(exercise =>
         exercise.difficulty === difficulty &&
         targetMuscleGroups.some(muscle => exercise.muscleGroups.includes(muscle))
       )
@@ -293,7 +294,7 @@ export class ExerciseService {
 
       console.log('ExerciseService: Limpando todos os exercícios da biblioteca');
       data.exerciseLibrary = [];
-      
+
       this.dataService.saveData(data).then(() => {
         console.log('ExerciseService: Todos os exercícios foram removidos com sucesso');
         this.exerciseLibrarySubject.next([]);

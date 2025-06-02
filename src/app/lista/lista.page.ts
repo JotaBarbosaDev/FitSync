@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import { ToastController, AlertController } from '@ionic/angular';
 import { JsonDataService, ExerciseData } from '../services/json-data.service';
@@ -7,6 +7,7 @@ import { StorageService } from '../services/storage.service';
 import { DeviceControlService } from '../services/device-control.service';
 import { ExerciseService, ExerciseLibraryItem } from '../services/exercise.service';
 import { TranslationService } from '../services/translation.service';
+import { Subscription } from 'rxjs';
 
 interface MuscleGroup {
   id: string;
@@ -21,15 +22,17 @@ interface MuscleGroup {
   styleUrls: ['./lista.page.scss'],
   standalone: false
 })
-export class ListaPage implements OnInit {
+export class ListaPage implements OnInit, OnDestroy {
   searchQuery: string = '';
   selectedMuscleGroup: string = 'all';
   showFavoritesOnly: boolean = false;
   loading: boolean = true;
-  
+
   exercises: ExerciseLibraryItem[] = [];
   filteredExercises: ExerciseLibraryItem[] = [];
   favoriteExercises: string[] = [];
+
+  private exerciseSubscription?: Subscription;
 
   muscleGroups: MuscleGroup[] = [
     { id: 'all', name: 'Todos', icon: 'apps-outline', color: 'primary' },
@@ -61,9 +64,23 @@ export class ListaPage implements OnInit {
     this.loading = false;
   }
 
+  ngOnDestroy() {
+    // Clean up subscription to prevent memory leaks
+    if (this.exerciseSubscription) {
+      this.exerciseSubscription.unsubscribe();
+    }
+  }
+
   async loadExercises() {
     try {
-      this.exerciseService.getExerciseLibrary().subscribe(exercises => {
+      // Unsubscribe from previous subscription to avoid duplicates
+      if (this.exerciseSubscription) {
+        this.exerciseSubscription.unsubscribe();
+      }
+
+      // Subscribe to the exercise library and store the subscription
+      this.exerciseSubscription = this.exerciseService.getExerciseLibrary().subscribe(exercises => {
+        console.log('ListaPage: Recebidos', exercises.length, 'exercícios');
         this.exercises = exercises;
         this.filteredExercises = exercises;
         this.loading = false;
@@ -85,14 +102,14 @@ export class ListaPage implements OnInit {
   filterExercises() {
     this.filteredExercises = this.exercises.filter(exercise => {
       const matchesSearch = exercise.name.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
-                           (exercise.instructions || '').toLowerCase().includes(this.searchQuery.toLowerCase());
-      
-      const matchesMuscleGroup = this.selectedMuscleGroup === 'all' || 
-                                exercise.category === this.selectedMuscleGroup ||
-                                exercise.muscleGroups.includes(this.selectedMuscleGroup);
-      
+        (exercise.instructions || '').toLowerCase().includes(this.searchQuery.toLowerCase());
+
+      const matchesMuscleGroup = this.selectedMuscleGroup === 'all' ||
+        exercise.category === this.selectedMuscleGroup ||
+        exercise.muscleGroups.includes(this.selectedMuscleGroup);
+
       const matchesFavorites = !this.showFavoritesOnly || this.isFavorite(exercise.id);
-      
+
       return matchesSearch && matchesMuscleGroup && matchesFavorites;
     });
   }
@@ -109,10 +126,10 @@ export class ListaPage implements OnInit {
 
   async toggleFavorite(exercise: ExerciseLibraryItem, event: Event) {
     event.stopPropagation();
-    
+
     try {
       let favorites = await this.storageService.get<string[]>('favoriteExercises') || [];
-      
+
       if (this.isFavorite(exercise.id)) {
         favorites = favorites.filter((id: string) => id !== exercise.id);
         await this.showToast(`${exercise.name} removido dos favoritos`, 'medium');
@@ -120,10 +137,10 @@ export class ListaPage implements OnInit {
         favorites.push(exercise.id);
         await this.showToast(`${exercise.name} adicionado aos favoritos`, 'success');
       }
-      
+
       await this.storageService.set('favoriteExercises', favorites);
       this.favoriteExercises = favorites;
-      
+
     } catch (error) {
       console.error('Error toggling favorite:', error);
       await this.showToast('Erro ao atualizar favoritos', 'danger');
@@ -206,7 +223,7 @@ export class ListaPage implements OnInit {
 
   async showEditEquipmentSelection(exercise: ExerciseLibraryItem, muscleGroup: string) {
     const currentEquipment = exercise.equipment[0] || 'nenhum';
-    
+
     const equipmentAlert = await this.alertController.create({
       header: 'Editar Equipamento',
       message: 'Escolha o equipamento necessário:',
@@ -358,7 +375,7 @@ export class ListaPage implements OnInit {
     try {
       // Processar instruções para garantir numeração
       const formattedInstructions = this.formatInstructions(updatedData.instructions);
-      
+
       const updates: Partial<ExerciseLibraryItem> = {
         name: updatedData.name,
         category: this.mapMuscleGroupToCategory(updatedData.muscleGroup),
@@ -374,8 +391,7 @@ export class ListaPage implements OnInit {
       this.exerciseService.updateCustomExercise(exerciseId, updates).subscribe({
         next: (updatedExercise) => {
           this.showToast(`Exercício "${updatedData.name}" atualizado com sucesso!`, 'success');
-          // Recarregar a lista de exercícios
-          this.loadExercises();
+          // Não precisa chamar loadExercises() - o service já atualiza automaticamente
         },
         error: (error) => {
           console.error('Erro ao atualizar exercício:', error);
@@ -411,8 +427,7 @@ export class ListaPage implements OnInit {
               this.exerciseService.deleteCustomExercise(exercise.id).subscribe({
                 next: () => {
                   this.showToast(`Exercício "${exercise.name}" excluído com sucesso!`, 'success');
-                  // Recarregar a lista de exercícios
-                  this.loadExercises();
+                  // Não precisa chamar loadExercises() - o service já atualiza automaticamente
                 },
                 error: (error) => {
                   console.error('Erro ao excluir exercício:', error);
@@ -434,7 +449,7 @@ export class ListaPage implements OnInit {
   // Método para formatar instruções com numeração automática
   private formatInstructions(instructions: string): string {
     if (!instructions) return '';
-    
+
     // Dividir por linhas e processar
     const lines = instructions.split('\n').filter(line => line.trim() !== '');
     const formattedLines = lines.map((line, index) => {
@@ -445,7 +460,7 @@ export class ListaPage implements OnInit {
       }
       return trimmedLine;
     });
-    
+
     return formattedLines.join('\n');
   }
 
@@ -465,7 +480,7 @@ export class ListaPage implements OnInit {
       'abdomen': 'core',
       'cardio': 'cardio'
     };
-    
+
     return mapping[muscleGroup.toLowerCase()] || 'core';
   }
 
@@ -473,7 +488,7 @@ export class ListaPage implements OnInit {
   private getEquipmentName(equipment: string): string {
     const equipmentMapping: { [key: string]: string } = {
       'peso_livre': 'Peso Livre',
-      'maquina': 'Máquina', 
+      'maquina': 'Máquina',
       'barra': 'Barra',
       'halter': 'Halter',
       'peso_corporal': 'Peso Corporal',
@@ -669,10 +684,10 @@ export class ListaPage implements OnInit {
   private async saveCustomExercise(exerciseData: any) {
     try {
       const emoji = this.getMuscleGroupEmoji(exerciseData.muscleGroup);
-      
+
       // Processar instruções para garantir numeração
       const formattedInstructions = this.formatInstructions(exerciseData.instructions);
-      
+
       const newExercise: Omit<ExerciseLibraryItem, 'id'> = {
         name: exerciseData.name,
         category: this.mapMuscleGroupToCategory(exerciseData.muscleGroup),
@@ -690,7 +705,7 @@ export class ListaPage implements OnInit {
       this.exerciseService.addCustomExercise(newExercise).subscribe({
         next: (createdExercise) => {
           this.showToast(`${emoji} Exercício "${exerciseData.name}" criado com sucesso!`, 'success');
-          this.loadExercises();
+          // Não precisa chamar loadExercises() - o service já atualiza automaticamente
         },
         error: (error) => {
           console.error('Erro ao criar exercício:', error);
@@ -707,7 +722,7 @@ export class ListaPage implements OnInit {
   private getMuscleGroupEmoji(muscleGroup: string): string {
     const emojiMapping: { [key: string]: string } = {
       'arms': '💪',
-      'chest': '🏠', 
+      'chest': '🏠',
       'back': '🔙',
       'legs': '🦵',
       'shoulders': '🔺',
@@ -774,7 +789,7 @@ export class ListaPage implements OnInit {
               next: (success) => {
                 if (success) {
                   this.showToast('Todos os exercícios foram removidos com sucesso!', 'success');
-                  this.loadExercises(); // Recarregar lista
+                  // Não precisa chamar loadExercises() - o service já atualiza automaticamente
                 } else {
                   this.showToast('Erro ao limpar exercícios', 'danger');
                 }

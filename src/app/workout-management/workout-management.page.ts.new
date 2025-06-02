@@ -1,0 +1,97 @@
+import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
+import { Storage } from '@ionic/storage-angular';
+import { ExerciseLibraryItem } from '../services/exercise.service';
+
+interface WeekDay {
+  name: string;
+  shortName: string;
+  isToday: boolean;
+}
+
+@Component({
+  selector: 'app-workout-management',
+  templateUrl: './workout-management.page.html',
+  styleUrls: ['./workout-management.page.scss'],
+  standalone: false
+})
+export class WorkoutManagementPage implements OnInit {
+  isLoading = true;
+  weekDays: WeekDay[] = [];
+  weeklyExercises: ExerciseLibraryItem[][] = [];
+
+  constructor(
+    private router: Router,
+    private storage: Storage
+  ) {
+    this.initializeWeekDays();
+  }
+
+  async ngOnInit() {
+    await this.storage.create();
+    await this.loadWeeklyPlan();
+    this.isLoading = false;
+  }
+
+  private initializeWeekDays() {
+    const today = new Date().getDay(); // 0 = Sunday, 1 = Monday, etc.
+    const dayNames = [
+      { name: 'Domingo', shortName: 'DOM' },
+      { name: 'Segunda-feira', shortName: 'SEG' },
+      { name: 'Terça-feira', shortName: 'TER' },
+      { name: 'Quarta-feira', shortName: 'QUA' },
+      { name: 'Quinta-feira', shortName: 'QUI' },
+      { name: 'Sexta-feira', shortName: 'SEX' },
+      { name: 'Sábado', shortName: 'SAB' }
+    ];
+
+    this.weekDays = dayNames.map((day, index) => ({
+      ...day,
+      isToday: index === today
+    }));
+  }
+
+  private async loadWeeklyPlan() {
+    // Initialize empty arrays for each day if not exists
+    this.weeklyExercises = [];
+    for (let i = 0; i < 7; i++) {
+      const dayKey = `weekly_exercises_day_${i}`;
+      const exercises = await this.storage.get(dayKey) || [];
+      this.weeklyExercises[i] = exercises;
+    }
+  }
+
+  getExercisesCount(dayIndex: number): number {
+    return this.weeklyExercises[dayIndex]?.length || 0;
+  }
+
+  getPreviewExercises(dayIndex: number): ExerciseLibraryItem[] {
+    return this.weeklyExercises[dayIndex]?.slice(0, 3) || [];
+  }
+
+  async openDayExercises(dayIndex: number) {
+    // Navigate to a page where user can manage exercises for this specific day
+    // For now, let's navigate to the exercise selection page with the day index
+    this.router.navigate(['/personalizar-treino'], {
+      queryParams: { dayIndex: dayIndex }
+    });
+  }
+
+  async addExerciseToDay(dayIndex: number, exercise: ExerciseLibraryItem) {
+    if (!this.weeklyExercises[dayIndex]) {
+      this.weeklyExercises[dayIndex] = [];
+    }
+    
+    this.weeklyExercises[dayIndex].push(exercise);
+    const dayKey = `weekly_exercises_day_${dayIndex}`;
+    await this.storage.set(dayKey, this.weeklyExercises[dayIndex]);
+  }
+
+  async removeExerciseFromDay(dayIndex: number, exerciseIndex: number) {
+    if (this.weeklyExercises[dayIndex]) {
+      this.weeklyExercises[dayIndex].splice(exerciseIndex, 1);
+      const dayKey = `weekly_exercises_day_${dayIndex}`;
+      await this.storage.set(dayKey, this.weeklyExercises[dayIndex]);
+    }
+  }
+}
