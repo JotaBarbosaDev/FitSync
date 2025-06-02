@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, Observable, filter, take } from 'rxjs';
 import { Exercise, Set } from '../models';
 import { DataService } from './data.service';
 
@@ -25,20 +25,26 @@ export interface ExerciseLibraryItem {
 export class ExerciseService {
   private exerciseLibrarySubject = new BehaviorSubject<ExerciseLibraryItem[]>([]);
   public exerciseLibrary$ = this.exerciseLibrarySubject.asObservable();
+  private initialized = false;
 
   constructor(private dataService: DataService) {
     this.initializeService();
   }
 
   private async initializeService(): Promise<void> {
+    if (this.initialized) return;
+    
     console.log('ExerciseService: initializeService iniciado');
-    // Aguardar o DataService estar pronto
-    this.dataService.data$.subscribe(data => {
+    // Aguardar o DataService estar pronto - usar take(1) para evitar loop infinito
+    this.dataService.data$.pipe(
+      filter(data => data !== null),
+      take(1)
+    ).subscribe(data => {
       console.log('ExerciseService: data$ subscription recebeu dados:', data ? 'Dados presentes' : 'Dados nulos');
-      if (data) {
+      if (data && !this.initialized) {
         console.log('ExerciseService: Chamando loadExerciseLibrary');
         this.loadExerciseLibrary();
-        // Não inicializar exercícios padrão - biblioteca começará vazia
+        this.initialized = true;
         console.log('ExerciseService: Biblioteca inicializada vazia - apenas exercícios personalizados');
       }
     });

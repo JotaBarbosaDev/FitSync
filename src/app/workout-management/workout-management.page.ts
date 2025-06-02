@@ -1,6 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import { AlertController, ToastController, ModalController } from '@ionic/angular';
+import { Subscription } from 'rxjs';
 import { WorkoutManagementService } from '../services/workout-management.service';
 import { DataService } from '../services/data.service';
 import { ExerciseService, ExerciseLibraryItem } from '../services/exercise.service';
@@ -12,10 +13,12 @@ import { CustomWorkout, WorkoutExercise } from '../models/workout-system.model';
   styleUrls: ['./workout-management.page.scss'],
   standalone: false
 })
-export class WorkoutManagementPage implements OnInit {
+export class WorkoutManagementPage implements OnInit, OnDestroy {
   customWorkouts: CustomWorkout[] = [];
   exercises: ExerciseLibraryItem[] = [];
   isLoading = false;
+  
+  private subscriptions = new Subscription();
 
   constructor(
     private router: Router,
@@ -31,32 +34,47 @@ export class WorkoutManagementPage implements OnInit {
     await this.loadData();
   }
 
+  ngOnDestroy() {
+    this.subscriptions.unsubscribe();
+  }
+
   async ionViewWillEnter() {
-    await this.loadData();
+    // Evitar carregar dados duplamente se já foi carregado no ngOnInit
+    if (this.customWorkouts.length === 0) {
+      await this.loadData();
+    }
   }
 
   private async loadData() {
     this.isLoading = true;
     try {
+      // Limpar subscriptions anteriores para evitar duplicações
+      this.subscriptions.unsubscribe();
+      this.subscriptions = new Subscription();
+
       // Carregar treinos personalizados via subscription
-      this.workoutManagementService.getCustomWorkouts().subscribe({
+      const workoutsSubscription = this.workoutManagementService.getCustomWorkouts().subscribe({
         next: (workouts) => {
+          console.log('Treinos carregados:', workouts.length);
           this.customWorkouts = workouts;
         },
         error: (error) => {
           console.error('Erro ao carregar treinos:', error);
         }
       });
+      this.subscriptions.add(workoutsSubscription);
 
       // Carregar exercícios da biblioteca via ExerciseService
-      this.exerciseService.getExerciseLibrary().subscribe({
+      const exercisesSubscription = this.exerciseService.getExerciseLibrary().subscribe({
         next: (exercises) => {
+          console.log('Exercícios carregados:', exercises.length);
           this.exercises = exercises;
         },
         error: (error) => {
           console.error('Erro ao carregar exercícios:', error);
         }
       });
+      this.subscriptions.add(exercisesSubscription);
 
     } catch (error) {
       console.error('Erro ao carregar dados:', error);
@@ -124,8 +142,8 @@ export class WorkoutManagementPage implements OnInit {
       this.workoutManagementService.createCustomWorkout(workout).subscribe({
         next: (created) => {
           this.showToast('Treino criado com sucesso!', 'success');
-          this.customWorkouts.unshift(created);
-
+          // Não precisamos adicionar manualmente ao array, a subscription vai atualizar
+          
           // Navegar para edição do treino
           this.editWorkout(created);
         },

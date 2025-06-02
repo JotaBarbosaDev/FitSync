@@ -27,11 +27,10 @@ export class AuthService {
     this._storage = storage;
     
     // Garantir que usuário demo existe
-    this.dataService.data$.subscribe(data => {
-      if (data) {
-        this.createDemoUserIfNeeded().subscribe();
-      }
-    });
+    const data = this.dataService.getCurrentData();
+    if (data) {
+      this.createDemoUserIfNeeded().subscribe();
+    }
     
     // Carregar usuário atual após storage inicializado
     this.loadCurrentUser();
@@ -49,14 +48,13 @@ export class AuthService {
       }
       
       if (savedUserId) {
-        this.dataService.data$.subscribe(data => {
-          if (data) {
-            const user = data.users.find(u => u.id === savedUserId);
-            if (user) {
-              this.currentUserSubject.next(user);
-            }
+        const data = this.dataService.getCurrentData();
+        if (data) {
+          const user = data.users.find(u => u.id === savedUserId);
+          if (user) {
+            this.currentUserSubject.next(user);
           }
-        });
+        }
       }
     } catch (error) {
       console.error('AuthService: Erro ao carregar usuário atual:', error);
@@ -98,70 +96,75 @@ export class AuthService {
   }
 
   login(email: string, password: string): Observable<User> {
-    return this.dataService.data$.pipe(
-      map(data => {
-        if (!data) {
-          throw new Error('Dados não carregados');
-        }
+    return new Observable<User>(observer => {
+      const data = this.dataService.getCurrentData();
+      if (!data) {
+        observer.error(new Error('Dados não carregados'));
+        return;
+      }
 
-        // Encontrar usuário por email
-        const user = data.users.find(u => u.email === email);
-        if (!user) {
-          throw new Error('Email ou password incorretos');
-        }
+      // Encontrar usuário por email
+      const user = data.users.find(u => u.email === email);
+      if (!user) {
+        observer.error(new Error('Email ou password incorretos'));
+        return;
+      }
 
-        // Validar password (em produção usar hash/bcrypt)
-        if (user.password !== password) {
-          throw new Error('Email ou password incorretos');
-        }
+      // Validar password (em produção usar hash/bcrypt)
+      if (user.password !== password) {
+        observer.error(new Error('Email ou password incorretos'));
+        return;
+      }
 
-        // Guardar sessão de forma assíncrona
-        this.saveCurrentUserId(user.id);
-        this.currentUserSubject.next(user);
-        
-        return user;
-      })
-    );
+      // Guardar sessão de forma assíncrona
+      this.saveCurrentUserId(user.id);
+      this.currentUserSubject.next(user);
+      
+      observer.next(user);
+      observer.complete();
+    });
   }
 
   register(userData: RegisterData): Observable<User> {
-    return this.dataService.data$.pipe(
-      map(data => {
-        if (!data) {
-          throw new Error('Dados não carregados');
-        }
+    return new Observable<User>(observer => {
+      const data = this.dataService.getCurrentData();
+      if (!data) {
+        observer.error(new Error('Dados não carregados'));
+        return;
+      }
 
-        // Verificar se email já existe
-        const existingUser = data.users.find(u => u.email === userData.email);
-        if (existingUser) {
-          throw new Error('Email já está registado');
-        }
+      // Verificar se email já existe
+      const existingUser = data.users.find(u => u.email === userData.email);
+      if (existingUser) {
+        observer.error(new Error('Email já está registado'));
+        return;
+      }
 
-        // Criar novo utilizador
-        const newUser: User = {
-          id: this.dataService.generateId(),
-          email: userData.email,
-          password: userData.password, // Armazenar password (em produção usar hash)
-          name: userData.name,
-          height: userData.height,
-          weight: userData.weight,
-          fitnessLevel: userData.fitnessLevel,
-          goals: userData.goals,
-          createdAt: new Date(),
-          updatedAt: new Date()
-        };
+      // Criar novo utilizador
+      const newUser: User = {
+        id: this.dataService.generateId(),
+        email: userData.email,
+        password: userData.password, // Armazenar password (em produção usar hash)
+        name: userData.name,
+        height: userData.height,
+        weight: userData.weight,
+        fitnessLevel: userData.fitnessLevel,
+        goals: userData.goals,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      };
 
-        // Adicionar aos dados
-        data.users.push(newUser);
-        this.dataService.saveData(data);
+      // Adicionar aos dados
+      data.users.push(newUser);
+      this.dataService.saveData(data);
 
-        // Fazer login automático usando Ionic Storage
-        this.saveCurrentUserId(newUser.id);
-        this.currentUserSubject.next(newUser);
+      // Fazer login automático usando Ionic Storage
+      this.saveCurrentUserId(newUser.id);
+      this.currentUserSubject.next(newUser);
 
-        return newUser;
-      })
-    );
+      observer.next(newUser);
+      observer.complete();
+    });
   }
 
   logout(): Promise<void> {
@@ -186,36 +189,38 @@ export class AuthService {
       throw new Error('Utilizador não autenticado');
     }
 
-    return this.dataService.data$.pipe(
-      map(data => {
-        if (!data) {
-          throw new Error('Dados não carregados');
-        }
+    return new Observable<User>(observer => {
+      const data = this.dataService.getCurrentData();
+      if (!data) {
+        observer.error(new Error('Dados não carregados'));
+        return;
+      }
 
-        const userIndex = data.users.findIndex(u => u.id === currentUser.id);
-        if (userIndex === -1) {
-          throw new Error('Utilizador não encontrado');
-        }
+      const userIndex = data.users.findIndex(u => u.id === currentUser.id);
+      if (userIndex === -1) {
+        observer.error(new Error('Utilizador não encontrado'));
+        return;
+      }
 
-        // Atualizar dados do utilizador
-        const updatedUser = { 
-          ...data.users[userIndex], 
-          ...userData, 
-          updatedAt: new Date() 
-        };
-        
-        data.users[userIndex] = updatedUser;
-        this.dataService.saveData(data);
-        
-        this.currentUserSubject.next(updatedUser);
-        return updatedUser;
-      })
-    );
+      // Atualizar dados do utilizador
+      const updatedUser = { 
+        ...data.users[userIndex], 
+        ...userData, 
+        updatedAt: new Date() 
+      };
+      
+      data.users[userIndex] = updatedUser;
+      this.dataService.saveData(data);
+      
+      this.currentUserSubject.next(updatedUser);
+      observer.next(updatedUser);
+      observer.complete();
+    });
   }
 
   // Método para demo - criar utilizador demo se não existir
   createDemoUserIfNeeded(): Observable<boolean> {
-    return this.dataService.data$.pipe(
+    return of(this.dataService.getCurrentData()).pipe(
       map(data => {
         if (!data) return false;
         

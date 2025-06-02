@@ -19,15 +19,14 @@ export class PlanService {
     this.loadUserPlans();
   }
   private loadUserPlans(): void {
-    this.authService.getCurrentUser().subscribe(currentUser => {
+    this.authService.getCurrentUser().pipe(take(1)).subscribe(currentUser => {
       if (!currentUser) return;
 
-      this.dataService.data$.subscribe(data => {
-        if (data) {
-          const userPlans = data.plans.filter(plan => plan.userId === currentUser.id);
-          this.plansSubject.next(userPlans);
-        }
-      });
+      const data = this.dataService.getCurrentData();
+      if (data) {
+        const userPlans = data.plans.filter(plan => plan.userId === currentUser.id);
+        this.plansSubject.next(userPlans);
+      }
     });
   }
 
@@ -35,44 +34,43 @@ export class PlanService {
     return this.plans$;
   }
   createPlan(planData: Omit<Plan, 'id' | 'userId' | 'createdAt' | 'updatedAt'>): Observable<Plan> {
-    return this.authService.getCurrentUser().pipe(
-      switchMap(currentUser => {
-        if (!currentUser) {
-          throw new Error('Usuário não autenticado');
-        }
+    return new Observable<Plan>(observer => {
+      this.authService.getCurrentUser().pipe(take(1)).subscribe({
+        next: (currentUser) => {
+          if (!currentUser) {
+            observer.error(new Error('Usuário não autenticado'));
+            return;
+          }
 
-        const newPlan: Plan = {
-          ...planData,
-          id: this.generateId(),
-          userId: currentUser.id,
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString()
-        };
+          const data = this.dataService.getCurrentData();
+          if (!data) {
+            observer.error(new Error('Dados não encontrados'));
+            return;
+          }
 
-        return this.dataService.data$.pipe(
-          take(1),
-          switchMap(data => {
-            if (!data) {
-              throw new Error('Dados não encontrados');
-            }
-            
-            data.plans.push(newPlan);
-            
-            return new Observable<Plan>(observer => {
-              this.dataService.saveData(data).then(() => {
-                // Atualizar lista local
-                const currentPlans = this.plansSubject.value;
-                this.plansSubject.next([...currentPlans, newPlan]);
-                observer.next(newPlan);
-                observer.complete();
-              }).catch(error => {
-                observer.error(new Error('Erro ao salvar plano'));
-              });
-            });
-          })
-        );
-      })
-    );
+          const newPlan: Plan = {
+            ...planData,
+            id: this.generateId(),
+            userId: currentUser.id,
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString()
+          };
+
+          data.plans.push(newPlan);
+
+          this.dataService.saveData(data).then(() => {
+            // Atualizar lista local
+            const currentPlans = this.plansSubject.value;
+            this.plansSubject.next([...currentPlans, newPlan]);
+            observer.next(newPlan);
+            observer.complete();
+          }).catch(error => {
+            observer.error(new Error('Erro ao salvar plano'));
+          });
+        },
+        error: (error) => observer.error(error)
+      });
+    });
   }
   updatePlan(planId: string, updates: Partial<Plan>): Observable<Plan> {
     return new Observable<Plan>(observer => {
