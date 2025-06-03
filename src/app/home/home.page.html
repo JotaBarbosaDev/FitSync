@@ -80,5 +80,26 @@
         </div>
       </div>
     </div>
+
+    <!-- Repeat Today's Workout Section -->
+    <div *ngIf="hasCompletedWorkoutToday" class="repeat-workout-section">
+      <div class="repeat-workout-card">
+        <div class="repeat-header">
+          <div class="repeat-icon">
+            <ion-icon name="refresh-circle-outline"></ion-icon>
+          </div>
+          <div class="repeat-info">
+            <h4>Treino Completado Hoje</h4>
+            <p>{{ completedWorkoutName }} • {{ completedWorkoutExerciseCount }} exercícios</p>
+          </div>
+        </div>
+
+        <ion-button expand="block" fill="outline" color="secondary" (click)="repeatTodayWorkout()"
+          class="repeat-workout-btn">
+          <ion-icon name="refresh" slot="start"></ion-icon>
+          REPETIR TREINO DE HOJE
+        </ion-button>
+      </div>
+    </div>
   </div>
 </ion-content>

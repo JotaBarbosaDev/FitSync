@@ -28,6 +28,14 @@ const routes: Routes = [
         loadChildren: () => import('../dashboard/dashboard.module').then(m => m.DashboardPageModule)
       },
       {
+        path: 'workout-execution',
+        loadChildren: () => import('../workout-execution/workout-execution.module').then(m => m.WorkoutExecutionPageModule)
+      },
+      {
+        path: 'workout-progress',
+        loadChildren: () => import('../workout-progress/workout-progress.module').then(m => m.WorkoutProgressPageModule)
+      },
+      {
         path: '',
         redirectTo: 'home',
         pathMatch: 'full'

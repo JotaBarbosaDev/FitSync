@@ -35,65 +35,55 @@ const routes: Routes = [
   },
   {
     path: 'home',
-    loadChildren: () => import('./home/home.module').then( m => m.HomePageModule)
+    loadChildren: () => import('./home/home.module').then(m => m.HomePageModule)
   },
   {
     path: 'lista',
-    loadChildren: () => import('./lista/lista.module').then( m => m.ListaPageModule)
+    loadChildren: () => import('./lista/lista.module').then(m => m.ListaPageModule)
   },
   {
     path: 'detalhe/:id',
-    loadChildren: () => import('./detalhe/detalhe.module').then( m => m.DetalhePageModule)
-  },  {
+    loadChildren: () => import('./detalhe/detalhe.module').then(m => m.DetalhePageModule)
+  }, {
     path: 'progress',
-    loadChildren: () => import('./progress/progress.module').then( m => m.ProgressPageModule),
+    loadChildren: () => import('./progress/progress.module').then(m => m.ProgressPageModule),
     canActivate: [AuthGuard]
   },
   {
     path: 'progresso',
-    loadChildren: () => import('./progresso/progresso.module').then( m => m.ProgressoPageModule)
+    loadChildren: () => import('./progresso/progresso.module').then(m => m.ProgressoPageModule)
   },
   {
     path: 'exercise-detail/:id',
-    loadChildren: () => import('./exercise-detail/exercise-detail.module').then( m => m.ExerciseDetailPageModule)
+    loadChildren: () => import('./exercise-detail/exercise-detail.module').then(m => m.ExerciseDetailPageModule)
   },
   {
     path: 'forgot-password',
-    loadChildren: () => import('./auth/forgot-password/forgot-password.module').then( m => m.ForgotPasswordPageModule)
+    loadChildren: () => import('./auth/forgot-password/forgot-password.module').then(m => m.ForgotPasswordPageModule)
   },
   {
     path: 'plano-hoje',
-    loadChildren: () => import('./plano-hoje/plano-hoje.module').then( m => m.PlanoHojePageModule),
+    loadChildren: () => import('./plano-hoje/plano-hoje.module').then(m => m.PlanoHojePageModule),
     canActivate: [AuthGuard]
   },
   {
     path: 'personalizar-treino',
-    loadChildren: () => import('./personalizar-treino/personalizar-treino.module').then( m => m.PersonalizarTreinoPageModule),
+    loadChildren: () => import('./personalizar-treino/personalizar-treino.module').then(m => m.PersonalizarTreinoPageModule),
     canActivate: [AuthGuard]
   },
   {
     path: 'analisar-progresso',
-    loadChildren: () => import('./analisar-progresso/analisar-progresso.module').then( m => m.AnalisarProgressoPageModule),
+    loadChildren: () => import('./analisar-progresso/analisar-progresso.module').then(m => m.AnalisarProgressoPageModule),
     canActivate: [AuthGuard]
   },
   {
     path: 'workout-management',
-    loadChildren: () => import('./workout-management/workout-management.module').then( m => m.WorkoutManagementPageModule),
+    loadChildren: () => import('./workout-management/workout-management.module').then(m => m.WorkoutManagementPageModule),
     canActivate: [AuthGuard]
   },
   {
     path: 'weekly-plan',
-    loadChildren: () => import('./weekly-plan/weekly-plan.module').then( m => m.WeeklyPlanPageModule),
-    canActivate: [AuthGuard]
-  },
-  {
-    path: 'workout-execution',
-    loadChildren: () => import('./workout-execution/workout-execution.module').then( m => m.WorkoutExecutionPageModule),
-    canActivate: [AuthGuard]
-  },
-  {
-    path: 'workout-progress',
-    loadChildren: () => import('./workout-progress/workout-progress.module').then( m => m.WorkoutProgressPageModule),
+    loadChildren: () => import('./weekly-plan/weekly-plan.module').then(m => m.WeeklyPlanPageModule),
     canActivate: [AuthGuard]
   }
 

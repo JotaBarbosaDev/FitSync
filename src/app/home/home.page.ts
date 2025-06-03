@@ -11,6 +11,12 @@ interface TodayWorkout {
   isRestDay: boolean;
 }
 
+interface CompletedWorkoutToday {
+  session: any;
+  exercises: any[];
+  canRepeat: boolean;
+}
+
 @Component({
   selector: 'app-home',
   templateUrl: 'home.page.html',
@@ -23,6 +29,7 @@ export class HomePage implements OnInit {
   };
 
   todayWorkout: TodayWorkout | null = null;
+  completedWorkoutToday: CompletedWorkoutToday | null = null;
   isLoading = true;
 
   constructor(
@@ -37,6 +44,7 @@ export class HomePage implements OnInit {
     await this.storage.create();
     await this.initializeDefaultWorkouts();
     await this.loadTodayWorkout();
+    await this.checkCompletedWorkoutToday();
     this.isLoading = false;
   }
 
@@ -106,7 +114,7 @@ export class HomePage implements OnInit {
   }
 
   navigateToWorkoutManagement() {
-    this.router.navigate(['/workout-management']);
+    this.router.navigate(['/tabs/workout-management']);
   }
 
   async startTodayWorkout() {
@@ -117,7 +125,7 @@ export class HomePage implements OnInit {
       console.log('Iniciando treino do plano semanal:', todayExercises);
 
       // Navigate to workout execution with today's exercises from weekly plan
-      this.router.navigate(['/workout-execution'], {
+      this.router.navigate(['/tabs/workout-execution'], {
         queryParams: {
           exercises: JSON.stringify(todayExercises),
           dayName: this.getTodayDayName(),
@@ -128,7 +136,7 @@ export class HomePage implements OnInit {
       console.log('Iniciando treino padrão:', this.todayWorkout.workout.name);
 
       // Fallback to default workout system
-      this.router.navigate(['/workout-execution'], {
+      this.router.navigate(['/tabs/workout-execution'], {
         queryParams: {
           workoutId: this.todayWorkout.workout.id,
           workoutName: this.todayWorkout.workout.name,
@@ -377,5 +385,148 @@ export class HomePage implements OnInit {
     });
 
     return Array.from(muscleGroups);
+  }
+
+  async checkCompletedWorkoutToday() {
+    try {
+      const today = new Date();
+      const todayDateString = today.toDateString();
+
+      // Check for completed workout sessions today
+      const sessions = await this.storageService.get('workoutSessions') || [];
+      const sessions2 = await this.storageService.get('workoutSessions2') || [];
+
+      // Ensure both are arrays before combining
+      const sessionsArray = Array.isArray(sessions) ? sessions : [];
+      const sessions2Array = Array.isArray(sessions2) ? sessions2 : [];
+
+      // Combine both session stores for compatibility
+      const allSessions = [...sessionsArray, ...sessions2Array];
+
+      const todayCompletedSessions = allSessions.filter((session: any) => {
+        if (!session.startTime || session.status !== 'completed') return false;
+
+        const sessionDate = new Date(session.startTime);
+        return sessionDate.toDateString() === todayDateString;
+      });
+
+      if (todayCompletedSessions.length > 0) {
+        // Get the most recent completed session
+        const latestSession = todayCompletedSessions.sort((a: any, b: any) =>
+          new Date(b.startTime).getTime() - new Date(a.startTime).getTime()
+        )[0];
+
+        // Extract exercises from the session for repeat functionality
+        const exercises = this.extractExercisesFromSession(latestSession);
+
+        this.completedWorkoutToday = {
+          session: latestSession,
+          exercises: exercises,
+          canRepeat: exercises.length > 0
+        };
+
+        console.log('Treino completado hoje encontrado:', this.completedWorkoutToday);
+      }
+    } catch (error) {
+      console.error('Erro ao verificar treino completado hoje:', error);
+    }
+  }
+
+  private extractExercisesFromSession(session: any): any[] {
+    try {
+      // Handle different session formats
+      if (session.exercises && Array.isArray(session.exercises)) {
+        // Handle WorkoutManagementService format
+        return session.exercises.map((exercise: any) => ({
+          id: exercise.exerciseId || exercise.id || `exercise-${Date.now()}`,
+          name: exercise.exerciseName || exercise.name || 'Exercício',
+          category: exercise.category || 'strength',
+          muscleGroups: exercise.muscleGroup ? [exercise.muscleGroup] : ['general'],
+          equipment: ['bodyweight'],
+          instructions: exercise.instructions || 'Execute conforme orientação anterior',
+          difficulty: exercise.difficulty || 'medium',
+          duration: 5,
+          calories: 50,
+          emoji: '💪',
+          description: exercise.notes || 'Repetir exercício do treino anterior'
+        }));
+      }
+
+      return [];
+    } catch (error) {
+      console.error('Erro ao extrair exercícios da sessão:', error);
+      return [];
+    }
+  }
+
+  async repeatTodayWorkout() {
+    if (!this.completedWorkoutToday || !this.completedWorkoutToday.canRepeat) {
+      const toast = await this.toastController.create({
+        message: 'Nenhum treino disponível para repetir hoje',
+        duration: 3000,
+        position: 'bottom',
+        color: 'warning'
+      });
+      await toast.present();
+      return;
+    }
+
+    try {
+      console.log('Repetindo treino de hoje com exercícios:', this.completedWorkoutToday.exercises);
+
+      // Navigate to workout execution with today's completed exercises
+      this.router.navigate(['/tabs/workout-execution'], {
+        queryParams: {
+          exercises: JSON.stringify(this.completedWorkoutToday.exercises),
+          dayName: this.getTodayDayName(),
+          source: 'repeat-today',
+          originalSession: JSON.stringify({
+            id: this.completedWorkoutToday.session.id,
+            startTime: this.completedWorkoutToday.session.startTime
+          })
+        }
+      });
+
+      const toast = await this.toastController.create({
+        message: '🔄 Repetindo treino de hoje!',
+        duration: 2000,
+        position: 'bottom',
+        color: 'success'
+      });
+      await toast.present();
+
+    } catch (error) {
+      console.error('Erro ao repetir treino:', error);
+      const toast = await this.toastController.create({
+        message: 'Erro ao repetir treino. Tente novamente.',
+        duration: 3000,
+        position: 'bottom',
+        color: 'danger'
+      });
+      await toast.present();
+    }
+  }
+
+  get hasCompletedWorkoutToday(): boolean {
+    return !!(this.completedWorkoutToday && this.completedWorkoutToday.canRepeat);
+  }
+
+  get completedWorkoutName(): string {
+    if (!this.completedWorkoutToday || !this.completedWorkoutToday.session) {
+      return 'Treino de hoje';
+    }
+
+    // Try to get workout name from session
+    const session = this.completedWorkoutToday.session;
+    if (session.workoutName) return session.workoutName;
+    if (session.workoutId && session.workoutId.includes('weekly-plan')) {
+      return `Treino de ${this.getTodayDayName()}`;
+    }
+
+    return 'Último treino';
+  }
+
+  get completedWorkoutExerciseCount(): number {
+    return this.completedWorkoutToday?.exercises?.length || 0;
   }
 }

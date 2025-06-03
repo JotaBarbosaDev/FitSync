@@ -174,12 +174,13 @@
       </div>
 
       <div class="completion-actions">
-        <ion-button expand="block" fill="solid" (click)="router.navigate(['/workout-progress'])" class="action-btn">
+        <ion-button expand="block" fill="solid" (click)="router.navigate(['/tabs/workout-progress'])"
+          class="action-btn">
           <ion-icon name="stats-chart" slot="start"></ion-icon>
           Ver Progresso
         </ion-button>
 
-        <ion-button expand="block" fill="outline" (click)="router.navigate(['/home'])" class="action-btn">
+        <ion-button expand="block" fill="outline" (click)="router.navigate(['/tabs/home'])" class="action-btn">
           <ion-icon name="home" slot="start"></ion-icon>
           Voltar ao Início
         </ion-button>
@@ -192,7 +193,7 @@
     <ion-icon name="alert-circle-outline" class="error-icon"></ion-icon>
     <h2>Nenhum exercício encontrado</h2>
     <p>Verifique se os dados do treino foram carregados corretamente.</p>
-    <ion-button (click)="router.navigate(['/home'])" fill="outline">
+    <ion-button (click)="router.navigate(['/tabs/home'])" fill="outline">
       Voltar ao Início
     </ion-button>
   </div>

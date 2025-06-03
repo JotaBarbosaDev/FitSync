@@ -40,22 +40,22 @@ export class AppComponent implements OnInit, OnDestroy {
 
   async initializeApp() {
     await this.platform.ready();
-    
+
     // Initialize storage
     await this.storageService.init();
-    
+
     // Initialize migrated services with Ionic Storage
     // Os serviços DataService, AuthService e ThemeService já se inicializam automaticamente
-    
+
     // Initialize JSON data
     await this.jsonDataService.initializeAppData();
-    
+
     // Initialize device controls
     await this.deviceControlService.initializeDevice();
-    
+
     // Setup orientation listener
     await this.deviceControlService.setupOrientationListener();
-    
+
     console.log('FitSync app initialized successfully');
   }
 
@@ -83,17 +83,17 @@ export class AppComponent implements OnInit, OnDestroy {
 
   async navigateTo(path: string) {
     await this.menuController.close();
-    
+
     // Redirect to tabs for main app sections
     const tabsRoutes = {
       '/dashboard': '/tabs/home',
       '/home': '/tabs/home',
       '/plans': '/tabs/lista',
       '/workout': '/tabs/detalhe',
-      '/progress': '/tabs/progresso',
+      '/progress': '/tabs/workout-progress',
       '/profile': '/tabs/dashboard'
     };
-    
+
     const targetPath = tabsRoutes[path as keyof typeof tabsRoutes] || path;
     this.router.navigate([targetPath]);
   }

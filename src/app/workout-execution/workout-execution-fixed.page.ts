@@ -205,7 +205,7 @@ export class WorkoutExecutionPage implements OnInit, OnDestroy {
         {
           text: 'Ver Progresso',
           handler: () => {
-            this.router.navigate(['/workout-progress']);
+            this.router.navigate(['/tabs/workout-progress']);
           }
         },
         {
@@ -263,10 +263,10 @@ export class WorkoutExecutionPage implements OnInit, OnDestroy {
       'squat': { name: 'Agachamento', instructions: 'Fique em pé, pés afastados...' },
       'pull-up': { name: 'Barra fixa', instructions: 'Segure a barra com as mãos...' }
     };
-    
-    return exerciseLibrary[exerciseId] || { 
-      name: 'Exercício', 
-      instructions: 'Instruções não disponíveis' 
+
+    return exerciseLibrary[exerciseId] || {
+      name: 'Exercício',
+      instructions: 'Instruções não disponíveis'
     };
   }
 

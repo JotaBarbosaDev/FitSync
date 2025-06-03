@@ -27,17 +27,18 @@ interface WorkoutHistory {
   styleUrls: ['./dashboard.page.scss'],
   standalone: false,
 })
-export class DashboardPage implements OnInit, OnDestroy {  currentUser: User | null = null;
+export class DashboardPage implements OnInit, OnDestroy {
+    currentUser: User | null = null;
   activePlan: Plan | null = null;
   plans: Plan[] = [];
   workoutTimer: WorkoutTimer = { totalTime: 0, isRunning: false, isPaused: false };
   recentWorkouts: WorkoutHistory[] = [];
-  
+
   // Cache para valores estáveis durante o ciclo de vida do componente
   private _dailyMotivationalMessage: string | null = null;
   private _dailyTip: string | null = null;
   private _currentDate: string | null = null;
-  
+
   private subscriptions: Subscription[] = [];
 
   constructor(
@@ -159,7 +160,7 @@ export class DashboardPage implements OnInit, OnDestroy {  currentUser: User | n
           }
         }
       ]
-    });    await alert.present();
+    }); await alert.present();
   }
 
   getUserFirstName(): string {
@@ -182,7 +183,7 @@ export class DashboardPage implements OnInit, OnDestroy {  currentUser: User | n
     const currentDate = new Date().toDateString();
     if (this._currentDate !== currentDate || this._dailyMotivationalMessage === null) {
       this._currentDate = currentDate;
-      
+
       const messages = [
         'Pronto para superar seus limites hoje?',
         'Cada rep te deixa mais forte!',
@@ -191,15 +192,15 @@ export class DashboardPage implements OnInit, OnDestroy {  currentUser: User | n
         'O único treino ruim é aquele que não acontece',
         'Seja a melhor versão de você mesmo'
       ];
-      
+
       // Usar a data como seed para ter o mesmo resultado durante o dia
       const today = new Date();
       const dayOfYear = Math.floor((today.getTime() - new Date(today.getFullYear(), 0, 0).getTime()) / (1000 * 60 * 60 * 24));
       const messageIndex = dayOfYear % messages.length;
-      
+
       this._dailyMotivationalMessage = messages[messageIndex];
     }
-    
+
     return this._dailyMotivationalMessage;
   }
 
@@ -247,7 +248,7 @@ export class DashboardPage implements OnInit, OnDestroy {  currentUser: User | n
     const currentDate = new Date().toDateString();
     if (this._currentDate !== currentDate || this._dailyTip === null) {
       this._currentDate = currentDate;
-      
+
       const tips = [
         'Hidrate-se bem antes, durante e após o treino',
         'Aqueça sempre antes de iniciar os exercícios',
@@ -256,15 +257,15 @@ export class DashboardPage implements OnInit, OnDestroy {  currentUser: User | n
         'Varie seus treinos para evitar adaptação muscular',
         'A consistência é mais importante que a intensidade'
       ];
-      
+
       // Usar a data como seed para ter o mesmo resultado durante o dia
       const today = new Date();
       const dayOfYear = Math.floor((today.getTime() - new Date(today.getFullYear(), 0, 0).getTime()) / (1000 * 60 * 60 * 24));
       const tipIndex = (dayOfYear + 1) % tips.length; // +1 para diferir da mensagem motivacional
-      
+
       this._dailyTip = tips[tipIndex];
     }
-    
+
     return this._dailyTip;
   }
 
@@ -299,7 +300,7 @@ export class DashboardPage implements OnInit, OnDestroy {  currentUser: User | n
   }
 
   navigateToProgress(): void {
-    this.router.navigate(['/tabs/progresso']);
+    this.router.navigate(['/tabs/workout-progress']);
   }
 
   navigateToNutrition(): void {

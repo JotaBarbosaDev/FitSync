@@ -70,7 +70,7 @@ export class WorkoutExecutionPage implements OnInit, OnDestroy {
       } catch (error) {
         console.error('Erro ao parsear exercícios da URL:', error);
         this.showErrorToast('Erro ao carregar exercícios. Verifique os dados.');
-        this.router.navigate(['/home']);
+        this.router.navigate(['/tabs/home']);
       }
     });
   }
@@ -165,13 +165,13 @@ export class WorkoutExecutionPage implements OnInit, OnDestroy {
         {
           text: 'Ver Progresso',
           handler: () => {
-            this.router.navigate(['/workout-progress']);
+            this.router.navigate(['/tabs/workout-progress']);
           }
         },
         {
           text: 'Voltar ao Início',
           handler: () => {
-            this.router.navigate(['/home']);
+            this.router.navigate(['/tabs/home']);
           }
         }
       ]
@@ -216,14 +216,14 @@ export class WorkoutExecutionPage implements OnInit, OnDestroy {
           {
             text: 'Sair',
             handler: () => {
-              this.router.navigate(['/home']);
+              this.router.navigate(['/tabs/home']);
             }
           }
         ]
       });
       await alert.present();
     } else {
-      this.router.navigate(['/home']);
+      this.router.navigate(['/tabs/home']);
     }
   }
 
@@ -330,7 +330,7 @@ export class WorkoutExecutionPage implements OnInit, OnDestroy {
       // Calcular duração total
       const endTime = new Date();
       const durationMinutes = Math.round((endTime.getTime() - this.workoutStartTime.getTime()) / 60000);
-      
+
       // Calcular volume total e calorias
       const totalVolume = this.completedExerciseData.reduce((total, exercise) => {
         return total + exercise.sets.reduce((setTotal: number, set: any) => {
@@ -372,7 +372,7 @@ export class WorkoutExecutionPage implements OnInit, OnDestroy {
 
     } catch (error) {
       console.error('Erro ao salvar sessão de treino:', error);
-      
+
       const toast = await this.toastController.create({
         message: '⚠️ Erro ao salvar dados do treino',
         duration: 3000,

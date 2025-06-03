@@ -150,7 +150,7 @@ export class WorkoutManagementPage implements OnInit, OnDestroy {
     }
 
     // Navigate to workout execution with the day's exercises
-    this.router.navigate(['/workout-execution'], {
+    this.router.navigate(['/tabs/workout-execution'], {
       queryParams: {
         exercises: JSON.stringify(exercises),
         dayName: this.weekDays[dayIndex].name

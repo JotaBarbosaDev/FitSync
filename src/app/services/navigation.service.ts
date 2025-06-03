@@ -10,7 +10,7 @@ export class NavigationService {
 
   constructor(
     private router: Router
-  ) {}
+  ) { }
 
   // Navigate to specific page
   navigateTo(route: string | string[], extras?: NavigationExtras): Promise<boolean> {
@@ -22,7 +22,7 @@ export class NavigationService {
     const navigationExtras: NavigationExtras = {
       queryParams: queryParams
     };
-    
+
     // Replace route parameters
     let finalRoute = route;
     Object.keys(params).forEach(key => {
@@ -52,7 +52,7 @@ export class NavigationService {
   // Navigate to progress with date filter
   navigateToProgress(period?: 'week' | 'month' | 'year'): Promise<boolean> {
     const queryParams = period ? { period } : undefined;
-    return this.navigateWithParams('/tabs/progresso', {}, queryParams);
+    return this.navigateWithParams('/tabs/workout-progress', {}, queryParams);
   }
 
   // Navigate to workout plans
@@ -83,7 +83,7 @@ export class NavigationService {
 
   // Navigate to achievements
   navigateToAchievements(): Promise<boolean> {
-    return this.navigateTo('/tabs/progresso');
+    return this.navigateTo('/tabs/workout-progress');
   }
 
   // Navigate with state

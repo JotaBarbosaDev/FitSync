@@ -215,7 +215,7 @@ export class BicepWorkoutComponent implements OnInit {
         {
           text: 'Ver Progresso',
           handler: () => {
-            this.router.navigate(['/workout-progress']);
+            this.router.navigate(['/tabs/workout-progress']);
           }
         },
         {
