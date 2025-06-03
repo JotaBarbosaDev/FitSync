@@ -391,24 +391,49 @@ export class WorkoutProgressPage implements OnInit, OnDestroy {
         datasets: [{
           label: 'Treinos por Dia',
           data: data,
-          backgroundColor: 'rgba(var(--ion-color-primary-rgb), 0.7)',
+          backgroundColor: '#9ca3af',
           borderColor: 'var(--ion-color-primary)',
           borderWidth: 2,
-          borderRadius: 8
+          borderRadius: 8,
+          hoverBackgroundColor: '#6b7280',
+          hoverBorderColor: 'var(--ion-color-primary-shade)',
+          hoverBorderWidth: 3
         }]
       },
       options: {
         responsive: true,
         plugins: {
           legend: {
-            display: false
+            display: false,
+            labels: {
+              color: 'var(--ion-color-light)'
+            }
+          },
+          tooltip: {
+            backgroundColor: '#1f2937',
+            titleColor: '#f9fafb',
+            bodyColor: '#f9fafb',
+            borderColor: 'var(--ion-color-primary)',
+            borderWidth: 1
           }
         },
         scales: {
+          x: {
+            ticks: {
+              color: '#9ca3af'
+            },
+            grid: {
+              color: 'rgba(156, 163, 175, 0.2)'
+            }
+          },
           y: {
             beginAtZero: true,
             ticks: {
-              stepSize: 1
+              stepSize: 1,
+              color: '#9ca3af'
+            },
+            grid: {
+              color: 'rgba(156, 163, 175, 0.2)'
             }
           }
         }
@@ -430,21 +455,49 @@ export class WorkoutProgressPage implements OnInit, OnDestroy {
         datasets: [{
           data: workoutTypes.data,
           backgroundColor: [
-            'rgba(var(--ion-color-primary-rgb), 0.8)',
-            'rgba(var(--ion-color-secondary-rgb), 0.8)',
-            'rgba(var(--ion-color-tertiary-rgb), 0.8)',
-            'rgba(var(--ion-color-success-rgb), 0.8)',
-            'rgba(var(--ion-color-warning-rgb), 0.8)'
+            '#9ca3af',
+            '#6b7280',
+            '#4b5563',
+            '#374151',
+            '#1f2937'
           ],
-          borderWidth: 2,
-          borderColor: 'var(--ion-color-light)'
+          borderWidth: 3,
+          borderColor: [
+            'var(--ion-color-primary)',
+            'var(--ion-color-secondary)',
+            'var(--ion-color-tertiary)',
+            'var(--ion-color-success)',
+            'var(--ion-color-warning)'
+          ],
+          hoverBackgroundColor: [
+            '#d1d5db',
+            '#9ca3af',
+            '#6b7280',
+            '#4b5563',
+            '#374151'
+          ],
+          hoverBorderWidth: 4
         }]
       },
       options: {
         responsive: true,
         plugins: {
           legend: {
-            position: 'bottom'
+            position: 'bottom',
+            labels: {
+              color: '#9ca3af',
+              padding: 20,
+              font: {
+                size: 12
+              }
+            }
+          },
+          tooltip: {
+            backgroundColor: '#1f2937',
+            titleColor: '#f9fafb',
+            bodyColor: '#f9fafb',
+            borderColor: 'var(--ion-color-primary)',
+            borderWidth: 1
           }
         }
       }
@@ -466,35 +519,60 @@ export class WorkoutProgressPage implements OnInit, OnDestroy {
           label: this.getMetricLabel(),
           data: chartData.data,
           borderColor: 'var(--ion-color-primary)',
-          backgroundColor: 'rgba(var(--ion-color-primary-rgb), 0.1)',
+          backgroundColor: 'rgba(156, 163, 175, 0.3)',
           borderWidth: 3,
           fill: true,
           tension: 0.4,
-          pointBackgroundColor: 'var(--ion-color-primary)',
-          pointBorderColor: 'white',
-          pointBorderWidth: 2,
-          pointRadius: 6
+          pointBackgroundColor: '#9ca3af',
+          pointBorderColor: 'var(--ion-color-primary)',
+          pointBorderWidth: 3,
+          pointRadius: 7,
+          pointHoverBackgroundColor: '#6b7280',
+          pointHoverBorderColor: 'var(--ion-color-primary)',
+          pointHoverBorderWidth: 4,
+          pointHoverRadius: 9
         }]
       },
       options: {
         responsive: true,
         plugins: {
           legend: {
-            display: false
+            display: false,
+            labels: {
+              color: 'var(--ion-color-light)'
+            }
+          },
+          tooltip: {
+            backgroundColor: '#1f2937',
+            titleColor: '#f9fafb',
+            bodyColor: '#f9fafb',
+            borderColor: 'var(--ion-color-primary)',
+            borderWidth: 1,
+            cornerRadius: 8
           }
         },
         scales: {
           x: {
             grid: {
-              display: false
+              color: 'rgba(156, 163, 175, 0.2)'
+            },
+            ticks: {
+              color: '#9ca3af'
             }
           },
           y: {
             beginAtZero: true,
             grid: {
-              color: 'rgba(var(--ion-color-medium-rgb), 0.2)'
+              color: 'rgba(156, 163, 175, 0.2)'
+            },
+            ticks: {
+              color: '#9ca3af'
             }
           }
+        },
+        interaction: {
+          intersect: false,
+          mode: 'index'
         }
       }
     });

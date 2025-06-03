@@ -1,28 +1,39 @@
+/* Dark Mode Base */
+:host {
+  --background: var(--ion-color-dark);
+  --color: var(--ion-color-light);
+}
+
+ion-content {
+  --background: var(--ion-color-dark);
+  --color: var(--ion-color-light);
+}
+
 /* Estatísticas Principais */
 .main-stats {
   padding: 24px;
-  background: linear-gradient(135deg, var(--ion-color-primary-tint), var(--ion-color-secondary-tint));
+  background: var(--ion-color-dark-shade);
   margin: 16px;
   border-radius: 20px;
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  border: 1px solid var(--ion-color-dark-tint);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
 }
 
 .stats-header {
   text-align: center;
   margin-bottom: 24px;
-  color: var(--ion-color-dark);
   
   h2 {
     font-size: 24px;
     font-weight: 700;
     margin: 0 0 8px 0;
+    color: var(--ion-color-light);
   }
   
   p {
     font-size: 16px;
     margin: 0;
+    color: var(--ion-color-medium);
     opacity: 0.8;
   }
 }
@@ -34,34 +45,34 @@
 }
 
 .stat-card {
-  background: rgba(255, 255, 255, 0.2);
+  background: var(--ion-color-dark-tint);
   border-radius: 16px;
   padding: 20px;
   display: flex;
   align-items: center;
   gap: 16px;
-  backdrop-filter: blur(5px);
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  border: 1px solid var(--ion-color-step-200);
   transition: transform 0.3s ease;
   
   &:hover {
     transform: translateY(-4px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
   }
   
   &.primary .stat-icon {
-    background: var(--ion-color-primary);
+    background: rgba(var(--ion-color-primary-rgb), 0.2);
   }
   
   &.success .stat-icon {
-    background: var(--ion-color-success);
+    background: rgba(var(--ion-color-success-rgb), 0.2);
   }
   
   &.warning .stat-icon {
-    background: var(--ion-color-warning);
+    background: rgba(var(--ion-color-warning-rgb), 0.2);
   }
   
   &.danger .stat-icon {
-    background: var(--ion-color-danger);
+    background: rgba(var(--ion-color-danger-rgb), 0.2);
   }
 }
 
@@ -75,7 +86,7 @@
   
   ion-icon {
     font-size: 24px;
-    color: white;
+    color: var(--ion-color-light);
   }
 }
 
@@ -85,14 +96,14 @@
   .stat-number {
     font-size: 20px;
     font-weight: 700;
-    color: var(--ion-color-dark);
+    color: var(--ion-color-light);
     line-height: 1;
     margin-bottom: 4px;
   }
   
   .stat-label {
     font-size: 12px;
-    color: var(--ion-color-medium-shade);
+    color: var(--ion-color-medium);
     text-transform: uppercase;
     font-weight: 500;
   }
@@ -102,13 +113,14 @@
 .goals-section {
   padding: 20px;
   margin: 16px;
-  background: var(--ion-color-light);
+  background: var(--ion-color-dark-shade);
+  border: 1px solid var(--ion-color-dark-tint);
   border-radius: 16px;
   
   h3 {
     font-size: 18px;
     font-weight: 600;
-    color: var(--ion-color-dark);
+    color: var(--ion-color-light);
     margin: 0 0 16px 0;
   }
 }
@@ -124,9 +136,10 @@
   justify-content: space-between;
   align-items: center;
   padding: 16px;
-  background: white;
+  background: var(--ion-color-dark-tint);
+  border: 1px solid var(--ion-color-step-200);
   border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
   
   .goal-info {
     display: flex;
@@ -140,7 +153,7 @@
     span {
       font-size: 14px;
       font-weight: 500;
-      color: var(--ion-color-dark);
+      color: var(--ion-color-light);
     }
   }
   
@@ -154,7 +167,7 @@
     .progress-text {
       font-size: 12px;
       font-weight: 600;
-      color: var(--ion-color-medium-shade);
+      color: var(--ion-color-medium);
     }
     
     ion-progress-bar {
@@ -174,13 +187,15 @@
   
   .control-group {
     ion-segment {
-      background: var(--ion-color-light);
+      background: var(--ion-color-dark-shade);
+      border: 1px solid var(--ion-color-dark-tint);
       border-radius: 12px;
       
       ion-segment-button {
         --indicator-color: var(--ion-color-primary);
         --color: var(--ion-color-medium);
-        --color-checked: var(--ion-color-primary-contrast);
+        --color-checked: var(--ion-color-dark);
+        --background-checked: var(--ion-color-primary);
         
         ion-label {
           font-size: 12px;
@@ -198,16 +213,17 @@
   h3 {
     font-size: 18px;
     font-weight: 600;
-    color: var(--ion-color-dark);
+    color: var(--ion-color-light);
     margin: 0 0 16px 0;
     padding: 0 4px;
   }
   
   .chart-container {
-    background: white;
+    background: var(--ion-color-dark-shade);
+    border: 1px solid var(--ion-color-dark-tint);
     border-radius: 16px;
     padding: 20px;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
     
     &.doughnut {
       max-width: 300px;
@@ -224,13 +240,14 @@
 .recent-sessions {
   padding: 20px;
   margin: 16px;
-  background: var(--ion-color-light);
+  background: var(--ion-color-dark-shade);
+  border: 1px solid var(--ion-color-dark-tint);
   border-radius: 16px;
   
   h3 {
     font-size: 18px;
     font-weight: 600;
-    color: var(--ion-color-dark);
+    color: var(--ion-color-light);
     margin: 0 0 16px 0;
   }
 }
@@ -245,10 +262,11 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: white;
+  background: var(--ion-color-dark-tint);
+  border: 1px solid var(--ion-color-step-200);
   border-radius: 12px;
   padding: 16px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
   
   .session-info {
     flex: 1;
@@ -256,7 +274,7 @@
     .session-date {
       font-size: 14px;
       font-weight: 600;
-      color: var(--ion-color-dark);
+      color: var(--ion-color-light);
       margin-bottom: 4px;
     }
     
@@ -286,7 +304,7 @@
       span {
         font-size: 12px;
         font-weight: 500;
-        color: var(--ion-color-dark);
+        color: var(--ion-color-light);
       }
     }
   }
@@ -296,13 +314,14 @@
 .achievements-section {
   padding: 20px;
   margin: 16px;
-  background: var(--ion-color-light);
+  background: var(--ion-color-dark-shade);
+  border: 1px solid var(--ion-color-dark-tint);
   border-radius: 16px;
   
   h3 {
     font-size: 18px;
     font-weight: 600;
-    color: var(--ion-color-dark);
+    color: var(--ion-color-light);
     margin: 0 0 16px 0;
   }
 }
@@ -317,17 +336,18 @@
   display: flex;
   align-items: center;
   gap: 16px;
-  background: white;
+  background: var(--ion-color-dark-tint);
+  border: 1px solid var(--ion-color-step-200);
   border-radius: 12px;
   padding: 16px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
   border-left: 4px solid var(--border-color);
   
   &.achievement-warning {
     --border-color: var(--ion-color-warning);
     
     .achievement-icon {
-      background: var(--ion-color-warning-tint);
+      background: rgba(var(--ion-color-warning-rgb), 0.2);
       
       ion-icon {
         color: var(--ion-color-warning);
@@ -339,7 +359,7 @@
     --border-color: var(--ion-color-danger);
     
     .achievement-icon {
-      background: var(--ion-color-danger-tint);
+      background: rgba(var(--ion-color-danger-rgb), 0.2);
       
       ion-icon {
         color: var(--ion-color-danger);
@@ -351,7 +371,7 @@
     --border-color: var(--ion-color-success);
     
     .achievement-icon {
-      background: var(--ion-color-success-tint);
+      background: rgba(var(--ion-color-success-rgb), 0.2);
       
       ion-icon {
         color: var(--ion-color-success);
@@ -378,7 +398,7 @@
     .achievement-title {
       font-size: 16px;
       font-weight: 600;
-      color: var(--ion-color-dark);
+      color: var(--ion-color-light);
       margin-bottom: 4px;
     }
     
@@ -395,12 +415,44 @@
   margin: 16px;
   background: var(--ion-color-light);
   border-radius: 16px;
+  border: 1px solid var(--ion-color-light-shade);
   
   h3 {
     font-size: 18px;
     font-weight: 600;
     color: var(--ion-color-dark);
     margin: 0 0 16px 0;
+  }
+}
+
+/* Dark mode usando @media como fallback */
+@media (prefers-color-scheme: dark) {
+  .last-workout-summary {
+    background: var(--ion-color-dark-shade) !important;
+    border: 1px solid var(--ion-color-dark-tint) !important;
+    
+    h3 {
+      color: var(--ion-color-light) !important;
+    }
+  }
+  
+  .summary-card {
+    background: var(--ion-color-step-100) !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3) !important;
+    
+    .summary-header {
+      .summary-date {
+        color: var(--ion-color-light) !important;
+      }
+    }
+    
+    .summary-stats {
+      .summary-stat {
+        span {
+          color: var(--ion-color-light) !important;
+        }
+      }
+    }
   }
 }
 
@@ -442,6 +494,37 @@
         font-size: 12px;
         font-weight: 500;
         color: var(--ion-color-dark);
+      }
+    }
+  }
+}
+
+/* Dark Mode - Último Treino */
+:host-context(.dark) .last-workout-summary,
+body.dark .last-workout-summary {
+  background: var(--ion-color-dark-shade) !important;
+  border: 1px solid var(--ion-color-dark-tint) !important;
+  
+  h3 {
+    color: var(--ion-color-light) !important;
+  }
+}
+
+:host-context(.dark) .summary-card,
+body.dark .summary-card {
+  background: var(--ion-color-step-100) !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3) !important;
+  
+  .summary-header {
+    .summary-date {
+      color: var(--ion-color-light) !important;
+    }
+  }
+  
+  .summary-stats {
+    .summary-stat {
+      span {
+        color: var(--ion-color-light) !important;
       }
     }
   }

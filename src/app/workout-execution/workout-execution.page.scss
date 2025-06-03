@@ -1,6 +1,7 @@
 /* Tela Inicial do Treino */
 .workout-intro {
   padding: 24px;
+  padding-top: 90px;
   text-align: center;
   min-height: 100vh;
   display: flex;
@@ -511,10 +512,280 @@
   transition: all 0.3s ease;
 }
 
-/* Ajustes para modo escuro */
+/* Modo Escuro Completo */
 @media (prefers-color-scheme: dark) {
+  .intro-header {
+    h1 {
+      color: var(--ion-color-light) !important;
+    }
+    
+    .workout-description {
+      color: var(--ion-color-medium) !important;
+    }
+  }
+
+  .overview-stats {
+    background: var(--ion-color-step-50) !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4) !important;
+    
+    .stat-item span {
+      color: var(--ion-color-light) !important;
+    }
+  }
+
+  .exercises-preview h3 {
+    color: var(--ion-color-light) !important;
+  }
+
+  .exercise-preview {
+    background: var(--ion-color-step-50) !important;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3) !important;
+    
+    .exercise-info {
+      .exercise-name {
+        color: var(--ion-color-light) !important;
+      }
+      
+      .exercise-details {
+        color: var(--ion-color-medium) !important;
+      }
+    }
+  }
+
+  .progress-section {
+    background: var(--ion-color-step-50) !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4) !important;
+    
+    .progress-info span {
+      color: var(--ion-color-light) !important;
+      
+      &:last-child {
+        color: var(--ion-color-primary) !important;
+      }
+    }
+  }
+
+  .timer-section {
+    background: linear-gradient(135deg, rgba(var(--ion-color-primary-rgb), 0.8), rgba(var(--ion-color-secondary-rgb), 0.8)) !important;
+    color: var(--ion-color-light) !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4) !important;
+    
+    .workout-timer {
+      color: var(--ion-color-light) !important;
+    }
+    
+    .exercise-counter {
+      color: var(--ion-color-light) !important;
+    }
+  }
+
+  .exercise-header {
+    h2 {
+      color: var(--ion-color-light) !important;
+    }
+  }
+
+  .detail-card {
+    background: var(--ion-color-step-50) !important;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3) !important;
+    
+    .detail-content {
+      .detail-label {
+        color: var(--ion-color-medium) !important;
+      }
+      
+      .detail-value {
+        color: var(--ion-color-light) !important;
+      }
+    }
+  }
+
+  .exercise-instructions {
+    background: rgba(var(--ion-color-warning-rgb), 0.15) !important;
+    border-left-color: var(--ion-color-warning) !important;
+    
+    h4 {
+      color: var(--ion-color-light) !important;
+    }
+    
+    p {
+      color: var(--ion-color-medium) !important;
+    }
+  }
+
+  .completion-content {
+    h1 {
+      color: var(--ion-color-light) !important;
+    }
+    
+    p {
+      color: var(--ion-color-medium) !important;
+    }
+  }
+
+  .completion-stats {
+    background: var(--ion-color-step-50) !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4) !important;
+    
+    .stat-item {
+      .stat-content {
+        .stat-value {
+          color: var(--ion-color-light) !important;
+        }
+        
+        .stat-label {
+          color: var(--ion-color-medium) !important;
+        }
+      }
+    }
+  }
+
   .rest-timer,
   .pause-overlay {
-    background: rgba(0, 0, 0, 0.95);
+    background: rgba(0, 0, 0, 0.95) !important;
+  }
+
+  .detail-card:hover {
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5) !important;
+  }
+}
+
+/* Modo Escuro - Classe CSS */
+.dark,
+body.dark,
+:host-context(.dark) {
+  .intro-header {
+    h1 {
+      color: var(--ion-color-light) !important;
+    }
+    
+    .workout-description {
+      color: var(--ion-color-medium) !important;
+    }
+  }
+
+  .overview-stats {
+    background: var(--ion-color-step-50) !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4) !important;
+    
+    .stat-item span {
+      color: var(--ion-color-light) !important;
+    }
+  }
+
+  .exercises-preview h3 {
+    color: var(--ion-color-light) !important;
+  }
+
+  .exercise-preview {
+    background: var(--ion-color-step-50) !important;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3) !important;
+    
+    .exercise-info {
+      .exercise-name {
+        color: var(--ion-color-light) !important;
+      }
+      
+      .exercise-details {
+        color: var(--ion-color-medium) !important;
+      }
+    }
+  }
+
+  .progress-section {
+    background: var(--ion-color-step-50) !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4) !important;
+    
+    .progress-info span {
+      color: var(--ion-color-light) !important;
+      
+      &:last-child {
+        color: var(--ion-color-primary) !important;
+      }
+    }
+  }
+
+  .timer-section {
+    background: linear-gradient(135deg, rgba(var(--ion-color-primary-rgb), 0.8), rgba(var(--ion-color-secondary-rgb), 0.8)) !important;
+    color: var(--ion-color-light) !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4) !important;
+    
+    .workout-timer {
+      color: var(--ion-color-light) !important;
+    }
+    
+    .exercise-counter {
+      color: var(--ion-color-light) !important;
+    }
+  }
+
+  .exercise-header {
+    h2 {
+      color: var(--ion-color-light) !important;
+    }
+  }
+
+  .detail-card {
+    background: var(--ion-color-step-50) !important;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3) !important;
+    
+    .detail-content {
+      .detail-label {
+        color: var(--ion-color-medium) !important;
+      }
+      
+      .detail-value {
+        color: var(--ion-color-light) !important;
+      }
+    }
+  }
+
+  .exercise-instructions {
+    background: rgba(var(--ion-color-warning-rgb), 0.15) !important;
+    border-left-color: var(--ion-color-warning) !important;
+    
+    h4 {
+      color: var(--ion-color-light) !important;
+    }
+    
+    p {
+      color: var(--ion-color-medium) !important;
+    }
+  }
+
+  .completion-content {
+    h1 {
+      color: var(--ion-color-light) !important;
+    }
+    
+    p {
+      color: var(--ion-color-medium) !important;
+    }
+  }
+
+  .completion-stats {
+    background: var(--ion-color-step-50) !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4) !important;
+    
+    .stat-item {
+      .stat-content {
+        .stat-value {
+          color: var(--ion-color-light) !important;
+        }
+        
+        .stat-label {
+          color: var(--ion-color-medium) !important;
+        }
+      }
+    }
+  }
+
+  .rest-timer,
+  .pause-overlay {
+    background: rgba(0, 0, 0, 0.95) !important;
+  }
+
+  .detail-card:hover {
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5) !important;
   }
 }

@@ -209,17 +209,57 @@
 
     .start-workout-btn {
       --background: linear-gradient(135deg, var(--fitsync-primary), var(--fitsync-secondary));
-      --border-radius: 16px;
-      height: 56px;
+      --border-radius: 20px;
+      --color: #1a1a1a;
+      height: 60px;
       font-size: 1.1rem;
       font-weight: 700;
       text-transform: uppercase;
-      letter-spacing: 0.5px;
-      box-shadow: 0 4px 15px rgba(118, 75, 162, 0.3);
+      letter-spacing: 0.8px;
+      box-shadow: 
+        0 8px 25px rgba(118, 75, 162, 0.4),
+        0 4px 15px rgba(230, 254, 88, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
       margin: 0;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      
+      &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, 
+          transparent, 
+          rgba(255, 255, 255, 0.2), 
+          transparent);
+        transition: left 0.5s;
+      }
+      
+      &:hover {
+        transform: translateY(-2px);
+        box-shadow: 
+          0 12px 35px rgba(118, 75, 162, 0.5),
+          0 6px 20px rgba(230, 254, 88, 0.4),
+          inset 0 1px 0 rgba(255, 255, 255, 0.3);
+          
+        &::before {
+          left: 100%;
+        }
+      }
+      
+      &:active {
+        transform: translateY(0);
+        transition: transform 0.1s;
+      }
 
       ion-icon {
-        font-size: 1.3rem;
+        font-size: 1.4rem;
+        margin-right: 8px;
+        filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.2));
       }
     }
   }
@@ -299,7 +339,9 @@
   .workout-card .workout-content,
   .no-workout-card,
   .quick-actions .action-card {
-    background: var(--ion-color-dark);
+    background: var(--ion-color-step-50);
+    border: 1px solid var(--ion-color-step-200);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
 
     h2,
     h3,
@@ -308,11 +350,197 @@
     .action-title {
       color: var(--ion-color-light);
     }
+
+    p {
+      color: var(--ion-color-medium);
+    }
+  }
+
+  /* Workout Card Dark Mode */
+  .workout-card {
+    background: var(--ion-color-step-50);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+
+    .workout-content {
+      background: var(--ion-color-step-50);
+
+      .start-workout-btn {
+        --background: linear-gradient(135deg, var(--fitsync-primary), var(--fitsync-secondary));
+        --color: var(--ion-color-dark);
+        box-shadow: 0 4px 15px rgba(118, 75, 162, 0.6);
+        color: var(--ion-color-dark);
+        font-weight: 700;
+      }
+    }
+  }
+
+  /* No-workout card specific dark mode */
+  .no-workout-card {
+    background: var(--ion-color-step-50);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+    border: 1px solid var(--ion-color-step-200);
+
+    .no-workout-icon,
+    .empty-icon {
+      color: var(--ion-color-medium);
+    }
+
+    h3 {
+      color: var(--ion-color-light);
+    }
+
+    p {
+      color: var(--ion-color-medium);
+    }
+  }
+
+  /* Rest card dark mode */
+  .rest-card {
+    background: linear-gradient(135deg, 
+      rgba(103, 126, 234, 0.7) 0%, 
+      rgba(118, 75, 162, 0.7) 50%,
+      rgba(76, 175, 80, 0.6) 100%);
+    box-shadow: 
+      0 8px 32px rgba(103, 126, 234, 0.4),
+      0 4px 16px rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.2);
   }
 
   .exercise-item {
     border-bottom-color: var(--ion-color-medium);
   }
+}
+
+/* Dark Mode Support - Class-based approach */
+.dark .date-display,
+.dark .workout-card .workout-content,
+.dark .no-workout-card,
+.dark .quick-actions .action-card,
+body.dark .date-display,
+body.dark .workout-card .workout-content,
+body.dark .no-workout-card,
+body.dark .quick-actions .action-card,
+:host-context(.dark) .date-display,
+:host-context(.dark) .workout-card .workout-content,
+:host-context(.dark) .no-workout-card,
+:host-context(.dark) .quick-actions .action-card {
+  background: var(--ion-color-step-50) !important;
+  border: 1px solid var(--ion-color-step-200) !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4) !important;
+
+  h2,
+  h3,
+  h4,
+  .exercise-name,
+  .action-title {
+    color: var(--ion-color-light) !important;
+  }
+
+  p {
+    color: var(--ion-color-medium) !important;
+  }
+}
+
+/* Workout Card Dark Mode - Class-based */
+.dark .workout-card,
+body.dark .workout-card,
+:host-context(.dark) .workout-card {
+  background: var(--ion-color-step-50) !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4) !important;
+
+  .workout-content {
+    background: var(--ion-color-step-50) !important;
+
+    .start-workout-btn {
+      --background: linear-gradient(135deg, 
+        #E6FE58 0%, 
+        #4CAF50 50%, 
+        #2DD36F 100%) !important;
+      --color: #1a1a1a !important;
+      box-shadow: 
+        0 8px 30px rgba(230, 254, 88, 0.6),
+        0 4px 20px rgba(76, 175, 80, 0.4),
+        0 2px 10px rgba(45, 211, 111, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.3) !important;
+      
+      /* Texto do botão em dark mode */
+      color: #1a1a1a !important;
+      font-weight: 700 !important;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1) !important;
+      
+      /* Efeito glow no dark mode */
+      &::after {
+        content: '';
+        position: absolute;
+        top: -2px;
+        left: -2px;
+        right: -2px;
+        bottom: -2px;
+        background: linear-gradient(135deg, 
+          rgba(230, 254, 88, 0.3) 0%, 
+          rgba(76, 175, 80, 0.2) 50%, 
+          rgba(45, 211, 111, 0.3) 100%);
+        z-index: -1;
+        border-radius: 22px;
+        filter: blur(4px);
+        opacity: 0;
+        transition: opacity 0.3s ease;
+      }
+      
+      &:hover {
+        transform: translateY(-3px);
+        box-shadow: 
+          0 15px 40px rgba(230, 254, 88, 0.7),
+          0 8px 25px rgba(76, 175, 80, 0.5),
+          0 4px 15px rgba(45, 211, 111, 0.4),
+          inset 0 2px 0 rgba(255, 255, 255, 0.4) !important;
+          
+        &::after {
+          opacity: 1;
+        }
+      }
+      
+      ion-icon {
+        filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.3)) !important;
+      }
+    }
+  }
+}
+
+/* No-workout card specific dark mode */
+.dark .no-workout-card,
+body.dark .no-workout-card,
+:host-context(.dark) .no-workout-card {
+  background: var(--ion-color-step-50) !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4) !important;
+  border: 1px solid var(--ion-color-step-200) !important;
+
+  .no-workout-icon,
+  .empty-icon {
+    color: var(--ion-color-medium) !important;
+  }
+
+  h3 {
+    color: var(--ion-color-light) !important;
+  }
+
+  p {
+    color: var(--ion-color-medium) !important;
+  }
+}
+
+/* Rest card dark mode - Class-based */
+.dark .rest-card,
+body.dark .rest-card,
+:host-context(.dark) .rest-card {
+  background: linear-gradient(135deg, 
+    rgba(103, 126, 234, 0.7) 0%, 
+    rgba(118, 75, 162, 0.7) 50%,
+    rgba(76, 175, 80, 0.6) 100%) !important;
+  box-shadow: 
+    0 8px 32px rgba(103, 126, 234, 0.4),
+    0 4px 16px rgba(0, 0, 0, 0.3) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
 }
 
 /* Loading Animation */
