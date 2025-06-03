@@ -41,8 +41,11 @@ export class AppComponent implements OnInit, OnDestroy {
   async initializeApp() {
     await this.platform.ready();
 
-    // Initialize storage
+    // Initialize storage first
     await this.storageService.init();
+
+    // Initialize device controls early to prevent UI issues
+    await this.deviceControlService.initializeDevice();
 
     // Initialize migrated services with Ionic Storage
     // Os serviços DataService, AuthService e ThemeService já se inicializam automaticamente

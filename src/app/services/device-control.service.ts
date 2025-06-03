@@ -9,8 +9,8 @@ import { Platform } from '@ionic/angular';
   providedIn: 'root'
 })
 export class DeviceControlService {
-  
-  constructor(private platform: Platform) {}
+
+  constructor(private platform: Platform) { }
 
   // Initialize device controls
   async initializeDevice(): Promise<void> {
@@ -65,10 +65,17 @@ export class DeviceControlService {
   // Setup status bar
   async setupStatusBar(): Promise<void> {
     try {
-      await StatusBar.setStyle({ style: Style.Dark });
-      await StatusBar.setBackgroundColor({ color: '#1a1a1a' });
+      if (this.platform.is('android')) {
+        await StatusBar.setStyle({ style: Style.Dark });
+        await StatusBar.setBackgroundColor({ color: '#141414' });
+        // IMPORTANTE: overlaysWebView false para evitar sobreposição
+        await StatusBar.setOverlaysWebView({ overlay: false });
+      } else if (this.platform.is('ios')) {
+        await StatusBar.setStyle({ style: Style.Dark });
+        await StatusBar.setOverlaysWebView({ overlay: false });
+      }
       await StatusBar.show();
-      console.log('Status bar configured');
+      console.log('Status bar configured for safe areas - no overlay');
     } catch (error) {
       console.error('Error setting up status bar:', error);
     }
@@ -142,7 +149,7 @@ export class DeviceControlService {
   async setupOrientationListener(): Promise<void> {
     ScreenOrientation.addListener('screenOrientationChange', (result) => {
       console.log('Orientation changed to:', result.type);
-      
+
       // Auto-lock back to portrait if user rotates during workout
       if (result.type.includes('landscape')) {
         this.lockToPortrait();
@@ -232,7 +239,7 @@ export class DeviceControlService {
 
   // Toggle orientation lock
   private isOrientationLocked = false;
-  
+
   async toggleOrientationLock(): Promise<void> {
     if (this.isOrientationLocked) {
       await this.unlockOrientation();

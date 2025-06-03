@@ -11,20 +11,20 @@
 
 .intro-header {
   margin-bottom: 32px;
-  
+
   .workout-icon {
     font-size: 80px;
     color: var(--ion-color-primary);
     margin-bottom: 16px;
   }
-  
+
   h1 {
     font-size: 28px;
     font-weight: 700;
     color: var(--ion-color-dark);
     margin: 0 0 8px 0;
   }
-  
+
   .workout-description {
     font-size: 16px;
     color: var(--ion-color-medium);
@@ -45,18 +45,18 @@
   border-radius: 16px;
   padding: 20px;
   margin-bottom: 24px;
-  
+
   .stat-item {
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 8px;
-    
+
     ion-icon {
       font-size: 24px;
       color: var(--ion-color-primary);
     }
-    
+
     span {
       font-size: 14px;
       font-weight: 500;
@@ -87,7 +87,7 @@
   border-radius: 12px;
   padding: 16px;
   gap: 16px;
-  
+
   .exercise-number {
     width: 32px;
     height: 32px;
@@ -100,17 +100,17 @@
     font-weight: 600;
     font-size: 14px;
   }
-  
+
   .exercise-info {
     flex: 1;
-    
+
     .exercise-name {
       font-size: 16px;
       font-weight: 600;
       color: var(--ion-color-dark);
       margin-bottom: 4px;
     }
-    
+
     .exercise-details {
       font-size: 14px;
       color: var(--ion-color-medium);
@@ -120,7 +120,7 @@
 
 .start-section {
   margin-top: 32px;
-  
+
   .start-button {
     --border-radius: 16px;
     height: 56px;
@@ -131,7 +131,30 @@
 
 /* Execução do Treino */
 .workout-execution {
-  min-height: 100vh;
+  min-height: calc(100vh - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+  padding-top: 16px;
+  /* Padding interno, não para safe area */
+  padding-bottom: 16px;
+}
+
+/* ===== ANDROID SAFE AREA FIXES ===== */
+
+/* Android e iOS specific fixes */
+.platform-android,
+.platform-ios {
+  .workout-execution {
+    /* Remove padding extra que pode causar problemas */
+    padding-top: 16px;
+    padding-bottom: 16px;
+  }
+
+  .progress-section {
+    margin-top: 8px;
+  }
+
+  .timer-section {
+    margin-bottom: 8px;
+  }
 }
 
 .progress-section {
@@ -139,25 +162,25 @@
   padding: 20px;
   margin: 16px;
   border-radius: 16px;
-  
+
   .progress-info {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 12px;
-    
+
     span {
       font-size: 14px;
       font-weight: 500;
       color: var(--ion-color-dark);
-      
+
       &:last-child {
         color: var(--ion-color-primary);
         font-weight: 600;
       }
     }
   }
-  
+
   ion-progress-bar {
     height: 8px;
     border-radius: 4px;
@@ -173,19 +196,19 @@
   margin: 16px;
   border-radius: 16px;
   color: var(--ion-color-dark);
-  
+
   .workout-timer {
     display: flex;
     align-items: center;
     gap: 8px;
     font-size: 18px;
     font-weight: 600;
-    
+
     ion-icon {
       font-size: 20px;
     }
   }
-  
+
   .exercise-counter {
     font-size: 14px;
     font-weight: 500;
@@ -211,19 +234,19 @@
 .rest-content {
   text-align: center;
   padding: 40px;
-  
+
   .rest-icon {
     font-size: 80px;
     color: var(--ion-color-warning);
     margin-bottom: 16px;
   }
-  
+
   h2 {
     font-size: 24px;
     font-weight: 600;
     margin: 0 0 16px 0;
   }
-  
+
   .rest-time {
     font-size: 48px;
     font-weight: 700;
@@ -231,13 +254,13 @@
     margin: 16px 0;
     font-family: 'Courier New', monospace;
   }
-  
+
   p {
     font-size: 16px;
     opacity: 0.8;
     margin: 16px 0 32px 0;
   }
-  
+
   ion-button {
     --color: var(--ion-color-warning);
     --border-color: var(--ion-color-warning);
@@ -252,14 +275,14 @@
 .exercise-header {
   text-align: center;
   margin-bottom: 32px;
-  
+
   h2 {
     font-size: 24px;
     font-weight: 700;
     color: var(--ion-color-dark);
     margin: 0 0 8px 0;
   }
-  
+
   .set-info {
     font-size: 16px;
     color: var(--ion-color-primary);
@@ -281,21 +304,21 @@
   border-radius: 12px;
   padding: 20px;
   gap: 16px;
-  
+
   ion-icon {
     font-size: 24px;
     color: var(--ion-color-primary);
   }
-  
+
   .detail-content {
     flex: 1;
-    
+
     .detail-label {
       font-size: 14px;
       color: var(--ion-color-medium);
       margin-bottom: 4px;
     }
-    
+
     .detail-value {
       font-size: 18px;
       font-weight: 600;
@@ -310,14 +333,14 @@
   padding: 20px;
   margin-bottom: 32px;
   border-left: 4px solid var(--ion-color-warning);
-  
+
   h4 {
     font-size: 16px;
     font-weight: 600;
     color: var(--ion-color-dark);
     margin: 0 0 12px 0;
   }
-  
+
   p {
     font-size: 14px;
     color: var(--ion-color-dark);
@@ -346,21 +369,21 @@
 
 .completion-content {
   text-align: center;
-  
+
   .trophy-icon {
     font-size: 100px;
     color: var(--ion-color-warning);
     margin-bottom: 24px;
     animation: bounce 2s infinite;
   }
-  
+
   h1 {
     font-size: 32px;
     font-weight: 700;
     color: var(--ion-color-dark);
     margin: 0 0 12px 0;
   }
-  
+
   p {
     font-size: 18px;
     color: var(--ion-color-medium);
@@ -375,27 +398,27 @@
   border-radius: 16px;
   padding: 24px;
   margin-bottom: 32px;
-  
+
   .stat-item {
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 12px;
-    
+
     ion-icon {
       font-size: 32px;
       color: var(--ion-color-primary);
     }
-    
+
     .stat-content {
       text-align: center;
-      
+
       .stat-value {
         font-size: 18px;
         font-weight: 700;
         color: var(--ion-color-dark);
       }
-      
+
       .stat-label {
         font-size: 12px;
         color: var(--ion-color-medium);
@@ -411,7 +434,7 @@
   display: flex;
   flex-direction: column;
   gap: 12px;
-  
+
   .action-btn {
     --border-radius: 16px;
     height: 48px;
@@ -435,19 +458,19 @@
 
 .pause-content {
   text-align: center;
-  
+
   .pause-icon {
     font-size: 80px;
     color: var(--ion-color-warning);
     margin-bottom: 16px;
   }
-  
+
   h2 {
     font-size: 24px;
     font-weight: 600;
     margin: 0 0 8px 0;
   }
-  
+
   p {
     font-size: 16px;
     opacity: 0.8;
@@ -457,12 +480,19 @@
 
 /* Animações */
 @keyframes bounce {
-  0%, 20%, 50%, 80%, 100% {
+
+  0%,
+  20%,
+  50%,
+  80%,
+  100% {
     transform: translateY(0);
   }
+
   40% {
     transform: translateY(-10px);
   }
+
   60% {
     transform: translateY(-5px);
   }
@@ -475,11 +505,11 @@
     grid-template-columns: repeat(2, 1fr);
     gap: 16px;
   }
-  
+
   .overview-stats {
     justify-content: space-evenly;
   }
-  
+
   .completion-stats {
     justify-content: space-evenly;
   }
@@ -489,12 +519,12 @@
   .exercise-details {
     grid-template-columns: repeat(3, 1fr);
   }
-  
+
   .workout-intro {
     max-width: 600px;
     margin: 0 auto;
   }
-  
+
   .current-exercise {
     max-width: 800px;
     margin: 0 auto;
@@ -518,7 +548,7 @@
     h1 {
       color: var(--ion-color-light) !important;
     }
-    
+
     .workout-description {
       color: var(--ion-color-medium) !important;
     }
@@ -527,7 +557,7 @@
   .overview-stats {
     background: var(--ion-color-step-50) !important;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4) !important;
-    
+
     .stat-item span {
       color: var(--ion-color-light) !important;
     }
@@ -540,12 +570,12 @@
   .exercise-preview {
     background: var(--ion-color-step-50) !important;
     box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3) !important;
-    
+
     .exercise-info {
       .exercise-name {
         color: var(--ion-color-light) !important;
       }
-      
+
       .exercise-details {
         color: var(--ion-color-medium) !important;
       }
@@ -555,10 +585,10 @@
   .progress-section {
     background: var(--ion-color-step-50) !important;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4) !important;
-    
+
     .progress-info span {
       color: var(--ion-color-light) !important;
-      
+
       &:last-child {
         color: var(--ion-color-primary) !important;
       }
@@ -569,11 +599,11 @@
     background: linear-gradient(135deg, rgba(var(--ion-color-primary-rgb), 0.8), rgba(var(--ion-color-secondary-rgb), 0.8)) !important;
     color: var(--ion-color-light) !important;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4) !important;
-    
+
     .workout-timer {
       color: var(--ion-color-light) !important;
     }
-    
+
     .exercise-counter {
       color: var(--ion-color-light) !important;
     }
@@ -588,12 +618,12 @@
   .detail-card {
     background: var(--ion-color-step-50) !important;
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3) !important;
-    
+
     .detail-content {
       .detail-label {
         color: var(--ion-color-medium) !important;
       }
-      
+
       .detail-value {
         color: var(--ion-color-light) !important;
       }
@@ -603,11 +633,11 @@
   .exercise-instructions {
     background: rgba(var(--ion-color-warning-rgb), 0.15) !important;
     border-left-color: var(--ion-color-warning) !important;
-    
+
     h4 {
       color: var(--ion-color-light) !important;
     }
-    
+
     p {
       color: var(--ion-color-medium) !important;
     }
@@ -617,7 +647,7 @@
     h1 {
       color: var(--ion-color-light) !important;
     }
-    
+
     p {
       color: var(--ion-color-medium) !important;
     }
@@ -626,13 +656,13 @@
   .completion-stats {
     background: var(--ion-color-step-50) !important;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4) !important;
-    
+
     .stat-item {
       .stat-content {
         .stat-value {
           color: var(--ion-color-light) !important;
         }
-        
+
         .stat-label {
           color: var(--ion-color-medium) !important;
         }
@@ -658,7 +688,7 @@ body.dark,
     h1 {
       color: var(--ion-color-light) !important;
     }
-    
+
     .workout-description {
       color: var(--ion-color-medium) !important;
     }
@@ -667,7 +697,7 @@ body.dark,
   .overview-stats {
     background: var(--ion-color-step-50) !important;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4) !important;
-    
+
     .stat-item span {
       color: var(--ion-color-light) !important;
     }
@@ -680,12 +710,12 @@ body.dark,
   .exercise-preview {
     background: var(--ion-color-step-50) !important;
     box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3) !important;
-    
+
     .exercise-info {
       .exercise-name {
         color: var(--ion-color-light) !important;
       }
-      
+
       .exercise-details {
         color: var(--ion-color-medium) !important;
       }
@@ -695,10 +725,10 @@ body.dark,
   .progress-section {
     background: var(--ion-color-step-50) !important;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4) !important;
-    
+
     .progress-info span {
       color: var(--ion-color-light) !important;
-      
+
       &:last-child {
         color: var(--ion-color-primary) !important;
       }
@@ -709,11 +739,11 @@ body.dark,
     background: linear-gradient(135deg, rgba(var(--ion-color-primary-rgb), 0.8), rgba(var(--ion-color-secondary-rgb), 0.8)) !important;
     color: var(--ion-color-light) !important;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4) !important;
-    
+
     .workout-timer {
       color: var(--ion-color-light) !important;
     }
-    
+
     .exercise-counter {
       color: var(--ion-color-light) !important;
     }
@@ -728,12 +758,12 @@ body.dark,
   .detail-card {
     background: var(--ion-color-step-50) !important;
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3) !important;
-    
+
     .detail-content {
       .detail-label {
         color: var(--ion-color-medium) !important;
       }
-      
+
       .detail-value {
         color: var(--ion-color-light) !important;
       }
@@ -743,11 +773,11 @@ body.dark,
   .exercise-instructions {
     background: rgba(var(--ion-color-warning-rgb), 0.15) !important;
     border-left-color: var(--ion-color-warning) !important;
-    
+
     h4 {
       color: var(--ion-color-light) !important;
     }
-    
+
     p {
       color: var(--ion-color-medium) !important;
     }
@@ -757,7 +787,7 @@ body.dark,
     h1 {
       color: var(--ion-color-light) !important;
     }
-    
+
     p {
       color: var(--ion-color-medium) !important;
     }
@@ -766,13 +796,13 @@ body.dark,
   .completion-stats {
     background: var(--ion-color-step-50) !important;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4) !important;
-    
+
     .stat-item {
       .stat-content {
         .stat-value {
           color: var(--ion-color-light) !important;
         }
-        
+
         .stat-label {
           color: var(--ion-color-medium) !important;
         }

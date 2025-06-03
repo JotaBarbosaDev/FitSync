@@ -5,7 +5,7 @@
   --background: var(--fitsync-surface-primary);
   --border: none;
   position: relative;
-  box-shadow: 
+  box-shadow:
     0 -8px 32px rgba(0, 0, 0, 0.06),
     0 -4px 16px rgba(0, 0, 0, 0.04);
   border-radius: var(--fitsync-radius-xl) var(--fitsync-radius-xl) 0 0;
@@ -13,7 +13,10 @@
   border-top: 1px solid var(--fitsync-border-light);
   padding: var(--fitsync-spacing-md) 0 var(--fitsync-spacing-sm);
   margin: 0;
-  
+
+  /* Safe area fix for Android navigation bar */
+  padding-bottom: calc(var(--fitsync-spacing-sm) + env(safe-area-inset-bottom));
+
   &::before {
     content: '';
     position: absolute;
@@ -21,11 +24,9 @@
     left: 0;
     right: 0;
     height: 100%;
-    background: linear-gradient(
-      180deg,
-      var(--fitsync-surface-primary) 0%,
-      rgba(255, 255, 255, 0.95) 100%
-    );
+    background: linear-gradient(180deg,
+        var(--fitsync-surface-primary) 0%,
+        rgba(255, 255, 255, 0.95) 100%);
     z-index: -1;
     border-radius: inherit;
   }
@@ -37,11 +38,11 @@
   --color-selected: var(--fitsync-primary);
   --background-focused: transparent;
   --ripple-color: var(--fitsync-primary-alpha-20);
-  
+
   position: relative;
   padding: var(--fitsync-spacing-sm) var(--fitsync-spacing-xs);
   transition: all 0.3s var(--fitsync-transition-smooth);
-  
+
   /* Tab icon */
   ion-icon {
     font-size: 1.5rem;
@@ -49,7 +50,7 @@
     transition: all 0.3s var(--fitsync-transition-smooth);
     color: inherit;
   }
-  
+
   /* Tab label */
   ion-label {
     font-size: var(--fitsync-text-xs);
@@ -59,7 +60,7 @@
     color: inherit;
     transition: all 0.3s var(--fitsync-transition-smooth);
   }
-  
+
   /* Active tab indicator */
   &::before {
     content: '';
@@ -74,26 +75,26 @@
     opacity: 0;
     transition: all 0.3s var(--fitsync-transition-smooth);
   }
-  
+
   /* Selected state */
   &.tab-selected {
     --color: var(--fitsync-primary);
-    
+
     ion-icon {
       transform: scale(1.1);
       color: var(--fitsync-primary);
       filter: drop-shadow(0 2px 8px rgba(230, 254, 88, 0.3));
     }
-    
+
     ion-label {
       color: var(--fitsync-primary);
       font-weight: 600;
     }
-    
+
     &::before {
       opacity: 1;
     }
-    
+
     /* Glow effect for selected tab */
     &::after {
       content: '';
@@ -103,36 +104,34 @@
       transform: translate(-50%, -50%);
       width: 48px;
       height: 48px;
-      background: radial-gradient(
-        circle,
-        var(--fitsync-primary-alpha-10) 0%,
-        transparent 70%
-      );
+      background: radial-gradient(circle,
+          var(--fitsync-primary-alpha-10) 0%,
+          transparent 70%);
       border-radius: 50%;
       opacity: 0.6;
       z-index: -1;
     }
   }
-  
+
   /* Hover state */
   &:hover:not(.tab-selected) {
     --color: var(--fitsync-text-secondary);
-    
+
     ion-icon {
       transform: scale(1.05);
       color: var(--fitsync-text-secondary);
     }
-    
+
     ion-label {
       color: var(--fitsync-text-secondary);
     }
-    
+
     &::before {
       opacity: 0.4;
       width: 24px;
     }
   }
-  
+
   /* Press/Active state */
   &:active {
     transform: scale(0.95);
@@ -145,14 +144,14 @@
 @media (max-width: 768px) {
   .fitsync-tabs {
     padding: var(--fitsync-spacing-sm) 0;
-    
+
     .fitsync-tab {
       padding: var(--fitsync-spacing-xs) var(--fitsync-spacing-xxs);
-      
+
       ion-icon {
         font-size: 1.375rem;
       }
-      
+
       ion-label {
         font-size: var(--fitsync-text-xxs);
       }
@@ -164,22 +163,22 @@
 @media (max-width: 480px) {
   .fitsync-tabs {
     border-radius: var(--fitsync-radius-lg) var(--fitsync-radius-lg) 0 0;
-    
+
     .fitsync-tab {
       ion-icon {
         font-size: 1.25rem;
         margin-bottom: 2px;
       }
-      
+
       ion-label {
         font-size: 10px;
       }
-      
+
       &::before {
         width: 28px;
         height: 2px;
       }
-      
+
       &.tab-selected::after {
         width: 40px;
         height: 40px;
@@ -192,20 +191,20 @@
 @media (prefers-reduced-motion: reduce) {
   .fitsync-tab {
     transition: none;
-    
+
     ion-icon,
     ion-label,
     &::before {
       transition: none;
     }
-    
+
     &:hover,
     &.tab-selected {
       ion-icon {
         transform: none;
       }
     }
-    
+
     &:active {
       transform: none;
     }
@@ -217,14 +216,15 @@
   .fitsync-tabs {
     border-top-width: 2px;
     box-shadow: none;
-    
+
     .fitsync-tab {
       &.tab-selected {
+
         ion-icon,
         ion-label {
           color: var(--fitsync-text-primary);
         }
-        
+
         &::before {
           height: 4px;
           background: var(--fitsync-primary);
@@ -234,14 +234,47 @@
   }
 }
 
+/* ===== SAFE AREA FIXES FOR ANDROID ===== */
+
+/* Android safe area handling */
+.platform-android {
+  .fitsync-tabs {
+    padding-bottom: max(var(--ion-safe-area-bottom), 8px);
+  }
+
+  /* Fix for gesture navigation bar */
+  ion-tab-bar {
+    padding-bottom: max(var(--ion-safe-area-bottom), 8px);
+  }
+}
+
+/* iOS safe area handling */
+.platform-ios {
+  .fitsync-tabs {
+    padding-bottom: var(--ion-safe-area-bottom);
+  }
+}
+
+/* Ensure tabs don't get covered by system navigation */
+.fitsync-tab {
+  padding-bottom: 4px;
+}
+
 /* ===== ANIMATIONS ===== */
 @keyframes fitsync-tab-bounce {
-  0%, 20%, 50%, 80%, 100% {
+
+  0%,
+  20%,
+  50%,
+  80%,
+  100% {
     transform: translateY(0) scale(1);
   }
+
   40% {
     transform: translateY(-2px) scale(1.05);
   }
+
   60% {
     transform: translateY(-1px) scale(1.02);
   }
