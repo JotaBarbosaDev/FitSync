@@ -25,17 +25,27 @@ interface Exercise {
   standalone: false
 })
 export class WorkoutExecutionPage implements OnInit, OnDestroy {
+  // Propriedades principais
   exercises: Exercise[] = [];
-  dayName = '';
-  source = '';
-  currentExerciseIndex = 0;
-  completedExercises = 0;
-  workoutStarted = false;
-  workoutCompleted = false;
-  workoutDuration = 0;
+  dayName: string = '';
+  source: string = '';
+  currentExerciseIndex: number = 0;
+  completedExercises: number = 0;
+  isWorkoutStarted: boolean = false;
+  isWorkoutCompleted: boolean = false;
+  workoutDuration: number = 0;
   private workoutTimer: any;
   private workoutStartTime: Date | null = null;
   private completedExerciseData: any[] = [];
+  
+  // Getters for template compatibility
+  get workoutStarted(): boolean {
+    return this.isWorkoutStarted;
+  }
+  
+  get workoutCompleted(): boolean {
+    return this.isWorkoutCompleted;
+  }
 
   constructor(
     private route: ActivatedRoute,
@@ -81,7 +91,7 @@ export class WorkoutExecutionPage implements OnInit, OnDestroy {
       return;
     }
 
-    this.workoutStarted = true;
+    this.isWorkoutStarted = true;
     this.workoutDuration = 0;
     this.workoutStartTime = new Date();
     this.completedExerciseData = [];
@@ -152,7 +162,7 @@ export class WorkoutExecutionPage implements OnInit, OnDestroy {
   }
 
   private async completeWorkout() {
-    this.workoutCompleted = true;
+    this.isWorkoutCompleted = true;
     this.stopTimer();
 
     // Salvar sessão de treino no sistema de progresso
@@ -210,7 +220,7 @@ export class WorkoutExecutionPage implements OnInit, OnDestroy {
   }
 
   async goBack() {
-    if (this.workoutStarted && !this.workoutCompleted) {
+    if (this.isWorkoutStarted && !this.isWorkoutCompleted) {
       const alert = await this.alertController.create({
         header: 'Abandonar Treino',
         message: 'Tem certeza que deseja sair? O progresso será perdido.',
@@ -236,6 +246,10 @@ export class WorkoutExecutionPage implements OnInit, OnDestroy {
   // Getters para a template
   get currentExercise(): Exercise | null {
     return this.exercises[this.currentExerciseIndex] || null;
+  }
+
+  getCurrentExercise(): Exercise | null {
+    return this.currentExercise;
   }
 
   get progressPercentage(): number {
@@ -370,7 +384,7 @@ export class WorkoutExecutionPage implements OnInit, OnDestroy {
     // Reset workout state
     this.currentExerciseIndex = 0;
     this.completedExercises = 0;
-    this.workoutCompleted = false;
+    this.isWorkoutCompleted = false;
     this.workoutDuration = 0;
     this.workoutStartTime = null;
     this.completedExerciseData = [];

@@ -1,111 +1,299 @@
+
+/* === KEYFRAME ANIMATIONS === */
+@keyframes dayCardFloat {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-3px); }
+}
+
+@keyframes todayPulse {
+  0%, 100% { box-shadow: 0 4px 20px rgba(var(--ion-color-primary-rgb), 0.3); }
+  50% { box-shadow: 0 6px 30px rgba(var(--ion-color-primary-rgb), 0.5); }
+}
+
+@keyframes shimmerEffect {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes exerciseItemSlide {
+  0% { transform: translateX(-10px); opacity: 0; }
+  100% { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes iconBounce {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+}
+
+@keyframes gradientShift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+@keyframes emptyDayBreath {
+  0%, 100% { transform: scale(1); opacity: 0.6; }
+  50% { transform: scale(1.05); opacity: 0.8; }
+}
+
 .weekly-plan-container {
-  padding: 16px;
+  padding: 20px 16px;
+  background: linear-gradient(135deg, 
+    rgba(var(--ion-color-primary-rgb), 0.02) 0%, 
+    rgba(var(--ion-color-secondary-rgb), 0.02) 100%);
+  min-height: 100vh;
   
   .loading-container {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    min-height: 200px;
-    gap: 16px;
+    min-height: 300px;
+    gap: 20px;
+    
+    ion-spinner {
+      --color: var(--ion-color-primary);
+      transform: scale(1.2);
+    }
     
     p {
       color: var(--ion-color-medium);
       margin: 0;
+      font-size: 16px;
+      font-weight: 500;
+      text-align: center;
+      opacity: 0.8;
     }
   }
   
   .weekly-cards {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 16px;
     
     .day-card {
       position: relative;
       margin: 0;
-      border-radius: 12px;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-      transition: all 0.3s ease;
+      border-radius: 20px;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      box-shadow: 
+        0 8px 32px rgba(0, 0, 0, 0.1),
+        0 2px 8px rgba(0, 0, 0, 0.05),
+        inset 0 1px 0 rgba(255, 255, 255, 0.3);
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
       cursor: pointer;
+      overflow: hidden;
       
-      &:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+      // Decorative patterns
+      &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 1px;
+        background: linear-gradient(90deg, 
+          transparent 0%, 
+          rgba(var(--ion-color-primary-rgb), 0.3) 50%, 
+          transparent 100%);
+        z-index: 1;
       }
       
-      &.today {
-        border: 2px solid var(--ion-color-primary);
-        box-shadow: 0 2px 8px rgba(var(--ion-color-primary-rgb), 0.2);
+      &::after {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle, 
+          rgba(var(--ion-color-primary-rgb), 0.03) 0%, 
+          transparent 70%);
+        opacity: 0;
+        transition: opacity 0.4s ease;
+        pointer-events: none;
+        z-index: 0;
+      }
+      
+      &:hover {
+        transform: translateY(-6px) scale(1.02);
+        box-shadow: 
+          0 20px 60px rgba(0, 0, 0, 0.15),
+          0 8px 24px rgba(0, 0, 0, 0.1),
+          inset 0 1px 0 rgba(255, 255, 255, 0.4);
         
-        .today-indicator {
-          position: absolute;
-          top: 8px;
-          right: 8px;
-          z-index: 1;
+        &::after {
+          opacity: 1;
+        }
+        
+        .exercise-preview-item {
+          transform: translateY(-2px);
+          box-shadow: 0 4px 12px rgba(var(--ion-color-primary-rgb), 0.1);
+        }
+        
+        .exercises-count ion-icon {
+          animation: iconBounce 0.6s ease infinite;
         }
       }
       
+      &.today {
+        background: linear-gradient(135deg, 
+          rgba(var(--ion-color-primary-rgb), 0.08) 0%, 
+          rgba(255, 255, 255, 0.95) 30%, 
+          rgba(255, 255, 255, 0.95) 70%, 
+          rgba(var(--ion-color-primary-rgb), 0.08) 100%);
+        border: 2px solid rgba(var(--ion-color-primary-rgb), 0.3);
+        animation: todayPulse 3s ease-in-out infinite;
+        
+        &::before {
+          height: 3px;
+          background: linear-gradient(90deg, 
+            rgba(var(--ion-color-primary-rgb), 0.6) 0%, 
+            rgba(var(--ion-color-primary-rgb), 1) 50%, 
+            rgba(var(--ion-color-primary-rgb), 0.6) 100%);
+          animation: shimmerEffect 2s ease-in-out infinite;
+        }
+        
+        .today-indicator {
+          position: absolute;
+          top: 12px;
+          right: 12px;
+          z-index: 2;
+          padding: 6px 12px;
+          background: linear-gradient(135deg, 
+            var(--ion-color-primary) 0%, 
+            var(--ion-color-primary-shade) 100%);
+          color: white;
+          border-radius: 20px;
+          font-size: 11px;
+          font-weight: 600;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+          box-shadow: 0 4px 12px rgba(var(--ion-color-primary-rgb), 0.4);
+          animation: dayCardFloat 3s ease-in-out infinite;
+        }
+      }
+      
+      &:not(.today):nth-child(even) {
+        background: linear-gradient(135deg, 
+          rgba(var(--ion-color-secondary-rgb), 0.03) 0%, 
+          rgba(255, 255, 255, 0.95) 100%);
+      }
+      
       ion-card-header {
-        padding: 16px 16px 8px 16px;
+        padding: 20px 20px 12px 20px;
+        position: relative;
+        z-index: 1;
         
         ion-card-subtitle {
           color: var(--ion-color-medium);
-          font-size: 12px;
-          font-weight: 500;
+          font-size: 11px;
+          font-weight: 600;
           text-transform: uppercase;
-          letter-spacing: 1px;
-          margin-bottom: 4px;
+          letter-spacing: 1.5px;
+          margin-bottom: 6px;
+          opacity: 0.8;
         }
         
         ion-card-title {
           color: var(--ion-color-dark);
-          font-size: 18px;
-          font-weight: 600;
+          font-size: 20px;
+          font-weight: 700;
           margin: 0;
+          background: linear-gradient(135deg, 
+            var(--ion-color-dark) 0%, 
+            var(--ion-color-primary) 100%);
+          background-clip: text;
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
         }
       }
       
       ion-card-content {
-        padding: 8px 16px 16px 16px;
+        padding: 12px 20px 20px 20px;
+        position: relative;
+        z-index: 1;
         
         .exercises-count {
           display: flex;
           align-items: center;
-          gap: 8px;
-          margin-bottom: 12px;
+          gap: 10px;
+          margin-bottom: 16px;
+          padding: 8px 12px;
+          background: rgba(var(--ion-color-primary-rgb), 0.08);
+          border-radius: 12px;
+          border-left: 3px solid var(--ion-color-primary);
           
           ion-icon {
             color: var(--ion-color-primary);
-            font-size: 16px;
+            font-size: 18px;
+            transition: all 0.3s ease;
           }
           
           span {
-            color: var(--ion-color-medium);
+            color: var(--ion-color-dark);
             font-size: 14px;
-            font-weight: 500;
+            font-weight: 600;
           }
         }
         
         .exercises-preview {
           .exercise-preview-item {
-            background: var(--ion-color-light);
-            padding: 6px 10px;
-            border-radius: 6px;
-            margin-bottom: 6px;
+            background: linear-gradient(135deg, 
+              rgba(var(--ion-color-light-rgb), 0.8) 0%, 
+              rgba(255, 255, 255, 0.9) 100%);
+            padding: 10px 14px;
+            border-radius: 12px;
+            margin-bottom: 8px;
+            border: 1px solid rgba(var(--ion-color-primary-rgb), 0.1);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            animation: exerciseItemSlide 0.6s ease forwards;
+            position: relative;
+            overflow: hidden;
+            
+            &::before {
+              content: '';
+              position: absolute;
+              top: 0;
+              left: -100%;
+              width: 100%;
+              height: 100%;
+              background: linear-gradient(90deg, 
+                transparent 0%, 
+                rgba(var(--ion-color-primary-rgb), 0.1) 50%, 
+                transparent 100%);
+              transition: left 0.6s ease;
+            }
+            
+            &:hover::before {
+              left: 100%;
+            }
+            
+            &:nth-child(1) { animation-delay: 0.1s; }
+            &:nth-child(2) { animation-delay: 0.2s; }
+            &:nth-child(3) { animation-delay: 0.3s; }
             
             span {
               color: var(--ion-color-dark);
               font-size: 13px;
-              font-weight: 500;
+              font-weight: 600;
+              position: relative;
+              z-index: 1;
             }
           }
           
           .more-exercises {
-            color: var(--ion-color-medium);
+            color: var(--ion-color-primary);
             font-size: 12px;
-            font-style: italic;
+            font-weight: 600;
             text-align: center;
-            margin-top: 8px;
+            margin-top: 12px;
+            padding: 8px;
+            background: rgba(var(--ion-color-primary-rgb), 0.05);
+            border-radius: 8px;
+            border: 1px dashed rgba(var(--ion-color-primary-rgb), 0.3);
           }
         }
         
@@ -113,19 +301,28 @@
           display: flex;
           flex-direction: column;
           align-items: center;
-          gap: 8px;
-          padding: 20px;
+          gap: 12px;
+          padding: 30px 20px;
           color: var(--ion-color-medium);
+          text-align: center;
           
           ion-icon {
-            font-size: 32px;
-            opacity: 0.6;
+            font-size: 48px;
+            animation: emptyDayBreath 3s ease-in-out infinite;
+            color: var(--ion-color-medium);
           }
           
           p {
             margin: 0;
             font-size: 14px;
             font-weight: 500;
+            line-height: 1.4;
+            
+            &:first-of-type {
+              font-weight: 600;
+              color: var(--ion-color-dark);
+              margin-bottom: 4px;
+            }
           }
         }
       }
@@ -133,30 +330,288 @@
   }
 }
 
-// Dark mode support
-@media (prefers-color-scheme: dark) {
+/* === RESPONSIVE DESIGN === */
+@media (max-width: 480px) {
   .weekly-plan-container {
+    padding: 16px 12px;
+    
     .weekly-cards {
+      gap: 12px;
+      
       .day-card {
-        background: var(--ion-color-step-50);
+        border-radius: 16px;
         
         ion-card-header {
+          padding: 16px 16px 10px 16px;
+          
           ion-card-title {
-            color: var(--ion-color-light);
+            font-size: 18px;
           }
         }
         
         ion-card-content {
+          padding: 10px 16px 16px 16px;
+          
+          .exercises-count {
+            padding: 6px 10px;
+            margin-bottom: 12px;
+            
+            ion-icon {
+              font-size: 16px;
+            }
+            
+            span {
+              font-size: 13px;
+            }
+          }
+          
           .exercises-preview {
             .exercise-preview-item {
-              background: var(--ion-color-step-100);
+              padding: 8px 12px;
+              margin-bottom: 6px;
+              
+              span {
+                font-size: 12px;
+              }
+            }
+          }
+          
+          .empty-day {
+            padding: 24px 16px;
+            
+            ion-icon {
+              font-size: 40px;
+            }
+          }
+        }
+        
+        &.today .today-indicator {
+          top: 10px;
+          right: 10px;
+          padding: 4px 8px;
+          font-size: 10px;
+        }
+      }
+    }
+  }
+}
+
+@media (min-width: 768px) {
+  .weekly-plan-container {
+    padding: 24px;
+    
+    .weekly-cards {
+      gap: 20px;
+      
+      .day-card {
+        &:hover {
+          transform: translateY(-8px) scale(1.03);
+        }
+        
+        ion-card-header {
+          padding: 24px 24px 16px 24px;
+          
+          ion-card-title {
+            font-size: 22px;
+          }
+        }
+        
+        ion-card-content {
+          padding: 16px 24px 24px 24px;
+        }
+      }
+    }
+  }
+}
+
+@media (min-width: 1024px) {
+  .weekly-plan-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 32px 24px;
+  }
+}
+
+/* === DARK MODE SUPPORT === */
+@media (prefers-color-scheme: dark) {
+  .weekly-plan-container {
+    background: linear-gradient(135deg, 
+      rgba(255, 255, 255, 0.02) 0%, 
+      rgba(var(--ion-color-primary-rgb), 0.03) 100%);
+    
+    .weekly-cards {
+      .day-card {
+        background: rgba(var(--ion-color-step-100), 0.7);
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        box-shadow: 
+          0 8px 32px rgba(0, 0, 0, 0.3),
+          0 2px 8px rgba(0, 0, 0, 0.2),
+          inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        
+        &::before {
+          background: linear-gradient(90deg, 
+            transparent 0%, 
+            rgba(var(--ion-color-primary-rgb), 0.4) 50%, 
+            transparent 100%);
+        }
+        
+        &::after {
+          background: radial-gradient(circle, 
+            rgba(var(--ion-color-primary-rgb), 0.05) 0%, 
+            transparent 70%);
+        }
+        
+        &:hover {
+          box-shadow: 
+            0 20px 60px rgba(0, 0, 0, 0.4),
+            0 8px 24px rgba(0, 0, 0, 0.3),
+            inset 0 1px 0 rgba(255, 255, 255, 0.2);
+        }
+        
+        &.today {
+          background: linear-gradient(135deg, 
+            rgba(var(--ion-color-primary-rgb), 0.15) 0%, 
+            rgba(var(--ion-color-step-100), 0.8) 30%, 
+            rgba(var(--ion-color-step-100), 0.8) 70%, 
+            rgba(var(--ion-color-primary-rgb), 0.15) 100%);
+          border: 2px solid rgba(var(--ion-color-primary-rgb), 0.5);
+          
+          &::before {
+            background: linear-gradient(90deg, 
+              rgba(var(--ion-color-primary-rgb), 0.8) 0%, 
+              var(--ion-color-primary) 50%, 
+              rgba(var(--ion-color-primary-rgb), 0.8) 100%);
+          }
+        }
+        
+        &:not(.today):nth-child(even) {
+          background: linear-gradient(135deg, 
+            rgba(var(--ion-color-secondary-rgb), 0.05) 0%, 
+            rgba(var(--ion-color-step-100), 0.7) 100%);
+        }
+        
+        ion-card-header {
+          ion-card-subtitle {
+            color: var(--ion-color-medium);
+            opacity: 0.9;
+          }
+          
+          ion-card-title {
+            background: linear-gradient(135deg, 
+              var(--ion-color-light) 0%, 
+              var(--ion-color-primary-tint) 100%);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+          }
+        }
+        
+        ion-card-content {
+          .exercises-count {
+            background: rgba(var(--ion-color-primary-rgb), 0.15);
+            border-left-color: var(--ion-color-primary-tint);
+            
+            span {
+              color: var(--ion-color-light);
+            }
+          }
+          
+          .exercises-preview {
+            .exercise-preview-item {
+              background: linear-gradient(135deg, 
+                rgba(var(--ion-color-step-150), 0.8) 0%, 
+                rgba(var(--ion-color-step-100), 0.9) 100%);
+              border: 1px solid rgba(var(--ion-color-primary-rgb), 0.2);
+              
+              &::before {
+                background: linear-gradient(90deg, 
+                  transparent 0%, 
+                  rgba(var(--ion-color-primary-rgb), 0.2) 50%, 
+                  transparent 100%);
+              }
               
               span {
                 color: var(--ion-color-light);
               }
             }
+            
+            .more-exercises {
+              color: var(--ion-color-primary-tint);
+              background: rgba(var(--ion-color-primary-rgb), 0.1);
+              border-color: rgba(var(--ion-color-primary-rgb), 0.4);
+            }
+          }
+          
+          .empty-day {
+            color: var(--ion-color-medium);
+            
+            ion-icon {
+              color: var(--ion-color-medium);
+            }
+            
+            p {
+              &:first-of-type {
+                color: var(--ion-color-light);
+              }
+            }
           }
         }
+      }
+    }
+  }
+}
+
+/* === ACCESSIBILITY === */
+@media (prefers-reduced-motion: reduce) {
+  .weekly-plan-container .weekly-cards .day-card {
+    &, &::before, &::after {
+      animation: none !important;
+      transition: none !important;
+    }
+    
+    &:hover {
+      transform: none !important;
+    }
+    
+    .exercises-count ion-icon,
+    .exercise-preview-item,
+    .empty-day ion-icon {
+      animation: none !important;
+    }
+  }
+  
+  @keyframes dayCardFloat,
+  @keyframes todayPulse,
+  @keyframes shimmerEffect,
+  @keyframes exerciseItemSlide,
+  @keyframes iconBounce,
+  @keyframes gradientShift,
+  @keyframes emptyDayBreath {
+    to { transform: none; opacity: inherit; background-position: inherit; }
+  }
+}
+
+/* === HIGH CONTRAST MODE === */
+@media (prefers-contrast: high) {
+  .weekly-plan-container .weekly-cards .day-card {
+    border: 2px solid var(--ion-color-dark);
+    background: var(--ion-background-color) !important;
+    
+    &.today {
+      border: 3px solid var(--ion-color-primary);
+      background: rgba(var(--ion-color-primary-rgb), 0.1) !important;
+    }
+    
+    ion-card-content {
+      .exercises-count {
+        background: var(--ion-color-primary);
+        color: var(--ion-color-primary-contrast);
+      }
+      
+      .exercises-preview .exercise-preview-item {
+        background: var(--ion-color-light);
+        border: 1px solid var(--ion-color-dark);
       }
     }
   }

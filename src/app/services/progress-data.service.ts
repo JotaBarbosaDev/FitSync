@@ -65,15 +65,31 @@ export class ProgressDataService {
 
   private storage: Storage | null = null;
   private isInitialized = false;
+  private initPromise: Promise<void> | null = null;
 
   constructor(private ionicStorage: Storage) {
-    this.init();
+    // Não inicializar automaticamente - será feito quando necessário
   }
 
   async init() {
-    this.storage = await this.ionicStorage.create();
-    await this.loadAllData();
-    this.isInitialized = true;
+    if (this.isInitialized || this.initPromise) {
+      return this.initPromise;
+    }
+
+    this.initPromise = this.doInit();
+    return this.initPromise;
+  }
+
+  private async doInit() {
+    try {
+      this.storage = await this.ionicStorage.create();
+      await this.loadAllData();
+      this.isInitialized = true;
+    } catch (error) {
+      console.error('ProgressDataService: Erro na inicialização:', error);
+      this.isInitialized = false;
+      this.initPromise = null;
+    }
   }
 
   // Workout Session Methods

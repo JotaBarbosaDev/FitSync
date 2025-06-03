@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
@@ -6,6 +6,7 @@ import { WorkoutManagementService } from '../services/workout-management.service
 import { ProgressDataService } from '../services/progress-data.service';
 import { WorkoutProgress, WorkoutSession } from '../models/workout-system.model';
 import { Chart, ChartConfiguration, ChartType, registerables } from 'chart.js';
+import { Subscription } from 'rxjs';
 
 Chart.register(...registerables);
 
@@ -36,7 +37,7 @@ interface ProgressDataPoint {
   standalone: true,
   imports: [CommonModule, FormsModule, IonicModule, DatePipe]
 })
-export class WorkoutProgressPage implements OnInit {
+export class WorkoutProgressPage implements OnInit, OnDestroy {
   @ViewChild('weeklyChart', { static: false }) weeklyChartRef!: ElementRef;
   @ViewChild('workoutDistributionChart', { static: false }) workoutDistributionRef!: ElementRef;
   @ViewChild('progressChart', { static: false }) progressChartRef!: ElementRef;
@@ -51,6 +52,17 @@ export class WorkoutProgressPage implements OnInit {
 
   selectedPeriod: 'week' | 'month' | 'year' = 'month';
   selectedMetric: 'frequency' | 'duration' | 'calories' = 'frequency';
+  
+  isLoading = true;
+  private subscriptions: Subscription[] = [];
+
+  // Cache para evitar recálculos desnecessários e loops infinitos
+  private _cachedStreakText: string = '0 dias';
+  private _cachedLastWorkoutText: string = 'Nenhum treino realizado';
+  private _cachedMetricLabel: string = 'Treinos Realizados';
+  private _cachedAchievements: any[] = [];
+  private _lastCacheUpdateData: string = '';
+  private _isUpdatingCharts: boolean = false;
 
   constructor(
     private workoutService: WorkoutManagementService,
@@ -61,11 +73,17 @@ export class WorkoutProgressPage implements OnInit {
     await this.loadData();
   }
 
+  ngOnDestroy() {
+    this.subscriptions.forEach(sub => sub.unsubscribe());
+    this.destroyCharts();
+  }
+
   async ionViewDidEnter() {
-    await this.loadData();
-    setTimeout(() => {
-      this.createCharts();
-    }, 100);
+    if (!this.isLoading && this.stats) {
+      setTimeout(() => {
+        this.createCharts();
+      }, 100);
+    }
   }
 
   ionViewWillLeave() {
@@ -74,57 +92,42 @@ export class WorkoutProgressPage implements OnInit {
 
   async loadData() {
     try {
-      // Primeiro, tentar carregar dados do ProgressDataService
+      this.isLoading = true;
+      
+      // Inicializar o ProgressDataService apenas uma vez
+      await this.progressDataService.init();
+      
+      // Carregar dados do ProgressDataService usando subscriptions gerenciadas
       await this.loadDataFromProgressService();
       
-      // Depois, carregar dados do WorkoutManagementService como fallback
-      this.workoutService.getUserWorkoutSessions().subscribe(sessions => {
-        // Se não temos dados do ProgressDataService, usar dados do WorkoutManagementService
-        if (this.recentSessions.length === 0) {
-          this.recentSessions = sessions
-            .sort((a, b) => new Date(b.startTime).getTime() - new Date(a.startTime).getTime())
-            .slice(0, 10);
+      // Se não há dados, tentar carregar do WorkoutManagementService como fallback
+      if (this.recentSessions.length === 0) {
+        await this.loadDataFromWorkoutService();
+      }
+
+      // Atualizar cache após carregar dados
+      this.updateCache();
+
+      this.isLoading = false;
+      
+      // Criar gráficos após carregar dados
+      setTimeout(() => {
+        if (this.stats) {
+          this.createCharts();
         }
-
-        // Calculate weekly stats from sessions
-        const weekAgo = new Date();
-        weekAgo.setDate(weekAgo.getDate() - 7);
-
-        const weeklySessions = this.recentSessions.filter(session =>
-          new Date(session.startTime) >= weekAgo
-        );
-
-        // Get stats using the existing method and enhance with weekly data
-        if (!this.stats) {
-          this.workoutService.getWorkoutStats().subscribe(stats => {
-            this.stats = {
-              ...stats,
-              currentStreak: this.calculateCurrentStreak(),
-              weeklyWorkouts: weeklySessions.length,
-              weeklyDuration: weeklySessions.reduce((sum, s) => sum + (s.duration || 0), 0)
-            };
-          });
-        }
-
-        // Generate progress data from sessions if not already loaded
-        if (this.progressData.length === 0) {
-          this.progressData = this.generateProgressData(this.recentSessions);
-        }
-      });
+      }, 100);
 
     } catch (error) {
       console.error('Erro ao carregar dados de progresso:', error);
+      this.isLoading = false;
     }
   }
 
   // Novo método para carregar dados do ProgressDataService
   private async loadDataFromProgressService() {
     try {
-      // Inicializar o ProgressDataService
-      await this.progressDataService.init();
-
-      // Carregar dados das sessões do ProgressDataService
-      this.progressDataService.workoutSessions$.subscribe(sessions => {
+      // Carregar dados das sessões do ProgressDataService com subscription gerenciada
+      const sessionsSubscription = this.progressDataService.workoutSessions$.subscribe(sessions => {
         if (sessions.length > 0) {
           // Converter formato do ProgressDataService para o formato esperado
           this.recentSessions = sessions.map(session => ({
@@ -156,42 +159,99 @@ export class WorkoutProgressPage implements OnInit {
           .sort((a, b) => new Date(b.startTime).getTime() - new Date(a.startTime).getTime())
           .slice(0, 10);
 
-          // Calcular estatísticas
+          // Gerar dados de progresso
+          this.progressData = this.generateProgressDataFromProgressService(sessions);
+          
+          // Invalidar cache para forçar recálculo
+          this._lastCacheUpdateData = '';
+        }
+      });
+      
+      this.subscriptions.push(sessionsSubscription);
+
+      // Carregar estatísticas do ProgressDataService com subscription gerenciada
+      const statsSubscription = this.progressDataService.progressStats$.subscribe(progressStats => {
+        if (progressStats) {
           const weekAgo = new Date();
           weekAgo.setDate(weekAgo.getDate() - 7);
 
-          const weeklySessions = sessions.filter(session =>
-            new Date(session.date) >= weekAgo
+          const weeklySessions = this.recentSessions.filter(session =>
+            new Date(session.startTime) >= weekAgo
           );
 
-          // Carregar estatísticas do ProgressDataService
-          this.progressDataService.progressStats$.subscribe(progressStats => {
-            if (progressStats) {
-              this.stats = {
-                totalWorkouts: progressStats.totalWorkouts,
-                totalDuration: sessions.reduce((sum, s) => sum + s.duration, 0),
-                totalCalories: 0, // Calorias ainda não implementadas no ProgressDataService
-                averageRating: 5,
-                thisWeekWorkouts: weeklySessions.length,
-                thisMonthWorkouts: sessions.filter(s => {
-                  const monthAgo = new Date();
-                  monthAgo.setMonth(monthAgo.getMonth() - 1);
-                  return new Date(s.date) >= monthAgo;
-                }).length,
-                currentStreak: progressStats.currentStreak || 0,
-                weeklyWorkouts: weeklySessions.length,
-                weeklyDuration: weeklySessions.reduce((sum, s) => sum + s.duration, 0)
-              };
-            }
-          });
-
-          // Gerar dados de progresso
-          this.progressData = this.generateProgressDataFromProgressService(sessions);
+          this.stats = {
+            totalWorkouts: progressStats.totalWorkouts,
+            totalDuration: progressStats.totalWorkouts > 0 ? progressStats.averageWorkoutDuration * progressStats.totalWorkouts : 0,
+            totalCalories: 0, // Calorias ainda não implementadas no ProgressDataService
+            averageRating: 5,
+            thisWeekWorkouts: weeklySessions.length,
+            thisMonthWorkouts: this.recentSessions.filter(s => {
+              const monthAgo = new Date();
+              monthAgo.setMonth(monthAgo.getMonth() - 1);
+              return new Date(s.startTime) >= monthAgo;
+            }).length,
+            currentStreak: progressStats.currentStreak || 0,
+            weeklyWorkouts: weeklySessions.length,
+            weeklyDuration: weeklySessions.reduce((sum, s) => sum + (s.duration || 0), 0)
+          };
+          
+          // Invalidar cache para forçar recálculo
+          this._lastCacheUpdateData = '';
         }
       });
 
+      this.subscriptions.push(statsSubscription);
+
     } catch (error) {
       console.error('Erro ao carregar dados do ProgressDataService:', error);
+    }
+  }
+
+  // Método para carregar dados do WorkoutManagementService como fallback
+  private async loadDataFromWorkoutService() {
+    try {
+      const sessionsSubscription = this.workoutService.getUserWorkoutSessions().subscribe(sessions => {
+        this.recentSessions = sessions
+          .sort((a, b) => new Date(b.startTime).getTime() - new Date(a.startTime).getTime())
+          .slice(0, 10);
+
+        // Calculate weekly stats from sessions
+        const weekAgo = new Date();
+        weekAgo.setDate(weekAgo.getDate() - 7);
+
+        const weeklySessions = this.recentSessions.filter(session =>
+          new Date(session.startTime) >= weekAgo
+        );
+
+        // Get stats using the existing method and enhance with weekly data
+        if (!this.stats) {
+          const statsSubscription = this.workoutService.getWorkoutStats().subscribe(stats => {
+            this.stats = {
+              ...stats,
+              currentStreak: this.calculateCurrentStreak(),
+              weeklyWorkouts: weeklySessions.length,
+              weeklyDuration: weeklySessions.reduce((sum, s) => sum + (s.duration || 0), 0)
+            };
+            
+            // Invalidar cache para forçar recálculo
+            this._lastCacheUpdateData = '';
+          });
+          this.subscriptions.push(statsSubscription);
+        }
+
+        // Generate progress data from sessions if not already loaded
+        if (this.progressData.length === 0) {
+          this.progressData = this.generateProgressData(this.recentSessions);
+        }
+        
+        // Invalidar cache para forçar recálculo
+        this._lastCacheUpdateData = '';
+      });
+
+      this.subscriptions.push(sessionsSubscription);
+
+    } catch (error) {
+      console.error('Erro ao carregar dados do WorkoutManagementService:', error);
     }
   }
 
@@ -226,12 +286,29 @@ export class WorkoutProgressPage implements OnInit {
   }
 
   async onPeriodChange() {
-    await this.loadData();
-    this.updateCharts();
+    // Evitar loops infinitos durante atualização
+    if (this._isUpdatingCharts) return;
+    
+    this._isUpdatingCharts = true;
+    try {
+      await this.loadData();
+      this.updateChartsWithCache();
+    } finally {
+      this._isUpdatingCharts = false;
+    }
   }
 
   async onMetricChange() {
-    this.updateCharts();
+    // Evitar loops infinitos durante atualização
+    if (this._isUpdatingCharts) return;
+    
+    this._isUpdatingCharts = true;
+    try {
+      this.updateCache(); // Atualizar cache do label da métrica
+      this.updateChartsWithCache();
+    } finally {
+      this._isUpdatingCharts = false;
+    }
   }
 
   // Generate progress data from workout sessions
@@ -424,9 +501,22 @@ export class WorkoutProgressPage implements OnInit {
   }
 
   private updateCharts() {
+    // Evitar loops infinitos durante atualização
+    if (this._isUpdatingCharts) return;
+    
     this.destroyCharts();
     setTimeout(() => {
       this.createCharts();
+    }, 100);
+  }
+
+  private updateChartsWithCache() {
+    // Método otimizado que usa cache e evita loops
+    this.destroyCharts();
+    setTimeout(() => {
+      if (this.stats && !this._isUpdatingCharts) {
+        this.createCharts();
+      }
     }, 100);
   }
 
@@ -501,19 +591,46 @@ export class WorkoutProgressPage implements OnInit {
   }
 
   getMetricLabel(): string {
-    switch (this.selectedMetric) {
-      case 'frequency': return 'Treinos Realizados';
-      case 'duration': return 'Duração (min)';
-      case 'calories': return 'Calorias Queimadas';
-      default: return '';
+    this.updateCache();
+    return this._cachedMetricLabel;
+  }
+
+  // Métodos otimizados para template com cache
+  getStreakText(): string {
+    this.updateCache();
+    return this._cachedStreakText;
+  }
+
+  getLastWorkoutText(): string {
+    this.updateCache();
+    return this._cachedLastWorkoutText;
+  }
+
+  getAchievements() {
+    this.updateCache();
+    return this._cachedAchievements;
+  }
+
+  // Sistema de cache para evitar recálculos desnecessários
+  private updateCache(): void {
+    const currentData = JSON.stringify({
+      stats: this.stats,
+      sessionsLength: this.recentSessions.length,
+      selectedMetric: this.selectedMetric,
+      firstSessionTime: this.recentSessions[0]?.startTime
+    });
+
+    if (currentData !== this._lastCacheUpdateData) {
+      this._cachedStreakText = this.calculateStreakText();
+      this._cachedLastWorkoutText = this.calculateLastWorkoutText();
+      this._cachedMetricLabel = this.calculateMetricLabel();
+      this._cachedAchievements = this.calculateAchievements();
+      this._lastCacheUpdateData = currentData;
     }
   }
 
-  getProgressPercentage(current: number, target: number): number {
-    return Math.min((current / target) * 100, 100);
-  }
-
-  getStreakText(): string {
+  // Métodos de cálculo privados (não chamados no template)
+  private calculateStreakText(): string {
     if (!this.stats) return '0 dias';
 
     const streak = this.stats.currentStreak || 0;
@@ -522,7 +639,7 @@ export class WorkoutProgressPage implements OnInit {
     return `${streak} dias`;
   }
 
-  getLastWorkoutText(): string {
+  private calculateLastWorkoutText(): string {
     if (!this.recentSessions.length) return 'Nenhum treino realizado';
 
     const lastSession = this.recentSessions[0];
@@ -533,17 +650,16 @@ export class WorkoutProgressPage implements OnInit {
     return `${daysDiff} dias atrás`;
   }
 
-  formatDuration(seconds: number): string {
-    const hours = Math.floor(seconds / 3600);
-    const minutes = Math.floor((seconds % 3600) / 60);
-
-    if (hours > 0) {
-      return `${hours}h ${minutes}m`;
+  private calculateMetricLabel(): string {
+    switch (this.selectedMetric) {
+      case 'frequency': return 'Treinos Realizados';
+      case 'duration': return 'Duração (min)';
+      case 'calories': return 'Calorias Queimadas';
+      default: return '';
     }
-    return `${minutes}m`;
   }
 
-  getAchievements() {
+  private calculateAchievements(): any[] {
     if (!this.stats) return [];
 
     const achievements = [];
@@ -576,5 +692,20 @@ export class WorkoutProgressPage implements OnInit {
     }
 
     return achievements;
+  }
+
+  // Métodos utilitários simples (sem cache necessário)
+  getProgressPercentage(current: number, target: number): number {
+    return Math.min((current / target) * 100, 100);
+  }
+
+  formatDuration(seconds: number): string {
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+
+    if (hours > 0) {
+      return `${hours}h ${minutes}m`;
+    }
+    return `${minutes}m`;
   }
 }

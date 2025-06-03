@@ -1,12 +1,15 @@
 <!-- Header -->
-<ion-header class="header-modern">
-  <ion-toolbar color="primary">
-    <ion-title class="header-title">
-      <div class="title-content">
-        <h1>FitSync</h1>
-        <p class="greeting">{{ getGreeting() }}, {{ userProfile.name }}!</p>
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <div class="header-content">
+      <div class="header-left"> 
+        <div class="header-title">
+          <h1 class="title-large text-gradient-primary">FitSync Pro</h1>
+        </div>
       </div>
-    </ion-title>
+      <div class="header-actions">
+      </div>
+    </div>
   </ion-toolbar>
 </ion-header>
 
@@ -42,7 +45,7 @@
         <div class="workout-card">
           <div class="workout-header">
             <h3>{{ currentWorkout.name }}</h3>
-            <span class="today-badge">{{ getCurrentDate() }}</span>
+            
 
             <div class="workout-stats">
               <div class="stat-item">
@@ -82,7 +85,7 @@
     </div>
 
     <!-- Repeat Today's Workout Section -->
-    <div *ngIf="hasCompletedWorkoutToday" class="repeat-workout-section">
+    <!-- <div *ngIf="hasCompletedWorkoutToday" class="repeat-workout-section">
       <div class="repeat-workout-card">
         <div class="repeat-header">
           <div class="repeat-icon">
@@ -100,6 +103,6 @@
           REPETIR TREINO DE HOJE
         </ion-button>
       </div>
-    </div>
+    </div> -->
   </div>
 </ion-content>
