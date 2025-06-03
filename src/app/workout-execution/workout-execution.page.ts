@@ -1,6 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AlertController, ToastController } from '@ionic/angular';
+import { ProgressDataService } from '../services/progress-data.service';
 
 interface Exercise {
   id: string;
@@ -33,16 +34,20 @@ export class WorkoutExecutionPage implements OnInit, OnDestroy {
   workoutCompleted = false;
   workoutDuration = 0;
   private workoutTimer: any;
+  private workoutStartTime: Date | null = null;
+  private completedExerciseData: any[] = [];
 
   constructor(
     private route: ActivatedRoute,
     public router: Router,
     private alertController: AlertController,
-    private toastController: ToastController
+    private toastController: ToastController,
+    private progressDataService: ProgressDataService
   ) { }
 
   ngOnInit() {
     this.loadExercisesFromUrl();
+    this.progressDataService.init();
   }
 
   ngOnDestroy() {
@@ -78,6 +83,8 @@ export class WorkoutExecutionPage implements OnInit, OnDestroy {
 
     this.workoutStarted = true;
     this.workoutDuration = 0;
+    this.workoutStartTime = new Date();
+    this.completedExerciseData = [];
     this.startTimer();
     console.log('Treino iniciado!');
   }
@@ -103,11 +110,31 @@ export class WorkoutExecutionPage implements OnInit, OnDestroy {
 
   private async completeCurrentExercise() {
     if (this.currentExerciseIndex < this.exercises.length) {
-      this.exercises[this.currentExerciseIndex].completed = true;
+      const currentExercise = this.exercises[this.currentExerciseIndex];
+      currentExercise.completed = true;
       this.completedExercises++;
 
+      // Salvar dados do exercício completado
+      const exerciseData = {
+        exerciseId: currentExercise.id,
+        exerciseName: currentExercise.name,
+        muscleGroup: currentExercise.muscleGroups[0] || 'unknown',
+        completedAt: new Date(),
+        duration: currentExercise.duration || 0,
+        calories: currentExercise.calories || 0,
+        difficulty: currentExercise.difficulty,
+        // Simular dados de séries - em uma implementação real, você coletaria esses dados do usuário
+        sets: [
+          { reps: 12, weight: 0, rpe: 7 },
+          { reps: 10, weight: 0, rpe: 8 },
+          { reps: 8, weight: 0, rpe: 9 }
+        ]
+      };
+
+      this.completedExerciseData.push(exerciseData);
+
       const toast = await this.toastController.create({
-        message: `✅ ${this.exercises[this.currentExerciseIndex].name} concluído!`,
+        message: `✅ ${currentExercise.name} concluído!`,
         duration: 2000,
         color: 'success',
         position: 'top'
@@ -128,9 +155,12 @@ export class WorkoutExecutionPage implements OnInit, OnDestroy {
     this.workoutCompleted = true;
     this.stopTimer();
 
+    // Salvar sessão de treino no sistema de progresso
+    await this.saveWorkoutSession();
+
     const alert = await this.alertController.create({
       header: '🎉 Parabéns!',
-      message: `Você completou o treino de ${this.dayName}!\n\nDuração: ${this.formatDuration(this.workoutDuration)}\nExercícios: ${this.completedExercises}/${this.exercises.length}`,
+      message: `Você completou o treino de ${this.dayName}!\n\nDuração: ${this.formatDuration(this.workoutDuration)}\nExercícios: ${this.completedExercises}/${this.exercises.length}\n\n📊 Dados salvos no seu progresso!`,
       buttons: [
         {
           text: 'Ver Progresso',
@@ -160,7 +190,11 @@ export class WorkoutExecutionPage implements OnInit, OnDestroy {
         },
         {
           text: 'Finalizar',
-          handler: () => {
+          handler: async () => {
+            // Salvar dados mesmo para treino incompleto
+            if (this.completedExerciseData.length > 0) {
+              await this.saveWorkoutSession();
+            }
             this.completeWorkout();
           }
         }
@@ -286,6 +320,66 @@ export class WorkoutExecutionPage implements OnInit, OnDestroy {
   nextExercise() {
     if (this.currentExerciseIndex < this.exercises.length - 1) {
       this.currentExerciseIndex++;
+    }
+  }
+
+  private async saveWorkoutSession() {
+    if (!this.workoutStartTime) return;
+
+    try {
+      // Calcular duração total
+      const endTime = new Date();
+      const durationMinutes = Math.round((endTime.getTime() - this.workoutStartTime.getTime()) / 60000);
+      
+      // Calcular volume total e calorias
+      const totalVolume = this.completedExerciseData.reduce((total, exercise) => {
+        return total + exercise.sets.reduce((setTotal: number, set: any) => {
+          return setTotal + (set.reps * set.weight);
+        }, 0);
+      }, 0);
+
+      const totalCalories = this.completedExerciseData.reduce((total, exercise) => {
+        return total + (exercise.calories || 0);
+      }, 0);
+
+      // Criar dados da sessão para o ProgressDataService
+      const workoutSession = {
+        date: this.workoutStartTime.toISOString(),
+        exercises: this.completedExerciseData.map(exercise => ({
+          exerciseId: exercise.exerciseId,
+          exerciseName: exercise.exerciseName,
+          sets: exercise.sets,
+          totalVolume: exercise.sets.reduce((total: number, set: any) => total + (set.reps * set.weight), 0),
+          muscleGroup: exercise.muscleGroup
+        })),
+        duration: durationMinutes,
+        totalVolume: totalVolume,
+        muscleGroups: [...new Set(this.completedExerciseData.map(ex => ex.muscleGroup))],
+        notes: `Treino de ${this.dayName} - ${this.completedExercises} exercícios completados`
+      };
+
+      // Salvar usando o ProgressDataService
+      await this.progressDataService.addWorkoutSession(workoutSession);
+
+      // Mostrar toast de confirmação
+      const toast = await this.toastController.create({
+        message: '✅ Dados do treino salvos com sucesso!',
+        duration: 2000,
+        color: 'success',
+        position: 'top'
+      });
+      await toast.present();
+
+    } catch (error) {
+      console.error('Erro ao salvar sessão de treino:', error);
+      
+      const toast = await this.toastController.create({
+        message: '⚠️ Erro ao salvar dados do treino',
+        duration: 3000,
+        color: 'warning',
+        position: 'top'
+      });
+      await toast.present();
     }
   }
 }

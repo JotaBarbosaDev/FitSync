@@ -3,6 +3,7 @@ import { CommonModule, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
 import { WorkoutManagementService } from '../services/workout-management.service';
+import { ProgressDataService } from '../services/progress-data.service';
 import { WorkoutProgress, WorkoutSession } from '../models/workout-system.model';
 import { Chart, ChartConfiguration, ChartType, registerables } from 'chart.js';
 
@@ -51,7 +52,10 @@ export class WorkoutProgressPage implements OnInit {
   selectedPeriod: 'week' | 'month' | 'year' = 'month';
   selectedMetric: 'frequency' | 'duration' | 'calories' = 'frequency';
 
-  constructor(private workoutService: WorkoutManagementService) { }
+  constructor(
+    private workoutService: WorkoutManagementService,
+    private progressDataService: ProgressDataService
+  ) { }
 
   async ngOnInit() {
     await this.loadData();
@@ -70,38 +74,155 @@ export class WorkoutProgressPage implements OnInit {
 
   async loadData() {
     try {
-      // Get recent sessions using the existing method
+      // Primeiro, tentar carregar dados do ProgressDataService
+      await this.loadDataFromProgressService();
+      
+      // Depois, carregar dados do WorkoutManagementService como fallback
       this.workoutService.getUserWorkoutSessions().subscribe(sessions => {
-        // Sort by date and get the 10 most recent
-        this.recentSessions = sessions
-          .sort((a, b) => new Date(b.startTime).getTime() - new Date(a.startTime).getTime())
-          .slice(0, 10);
+        // Se não temos dados do ProgressDataService, usar dados do WorkoutManagementService
+        if (this.recentSessions.length === 0) {
+          this.recentSessions = sessions
+            .sort((a, b) => new Date(b.startTime).getTime() - new Date(a.startTime).getTime())
+            .slice(0, 10);
+        }
 
         // Calculate weekly stats from sessions
         const weekAgo = new Date();
         weekAgo.setDate(weekAgo.getDate() - 7);
 
-        const weeklySessions = sessions.filter(session =>
+        const weeklySessions = this.recentSessions.filter(session =>
           new Date(session.startTime) >= weekAgo
         );
 
         // Get stats using the existing method and enhance with weekly data
-        this.workoutService.getWorkoutStats().subscribe(stats => {
-          this.stats = {
-            ...stats,
-            currentStreak: this.calculateCurrentStreak(),
-            weeklyWorkouts: weeklySessions.length,
-            weeklyDuration: weeklySessions.reduce((sum, s) => sum + (s.duration || 0), 0)
-          };
-        });
+        if (!this.stats) {
+          this.workoutService.getWorkoutStats().subscribe(stats => {
+            this.stats = {
+              ...stats,
+              currentStreak: this.calculateCurrentStreak(),
+              weeklyWorkouts: weeklySessions.length,
+              weeklyDuration: weeklySessions.reduce((sum, s) => sum + (s.duration || 0), 0)
+            };
+          });
+        }
 
-        // Generate progress data from sessions
-        this.progressData = this.generateProgressData(sessions);
+        // Generate progress data from sessions if not already loaded
+        if (this.progressData.length === 0) {
+          this.progressData = this.generateProgressData(this.recentSessions);
+        }
       });
 
     } catch (error) {
       console.error('Erro ao carregar dados de progresso:', error);
     }
+  }
+
+  // Novo método para carregar dados do ProgressDataService
+  private async loadDataFromProgressService() {
+    try {
+      // Inicializar o ProgressDataService
+      await this.progressDataService.init();
+
+      // Carregar dados das sessões do ProgressDataService
+      this.progressDataService.workoutSessions$.subscribe(sessions => {
+        if (sessions.length > 0) {
+          // Converter formato do ProgressDataService para o formato esperado
+          this.recentSessions = sessions.map(session => ({
+            id: session.id,
+            workoutId: `workout-${session.id}`,
+            userId: 'current-user',
+            startTime: new Date(session.date),
+            endTime: new Date(new Date(session.date).getTime() + (session.duration * 60000)),
+            duration: session.duration,
+            exercises: session.exercises.map(exercise => ({
+              exerciseId: exercise.exerciseId,
+              sets: exercise.sets.map(set => ({
+                reps: set.reps || 0,
+                weight: set.weight || 0,
+                completed: true,
+                startTime: new Date(),
+                endTime: new Date()
+              })),
+              restTimes: [],
+              startTime: new Date(session.date),
+              endTime: new Date(session.date)
+            })),
+            status: 'completed' as const,
+            caloriesBurned: 0,
+            notes: session.notes,
+            rating: 5,
+            dayOfWeek: new Date(session.date).toLocaleDateString('pt-BR', { weekday: 'long' })
+          }))
+          .sort((a, b) => new Date(b.startTime).getTime() - new Date(a.startTime).getTime())
+          .slice(0, 10);
+
+          // Calcular estatísticas
+          const weekAgo = new Date();
+          weekAgo.setDate(weekAgo.getDate() - 7);
+
+          const weeklySessions = sessions.filter(session =>
+            new Date(session.date) >= weekAgo
+          );
+
+          // Carregar estatísticas do ProgressDataService
+          this.progressDataService.progressStats$.subscribe(progressStats => {
+            if (progressStats) {
+              this.stats = {
+                totalWorkouts: progressStats.totalWorkouts,
+                totalDuration: sessions.reduce((sum, s) => sum + s.duration, 0),
+                totalCalories: 0, // Calorias ainda não implementadas no ProgressDataService
+                averageRating: 5,
+                thisWeekWorkouts: weeklySessions.length,
+                thisMonthWorkouts: sessions.filter(s => {
+                  const monthAgo = new Date();
+                  monthAgo.setMonth(monthAgo.getMonth() - 1);
+                  return new Date(s.date) >= monthAgo;
+                }).length,
+                currentStreak: progressStats.currentStreak || 0,
+                weeklyWorkouts: weeklySessions.length,
+                weeklyDuration: weeklySessions.reduce((sum, s) => sum + s.duration, 0)
+              };
+            }
+          });
+
+          // Gerar dados de progresso
+          this.progressData = this.generateProgressDataFromProgressService(sessions);
+        }
+      });
+
+    } catch (error) {
+      console.error('Erro ao carregar dados do ProgressDataService:', error);
+    }
+  }
+
+  // Método para gerar dados de progresso a partir do ProgressDataService
+  private generateProgressDataFromProgressService(sessions: any[]): ProgressDataPoint[] {
+    const periodDays = this.selectedPeriod === 'week' ? 7 :
+      this.selectedPeriod === 'month' ? 30 : 365;
+
+    const cutoffDate = new Date();
+    cutoffDate.setDate(cutoffDate.getDate() - periodDays);
+
+    // Group sessions by date
+    const sessionsByDate = new Map<string, any[]>();
+
+    sessions
+      .filter(session => new Date(session.date) >= cutoffDate)
+      .forEach(session => {
+        const dateKey = new Date(session.date).toDateString();
+        if (!sessionsByDate.has(dateKey)) {
+          sessionsByDate.set(dateKey, []);
+        }
+        sessionsByDate.get(dateKey)!.push(session);
+      });
+
+    // Convert to progress data points
+    return Array.from(sessionsByDate.entries()).map(([dateKey, daySessions]) => ({
+      date: new Date(dateKey),
+      workoutsCompleted: daySessions.length,
+      totalDuration: daySessions.reduce((sum, s) => sum + s.duration, 0),
+      totalCalories: 0 // Não implementado ainda
+    })).sort((a, b) => a.date.getTime() - b.date.getTime());
   }
 
   async onPeriodChange() {
