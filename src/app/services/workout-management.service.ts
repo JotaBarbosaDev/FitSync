@@ -755,7 +755,7 @@ export class WorkoutManagementService {
         totalVolume: completedSets.reduce((total: number, set: CompletedSet) =>
           total + ((set.reps || 0) * (set.weight || 0)), 0
         ),
-        personalRecord: false // TODO: calcular se é recorde
+        personalRecord: false
       };
 
       data.workoutProgress.push(progress);

@@ -9,10 +9,7 @@ const routes: Routes = [
     redirectTo: '/auth/login',
     pathMatch: 'full'
   },
-  {
-    path: 'test',
-    loadChildren: () => import('./test/test.module').then(m => m.TestPageModule)
-  },
+
   {
     path: 'auth/login',
     loadChildren: () => import('./auth/login/login.module').then(m => m.LoginPageModule),
@@ -44,10 +41,6 @@ const routes: Routes = [
   {
     path: 'detalhe/:id',
     loadChildren: () => import('./detalhe/detalhe.module').then(m => m.DetalhePageModule)
-  }, {
-    path: 'progress',
-    loadChildren: () => import('./progress/progress.module').then(m => m.ProgressPageModule),
-    canActivate: [AuthGuard]
   },
   {
     path: 'progresso',

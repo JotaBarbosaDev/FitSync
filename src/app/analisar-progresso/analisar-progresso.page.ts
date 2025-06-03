@@ -186,9 +186,7 @@ export class AnalisarProgressoPage implements OnInit {
   }
 
   exportarRelatorio() {
-    // Implementar exportação de relatório
     console.log('Exportando relatório de progresso...');
-    // TODO: Implementar funcionalidade de exportação
   }
 
   voltarParaHome() {

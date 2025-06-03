@@ -244,7 +244,7 @@ export class BicepWorkoutComponent implements OnInit {
       // Criar dados da sessão de treino
       const workoutSession: Omit<WorkoutSession, 'id'> = {
         workoutId: 'bicep-workout-default',
-        userId: 'current-user', // TODO: pegar do auth service
+        userId: 'current-user',
         startTime: this.workoutStartTime,
         endTime: endTime,
         duration: durationMinutes,
