@@ -42,8 +42,8 @@
         <div class="workout-card">
           <div class="workout-header">
             <h3>{{ currentWorkout.name }}</h3>
-            <span class="today-badge">HOJE</span>
-            
+            <span class="today-badge">{{ getCurrentDate() }}</span>
+
             <div class="workout-stats">
               <div class="stat-item">
                 <ion-icon name="fitness-outline"></ion-icon>
@@ -57,14 +57,9 @@
           </div>
 
           <div class="workout-content">
-            <ion-button
-              expand="block"
-              size="large"
-              (click)="startTodayWorkout()"
-              class="start-workout-btn"
-            >
+            <ion-button expand="block" size="large" (click)="startTodayWorkout()" class="start-workout-btn">
               <ion-icon name="play" slot="start"></ion-icon>
-              TREINAR AGORA
+              COMEÇAR TREINO DE {{ getTodayDayName().toUpperCase() }}
             </ion-button>
           </div>
         </div>

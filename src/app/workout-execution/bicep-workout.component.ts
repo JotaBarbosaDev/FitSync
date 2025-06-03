@@ -44,8 +44,12 @@ import { WorkoutSession } from '../models/workout-system.model';
             <p><strong>Descanso:</strong> 60s</p>
             
             <div class="exercise-image-container">
-              <img src="assets/images/exercises/bicep-curl.jpg" alt="Bicep Curl" class="exercise-image" 
-                onerror="this.src='assets/images/placeholder.png'"/>
+              <img 
+                [src]="exerciseImageSrc" 
+                alt="Bicep Curl" 
+                class="exercise-image"
+                (error)="onImageError($event)"
+                (load)="onImageLoad($event)"/>
             </div>
 
             <div class="workout-actions">
@@ -112,20 +116,26 @@ export class BicepWorkoutComponent implements OnInit {
   progress = 0;
   workoutStartTime: Date = new Date();
   completedSets: any[] = [];
-  
+
+  // Image handling properties
+  exerciseImageSrc = 'assets/images/exercises/bicep-curl.jpg';
+  private readonly fallbackImageSrc = 'assets/images/placeholder.png';
+  private readonly defaultImageSrc = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDIwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjRjVGNUY1Ii8+CjxwYXRoIGQ9Ik0xMDAgNTBDMTI1IDE1MCA3NSAxNTAgMTAwIDUwWiIgZmlsbD0iIzMzODBGRiIgZmlsbC1vcGFjaXR5PSIwLjMiLz4KPGF4aXMgeD0iODAiIHk9IjkwIiB3aWR0aD0iNDAiIGhlaWdodD0iMjAiIGZpbGw9IiMzMzgwRkYiLz4KPC9zdmc+';
+  private imageErrorOccurred = false;
+
   constructor(
     private toastController: ToastController,
     private alertController: AlertController,
     private router: Router,
     private workoutService: WorkoutManagementService,
     private storageService: StorageService
-  ) {}
-  
+  ) { }
+
   ngOnInit() {
     this.workoutStartTime = new Date();
     console.log('Treino de bíceps iniciado às:', this.workoutStartTime);
   }
-  
+
   async completeSet(setNumber: number) {
     if (setNumber !== this.currentSet) {
       const toast = await this.toastController.create({
@@ -137,7 +147,7 @@ export class BicepWorkoutComponent implements OnInit {
       await toast.present();
       return;
     }
-    
+
     // Registrar dados da série completada
     const completedSet = {
       setNumber: setNumber,
@@ -146,13 +156,14 @@ export class BicepWorkoutComponent implements OnInit {
       completed: true,
       completedAt: new Date()
     };
-    
+
     this.completedSets.push(completedSet);
-    
+
     // Incrementar progresso
-    this.progress += 33.33;
+    // Use 100/3 to ensure exactly 100% for 3 sets
+    this.progress = Math.round((this.completedSets.length / 3) * 100);
     if (this.progress > 100) this.progress = 100;
-    
+
     // Mostrar mensagem de sucesso
     const toast = await this.toastController.create({
       message: `Série ${setNumber} concluída! (12 reps, 20kg)`,
@@ -161,13 +172,13 @@ export class BicepWorkoutComponent implements OnInit {
       color: 'success'
     });
     await toast.present();
-    
+
     // Avançar para próxima série
     if (this.currentSet < 3) {
       this.currentSet++;
     }
   }
-  
+
   async finishWorkout() {
     if (this.progress < 100) {
       const toast = await this.toastController.create({
@@ -179,15 +190,15 @@ export class BicepWorkoutComponent implements OnInit {
       await toast.present();
       return;
     }
-    
+
     // Calcular duração do treino
     const endTime = new Date();
     const durationMinutes = Math.round((endTime.getTime() - this.workoutStartTime.getTime()) / 60000);
     const caloriesBurned = 150; // Estimativa para treino de bíceps
-    
+
     // Salvar dados do treino no storage
     await this.saveWorkoutData(durationMinutes, caloriesBurned);
-    
+
     // Mostrar alerta de congratulações
     const alert = await this.alertController.create({
       header: '🎉 Treino Concluído!',
@@ -216,14 +227,14 @@ export class BicepWorkoutComponent implements OnInit {
       ],
       cssClass: 'workout-success-alert'
     });
-    
+
     await alert.present();
   }
 
   async saveWorkoutData(durationMinutes: number, caloriesBurned: number) {
     try {
       const endTime = new Date();
-      
+
       // Criar dados da sessão de treino
       const workoutSession: Omit<WorkoutSession, 'id'> = {
         workoutId: 'bicep-workout-default',
@@ -257,7 +268,7 @@ export class BicepWorkoutComponent implements OnInit {
         ...workoutSession,
         id: `session-${Date.now()}`
       };
-      
+
       if (Array.isArray(existingSessions)) {
         existingSessions.push(sessionWithId);
         await this.storageService.set('workoutSessions', existingSessions);
@@ -287,7 +298,7 @@ export class BicepWorkoutComponent implements OnInit {
 
     } catch (error) {
       console.error('Erro ao salvar dados do treino:', error);
-      
+
       const toast = await this.toastController.create({
         message: '⚠️ Erro ao salvar treino, mas seus dados foram registrados localmente',
         duration: 3000,
@@ -297,7 +308,35 @@ export class BicepWorkoutComponent implements OnInit {
       await toast.present();
     }
   }
-  
+
+  onImageError(event: any) {
+    // Prevent infinite loop by checking if error already occurred
+    if (this.imageErrorOccurred) {
+      // Use default base64 image as final fallback
+      event.target.src = this.defaultImageSrc;
+      return;
+    }
+
+    this.imageErrorOccurred = true;
+
+    // Try fallback image first
+    if (this.exerciseImageSrc !== this.fallbackImageSrc) {
+      this.exerciseImageSrc = this.fallbackImageSrc;
+      event.target.src = this.fallbackImageSrc;
+    } else {
+      // If fallback also fails, use default base64 image
+      event.target.src = this.defaultImageSrc;
+    }
+
+    console.warn('Exercise image failed to load, using fallback');
+  }
+
+  onImageLoad(event: any) {
+    // Reset error flag when image loads successfully
+    this.imageErrorOccurred = false;
+    console.log('Exercise image loaded successfully');
+  }
+
   async showHelp() {
     const alert = await this.alertController.create({
       header: 'Instruções do Treino de Bíceps',

@@ -3,6 +3,8 @@ import { Router } from '@angular/router';
 import { StorageService } from '../services/storage.service';
 import { ToastController } from '@ionic/angular';
 import { CustomWorkout } from '../models';
+import { WorkoutManagementService } from '../services/workout-management.service';
+import { Storage } from '@ionic/storage-angular';
 
 interface TodayWorkout {
   workout: CustomWorkout | null;
@@ -19,17 +21,20 @@ export class HomePage implements OnInit {
   userProfile = {
     name: 'João'
   };
-  
+
   todayWorkout: TodayWorkout | null = null;
   isLoading = true;
 
   constructor(
     private router: Router,
     private storageService: StorageService,
-    private toastController: ToastController
-  ) {}
+    private toastController: ToastController,
+    private workoutManagementService: WorkoutManagementService,
+    private storage: Storage
+  ) { }
 
   async ngOnInit() {
+    await this.storage.create();
     await this.initializeDefaultWorkouts();
     await this.loadTodayWorkout();
     this.isLoading = false;
@@ -68,13 +73,19 @@ export class HomePage implements OnInit {
     return 'Boa noite';
   }
 
+  getTodayDayName(): string {
+    const today = new Date();
+    const dayNames = ['Domingo', 'Segunda-feira', 'Terça-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira', 'Sábado'];
+    return dayNames[today.getDay()];
+  }
+
   getCurrentDate(): string {
     const today = new Date();
-    const options: Intl.DateTimeFormatOptions = { 
-      weekday: 'long', 
-      year: 'numeric', 
-      month: 'long', 
-      day: 'numeric' 
+    const options: Intl.DateTimeFormatOptions = {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
     };
     return today.toLocaleDateString('pt-BR', options);
   }
@@ -99,64 +110,148 @@ export class HomePage implements OnInit {
   }
 
   async startTodayWorkout() {
-    if (this.todayWorkout?.workout) {
-      console.log('Iniciando treino:', this.todayWorkout.workout.name);
-      this.router.navigate(['/workout-execution/bicep']);
+    // Try to get today's exercises from weekly plan first
+    const todayExercises = await this.getTodayExercisesFromWeeklyPlan();
+
+    if (todayExercises && todayExercises.length > 0) {
+      console.log('Iniciando treino do plano semanal:', todayExercises);
+
+      // Navigate to workout execution with today's exercises from weekly plan
+      this.router.navigate(['/workout-execution'], {
+        queryParams: {
+          exercises: JSON.stringify(todayExercises),
+          dayName: this.getTodayDayName(),
+          source: 'weekly-plan'
+        }
+      });
+    } else if (this.todayWorkout?.workout) {
+      console.log('Iniciando treino padrão:', this.todayWorkout.workout.name);
+
+      // Fallback to default workout system
+      this.router.navigate(['/workout-execution'], {
+        queryParams: {
+          workoutId: this.todayWorkout.workout.id,
+          workoutName: this.todayWorkout.workout.name,
+          source: 'today'
+        }
+      });
     } else {
       const toast = await this.toastController.create({
-        message: 'Nenhum treino disponível para hoje',
-        duration: 2000,
+        message: 'Nenhum treino disponível para hoje. Configure seu plano semanal!',
+        duration: 3000,
         position: 'bottom',
         color: 'warning'
       });
       await toast.present();
+
+      // Navigate to workout management to configure weekly plan
+      this.router.navigate(['/workout-management']);
     }
   }
 
   async loadTodayWorkout() {
     try {
+      console.log('Carregando treino do dia...');
+
+      // First, try to get today's exercises from weekly plan
+      const todayExercises = await this.getTodayExercisesFromWeeklyPlan();
+
+      if (todayExercises && todayExercises.length > 0) {
+        console.log('Encontrou exercícios no plano semanal:', todayExercises);
+
+        // Create a virtual workout from weekly plan exercises
+        const virtualWorkout: CustomWorkout = {
+          id: `weekly-plan-${new Date().toISOString().split('T')[0]}`,
+          name: `Treino de ${this.getTodayDayName()}`,
+          description: 'Treino do plano semanal',
+          difficulty: 'medium',
+          muscleGroups: this.extractMuscleGroupsFromExercises(todayExercises),
+          equipment: [],
+          isTemplate: false,
+          category: 'strength',
+          estimatedDuration: todayExercises.length * 5, // 5 min per exercise
+          exercises: todayExercises.map((ex: any, index: number) => ({
+            id: `exercise-${index}`,
+            exerciseId: ex.id,
+            order: index + 1,
+            sets: [{ id: `set-${index}-1`, reps: 12, weight: 0, completed: false }],
+            restTime: 60,
+            notes: ''
+          })),
+          createdBy: 'weekly-plan',
+          createdAt: new Date(),
+          updatedAt: new Date()
+        };
+
+        this.todayWorkout = { workout: virtualWorkout, isRestDay: false };
+        console.log('Treino criado a partir do plano semanal:', virtualWorkout.name);
+        return;
+      }
+
+      // Fallback to the existing workout management service
+      console.log('Nenhum exercício no plano semanal, usando WorkoutManagementService...');
+
+      this.workoutManagementService.getTodayWorkout().subscribe({
+        next: (todayWorkout) => {
+          this.todayWorkout = todayWorkout;
+          console.log('Treino do dia carregado:', todayWorkout);
+        },
+        error: (error) => {
+          console.error('Erro ao carregar treino do dia:', error);
+          // Fallback para o método anterior
+          this.loadTodayWorkoutFallback();
+        }
+      });
+    } catch (error) {
+      console.error('Erro ao carregar treino do dia:', error);
+      this.loadTodayWorkoutFallback();
+    }
+  }
+
+  private async loadTodayWorkoutFallback() {
+    try {
       const today = new Date().getDay(); // 0 = domingo, 1 = segunda, etc.
       const todayFormatted = this.getTodayDateString();
-      
+
       console.log('Carregando treino para hoje:', this.translateDayName(today), '-', todayFormatted);
-      
+
       // Buscar todos os treinos do storage
       const workoutsData = await this.storageService.get('workouts');
       const allWorkouts: CustomWorkout[] = Array.isArray(workoutsData) ? workoutsData : [];
-      
+
       console.log('Treinos encontrados no storage:', allWorkouts);
-      
+
       // Verificar se é domingo (dia de descanso)
       if (today === 0) {
         this.todayWorkout = { workout: null, isRestDay: true };
         console.log('Hoje é domingo - dia de descanso');
         return;
       }
-      
+
       // Procurar por um treino que contenha o nome do dia ou seja adequado para hoje
       const dayNames = ['domingo', 'segunda', 'terca', 'quarta', 'quinta', 'sexta', 'sabado'];
       const todayName = dayNames[today];
-      
-      let todayWorkout = allWorkouts.find((workout: CustomWorkout) => 
+
+      let todayWorkout = allWorkouts.find((workout: CustomWorkout) =>
         workout.name?.toLowerCase().includes(todayName) ||
         workout.category === todayName ||
         workout.description?.toLowerCase().includes(todayName)
       );
-      
+
       // Se não encontrar um treino específico, usar o primeiro treino disponível
       if (!todayWorkout && allWorkouts.length > 0) {
         todayWorkout = allWorkouts[0];
       }
-      
+
       // Se ainda não há treino, criar um treino básico
       if (!todayWorkout) {
         todayWorkout = this.createBasicWorkout(today);
         console.log('Criando treino básico para hoje:', todayWorkout.name);
       }
-      
+
       this.todayWorkout = { workout: todayWorkout, isRestDay: false };
       console.log('Treino do dia carregado:', todayWorkout.name);
-      
+
     } catch (error) {
       console.error('Erro ao carregar treino do dia:', error);
       // Em caso de erro, criar um treino básico
@@ -183,7 +278,7 @@ export class HomePage implements OnInit {
   private createBasicWorkout(dayIndex: number, dayOfWeek?: string): CustomWorkout {
     const dayName = this.translateDayName(dayIndex);
     const basicExercises = this.getBasicExercisesForDay(dayIndex);
-    
+
     return {
       id: `basic-workout-${dayIndex}`,
       name: `Treino de ${dayName}`,
@@ -252,5 +347,35 @@ export class HomePage implements OnInit {
     };
 
     return exercisesByDay[dayIndex as keyof typeof exercisesByDay] || exercisesByDay[1];
+  }
+
+  // Method to get today's exercises from weekly plan
+  private async getTodayExercisesFromWeeklyPlan(): Promise<any[]> {
+    try {
+      await this.storage.create();
+      const today = new Date().getDay(); // 0 = Sunday, 1 = Monday, etc.
+      const dayKey = `weekly_exercises_day_${today}`;
+      const exercises = await this.storage.get(dayKey) || [];
+
+      console.log(`Exercícios do plano semanal para hoje (${today}):`, exercises);
+      return exercises;
+    } catch (error) {
+      console.error('Erro ao carregar exercícios do plano semanal:', error);
+      return [];
+    }
+  }
+
+  // Method to extract muscle groups from exercises
+  private extractMuscleGroupsFromExercises(exercises: any[]): string[] {
+    if (!exercises || !Array.isArray(exercises)) return [];
+
+    const muscleGroups = new Set<string>();
+    exercises.forEach(exercise => {
+      if (exercise.muscleGroups && Array.isArray(exercise.muscleGroups)) {
+        exercise.muscleGroups.forEach((group: string) => muscleGroups.add(group));
+      }
+    });
+
+    return Array.from(muscleGroups);
   }
 }
