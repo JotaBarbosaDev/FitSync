@@ -7,6 +7,7 @@ import { IonicModule } from '@ionic/angular';
 import { WorkoutExecutionPageRoutingModule } from './workout-execution-routing.module';
 
 import { WorkoutExecutionPage } from './workout-execution.page';
+import { BicepWorkoutComponent } from './bicep-workout.component';
 
 @NgModule({
   imports: [
@@ -14,7 +15,8 @@ import { WorkoutExecutionPage } from './workout-execution.page';
     FormsModule,
     IonicModule,
     WorkoutExecutionPageRoutingModule,
-    WorkoutExecutionPage
+    WorkoutExecutionPage,
+    BicepWorkoutComponent
   ]
 })
 export class WorkoutExecutionPageModule { }

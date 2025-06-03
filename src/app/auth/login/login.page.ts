@@ -189,13 +189,13 @@ export class LoginPage implements OnInit {
     }
   }
 
-  updateField(field: string, event: Event) {
-    const target = event.target as HTMLIonInputElement;
-    const value = target.value as string;
+  updateField(field: string, event: any) {
+    const value = typeof event === 'object' && event.detail ? event.detail.value : '';
     if (field === 'email') {
       this.loginData.email = value;
     } else if (field === 'password') {
       this.loginData.password = value;
     }
+    console.log(`Campo ${field} atualizado:`, value);
   }
 }

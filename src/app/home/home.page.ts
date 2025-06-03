@@ -1,54 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { StorageService } from '../services/storage.service';
-import { JsonDataService } from '../services/json-data.service';
-import { NavigationService } from '../services/navigation.service';
-import { DeviceControlService } from '../services/device-control.service';
-import { TranslationService } from '../services/translation.service';
-import { WorkoutManagementService } from '../services/workout-management.service';
-import { AlertController, ToastController } from '@ionic/angular';
+import { ToastController } from '@ionic/angular';
 import { CustomWorkout } from '../models';
-
-// Interfaces locais para o HomePage
-interface UserProfile {
-  name: string;
-  level: string;
-  streak: number;
-}
-
-interface WorkoutHistory {
-  id: string;
-  name: string;
-  date: string;
-  duration: number;
-  caloriesBurned: number;
-  completed: boolean;
-}
-
-interface QuickNote {
-  id: number;
-  text: string;
-  date: string;
-}
-
-interface Exercise {
-  id: string;
-  name: string;
-  description: string;
-  difficulty: string;
-  imageUrl?: string;
-  duration?: string;
-  muscleGroups?: string[];
-}
-
-interface ActivePlan {
-  id: string;
-  name: string;
-  description: string;
-  progress: number;
-  totalWorkouts: number;
-  completedWorkouts: number;
-}
 
 interface TodayWorkout {
   workout: CustomWorkout | null;
@@ -59,320 +13,95 @@ interface TodayWorkout {
   selector: 'app-home',
   templateUrl: 'home.page.html',
   styleUrls: ['home.page.scss'],
-  standalone: false,
+  standalone: false
 })
 export class HomePage implements OnInit {
-  nomeInstituto: string;
-  userProfile: UserProfile = {
-    name: 'João',
-    level: 'Iniciante',
-    streak: 0
-  };  
-  recentWorkouts: WorkoutHistory[] = [];
-  featuredExercises: Exercise[] = [];
-  activePlan: ActivePlan | null = null;
-  todayWorkout: TodayWorkout | null = null;
-
-  todayStats = {
-    workouts: 0,
-    calories: 0,
-    time: 0
+  userProfile = {
+    name: 'João'
   };
+  
+  todayWorkout: TodayWorkout | null = null;
   isLoading = true;
-
-  // Array de dicas diárias
-  private dailyTips = [
-    'Mantenha-se hidratado durante o treino!',
-    'O descanso é tão importante quanto o exercício.',
-    'Aqueça sempre antes de começar os exercícios.',
-    'Mantenha uma alimentação equilibrada.',
-    'Ouça seu corpo e respeite seus limites.',
-    'A consistência é a chave para o sucesso.',
-    'Varie seus exercícios para evitar o tédio.',
-    'Durma pelo menos 7-8 horas por noite.'
-  ];
 
   constructor(
     private router: Router,
     private storageService: StorageService,
-    private jsonDataService: JsonDataService,
-    private navigationService: NavigationService,
-    private deviceControlService: DeviceControlService,
-    private translationService: TranslationService,
-    private workoutManagementService: WorkoutManagementService,
-    private alertController: AlertController,
     private toastController: ToastController
-  ) {
-    this.nomeInstituto = 'Instituto Politécnico de Viana do Castelo';
-  }
+  ) {}
 
   async ngOnInit() {
-    await this.loadUserData();
-    await this.loadFeaturedExercises();
-    await this.loadTodayStats();
+    await this.initializeDefaultWorkouts();
     await this.loadTodayWorkout();
     this.isLoading = false;
   }
 
-  async loadUserData() {
+  async initializeDefaultWorkouts() {
     try {
-      // Load user profile - converter do storage UserProfile para interface local
-      const storageProfile = await this.storageService.getUserProfile();
-      if (storageProfile) {
-        this.userProfile = {
-          name: storageProfile.name,
-          level: 'Iniciante', // Valor padrão baseado no fitnessGoal ou calculado
-          streak: 0 // Seria calculado baseado no histórico
-        };
-      } else {
-        this.userProfile = {
-          name: 'João',
-          level: 'Iniciante',
-          streak: 0
-        };
-      }
-
-      // Load recent workouts - converter WorkoutData[] para WorkoutHistory[]
-      const workoutData = await this.storageService.getWorkouts() || [];
-      this.recentWorkouts = workoutData.map(workout => ({
-        id: workout.id,
-        name: workout.name,
-        date: workout.date instanceof Date ? workout.date.toISOString() : String(workout.date),
-        duration: workout.duration,
-        caloriesBurned: workout.calories || 0,
-        completed: true // WorkoutData salvo assume que foi completado
-      })).slice(0, 3); // Last 3 workouts
-    } catch (error) {
-      console.error('Error loading user data:', error);
-    }
-  }
-
-  async loadFeaturedExercises() {
-    try {
-      const fitnessData = await this.jsonDataService.getFitnessData();
-      if (fitnessData && fitnessData.exercises) {
-        // Converter ExerciseData[] para Exercise[]
-        this.featuredExercises = fitnessData.exercises
-          .slice(0, 4)
-          .map(exercise => ({
-            id: exercise.id,
-            name: exercise.name,
-            description: exercise.description || exercise.instructions?.[0] || 'Exercício de fitness',
-            difficulty: exercise.difficulty,
-            imageUrl: exercise.imageUrl,
-            duration: exercise.duration,
-            muscleGroups: exercise.muscleGroups
-          }));
+      const existingWorkouts = await this.storageService.get('workouts');
+      if (!existingWorkouts || !Array.isArray(existingWorkouts) || existingWorkouts.length === 0) {
+        console.log('Criando treinos padrão...');
+        const defaultWorkouts = this.createDefaultWorkouts();
+        await this.storageService.set('workouts', defaultWorkouts);
+        console.log('Treinos padrão criados:', defaultWorkouts);
       }
     } catch (error) {
-      console.error('Error loading featured exercises:', error);
+      console.error('Erro ao inicializar treinos padrão:', error);
     }
   }
 
-  async loadTodayStats() {
-    try {
-      const workouts = await this.storageService.getWorkouts() || [];
-      const today = new Date().toDateString();
-      
-      const todayWorkouts = workouts.filter(workout => 
-        new Date(workout.date).toDateString() === today
-      );
+  createDefaultWorkouts(): CustomWorkout[] {
+    const days = [
+      { index: 1, name: 'Segunda-feira' },
+      { index: 2, name: 'Terça-feira' },
+      { index: 3, name: 'Quarta-feira' },
+      { index: 4, name: 'Quinta-feira' },
+      { index: 5, name: 'Sexta-feira' }
+    ];
 
-      this.todayStats = {
-        workouts: todayWorkouts.length,
-        calories: todayWorkouts.reduce((sum, w) => sum + (w.calories || 0), 0),
-        time: todayWorkouts.reduce((sum, w) => sum + (w.duration || 0), 0)
-      };
-    } catch (error) {
-      console.error('Error loading today stats:', error);
-    }
+    return days.map(day => this.createBasicWorkout(day.index));
   }
 
-  async loadTodayWorkout() {
-    try {
-      this.workoutManagementService.getTodayWorkout().subscribe({
-        next: (todayWorkout) => {
-          this.todayWorkout = todayWorkout;
-        },
-        error: (error) => {
-          console.error('Error loading today workout:', error);
-          this.todayWorkout = { workout: null, isRestDay: false };
-        }
-      });
-    } catch (error) {
-      console.error('Error loading today workout:', error);
-      this.todayWorkout = { workout: null, isRestDay: false };
-    }
-  }
-
-  // Navigation methods using NavigationService
-  public verDetalhe() {
-    this.navigationService.navigateToExerciseDetail('123');
-  }
-
-  public navigateToExercisesList() {
-    this.navigationService.navigateToExercisesList();
-  }
-
-  public navigateToWorkouts() {
-    this.navigationService.navigateToWorkoutPlans();
-  }
-
-  public navigateToProgress() {
-    this.navigationService.navigateToProgress();
-  }
-
-  public navigateToProfile() {
-    this.navigationService.navigateToProfile();
-  }
-
-  // Quick actions
-  public async startQuickWorkout() {
-    await this.deviceControlService.lockOrientation('portrait');
-    this.navigationService.navigateToQuickWorkout();
-  }
-
-  public navigateToExercise(exerciseId: string) {
-    this.navigationService.navigateToExerciseDetail(exerciseId);
-  }
-
-  public async createCustomWorkout() {
-    const alert = await this.alertController.create({
-      header: 'Criar Treino Personalizado',
-      message: 'Você quer criar um novo treino personalizado?',
-      buttons: [
-        {
-          text: 'Cancelar',
-          role: 'cancel'
-        },
-        {
-          text: 'Criar',
-          handler: () => {
-            this.navigationService.navigateToCreateWorkout();
-          }
-        }
-      ]
-    });
-
-    await alert.present();
-  }
-
-  // Device control functions
-  public async toggleOrientationLock() {
-    try {
-      await this.deviceControlService.toggleOrientationLock();
-      const toast = await this.toastController.create({
-        message: 'Orientação da tela alternada',
-        duration: 2000,
-        position: 'bottom'
-      });
-      await toast.present();
-    } catch (error) {
-      console.error('Error toggling orientation:', error);
-    }
-  }
-
-  // Storage operations
-  public async saveQuickNote() {
-    const alert = await this.alertController.create({
-      header: 'Nota Rápida',
-      inputs: [
-        {
-          name: 'note',
-          type: 'textarea',
-          placeholder: 'Digite sua nota...'
-        }
-      ],
-      buttons: [
-        {
-          text: 'Cancelar',
-          role: 'cancel'
-        },
-        {
-          text: 'Salvar',
-          handler: async (data) => {
-            if (data.note) {
-              const notes = await this.storageService.get<QuickNote[]>('quick-notes') || [];
-              notes.push({
-                id: Date.now(),
-                text: data.note,
-                date: new Date().toISOString()
-              });
-              await this.storageService.set('quick-notes', notes);
-              
-              const toast = await this.toastController.create({
-                message: 'Nota salva com sucesso!',
-                duration: 2000,
-                position: 'bottom'
-              });
-              await toast.present();
-            }
-          }
-        }
-      ]
-    });
-
-    await alert.present();
-  }
-
-  // Utility methods
-  public formatTime(minutes: number): string {
-    const hours = Math.floor(minutes / 60);
-    const mins = minutes % 60;
-    if (hours > 0) {
-      return `${hours}h ${mins}min`;
-    }
-    return `${mins}min`;
-  }
-
-  public getGreeting(): string {
+  getGreeting(): string {
     const hour = new Date().getHours();
     if (hour < 12) return 'Bom dia';
     if (hour < 18) return 'Boa tarde';
     return 'Boa noite';
   }
 
-  public getDifficultyColor(difficulty: string): string {
-    return this.translationService.getDifficultyColor(difficulty);
+  getCurrentDate(): string {
+    const today = new Date();
+    const options: Intl.DateTimeFormatOptions = { 
+      weekday: 'long', 
+      year: 'numeric', 
+      month: 'long', 
+      day: 'numeric' 
+    };
+    return today.toLocaleDateString('pt-BR', options);
   }
 
-  public getDifficultyLabel(difficulty: string): string {
-    return this.translationService.getDifficultyLabel(difficulty);
+  get currentWorkout(): CustomWorkout | null {
+    return this.todayWorkout?.workout || null;
   }
 
-  public getMuscleGroupLabel(muscleGroup: string): string {
-    return this.translationService.getMuscleGroupLabel(muscleGroup);
+  get workoutDurationDisplay(): string {
+    const workout = this.currentWorkout;
+    if (!workout) return '0';
+    return workout.estimatedDuration?.toString() || '30';
   }
 
-  // Métodos chamados no template HTML
-  getPlanProgress(): number {
-    if (!this.activePlan) return 0;
-    if (this.activePlan.totalWorkouts === 0) return 0;
-    return Math.round((this.activePlan.completedWorkouts / this.activePlan.totalWorkouts) * 100);
+  get workoutExercisesCount(): number {
+    const workout = this.currentWorkout;
+    return workout?.exercises?.length || 0;
   }
 
-  startWorkout(): void {
-    // Navegar para iniciar um treino
-    this.navigationService.navigateToQuickWorkout();
+  navigateToWorkoutManagement() {
+    this.router.navigate(['/workout-management']);
   }
 
-  getDailyTip(): string {
-    // Retornar uma dica baseada no dia atual
-    const dayIndex = new Date().getDay();
-    return this.dailyTips[dayIndex] || this.dailyTips[0];
-  }
-
-  // Métodos para o sistema de treinos
-  public navigateToWeeklyPlan() {
-    this.router.navigate(['/weekly-plan']);
-  }
-
-  public async startTodayWorkout() {
+  async startTodayWorkout() {
     if (this.todayWorkout?.workout) {
-      // Navegar para a execução do treino com o ID do treino
-      this.router.navigate(['/workout-execution'], {
-        queryParams: { workoutId: this.todayWorkout.workout.id }
-      });
+      console.log('Iniciando treino:', this.todayWorkout.workout.name);
+      this.router.navigate(['/workout-execution/bicep']);
     } else {
       const toast = await this.toastController.create({
         message: 'Nenhum treino disponível para hoje',
@@ -384,76 +113,144 @@ export class HomePage implements OnInit {
     }
   }
 
-  public viewWorkoutDetails() {
-    if (this.todayWorkout?.workout) {
-      // Navegar para gestão de treinos focando no treino atual
-      this.router.navigate(['/workout-management'], {
-        queryParams: { workoutId: this.todayWorkout.workout.id }
-      });
-    }
-  }
-
-  public navigateToWorkoutManagement() {
-    this.router.navigate(['/workout-management']);
-  }
-
-  public getWorkoutDuration(workout: CustomWorkout): number {
-    if (!workout || !workout.exercises) return 0;
-    
-    // Usar a duração estimada do treino se disponível
-    if (workout.estimatedDuration) {
-      return workout.estimatedDuration;
-    }
-    
-    // Calcular duração estimada baseada nos exercícios
-    let totalDuration = 0;
-    
-    workout.exercises.forEach(exercise => {
-      if (exercise.sets && exercise.sets.length > 0) {
-        // Tempo estimado por exercício: (número de sets * 30 segundos) + (rest time entre sets)
-        const numberOfSets = exercise.sets.length;
-        const exerciseTime = (numberOfSets * 30) + (exercise.restTime * (numberOfSets - 1));
-        totalDuration += exerciseTime;
+  async loadTodayWorkout() {
+    try {
+      const today = new Date().getDay(); // 0 = domingo, 1 = segunda, etc.
+      const todayFormatted = this.getTodayDateString();
+      
+      console.log('Carregando treino para hoje:', this.translateDayName(today), '-', todayFormatted);
+      
+      // Buscar todos os treinos do storage
+      const workoutsData = await this.storageService.get('workouts');
+      const allWorkouts: CustomWorkout[] = Array.isArray(workoutsData) ? workoutsData : [];
+      
+      console.log('Treinos encontrados no storage:', allWorkouts);
+      
+      // Verificar se é domingo (dia de descanso)
+      if (today === 0) {
+        this.todayWorkout = { workout: null, isRestDay: true };
+        console.log('Hoje é domingo - dia de descanso');
+        return;
       }
-    });
+      
+      // Procurar por um treino que contenha o nome do dia ou seja adequado para hoje
+      const dayNames = ['domingo', 'segunda', 'terca', 'quarta', 'quinta', 'sexta', 'sabado'];
+      const todayName = dayNames[today];
+      
+      let todayWorkout = allWorkouts.find((workout: CustomWorkout) => 
+        workout.name?.toLowerCase().includes(todayName) ||
+        workout.category === todayName ||
+        workout.description?.toLowerCase().includes(todayName)
+      );
+      
+      // Se não encontrar um treino específico, usar o primeiro treino disponível
+      if (!todayWorkout && allWorkouts.length > 0) {
+        todayWorkout = allWorkouts[0];
+      }
+      
+      // Se ainda não há treino, criar um treino básico
+      if (!todayWorkout) {
+        todayWorkout = this.createBasicWorkout(today);
+        console.log('Criando treino básico para hoje:', todayWorkout.name);
+      }
+      
+      this.todayWorkout = { workout: todayWorkout, isRestDay: false };
+      console.log('Treino do dia carregado:', todayWorkout.name);
+      
+    } catch (error) {
+      console.error('Erro ao carregar treino do dia:', error);
+      // Em caso de erro, criar um treino básico
+      const today = new Date().getDay();
+      if (today === 0) {
+        this.todayWorkout = { workout: null, isRestDay: true };
+      } else {
+        const basicWorkout = this.createBasicWorkout(today);
+        this.todayWorkout = { workout: basicWorkout, isRestDay: false };
+      }
+    }
+  }
+
+  private getTodayDateString(): string {
+    const today = new Date();
+    return today.toISOString().split('T')[0]; // formato YYYY-MM-DD
+  }
+
+  private translateDayName(dayIndex: number): string {
+    const dayNames = ['Domingo', 'Segunda-feira', 'Terça-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira', 'Sábado'];
+    return dayNames[dayIndex] || 'Dia';
+  }
+
+  private createBasicWorkout(dayIndex: number, dayOfWeek?: string): CustomWorkout {
+    const dayName = this.translateDayName(dayIndex);
+    const basicExercises = this.getBasicExercisesForDay(dayIndex);
     
-    // Converter de segundos para minutos
-    return Math.round(totalDuration / 60);
+    return {
+      id: `basic-workout-${dayIndex}`,
+      name: `Treino de ${dayName}`,
+      description: `Treino básico para ${dayName}`,
+      difficulty: 'medium' as 'easy' | 'medium' | 'hard',
+      muscleGroups: ['arms', 'chest', 'legs'],
+      equipment: ['bodyweight'],
+      isTemplate: false,
+      category: 'strength',
+      estimatedDuration: 30,
+      exercises: basicExercises.map((exercise, index) => ({
+        id: `exercise-${index}`,
+        exerciseId: exercise.id,
+        order: index + 1,
+        sets: [
+          { id: `set-${index}-1`, reps: 12, weight: 0, completed: false },
+          { id: `set-${index}-2`, reps: 12, weight: 0, completed: false },
+          { id: `set-${index}-3`, reps: 12, weight: 0, completed: false }
+        ],
+        restTime: 60,
+        notes: ''
+      })),
+      createdBy: 'system',
+      createdAt: new Date(),
+      updatedAt: new Date()
+    };
   }
 
-  public getEstimatedCalories(workout: CustomWorkout): number {
-    if (!workout || !workout.exercises) return 0;
-    
-    // Estimativa simples: 5 calorias por minuto de treino
-    const duration = this.getWorkoutDuration(workout);
-    return Math.round(duration * 5);
-  }
+  private getBasicExercisesForDay(dayIndex: number): any[] {
+    // Exercícios básicos por dia da semana
+    const exercisesByDay = {
+      0: [ // Domingo - Descanso ou cardio leve
+        { id: 'ex-sunday-1', name: 'Caminhada', muscleGroups: ['cardio'] },
+        { id: 'ex-sunday-2', name: 'Alongamento', muscleGroups: ['flexibility'] }
+      ],
+      1: [ // Segunda - Peito e Tríceps
+        { id: 'ex-monday-1', name: 'Flexões', muscleGroups: ['chest'] },
+        { id: 'ex-monday-2', name: 'Tríceps no banco', muscleGroups: ['arms'] },
+        { id: 'ex-monday-3', name: 'Supino inclinado', muscleGroups: ['chest'] }
+      ],
+      2: [ // Terça - Costas e Bíceps
+        { id: 'ex-tuesday-1', name: 'Pull-ups', muscleGroups: ['back'] },
+        { id: 'ex-tuesday-2', name: 'Rosca direta', muscleGroups: ['arms'] },
+        { id: 'ex-tuesday-3', name: 'Remada curvada', muscleGroups: ['back'] }
+      ],
+      3: [ // Quarta - Pernas
+        { id: 'ex-wednesday-1', name: 'Agachamento', muscleGroups: ['legs'] },
+        { id: 'ex-wednesday-2', name: 'Leg press', muscleGroups: ['legs'] },
+        { id: 'ex-wednesday-3', name: 'Panturrilha', muscleGroups: ['legs'] }
+      ],
+      4: [ // Quinta - Ombros
+        { id: 'ex-thursday-1', name: 'Desenvolvimento militar', muscleGroups: ['shoulders'] },
+        { id: 'ex-thursday-2', name: 'Elevação lateral', muscleGroups: ['shoulders'] },
+        { id: 'ex-thursday-3', name: 'Elevação frontal', muscleGroups: ['shoulders'] }
+      ],
+      5: [ // Sexta - Braços
+        { id: 'ex-friday-1', name: 'Rosca bíceps', muscleGroups: ['arms'] },
+        { id: 'ex-friday-2', name: 'Tríceps francês', muscleGroups: ['arms'] },
+        { id: 'ex-friday-3', name: 'Martelo', muscleGroups: ['arms'] }
+      ],
+      6: [ // Sábado - Cardio
+        { id: 'ex-saturday-1', name: 'Corrida', muscleGroups: ['cardio'] },
+        { id: 'ex-saturday-2', name: 'Burpees', muscleGroups: ['cardio'] },
+        { id: 'ex-saturday-3', name: 'Jump squat', muscleGroups: ['cardio'] }
+      ]
+    };
 
-  public navigateToWorkoutProgress() {
-    this.router.navigate(['/workout-progress']);
-  }
-
-  // Getters para template safety
-  get currentWorkout(): CustomWorkout | null {
-    return this.todayWorkout?.workout || null;
-  }
-
-  get workoutDurationDisplay(): string {
-    const workout = this.currentWorkout;
-    if (!workout) return '0';
-    return this.getWorkoutDuration(workout).toString();
-  }
-
-  get workoutCaloriesDisplay(): string {
-    const workout = this.currentWorkout;
-    if (!workout) return '0';
-    return this.getEstimatedCalories(workout).toString();
-  }
-
-  get workoutExercisesCount(): number {
-    const workout = this.currentWorkout;
-    return workout?.exercises?.length || 0;
+    return exercisesByDay[dayIndex as keyof typeof exercisesByDay] || exercisesByDay[1];
   }
 }
-
-

@@ -1,67 +1,342 @@
-/* ===== HOME PAGE - MODERN FITSYNC DESIGN ===== */
+/* ===== HOME PAGE - TREINO DO DIA DESIGN ===== */
 .home-content {
   --padding-top: 0;
   --padding-bottom: 80px;
   background: var(--fitsync-background-subtle);
+  min-height: 100vh;
 }
 
 /* Header Styling */
-ion-header {
-  ion-toolbar {
-    --background: var(--fitsync-gradient-primary);
-    --color: white;
-    --border-width: 0;
+.home-header {
+  background: linear-gradient(135deg, var(--fitsync-primary), var(--fitsync-secondary));
+  padding: 1rem;
+  color: white;
+  
+  .greeting {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+  }
+  
+  .user-name {
+    font-size: 1rem;
+    opacity: 0.9;
+    margin: 0;
+  }
+}
+
+/* Loading State */
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 1rem;
+  
+  ion-spinner {
+    margin-bottom: 1rem;
+  }
+  
+  p {
+    color: var(--ion-color-medium);
+    font-size: 0.9rem;
+  }
+}
+
+/* Date Display */
+.date-display {
+  background: white;
+  margin: 0 1rem 1rem 1rem;
+  border-radius: 16px;
+  padding: 1rem;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  
+  h2 {
+    margin: 0 0 0.5rem 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--fitsync-dark);
+  }
+  
+  .streak-info {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+    color: var(--ion-color-medium);
     
-    .header-content {
+    ion-icon {
+      color: var(--fitsync-primary);
+    }
+  }
+}
+
+/* Today's Workout Section */
+.todays-workout {
+  margin: 0 1rem 1rem 1rem;
+  
+  .section-title {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--fitsync-dark);
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    
+    ion-icon {
+      color: var(--fitsync-primary);
+    }
+  }
+}
+
+/* Rest Day Card */
+.rest-day-card {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 20px;
+  padding: 2rem 1.5rem;
+  text-align: center;
+  color: white;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  
+  .rest-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    opacity: 0.9;
+  }
+  
+  h3 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin: 0 0 0.5rem 0;
+  }
+  
+  p {
+    font-size: 1rem;
+    opacity: 0.9;
+    margin: 0;
+  }
+}
+
+/* No Workout Card */
+.no-workout-card {
+  background: white;
+  border-radius: 20px;
+  padding: 2rem 1.5rem;
+  text-align: center;
+  box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+  
+  .empty-icon {
+    font-size: 3rem;
+    color: var(--ion-color-medium);
+    margin-bottom: 1rem;
+  }
+  
+  h3 {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: var(--fitsync-dark);
+    margin: 0 0 0.5rem 0;
+  }
+  
+  p {
+    color: var(--ion-color-medium);
+    font-size: 0.9rem;
+    margin: 0 0 1.5rem 0;
+  }
+  
+  ion-button {
+    --border-radius: 12px;
+    font-weight: 600;
+  }
+}
+
+/* Workout Card */
+.workout-card {
+  background: white;
+  border-radius: 20px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  
+  .workout-header {
+    background: linear-gradient(135deg, var(--fitsync-primary), var(--fitsync-secondary));
+    padding: 1.5rem;
+    color: white;
+    position: relative;
+    
+    h3 {
+      font-size: 1.4rem;
+      font-weight: 700;
+      margin: 0 0 1rem 0;
+    }
+    
+    .today-badge {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      background: rgba(255, 255, 255, 0.2);
+      padding: 0.3rem 0.8rem;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      backdrop-filter: blur(10px);
+    }
+    
+    .workout-stats {
       display: flex;
-      align-items: center;
       justify-content: space-between;
-      padding: 0.5rem 0;
+      margin-top: 1rem;
       
-      .logo-section {
-        display: flex;
-        align-items: center;
-        gap: 0.75rem;
-        
-        .logo-icon {
-          width: 32px;
-          height: 32px;
-          border-radius: 8px;
-          background: rgba(255, 255, 255, 0.15);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          
-          ion-icon {
-            font-size: 1.2rem;
-            color: white;
-          }
-        }
-        
-        .logo-text {
-          font-size: 1.25rem;
-          font-weight: 700;
-          color: white;
-        }
-      }
-      
-      .header-actions {
+      .stat-item {
         display: flex;
         align-items: center;
         gap: 0.5rem;
         
-        ion-button {
-          --color: white;
-          --background: rgba(255, 255, 255, 0.1);
-          --border-radius: 8px;
-          
-          &:hover {
-            --background: rgba(255, 255, 255, 0.2);
-          }
+        ion-icon {
+          font-size: 1.1rem;
+        }
+        
+        span {
+          font-size: 0.9rem;
+          font-weight: 500;
         }
       }
     }
   }
+  
+  .workout-content {
+    padding: 1.5rem;
+    
+    .start-workout-btn {
+      --background: linear-gradient(135deg, var(--fitsync-primary), var(--fitsync-secondary));
+      --border-radius: 16px;
+      height: 56px;
+      font-size: 1.1rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      box-shadow: 0 4px 15px rgba(118, 75, 162, 0.3);
+      margin: 0;
+      
+      ion-icon {
+        font-size: 1.3rem;
+      }
+    }
+  }
+}
+
+/* Quick Actions Grid */
+.quick-actions {
+  margin: 1rem;
+  
+  .section-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--fitsync-dark);
+    margin-bottom: 1rem;
+  }
+  
+  .actions-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+    
+    .action-card {
+      background: white;
+      border-radius: 16px;
+      padding: 1.5rem 1rem;
+      text-align: center;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      
+      &:active {
+        transform: scale(0.98);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+      }
+      
+      .action-icon {
+        background: var(--fitsync-gradient-primary);
+        border-radius: 12px;
+        width: 48px;
+        height: 48px;
+        margin: 0 auto 0.75rem auto;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        
+        ion-icon {
+          font-size: 1.5rem;
+          color: white;
+        }
+      }
+      
+      .action-title {
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: var(--fitsync-dark);
+        margin: 0;
+      }
+    }
+  }
+}
+
+/* Responsive Design */
+@media (min-width: 768px) {
+  .home-content {
+    max-width: 600px;
+    margin: 0 auto;
+  }
+  
+  .quick-actions .actions-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+/* Dark Mode Support */
+@media (prefers-color-scheme: dark) {
+  .date-display,
+  .workout-card .workout-content,
+  .no-workout-card,
+  .quick-actions .action-card {
+    background: var(--ion-color-dark);
+    
+    h2, h3, h4,
+    .exercise-name,
+    .action-title {
+      color: var(--ion-color-light);
+    }
+  }
+  
+  .exercise-item {
+    border-bottom-color: var(--ion-color-medium);
+  }
+}
+
+/* Loading Animation */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.workout-card,
+.rest-day-card,
+.no-workout-card,
+.date-display,
+.quick-actions {
+  animation: fadeIn 0.6s ease-out;
+}
+
+/* Accessible touch targets */
+.action-card,
+.start-workout-btn,
+ion-button {
+  min-height: 44px;
 }
 
 /* Loading State */
@@ -862,5 +1137,292 @@ ion-fab {
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+/* Stats Section */
+.stats-section {
+  margin: 1rem;
+  
+  h3 {
+    color: var(--ion-color-dark);
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    padding: 0 0.5rem;
+  }
+  
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.75rem;
+    
+    .stat-card {
+      background: white;
+      border-radius: 16px;
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      
+      .stat-icon {
+        background: var(--fitsync-primary-light);
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 0.5rem;
+        
+        ion-icon {
+          font-size: 1.2rem;
+          color: var(--fitsync-primary);
+        }
+      }
+      
+      .stat-info {
+        .stat-value {
+          display: block;
+          font-size: 1.5rem;
+          font-weight: 700;
+          color: var(--ion-color-dark);
+          margin-bottom: 0.25rem;
+        }
+        
+        .stat-label {
+          font-size: 0.8rem;
+          color: var(--ion-color-medium);
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+        }
+      }
+    }
+  }
+}
+
+/* Plan Section */
+.plan-section {
+  margin: 1rem;
+  
+  h3 {
+    color: var(--ion-color-dark);
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    padding: 0 0.5rem;
+  }
+  
+  .plan-card {
+    background: white;
+    border-radius: 16px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    
+    .plan-header {
+      margin-bottom: 1rem;
+      
+      h4 {
+        color: var(--ion-color-dark);
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin-bottom: 0.75rem;
+      }
+      
+      .plan-progress {
+        span {
+          font-size: 0.9rem;
+          color: var(--ion-color-medium);
+          margin-bottom: 0.5rem;
+          display: block;
+        }
+        
+        .progress-bar {
+          width: 100%;
+          height: 8px;
+          background: var(--ion-color-light);
+          border-radius: 4px;
+          overflow: hidden;
+          
+          .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--fitsync-primary), var(--fitsync-secondary));
+            border-radius: 4px;
+            transition: width 0.3s ease;
+          }
+        }
+      }
+    }
+    
+    .plan-actions {
+      display: flex;
+      justify-content: center;
+      
+      ion-button {
+        --border-radius: 12px;
+        --padding-start: 1.5rem;
+        --padding-end: 1.5rem;
+        font-weight: 500;
+      }
+    }
+  }
+}
+
+/* ===== SIMPLIFIED HOME PAGE STYLES ===== */
+.main-content {
+  padding: 1rem;
+}
+
+.date-header {
+  margin-bottom: 1.5rem;
+  
+  h2 {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--fitsync-dark);
+    text-align: center;
+    margin: 0;
+  }
+}
+
+.workout-section {
+  .rest-day {
+    .rest-card {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border-radius: 20px;
+      padding: 2rem 1.5rem;
+      text-align: center;
+      color: white;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+      
+      .rest-icon {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+        opacity: 0.9;
+      }
+      
+      h3 {
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin: 0 0 0.5rem 0;
+      }
+      
+      p {
+        font-size: 1rem;
+        opacity: 0.9;
+        margin: 0;
+      }
+    }
+  }
+  
+  .today-workout {
+    .workout-card {
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+      
+      .workout-header {
+        background: linear-gradient(135deg, var(--fitsync-primary), var(--fitsync-secondary));
+        padding: 1.5rem;
+        color: white;
+        position: relative;
+        
+        h3 {
+          font-size: 1.4rem;
+          font-weight: 700;
+          margin: 0 0 1rem 0;
+        }
+        
+        .today-badge {
+          position: absolute;
+          top: 1rem;
+          right: 1rem;
+          background: rgba(255, 255, 255, 0.2);
+          padding: 0.3rem 0.8rem;
+          border-radius: 20px;
+          font-size: 0.8rem;
+          font-weight: 600;
+          backdrop-filter: blur(10px);
+        }
+        
+        .workout-stats {
+          display: flex;
+          justify-content: space-between;
+          margin-top: 1rem;
+          
+          .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            
+            ion-icon {
+              font-size: 1.1rem;
+            }
+            
+            span {
+              font-size: 0.9rem;
+              font-weight: 500;
+            }
+          }
+        }
+      }
+      
+      .workout-content {
+        padding: 1.5rem;
+        
+        .start-workout-btn {
+          --background: linear-gradient(135deg, var(--fitsync-primary), var(--fitsync-secondary));
+          --border-radius: 16px;
+          height: 56px;
+          font-size: 1.1rem;
+          font-weight: 700;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+          box-shadow: 0 4px 15px rgba(118, 75, 162, 0.3);
+          margin: 0;
+          
+          ion-icon {
+            font-size: 1.3rem;
+          }
+        }
+      }
+    }
+  }
+  
+  .no-workout {
+    .no-workout-card {
+      background: white;
+      border-radius: 20px;
+      padding: 2rem 1.5rem;
+      text-align: center;
+      box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+      
+      .no-workout-icon {
+        font-size: 3rem;
+        color: var(--ion-color-medium);
+        margin-bottom: 1rem;
+      }
+      
+      h3 {
+        font-size: 1.3rem;
+        font-weight: 600;
+        color: var(--fitsync-dark);
+        margin: 0 0 0.5rem 0;
+      }
+      
+      p {
+        color: var(--ion-color-medium);
+        font-size: 0.9rem;
+        margin: 0 0 1.5rem 0;
+      }
+      
+      ion-button {
+        --border-radius: 12px;
+        font-weight: 600;
+      }
+    }
   }
 }
