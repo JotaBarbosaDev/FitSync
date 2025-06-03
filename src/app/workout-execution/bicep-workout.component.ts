@@ -213,6 +213,12 @@ export class BicepWorkoutComponent implements OnInit {
       `,
       buttons: [
         {
+          text: 'Repetir Treino',
+          handler: () => {
+            this.repeatWorkout();
+          }
+        },
+        {
           text: 'Ver Progresso',
           handler: () => {
             this.router.navigate(['/tabs/workout-progress']);
@@ -354,5 +360,58 @@ export class BicepWorkoutComponent implements OnInit {
       cssClass: 'workout-help-alert'
     });
     await alert.present();
+  }
+
+  async repeatWorkout() {
+    const alert = await this.alertController.create({
+      header: '🔄 Repetir Treino',
+      message: 'Deseja repetir o treino de bíceps? Todas as séries serão reiniciadas.',
+      buttons: [
+        {
+          text: 'Cancelar',
+          role: 'cancel'
+        },
+        {
+          text: 'Sim, repetir',
+          handler: () => {
+            this.restartWorkout();
+          }
+        }
+      ]
+    });
+
+    await alert.present();
+  }
+
+  private async restartWorkout() {
+    try {
+      // Reset workout state
+      this.currentSet = 1;
+      this.progress = 0;
+      this.completedSets = [];
+      this.workoutStartTime = new Date();
+
+      // Show success message
+      const toast = await this.toastController.create({
+        message: '🔄 Treino de bíceps reiniciado! Vamos começar novamente!',
+        duration: 2000,
+        color: 'success',
+        position: 'top'
+      });
+      await toast.present();
+
+      console.log('Treino de bíceps reiniciado às:', this.workoutStartTime);
+
+    } catch (error) {
+      console.error('Erro ao repetir treino:', error);
+
+      const errorToast = await this.toastController.create({
+        message: '⚠️ Erro ao repetir treino. Tente novamente.',
+        duration: 3000,
+        color: 'danger',
+        position: 'top'
+      });
+      await errorToast.present();
+    }
   }
 }

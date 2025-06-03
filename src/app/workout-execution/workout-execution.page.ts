@@ -163,6 +163,12 @@ export class WorkoutExecutionPage implements OnInit, OnDestroy {
       message: `Você completou o treino de ${this.dayName}!\n\nDuração: ${this.formatDuration(this.workoutDuration)}\nExercícios: ${this.completedExercises}/${this.exercises.length}\n\n📊 Dados salvos no seu progresso!`,
       buttons: [
         {
+          text: 'Repetir Treino',
+          handler: () => {
+            this.repeatWorkout();
+          }
+        },
+        {
           text: 'Ver Progresso',
           handler: () => {
             this.router.navigate(['/tabs/workout-progress']);
@@ -290,6 +296,16 @@ export class WorkoutExecutionPage implements OnInit, OnDestroy {
     await toast.present();
   }
 
+  private async showToast(message: string, color: string = 'primary') {
+    const toast = await this.toastController.create({
+      message,
+      duration: 2000,
+      color,
+      position: 'top'
+    });
+    await toast.present();
+  }
+
   // Additional methods referenced in template
   getTotalCalories(): number {
     return this.exercises.reduce((total, exercise) => total + (exercise.calories || 50), 0);
@@ -321,6 +337,54 @@ export class WorkoutExecutionPage implements OnInit, OnDestroy {
     if (this.currentExerciseIndex < this.exercises.length - 1) {
       this.currentExerciseIndex++;
     }
+  }
+
+  async repeatWorkout() {
+    const alert = await this.alertController.create({
+      header: '🔄 Repetir Treino',
+      message: 'Deseja repetir este treino? Todos os exercícios serão reiniciados.',
+      buttons: [
+        {
+          text: 'Cancelar',
+          role: 'cancel'
+        },
+        {
+          text: 'Sim, repetir',
+          handler: () => {
+            this.restartWorkout();
+          }
+        }
+      ]
+    });
+
+    await alert.present();
+  }
+
+  private restartWorkout() {
+    // Reset all exercise completion status
+    this.exercises = this.exercises.map(exercise => ({
+      ...exercise,
+      completed: false
+    }));
+
+    // Reset workout state
+    this.currentExerciseIndex = 0;
+    this.completedExercises = 0;
+    this.workoutCompleted = false;
+    this.workoutDuration = 0;
+    this.workoutStartTime = null;
+    this.completedExerciseData = [];
+
+    // Stop any existing timer
+    this.stopTimer();
+
+    // Show success message
+    this.showToast('🔄 Treino reiniciado! Vamos começar novamente!', 'success');
+
+    // Auto-start the workout
+    setTimeout(() => {
+      this.startWorkout();
+    }, 500);
   }
 
   private async saveWorkoutSession() {
