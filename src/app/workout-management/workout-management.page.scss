@@ -41,6 +41,10 @@
     rgba(var(--ion-color-primary-rgb), 0.02) 0%, 
     rgba(var(--ion-color-secondary-rgb), 0.02) 100%);
   min-height: 100vh;
+  --padding-top: 0;
+  --padding-bottom: 100px;
+  --offset-top: 0px !important; 
+  
   
   .loading-container {
     display: flex;
@@ -581,15 +585,13 @@
     }
   }
   
-  @keyframes dayCardFloat,
-  @keyframes todayPulse,
-  @keyframes shimmerEffect,
-  @keyframes exerciseItemSlide,
-  @keyframes iconBounce,
-  @keyframes gradientShift,
-  @keyframes emptyDayBreath {
-    to { transform: none; opacity: inherit; background-position: inherit; }
-  }
+  @keyframes dayCardFloat { to { transform: none; opacity: inherit; background-position: inherit; } }
+  @keyframes todayPulse { to { transform: none; opacity: inherit; background-position: inherit; } }
+  @keyframes shimmerEffect { to { transform: none; opacity: inherit; background-position: inherit; } }
+  @keyframes exerciseItemSlide { to { transform: none; opacity: inherit; background-position: inherit; } }
+  @keyframes iconBounce { to { transform: none; opacity: inherit; background-position: inherit; } }
+  @keyframes gradientShift { to { transform: none; opacity: inherit; background-position: inherit; } }
+  @keyframes emptyDayBreath { to { transform: none; opacity: inherit; background-position: inherit; } }
 }
 
 /* === HIGH CONTRAST MODE === */

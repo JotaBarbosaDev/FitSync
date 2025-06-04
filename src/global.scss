@@ -1358,6 +1358,7 @@ ion-content {
   &.exercise-library-content,
   &.progresso-content {
     padding-top: 0 !important;
+    --offset-top:0px !important;
   }
 }
 
