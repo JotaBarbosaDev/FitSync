@@ -17,6 +17,20 @@ interface CompletedWorkoutToday {
   canRepeat: boolean;
 }
 
+interface QuickStats {
+  weeklyWorkouts: number;
+  weeklyMinutes: number;
+  weeklyCalories: number;
+}
+
+interface Achievement {
+  id: string;
+  title: string;
+  description: string;
+  icon: string;
+  earnedAt: Date;
+}
+
 @Component({
   selector: 'app-home',
   templateUrl: 'home.page.html',
@@ -31,6 +45,16 @@ export class HomePage implements OnInit {
   todayWorkout: TodayWorkout | null = null;
   completedWorkoutToday: CompletedWorkoutToday | null = null;
   isLoading = true;
+  quickStats: QuickStats = { weeklyWorkouts: 0, weeklyMinutes: 0, weeklyCalories: 0 };
+  recentAchievements: Achievement[] = [];
+  dailyTip = '';
+  weeklyProgress = 0; // Porcentagem de 0 a 100
+  currentStreak = 0;
+
+  // Stats properties (getters will be used instead)
+  weeklyWorkouts = 0;
+  totalMinutes = 0;
+  weeklyCalories = 0;
 
   constructor(
     private router: Router,
@@ -43,6 +67,10 @@ export class HomePage implements OnInit {
   async ngOnInit() {
     await this.storage.create();
     await this.initializeDefaultWorkouts();
+    await this.loadUserProfile();
+    await this.loadQuickStats();
+    await this.loadRecentAchievements();
+    await this.loadDailyTip();
     await this.loadTodayWorkout();
     await this.checkCompletedWorkoutToday();
     this.isLoading = false;
@@ -511,22 +539,192 @@ export class HomePage implements OnInit {
     return !!(this.completedWorkoutToday && this.completedWorkoutToday.canRepeat);
   }
 
-  get completedWorkoutName(): string {
-    if (!this.completedWorkoutToday || !this.completedWorkoutToday.session) {
-      return 'Treino de hoje';
-    }
+  // Novos métodos para a página home melhorada
 
-    // Try to get workout name from session
-    const session = this.completedWorkoutToday.session;
-    if (session.workoutName) return session.workoutName;
-    if (session.workoutId && session.workoutId.includes('weekly-plan')) {
-      return `Treino de ${this.getTodayDayName()}`;
+  async loadUserProfile() {
+    try {
+      const profile: any = await this.storageService.get('userProfile');
+      if (profile?.name) {
+        this.userProfile.name = profile.name;
+      }
+    } catch (error) {
+      console.error('Erro ao carregar perfil do usuário:', error);
     }
-
-    return 'Último treino';
   }
 
-  get completedWorkoutExerciseCount(): number {
-    return this.completedWorkoutToday?.exercises?.length || 0;
+  async loadQuickStats() {
+    try {
+      const now = new Date();
+      const startOfWeek = new Date(now);
+      startOfWeek.setDate(now.getDate() - now.getDay());
+      startOfWeek.setHours(0, 0, 0, 0);
+
+      const sessions = await this.storageService.get('workoutSessions') || [];
+      const thisWeekSessions = Array.isArray(sessions) ? sessions.filter((session: any) => {
+        const sessionDate = new Date(session.startTime);
+        return sessionDate >= startOfWeek;
+      }) : [];
+
+      this.quickStats.weeklyWorkouts = thisWeekSessions.length;
+      this.quickStats.weeklyMinutes = thisWeekSessions.reduce((total: number, session: any) => {
+        return total + (session.duration || 0);
+      }, 0);
+      this.quickStats.weeklyCalories = thisWeekSessions.reduce((total: number, session: any) => {
+        return total + (session.caloriesBurned || 0);
+      }, 0);
+
+      // Calcular progresso semanal (assumindo meta de 4 treinos por semana)
+      this.weeklyProgress = Math.min((this.quickStats.weeklyWorkouts / 4) * 100, 100);
+    } catch (error) {
+      console.error('Erro ao carregar estatísticas rápidas:', error);
+    }
+  }
+
+  async loadRecentAchievements() {
+    try {
+      const achievements = await this.storageService.get('achievements') || [];
+      // Pegar as 3 conquistas mais recentes
+      this.recentAchievements = Array.isArray(achievements) ? achievements
+        .sort((a: any, b: any) => new Date(b.earnedAt).getTime() - new Date(a.earnedAt).getTime())
+        .slice(0, 3)
+        .map((achievement: any) => ({
+          id: achievement.id,
+          title: achievement.title,
+          description: achievement.description,
+          icon: achievement.icon || '🏆',
+          earnedAt: new Date(achievement.earnedAt)
+        })) : [];
+    } catch (error) {
+      console.error('Erro ao carregar conquistas recentes:', error);
+      this.recentAchievements = [];
+    }
+  }
+
+  loadDailyTip() {
+    const tips = [
+      'Beba água antes, durante e após o treino para manter-se hidratado.',
+      'Aqueça sempre antes de começar os exercícios principais.',
+      'Foque na forma correta do movimento, não apenas no peso.',
+      'Descanse adequadamente entre os treinos para recuperação muscular.',
+      'Varie seus exercícios para trabalhar diferentes grupos musculares.',
+      'Mantenha uma alimentação balanceada para potencializar seus resultados.',
+      'Durma pelo menos 7-8 horas por noite para uma recuperação adequada.',
+      'Seja consistente - a regularidade é mais importante que a intensidade.',
+      'Escute seu corpo e descanse quando necessário.',
+      'Celebre pequenas vitórias no seu progresso fitness.'
+    ];
+    
+    const today = new Date();
+    const dayOfYear = Math.floor((today.getTime() - new Date(today.getFullYear(), 0, 0).getTime()) / (1000 * 60 * 60 * 24));
+    this.dailyTip = tips[dayOfYear % tips.length];
+  }
+
+  getExercisePreview(): string[] {
+    const workout = this.currentWorkout;
+    if (!workout || !workout.exercises) return [];
+    
+    return workout.exercises
+      .slice(0, 3)
+      .map((ex: any) => {
+        // Mapear IDs de exercícios para nomes
+        const exerciseNames: { [key: string]: string } = {
+          'pushup': 'Flexão',
+          'squat': 'Agachamento',
+          'plank': 'Prancha',
+          'lunges': 'Afundo',
+          'burpees': 'Burpee',
+          'jumping-jacks': 'Polichinelo',
+          'mountain-climbers': 'Escalada',
+          'crunches': 'Abdominal'
+        };
+        return exerciseNames[ex.exerciseId] || ex.exerciseId;
+      });
+  }
+
+  getMuscleGroups(): string[] {
+    const workout = this.currentWorkout;
+    if (!workout || !workout.muscleGroups) return [];
+    
+    const muscleGroupNames: { [key: string]: string } = {
+      'chest': 'Peito',
+      'legs': 'Pernas',
+      'back': 'Costas',
+      'shoulders': 'Ombros',
+      'arms': 'Braços',
+      'core': 'Core',
+      'glutes': 'Glúteos'
+    };
+    
+    return workout.muscleGroups.map((mg: any) => muscleGroupNames[mg] || mg);
+  }
+
+  navigateToWorkoutCreation() {
+    this.router.navigate(['/workout-management/create']);
+  }
+
+  navigateToProgress() {
+    this.router.navigate(['/tabs/workout-progress']);
+  }
+
+  navigateToWorkoutList() {
+    this.router.navigate(['/tabs/lista']);
+  }
+
+  // Additional methods for the enhanced home page
+  getMotivationalMessage(): string {
+    const messages = [
+      'Pronto para conquistar o dia?',
+      'Vamos treinar e evoluir juntos!',
+      'Cada treino é um passo em direção ao seu objetivo!',
+      'Sua força está crescendo a cada dia!',
+      'Hoje é um ótimo dia para se superar!'
+    ];
+    return messages[Math.floor(Math.random() * messages.length)];
+  }
+
+  getTodayProgress(): number {
+    // Return a simple progress calculation based on current workout completion
+    if (this.todayWorkout?.isRestDay) return 100;
+    if (this.completedWorkoutToday) return 100;
+    return this.currentWorkout ? 25 : 0;
+  }
+
+  getWorkoutMuscleGroups(): string {
+    const muscleGroups = this.getMuscleGroups();
+    return muscleGroups.slice(0, 2).join(', ');
+  }
+
+  getPreviewExercises(): any[] {
+    const workout = this.currentWorkout || this.todayWorkout?.workout;
+    if (!workout || !workout.exercises) return [];
+    
+    return workout.exercises.slice(0, 3).map((exercise: any) => ({
+      name: exercise.name,
+      sets: exercise.sets?.length || 3,
+      reps: exercise.sets?.[0]?.reps || 12
+    }));
+  }
+
+  createQuickWorkout() {
+    // Navigate to workout creation or start a basic workout
+    this.router.navigate(['/workout-management']);
+  }
+
+  getDailyTip(): string {
+    const tips = [
+      'Mantenha-se hidratado durante o treino!',
+      'Faça o aquecimento antes de começar.',
+      'Escute seu corpo e respeite os limites.',
+      'Consistência é mais importante que intensidade.',
+      'Não esqueça de se alongar após o treino!'
+    ];
+    return this.dailyTip || tips[Math.floor(Math.random() * tips.length)];
+  }
+
+  getUserFirstName(): string {
+    if (this.userProfile?.name) {
+      return this.userProfile.name.split(' ')[0];
+    }
+    return 'Usuário';
   }
 }

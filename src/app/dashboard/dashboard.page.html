@@ -3,52 +3,231 @@
     <div class="header-content">
       <div class="header-left"> 
         <div class="header-title">
-          <h1 class="title-large text-gradient-primary">FitSync Pro</h1>
+          <h1 class="title-large text-gradient-primary">Perfil</h1>
         </div>
       </div>
       <div class="header-actions">
+        <ion-button fill="clear" (click)="openSettings()">
+          <ion-icon name="settings-outline"></ion-icon>
+        </ion-button>
       </div>
     </div>
   </ion-toolbar>
 </ion-header>
 
 <ion-content class="dashboard-content" [fullscreen]="true">
-  <!-- Hero Section com Boas-vindas -->
-  <div class="hero-section fitsync-slide-up">
-    <div class="hero-content">
-      <div class="greeting-section">
-        <h1 class="display-large">{{ getGreeting() }}, {{ getUserFirstName() }}!</h1>
-        <p class="body-large hero-subtitle text-muted">{{ getMotivationalMessage() }}</p>
-        <div class="motivation-badge">
-          <span class="label-medium text-accent">💪 VAMOS TREINAR</span>
+  <!-- Profile Header -->
+  <div class="profile-header fitsync-slide-up">
+    <div class="profile-info">
+      <div class="avatar-section">
+        <div class="avatar">
+          <ion-icon name="person"></ion-icon>
+        </div>
+        <div class="level-badge">
+          <span>Nível {{ userLevel }}</span>
         </div>
       </div>
-      
-      <!-- Timer de Treino Ativo -->
-      <div class="workout-timer-hero" *ngIf="workoutTimer.isRunning">
-        <div class="fitsync-card timer-card">
-          <div class="icon-container icon-container--lg icon-container--gradient">
-            <ion-icon name="timer" class="icon icon-lg"></ion-icon>
-          </div>
-          <div class="timer-info">
-            <span class="label-large text-emphasis">Treino Ativo</span>
-            <span class="display-small">{{ formatWorkoutTime() }}</span>
-          </div>
-          <ion-badge [color]="workoutTimer.isPaused ? 'warning' : 'success'" class="timer-badge">
-            {{ workoutTimer.isPaused ? 'PAUSADO' : 'ATIVO' }}
-          </ion-badge>
+      <div class="user-details">
+        <h1 class="display-large">{{ getUserFirstName() }}</h1>
+        <p class="body-large hero-subtitle text-muted">{{ userProfile?.email || 'Membro FitSync' }}</p>
+        <div class="streak-info">
+          <span class="streak-badge">
+            <ion-icon name="flame"></ion-icon>
+            {{ currentStreak }} dias seguidos
+          </span>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Estatísticas Principais -->
+  <!-- Quick Stats Overview -->
   <div class="stats-overview animate-slide-up">
     <div class="section-header">
-      <h2 class="hero-large">Sua Performance</h2>
-      <p class="modern-subtitle">Acompanhe seu progresso hoje</p>
+      <h2 class="hero-large">Estatísticas Gerais</h2>
+      <p class="modern-subtitle">Seu progresso até agora</p>
     </div>
     <div class="stats-grid">
+      <div class="stat-card total-workouts">
+        <div class="stat-icon">
+          <ion-icon name="barbell"></ion-icon>
+        </div>
+        <div class="stat-content">
+          <span class="stat-value">{{ totalStats.workouts }}</span>
+          <span class="stat-label">Treinos</span>
+        </div>
+      </div>
+      
+      <div class="stat-card total-time">
+        <div class="stat-icon">
+          <ion-icon name="time"></ion-icon>
+        </div>
+        <div class="stat-content">
+          <span class="stat-value">{{ totalStats.totalMinutes }}</span>
+          <span class="stat-label">Minutos</span>
+        </div>
+      </div>
+      
+      <div class="stat-card calories-burned">
+        <div class="stat-icon">
+          <ion-icon name="flame"></ion-icon>
+        </div>
+        <div class="stat-content">
+          <span class="stat-value">{{ totalStats.totalCalories }}</span>
+          <span class="stat-label">Calorias</span>
+        </div>
+      </div>
+      
+      <div class="stat-card achievements">
+        <div class="stat-icon">
+          <ion-icon name="trophy"></ion-icon>
+        </div>
+        <div class="stat-content">
+          <span class="stat-value">{{ totalStats.achievements }}</span>
+          <span class="stat-label">Conquistas</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Achievements Section -->
+  <div class="achievements-section" *ngIf="userAchievements.length > 0">
+    <div class="section-header">
+      <h2 class="hero-large">Conquistas Recentes</h2>
+      <p class="modern-subtitle">Comemore seus marcos!</p>
+    </div>
+    <div class="achievements-scroll">
+      <div class="achievement-card" *ngFor="let achievement of userAchievements">
+        <div class="achievement-icon">{{ achievement.icon }}</div>
+        <h3>{{ achievement.title }}</h3>
+        <p>{{ achievement.description }}</p>
+        <span class="achievement-date">{{ formatDate(achievement.earnedAt) }}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Weekly Progress -->
+  <div class="weekly-progress">
+    <div class="section-header">
+      <h2 class="hero-large">Progresso Semanal</h2>
+      <p class="modern-subtitle">Meta: 4 treinos por semana</p>
+    </div>
+    <div class="progress-card">
+      <div class="progress-visual">
+        <div class="progress-circle">
+          <svg viewBox="0 0 36 36" class="circular-chart">
+            <path class="circle-bg"
+              d="M18 2.0845
+                a 15.9155 15.9155 0 0 1 0 31.831
+                a 15.9155 15.9155 0 0 1 0 -31.831"
+            />
+            <path class="circle"
+              [attr.stroke-dasharray]="weeklyProgress + ', 100'"
+              d="M18 2.0845
+                a 15.9155 15.9155 0 0 1 0 31.831
+                a 15.9155 15.9155 0 0 1 0 -31.831"
+            />
+            <text x="18" y="20.35" class="percentage">{{ weeklyProgress }}%</text>
+          </svg>
+        </div>
+        <div class="progress-details">
+          <h3>{{ weeklyStats.workouts }}/4 treinos</h3>
+          <p>{{ weeklyStats.minutes }} minutos esta semana</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Personal Records -->
+  <div class="personal-records" *ngIf="personalRecords.length > 0">
+    <div class="section-header">
+      <h2 class="hero-large">Recordes Pessoais</h2>
+      <p class="modern-subtitle">Seus melhores desempenhos</p>
+    </div>
+    <div class="records-list">
+      <div class="record-item" *ngFor="let record of personalRecords">
+        <div class="record-icon">
+          <ion-icon [name]="record.icon"></ion-icon>
+        </div>
+        <div class="record-content">
+          <h4>{{ record.title }}</h4>
+          <p>{{ record.value }} - {{ formatDate(record.date) }}</p>
+        </div>
+        <div class="record-badge">
+          <ion-icon name="trophy" color="warning"></ion-icon>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- User Preferences -->
+  <div class="preferences-section">
+    <div class="section-header">
+      <h2 class="hero-large">Configurações</h2>
+      <p class="modern-subtitle">Personalize sua experiência</p>
+    </div>
+    <div class="preferences-list">
+      <div class="preference-item" (click)="toggleNotifications()">
+        <div class="preference-info">
+          <ion-icon name="notifications-outline"></ion-icon>
+          <span>Notificações</span>
+        </div>
+        <ion-toggle [checked]="preferences.notifications" (ionChange)="onNotificationsChange($event)"></ion-toggle>
+      </div>
+      
+      <div class="preference-item" (click)="toggleDarkMode()">
+        <div class="preference-info">
+          <ion-icon name="moon-outline"></ion-icon>
+          <span>Modo Escuro</span>
+        </div>
+        <ion-toggle [checked]="preferences.darkMode" (ionChange)="onDarkModeChange($event)"></ion-toggle>
+      </div>
+      
+      <div class="preference-item" (click)="setWorkoutReminder()">
+        <div class="preference-info">
+          <ion-icon name="alarm-outline"></ion-icon>
+          <span>Lembrete de Treino</span>
+        </div>
+        <span class="preference-value">{{ preferences.reminderTime || 'Não definido' }}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Action Buttons -->
+  <div class="action-buttons">
+    <ion-button expand="block" fill="outline" (click)="exportData()">
+      <ion-icon name="download-outline" slot="start"></ion-icon>
+      Exportar Dados
+    </ion-button>
+    
+    <ion-button expand="block" fill="clear" color="danger" (click)="logout()">
+      <ion-icon name="log-out-outline" slot="start"></ion-icon>
+      Sair da Conta
+    </ion-button>
+  </div>
+
+  <!-- Timer de Treino Ativo (mantido do original) -->
+  <div class="workout-timer-hero" *ngIf="workoutTimer.isRunning">
+    <div class="fitsync-card timer-card">
+      <div class="icon-container icon-container--lg icon-container--gradient">
+        <ion-icon name="timer" class="icon icon-lg"></ion-icon>
+      </div>
+      <div class="timer-info">
+        <span class="label-large text-emphasis">Treino Ativo</span>
+        <span class="display-small">{{ formatWorkoutTime() }}</span>
+      </div>
+      <ion-badge [color]="workoutTimer.isPaused ? 'warning' : 'success'" class="timer-badge">
+        {{ workoutTimer.isPaused ? 'PAUSADO' : 'ATIVO' }}
+      </ion-badge>
+    </div>
+  </div>
+
+  <!-- Ações Rápidas -->
+  <div class="quick-actions">
+    <div class="section-header">
+      <h2 class="headline-medium text-gradient-dark">Ações Rápidas</h2>
+      <p class="body-medium text-muted">Comece um treino ou explore</p>
+    </div>
+    <div class="actions-grid">
       <div class="fitsync-card stats">
         <div class="icon-container icon-container--xl icon-container--primary">
           <ion-icon name="calendar" class="icon icon-xl icon-glow"></ion-icon>
@@ -219,7 +398,6 @@
         </div>
       </div>
     </div>
-  </div>
 
   <!-- Últimos Treinos -->
   <div class="recent-workouts-section">
@@ -281,8 +459,6 @@
           <span class="body-medium">Primeiro Treino</span>
         </ion-button>
       </div>
-    </div>
-  </div>
 
   <!-- Dicas e Motivação -->
   <div class="tips-section">
@@ -296,4 +472,3 @@
       </div>
     </div>
   </div>
-</ion-content>

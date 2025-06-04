@@ -22,12 +22,63 @@
 
   <!-- Main content -->
   <div *ngIf="!isLoading" class="main-content">
-    <!-- Data do dia -->
-    <div class="date-header">
-      <h2>{{ getCurrentDate() }}</h2>
+    <!-- Saudação Personalizada -->
+    <div class="greeting-section">
+      <div class="greeting-card glass">
+        <div class="greeting-content">
+          <h1 class="greeting-title">{{ getGreeting() }}, {{ userProfile.name }}!</h1>
+          <p class="greeting-subtitle">{{ getMotivationalMessage() }}</p>
+          <div class="streak-info" *ngIf="currentStreak > 0">
+            <ion-icon name="flame" class="streak-icon"></ion-icon>
+            <span class="streak-text">{{ currentStreak }} dias de sequência!</span>
+          </div>
+        </div>
+        <div class="greeting-visual">
+          <div class="progress-ring">
+            <div class="progress-circle">
+              <span class="progress-value">{{ getTodayProgress() }}%</span>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
 
-    <!-- Treino do Dia - Card Simples -->
+    <!-- Stats Rápidos -->
+    <div class="quick-stats">
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon workout">
+            <ion-icon name="fitness"></ion-icon>
+          </div>
+          <div class="stat-info">
+            <span class="stat-value">{{ weeklyWorkouts }}</span>
+            <span class="stat-label">Esta Semana</span>
+          </div>
+        </div>
+        
+        <div class="stat-card">
+          <div class="stat-icon time">
+            <ion-icon name="time"></ion-icon>
+          </div>
+          <div class="stat-info">
+            <span class="stat-value">{{ totalMinutes }}</span>
+            <span class="stat-label">Minutos</span>
+          </div>
+        </div>
+        
+        <div class="stat-card">
+          <div class="stat-icon calories">
+            <ion-icon name="flame"></ion-icon>
+          </div>
+          <div class="stat-info">
+            <span class="stat-value">{{ weeklyCalories }}</span>
+            <span class="stat-label">Calorias</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Treino do Dia - Card Melhorado -->
     <div class="workout-section">
       <!-- Dia de Descanso -->
       <div *ngIf="todayWorkout?.isRestDay" class="rest-day">
@@ -37,6 +88,16 @@
           </div>
           <h3>Dia de Descanso</h3>
           <p>Aproveite para relaxar e se recuperar!</p>
+          <div class="rest-suggestions">
+            <div class="suggestion-item">
+              <ion-icon name="water-outline"></ion-icon>
+              <span>Hidrate-se bem</span>
+            </div>
+            <div class="suggestion-item">
+              <ion-icon name="moon-outline"></ion-icon>
+              <span>Durma pelo menos 7h</span>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -44,9 +105,10 @@
       <div *ngIf="currentWorkout" class="today-workout">
         <div class="workout-card">
           <div class="workout-header">
+            <div class="workout-badge">
+              <span>Treino de Hoje</span>
+            </div>
             <h3>{{ currentWorkout.name }}</h3>
-            
-
             <div class="workout-stats">
               <div class="stat-item">
                 <ion-icon name="fitness-outline"></ion-icon>
@@ -56,10 +118,22 @@
                 <ion-icon name="time-outline"></ion-icon>
                 <span>{{ workoutDurationDisplay }} min</span>
               </div>
+              <div class="stat-item">
+                <ion-icon name="body-outline"></ion-icon>
+                <span>{{ getWorkoutMuscleGroups() }}</span>
+              </div>
             </div>
           </div>
 
           <div class="workout-content">
+            <div class="workout-preview">
+              <h4>Principais Exercícios</h4>
+              <div class="exercise-preview" *ngFor="let exercise of getPreviewExercises()">
+                <span class="exercise-name">{{ exercise.name }}</span>
+                <span class="exercise-sets">{{ exercise.sets }}x{{ exercise.reps }}</span>
+              </div>
+            </div>
+            
             <ion-button expand="block" size="large" (click)="startTodayWorkout()" class="start-workout-btn">
               <ion-icon name="play" slot="start"></ion-icon>
               COMEÇAR TREINO DE {{ getTodayDayName().toUpperCase() }}
@@ -70,17 +144,53 @@
 
       <!-- Nenhum Treino Planejado -->
       <div *ngIf="!currentWorkout && !todayWorkout?.isRestDay" class="no-workout">
-        <div class="no-workout-card">
-          <div class="no-workout-icon">
-            <ion-icon name="calendar-outline"></ion-icon>
+        <div class="rest-card">
+          <div class="rest-icon">
+            <ion-icon name="bed-outline"></ion-icon>
           </div>
-          <h3>Nenhum Treino Planejado</h3>
-          <p>Vá para seus treinos para configurar o plano semanal</p>
-          <ion-button expand="block" (click)="navigateToWorkoutManagement()">
-            <ion-icon name="barbell-outline" slot="start"></ion-icon>
-            Ver Meus Treinos
-          </ion-button>
+          <h3>Dia de Descanso</h3>
+          <p>Aproveite para relaxar e se recuperar!</p>
+          <div class="rest-suggestions">
+            <div class="suggestion-item">
+              <ion-icon name="water-outline"></ion-icon>
+              <span>Hidrate-se bem</span>
+            </div>
+            <div class="suggestion-item">
+              <ion-icon name="moon-outline"></ion-icon>
+              <span>Durma pelo menos 7h</span>
+            </div>
+          </div>
         </div>
+      </div>
+    </div>
+
+    <!-- Conquistas Recentes -->
+    <div class="achievements-section" *ngIf="recentAchievements.length > 0">
+      <h3 class="section-title">
+        <ion-icon name="trophy"></ion-icon>
+        Conquistas Recentes
+      </h3>
+      <div class="achievements-list">
+        <div class="achievement-item" *ngFor="let achievement of recentAchievements">
+          <div class="achievement-icon">
+            <ion-icon [name]="achievement.icon"></ion-icon>
+          </div>
+          <div class="achievement-info">
+            <span class="achievement-title">{{ achievement.title }}</span>
+            <span class="achievement-desc">{{ achievement.description }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Dica do Dia -->
+    <div class="tip-section">
+      <div class="tip-card">
+        <div class="tip-header">
+          <ion-icon name="bulb-outline" class="tip-icon"></ion-icon>
+          <h4>Dica do Dia</h4>
+        </div>
+        <p class="tip-content">{{ getDailyTip() }}</p>
       </div>
     </div>
 

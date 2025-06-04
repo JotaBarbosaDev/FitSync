@@ -1,0 +1,609 @@
+/* Enhanced Dashboard Profile Styles */
+
+/* Profile Header */
+.profile-header {
+  background: linear-gradient(135deg, var(--fitsync-primary), var(--fitsync-secondary));
+  padding: 2rem 1rem;
+  color: white;
+  margin-bottom: 1rem;
+
+  .profile-info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+
+    .avatar-section {
+      position: relative;
+
+      .avatar {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 3px solid rgba(255, 255, 255, 0.3);
+
+        ion-icon {
+          font-size: 2.5rem;
+          color: white;
+        }
+      }
+
+      .level-badge {
+        position: absolute;
+        top: -5px;
+        right: -5px;
+        background: var(--fitsync-accent);
+        color: white;
+        padding: 0.25rem 0.5rem;
+        border-radius: 12px;
+        font-size: 0.7rem;
+        font-weight: 600;
+        border: 2px solid white;
+      }
+    }
+
+    .user-details {
+      flex: 1;
+
+      h1 {
+        font-size: 1.8rem;
+        font-weight: 700;
+        margin-bottom: 0.25rem;
+      }
+
+      .hero-subtitle {
+        font-size: 1rem;
+        opacity: 0.9;
+        margin-bottom: 0.75rem;
+      }
+
+      .streak-info {
+        .streak-badge {
+          background: rgba(255, 255, 255, 0.2);
+          padding: 0.5rem 1rem;
+          border-radius: 20px;
+          display: inline-flex;
+          align-items: center;
+          gap: 0.5rem;
+          font-size: 0.9rem;
+          font-weight: 600;
+
+          ion-icon {
+            color: #ff6b35;
+          }
+        }
+      }
+    }
+  }
+}
+
+/* Enhanced Stats Grid */
+.stats-overview {
+  margin: 0 1rem 2rem 1rem;
+
+  .section-header {
+    margin-bottom: 1rem;
+
+    .hero-large {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: var(--ion-color-dark);
+      margin-bottom: 0.25rem;
+    }
+
+    .modern-subtitle {
+      font-size: 0.9rem;
+      color: var(--ion-color-medium);
+    }
+  }
+
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+
+    .stat-card {
+      background: white;
+      border-radius: 16px;
+      padding: 1.5rem;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+
+      .stat-icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: var(--fitsync-primary);
+        color: white;
+
+        ion-icon {
+          font-size: 1.5rem;
+        }
+      }
+
+      .stat-content {
+        .stat-value {
+          font-size: 1.8rem;
+          font-weight: 700;
+          color: var(--ion-color-dark);
+          display: block;
+          margin-bottom: 0.25rem;
+        }
+
+        .stat-label {
+          font-size: 0.9rem;
+          color: var(--ion-color-medium);
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+        }
+      }
+
+      &.total-workouts .stat-icon { background: var(--fitsync-primary); }
+      &.total-time .stat-icon { background: var(--fitsync-secondary); }
+      &.calories-burned .stat-icon { background: #ff6b35; }
+      &.achievements .stat-icon { background: #ffd700; }
+    }
+  }
+}
+
+/* Achievements Section */
+.achievements-section {
+  margin: 0 1rem 2rem 1rem;
+
+  .section-header {
+    margin-bottom: 1rem;
+
+    .hero-large {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: var(--ion-color-dark);
+      margin-bottom: 0.25rem;
+    }
+
+    .modern-subtitle {
+      font-size: 0.9rem;
+      color: var(--ion-color-medium);
+    }
+  }
+
+  .achievements-scroll {
+    display: flex;
+    gap: 1rem;
+    overflow-x: auto;
+    padding: 0 0.5rem 0.5rem 0.5rem;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+
+    .achievement-card {
+      background: white;
+      border-radius: 16px;
+      padding: 1.5rem;
+      min-width: 160px;
+      text-align: center;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      flex-shrink: 0;
+
+      .achievement-icon {
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+      }
+
+      h3 {
+        font-size: 1rem;
+        font-weight: 600;
+        color: var(--ion-color-dark);
+        margin-bottom: 0.5rem;
+      }
+
+      p {
+        font-size: 0.8rem;
+        color: var(--ion-color-medium);
+        margin-bottom: 1rem;
+        line-height: 1.3;
+      }
+
+      .achievement-date {
+        font-size: 0.7rem;
+        color: var(--ion-color-light);
+        background: var(--fitsync-primary);
+        padding: 0.25rem 0.5rem;
+        border-radius: 8px;
+        display: inline-block;
+      }
+    }
+  }
+}
+
+/* Weekly Progress */
+.weekly-progress {
+  margin: 0 1rem 2rem 1rem;
+
+  .section-header {
+    margin-bottom: 1rem;
+
+    .hero-large {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: var(--ion-color-dark);
+      margin-bottom: 0.25rem;
+    }
+
+    .modern-subtitle {
+      font-size: 0.9rem;
+      color: var(--ion-color-medium);
+    }
+  }
+
+  .progress-card {
+    background: white;
+    border-radius: 16px;
+    padding: 2rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+
+    .progress-visual {
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+
+      .progress-circle {
+        .circular-chart {
+          display: block;
+          margin: 10px auto;
+          max-width: 80px;
+          max-height: 80px;
+        }
+
+        .circle-bg {
+          fill: none;
+          stroke: var(--ion-color-light);
+          stroke-width: 3.8;
+        }
+
+        .circle {
+          fill: none;
+          stroke: var(--fitsync-primary);
+          stroke-width: 3.8;
+          stroke-linecap: round;
+          animation: progress 1s ease-in-out forwards;
+        }
+
+        .percentage {
+          fill: var(--ion-color-dark);
+          font-family: sans-serif;
+          font-size: 0.5em;
+          text-anchor: middle;
+          font-weight: 600;
+        }
+      }
+
+      .progress-details {
+        flex: 1;
+
+        h3 {
+          font-size: 1.5rem;
+          font-weight: 700;
+          color: var(--ion-color-dark);
+          margin-bottom: 0.5rem;
+        }
+
+        p {
+          font-size: 1rem;
+          color: var(--ion-color-medium);
+        }
+      }
+    }
+  }
+}
+
+/* Personal Records */
+.personal-records {
+  margin: 0 1rem 2rem 1rem;
+
+  .section-header {
+    margin-bottom: 1rem;
+
+    .hero-large {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: var(--ion-color-dark);
+      margin-bottom: 0.25rem;
+    }
+
+    .modern-subtitle {
+      font-size: 0.9rem;
+      color: var(--ion-color-medium);
+    }
+  }
+
+  .records-list {
+    .record-item {
+      background: white;
+      border-radius: 12px;
+      padding: 1rem;
+      margin-bottom: 0.75rem;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+
+      .record-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 10px;
+        background: var(--fitsync-primary);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        ion-icon {
+          font-size: 1.2rem;
+        }
+      }
+
+      .record-content {
+        flex: 1;
+
+        h4 {
+          font-size: 1rem;
+          font-weight: 600;
+          color: var(--ion-color-dark);
+          margin-bottom: 0.25rem;
+        }
+
+        p {
+          font-size: 0.9rem;
+          color: var(--ion-color-medium);
+        }
+      }
+
+      .record-badge {
+        ion-icon {
+          font-size: 1.5rem;
+        }
+      }
+    }
+  }
+}
+
+/* Preferences Section */
+.preferences-section {
+  margin: 0 1rem 2rem 1rem;
+
+  .section-header {
+    margin-bottom: 1rem;
+
+    .hero-large {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: var(--ion-color-dark);
+      margin-bottom: 0.25rem;
+    }
+
+    .modern-subtitle {
+      font-size: 0.9rem;
+      color: var(--ion-color-medium);
+    }
+  }
+
+  .preferences-list {
+    background: white;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+
+    .preference-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem 1.5rem;
+      border-bottom: 1px solid var(--ion-color-light);
+      cursor: pointer;
+
+      &:last-child {
+        border-bottom: none;
+      }
+
+      .preference-info {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+
+        ion-icon {
+          font-size: 1.2rem;
+          color: var(--fitsync-primary);
+        }
+
+        span {
+          font-size: 1rem;
+          font-weight: 500;
+          color: var(--ion-color-dark);
+        }
+      }
+
+      .preference-value {
+        font-size: 0.9rem;
+        color: var(--ion-color-medium);
+      }
+    }
+  }
+}
+
+/* Action Buttons */
+.action-buttons {
+  margin: 0 1rem 2rem 1rem;
+
+  ion-button {
+    --border-radius: 12px;
+    height: 48px;
+    margin-bottom: 0.75rem;
+    font-weight: 600;
+  }
+}
+
+/* Workout Timer Hero (from original) */
+.workout-timer-hero {
+  position: fixed;
+  bottom: 90px;
+  left: 1rem;
+  right: 1rem;
+  z-index: 1000;
+
+  .timer-card {
+    background: var(--fitsync-primary);
+    color: white;
+    padding: 1rem;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+
+    .icon-container {
+      width: 50px;
+      height: 50px;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      ion-icon {
+        font-size: 1.5rem;
+      }
+    }
+
+    .timer-info {
+      flex: 1;
+
+      .label-large {
+        font-size: 0.9rem;
+        font-weight: 600;
+        margin-bottom: 0.25rem;
+        display: block;
+      }
+
+      .display-small {
+        font-size: 1.2rem;
+        font-weight: 700;
+      }
+    }
+
+    .timer-badge {
+      font-size: 0.7rem;
+      font-weight: 600;
+    }
+  }
+}
+
+/* DARK MODE STYLES */
+@media (prefers-color-scheme: dark) {
+  .stats-grid .stat-card,
+  .achievement-card,
+  .progress-card,
+  .record-item,
+  .preferences-list {
+    background: var(--ion-color-step-50) !important;
+    color: var(--ion-color-light) !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4) !important;
+  }
+
+  .hero-large,
+  .stat-value,
+  h3, h4 {
+    color: var(--ion-color-light) !important;
+  }
+
+  .modern-subtitle,
+  .stat-label,
+  p {
+    color: var(--ion-color-medium) !important;
+  }
+
+  .preference-item {
+    border-bottom-color: var(--ion-color-step-150) !important;
+  }
+}
+
+.dark .stats-grid .stat-card,
+.dark .achievement-card,
+.dark .progress-card,
+.dark .record-item,
+.dark .preferences-list,
+body.dark .stats-grid .stat-card,
+body.dark .achievement-card,
+body.dark .progress-card,
+body.dark .record-item,
+body.dark .preferences-list,
+:host-context(.dark) .stats-grid .stat-card,
+:host-context(.dark) .achievement-card,
+:host-context(.dark) .progress-card,
+:host-context(.dark) .record-item,
+:host-context(.dark) .preferences-list {
+  background: var(--ion-color-step-50) !important;
+  color: var(--ion-color-light) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4) !important;
+}
+
+.dark .hero-large,
+.dark .stat-value,
+.dark h3, .dark h4,
+body.dark .hero-large,
+body.dark .stat-value,
+body.dark h3, body.dark h4,
+:host-context(.dark) .hero-large,
+:host-context(.dark) .stat-value,
+:host-context(.dark) h3, 
+:host-context(.dark) h4 {
+  color: var(--ion-color-light) !important;
+}
+
+.dark .modern-subtitle,
+.dark .stat-label,
+.dark p,
+body.dark .modern-subtitle,
+body.dark .stat-label,
+body.dark p,
+:host-context(.dark) .modern-subtitle,
+:host-context(.dark) .stat-label,
+:host-context(.dark) p {
+  color: var(--ion-color-medium) !important;
+}
+
+.dark .preference-item,
+body.dark .preference-item,
+:host-context(.dark) .preference-item {
+  border-bottom-color: var(--ion-color-step-150) !important;
+}
+
+/* Animations */
+@keyframes progress {
+  0% {
+    stroke-dasharray: 0 100;
+  }
+}
+
+.animate-slide-up {
+  animation: slideUp 0.3s ease-out forwards;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

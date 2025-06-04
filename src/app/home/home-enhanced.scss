@@ -1,0 +1,375 @@
+/* Enhanced Home Page Styles */
+
+/* Enhanced Greeting Section */
+.greeting-section {
+  background: linear-gradient(135deg, var(--fitsync-primary), var(--fitsync-secondary));
+  padding: 1.5rem;
+  color: white;
+  margin-bottom: 1rem;
+
+  .greeting-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    .greeting-text {
+      .greeting {
+        font-size: 1.8rem;
+        font-weight: 700;
+        margin-bottom: 0.25rem;
+      }
+
+      .user-name {
+        font-size: 1.1rem;
+        opacity: 0.9;
+        margin-bottom: 0.5rem;
+      }
+
+      .date {
+        font-size: 0.9rem;
+        opacity: 0.8;
+      }
+    }
+
+    .progress-ring {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: conic-gradient(
+        #ffffff 0deg,
+        #ffffff var(--progress-degrees, 0deg),
+        rgba(255, 255, 255, 0.3) var(--progress-degrees, 0deg),
+        rgba(255, 255, 255, 0.3) 360deg
+      );
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+
+      &::before {
+        content: '';
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background: var(--fitsync-primary);
+        position: absolute;
+      }
+
+      .progress-text {
+        font-size: 0.8rem;
+        font-weight: 600;
+        z-index: 1;
+      }
+    }
+  }
+
+  .motivation-text {
+    text-align: center;
+    font-size: 0.95rem;
+    opacity: 0.9;
+    margin-top: 1rem;
+    font-style: italic;
+  }
+}
+
+/* Quick Stats Grid */
+.quick-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.75rem;
+  margin: 0 1rem 1rem 1rem;
+
+  .stat-card {
+    background: white;
+    border-radius: 12px;
+    padding: 1rem;
+    text-align: center;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+
+    .stat-value {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--fitsync-primary);
+      margin-bottom: 0.25rem;
+    }
+
+    .stat-label {
+      font-size: 0.8rem;
+      color: var(--ion-color-medium);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+  }
+}
+
+/* Recent Achievements */
+.recent-achievements {
+  margin: 0 1rem 1rem 1rem;
+
+  .section-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--ion-color-dark);
+    margin-bottom: 0.75rem;
+    padding: 0 0.5rem;
+  }
+
+  .achievements-scroll {
+    display: flex;
+    gap: 0.75rem;
+    overflow-x: auto;
+    padding: 0 0.5rem 0.5rem 0.5rem;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+
+    .achievement-card {
+      background: white;
+      border-radius: 12px;
+      padding: 1rem;
+      min-width: 140px;
+      text-align: center;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      flex-shrink: 0;
+
+      .achievement-icon {
+        font-size: 2rem;
+        margin-bottom: 0.5rem;
+      }
+
+      .achievement-title {
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: var(--ion-color-dark);
+        margin-bottom: 0.25rem;
+      }
+
+      .achievement-date {
+        font-size: 0.7rem;
+        color: var(--ion-color-medium);
+      }
+    }
+  }
+
+  .no-achievements {
+    text-align: center;
+    padding: 2rem;
+    color: var(--ion-color-medium);
+    font-style: italic;
+  }
+}
+
+/* Daily Tip Section */
+.daily-tip {
+  background: white;
+  margin: 0 1rem 1rem 1rem;
+  border-radius: 12px;
+  padding: 1rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  border-left: 4px solid var(--fitsync-accent);
+
+  .tip-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.75rem;
+
+    .tip-icon {
+      font-size: 1.2rem;
+      margin-right: 0.5rem;
+      color: var(--fitsync-accent);
+    }
+
+    .tip-title {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--ion-color-dark);
+    }
+  }
+
+  .tip-content {
+    font-size: 0.9rem;
+    color: var(--ion-color-medium);
+    line-height: 1.4;
+  }
+}
+
+/* Rest Day Suggestions */
+.rest-day-suggestions {
+  background: white;
+  margin: 0 1rem 1rem 1rem;
+  border-radius: 12px;
+  padding: 1rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+
+  .suggestions-header {
+    text-align: center;
+    margin-bottom: 1rem;
+
+    .rest-icon {
+      font-size: 3rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .rest-title {
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: var(--ion-color-dark);
+      margin-bottom: 0.25rem;
+    }
+
+    .rest-subtitle {
+      font-size: 0.9rem;
+      color: var(--ion-color-medium);
+    }
+  }
+
+  .suggestion-item {
+    display: flex;
+    align-items: center;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid var(--ion-color-light);
+
+    &:last-child {
+      border-bottom: none;
+    }
+
+    .suggestion-icon {
+      font-size: 1.5rem;
+      margin-right: 1rem;
+      width: 40px;
+      text-align: center;
+    }
+
+    .suggestion-content {
+      flex: 1;
+
+      .suggestion-title {
+        font-size: 0.95rem;
+        font-weight: 600;
+        color: var(--ion-color-dark);
+        margin-bottom: 0.25rem;
+      }
+
+      .suggestion-desc {
+        font-size: 0.8rem;
+        color: var(--ion-color-medium);
+      }
+    }
+  }
+}
+
+/* No Workout Quick Actions */
+.no-workout-actions {
+  display: flex;
+  gap: 0.75rem;
+  margin: 0 1rem;
+
+  ion-button {
+    flex: 1;
+    --border-radius: 12px;
+    height: 48px;
+    font-weight: 600;
+  }
+}
+
+/* DARK MODE STYLES */
+@media (prefers-color-scheme: dark) {
+  .quick-stats .stat-card,
+  .recent-achievements .achievement-card,
+  .daily-tip,
+  .rest-day-suggestions {
+    background: var(--ion-color-step-50) !important;
+    color: var(--ion-color-light) !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4) !important;
+  }
+
+  .section-title,
+  .achievement-title,
+  .tip-title,
+  .rest-title,
+  .suggestion-title {
+    color: var(--ion-color-light) !important;
+  }
+
+  .stat-label,
+  .achievement-date,
+  .tip-content,
+  .rest-subtitle,
+  .suggestion-desc {
+    color: var(--ion-color-medium) !important;
+  }
+
+  .suggestion-item {
+    border-bottom-color: var(--ion-color-step-150) !important;
+  }
+
+  .no-achievements {
+    color: var(--ion-color-medium) !important;
+  }
+}
+
+.dark .quick-stats .stat-card,
+.dark .recent-achievements .achievement-card,
+.dark .daily-tip,
+.dark .rest-day-suggestions,
+body.dark .quick-stats .stat-card,
+body.dark .recent-achievements .achievement-card,
+body.dark .daily-tip,
+body.dark .rest-day-suggestions,
+:host-context(.dark) .quick-stats .stat-card,
+:host-context(.dark) .recent-achievements .achievement-card,
+:host-context(.dark) .daily-tip,
+:host-context(.dark) .rest-day-suggestions {
+  background: var(--ion-color-step-50) !important;
+  color: var(--ion-color-light) !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4) !important;
+}
+
+.dark .section-title,
+.dark .achievement-title,
+.dark .tip-title,
+.dark .rest-title,
+.dark .suggestion-title,
+body.dark .section-title,
+body.dark .achievement-title,
+body.dark .tip-title,
+body.dark .rest-title,
+body.dark .suggestion-title,
+:host-context(.dark) .section-title,
+:host-context(.dark) .achievement-title,
+:host-context(.dark) .tip-title,
+:host-context(.dark) .rest-title,
+:host-context(.dark) .suggestion-title {
+  color: var(--ion-color-light) !important;
+}
+
+.dark .stat-label,
+.dark .achievement-date,
+.dark .tip-content,
+.dark .rest-subtitle,
+.dark .suggestion-desc,
+body.dark .stat-label,
+body.dark .achievement-date,
+body.dark .tip-content,
+body.dark .rest-subtitle,
+body.dark .suggestion-desc,
+:host-context(.dark) .stat-label,
+:host-context(.dark) .achievement-date,
+:host-context(.dark) .tip-content,
+:host-context(.dark) .rest-subtitle,
+:host-context(.dark) .suggestion-desc {
+  color: var(--ion-color-medium) !important;
+}
+
+.dark .suggestion-item,
+body.dark .suggestion-item,
+:host-context(.dark) .suggestion-item {
+  border-bottom-color: var(--ion-color-step-150) !important;
+}
+
+.dark .no-achievements,
+body.dark .no-achievements,
+:host-context(.dark) .no-achievements {
+  color: var(--ion-color-medium) !important;
+}
