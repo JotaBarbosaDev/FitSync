@@ -11,7 +11,7 @@
         </ion-buttons>
         <div class="header-title">
           <h1 class="headline-medium text-gradient-primary">Exercícios</h1>
-          <p class="body-medium text-muted">Biblioteca Completa • {{ filteredExercises.length }} itens</p>
+          <p class="body-medium text-muted">{{ filteredExercises.length }} itens</p>
         </div>
       </div>
       
@@ -25,11 +25,6 @@
         <ion-button fill="clear" class="fitsync-btn icon" (click)="toggleFavorites()">
           <div class="icon-container icon-container--sm icon-container--light">
             <ion-icon name="heart" class="icon icon-sm" style="color: #E74C3C;"></ion-icon>
-          </div>
-        </ion-button>
-        <ion-button fill="clear" class="fitsync-btn icon" (click)="showFilterOptions()">
-          <div class="icon-container icon-container--sm icon-container--dark">
-            <ion-icon name="options" class="icon icon-sm icon-hover"></ion-icon>
           </div>
         </ion-button>
       </div>
@@ -47,7 +42,7 @@
         </div>
         <ion-searchbar 
           [(ngModel)]="searchQuery" 
-          placeholder="Buscar exercícios..." 
+          placeholder="Pesquisar exercícios..." 
           (ionInput)="filterExercises()"
           class="fitsync-searchbar">
         </ion-searchbar>

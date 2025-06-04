@@ -4,11 +4,16 @@
 .home-content {
   --padding-top: 0;
   --padding-bottom: 80px;
-  --padding-start: 0;
-  --padding-end: 0;
   background: var(--fitsync-background-subtle);
   min-height: 100vh;
-  width: 100%;
+  display: flex;
+  justify-content: center;
+  
+  .main-content {
+    width: 100%;
+    max-width: 600px;
+    padding: 1rem;
+  }
 }
 
 /* Header Styling */
@@ -51,7 +56,7 @@
 /* Date Display */
 .date-display {
   background: white;
-  margin: 0 0 1rem 0;
+  margin: 0 1rem 1rem 1rem;
   border-radius: 16px;
   padding: 1rem;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
@@ -78,7 +83,7 @@
 
 /* Today's Workout Section */
 .todays-workout {
-  margin: 0 0 1rem 0;
+  margin: 0 1rem 1rem 1rem;
 
   .section-title {
     font-size: 1.3rem;
@@ -272,7 +277,7 @@
 
 /* Quick Actions Grid */
 .quick-actions {
-  margin: 1rem 0;
+  margin: 1rem;
 
   .section-title {
     font-size: 1.1rem;
@@ -328,9 +333,8 @@
 /* Responsive Design */
 @media (min-width: 768px) {
   .home-content {
-    max-width: 100%;
-    margin: 0;
-    padding: 0 2rem;
+    max-width: 600px;
+    margin: 0 auto;
   }
 
   .quick-actions .actions-grid {
@@ -458,40 +462,15 @@ body.dark .workout-card,
     background: var(--ion-color-step-50) !important;
 
     .start-workout-btn {
-      --background: linear-gradient(135deg, 
-        #E6FE58 0%, 
-        #4CAF50 50%, 
-        #2DD36F 100%) !important;
+      --background: var(--fitsync-primary) !important;
       --color: #1a1a1a !important;
-      box-shadow: 
-        0 8px 30px rgba(230, 254, 88, 0.6),
-        0 4px 20px rgba(76, 175, 80, 0.4),
-        0 2px 10px rgba(45, 211, 111, 0.3),
-        inset 0 1px 0 rgba(255, 255, 255, 0.3) !important;
       
       /* Texto do botão em dark mode */
       color: #1a1a1a !important;
       font-weight: 700 !important;
       text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1) !important;
       
-      /* Efeito glow no dark mode */
-      &::after {
-        content: '';
-        position: absolute;
-        top: -2px;
-        left: -2px;
-        right: -2px;
-        bottom: -2px;
-        background: linear-gradient(135deg, 
-          rgba(230, 254, 88, 0.3) 0%, 
-          rgba(76, 175, 80, 0.2) 50%, 
-          rgba(45, 211, 111, 0.3) 100%);
-        z-index: -1;
-        border-radius: 22px;
-        filter: blur(4px);
-        opacity: 0;
-        transition: opacity 0.3s ease;
-      }
+      /* Efeito glow no dark mode removido */
       
       &:hover {
         transform: translateY(-3px);
@@ -604,8 +583,8 @@ ion-button {
 /* Main Container */
 .home-container {
   padding: 1.5rem;
-  max-width: 100%;
-  margin: 0;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
 /* ===== TODAY'S WORKOUT SECTION ===== */
@@ -1383,7 +1362,7 @@ ion-fab {
 
 /* Stats Section */
 .stats-section {
-  margin: 1rem 0;
+  margin: 1rem;
 
   h3 {
     color: var(--ion-color-dark);
@@ -1513,9 +1492,9 @@ ion-fab {
 
 /* ===== SIMPLIFIED HOME PAGE STYLES ===== */
 .main-content {
-  padding: 1rem 2rem;
-  max-width: 100%;
-  margin: 0;
+  padding: 1rem;
+  max-width: 600px;
+  width: 100%;
 }
 
 .date-header {
@@ -1622,9 +1601,9 @@ ion-fab {
 
       .workout-header {
         background: linear-gradient(135deg, 
-          var(--fitsync-primary) 0%, 
-          var(--fitsync-secondary) 60%,
-          rgba(76, 175, 80, 0.9) 100%);
+        #c2d938 0%, 
+        #71aa6a 60%,
+          #4caf50e6 100%);
         padding: 2rem 1.5rem 1.5rem;
         color: white;
         position: relative;
@@ -2010,7 +1989,7 @@ ion-fab {
 
 /* Enhanced Responsive Design */
 @media (max-width: 768px) {
-  .main-content {
+  .home-content .main-content {
     padding: 0.75rem;
   }
 
@@ -2139,7 +2118,7 @@ ion-fab {
 }
 
 @media (max-width: 480px) {
-  .main-content {
+  .home-content .main-content {
     padding: 0.5rem;
   }
 
@@ -2158,8 +2137,8 @@ ion-fab {
 
 @media (min-width: 769px) {
   .main-content {
-    max-width: 100%;
-    padding: 1.5rem 2rem;
+    max-width: 700px;
+    padding: 1.5rem;
   }
 
   .date-header h2 {

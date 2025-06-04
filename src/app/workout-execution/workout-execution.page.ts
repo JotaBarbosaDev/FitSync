@@ -325,6 +325,26 @@ export class WorkoutExecutionPage implements OnInit, OnDestroy {
     return this.exercises.reduce((total, exercise) => total + (exercise.calories || 50), 0);
   }
 
+  getTotalMinutes(): number {
+    return this.exercises.reduce((total, exercise) => total + (exercise.duration || 3), 0);
+  }
+
+  getFormattedTotalMinutes(): string {
+    const totalMinutes = this.getTotalMinutes();
+    
+    if (totalMinutes >= 60) {
+      const hours = Math.floor(totalMinutes / 60);
+      const minutes = totalMinutes % 60;
+      return minutes > 0 ? `${hours}:${minutes.toString().padStart(2, '0')}h` : `${hours}h`;
+    } else {
+      return `${totalMinutes}min`;
+    }
+  }
+
+  getTotalExercises(): number {
+    return this.exercises.length;
+  }
+
   getDifficultyLabel(difficulty: string): string {
     switch (difficulty?.toLowerCase()) {
       case 'beginner':

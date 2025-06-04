@@ -1,44 +1,17 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
-    <div class="header-content">
-      <div class="header-left"> 
-        <div class="header-title">
-          <h1 class="title-large text-gradient-primary">Perfil</h1>
-        </div>
+    <ion-buttons slot="start">
+      <ion-buttons slot="start">
+
+      </ion-buttons>
+      <div class="header-title"  style="margin-left: 20px;">
+        <h1 class="headline-medium text-gradient-primary">Perfil</h1>
       </div>
-      <div class="header-actions">
-        <ion-button fill="clear" (click)="openSettings()">
-          <ion-icon name="settings-outline"></ion-icon>
-        </ion-button>
-      </div>
-    </div>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
 <ion-content class="dashboard-content" [fullscreen]="true">
-  <!-- Profile Header -->
-  <div class="profile-header fitsync-slide-up">
-    <div class="profile-info">
-      <div class="avatar-section">
-        <div class="avatar">
-          <ion-icon name="person"></ion-icon>
-        </div>
-        <div class="level-badge">
-          <span>Nível {{ userLevel }}</span>
-        </div>
-      </div>
-      <div class="user-details">
-        <h1 class="display-large">{{ getUserFirstName() }}</h1>
-        <p class="body-large hero-subtitle text-muted">{{ userProfile?.email || 'Membro FitSync' }}</p>
-        <div class="streak-info">
-          <span class="streak-badge">
-            <ion-icon name="flame"></ion-icon>
-            {{ currentStreak }} dias seguidos
-          </span>
-        </div>
-      </div>
-    </div>
-  </div>
 
   <!-- Quick Stats Overview -->
   <div class="stats-overview animate-slide-up">

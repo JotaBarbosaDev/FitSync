@@ -74,10 +74,10 @@
 
 /* Quick Stats Grid */
 .quick-stats {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  display: flex;
+  justify-content: center;
   gap: 0.75rem;
-  margin: 0 1rem 1rem 1rem;
+  margin: 1rem;
 
   .stat-card {
     background: white;

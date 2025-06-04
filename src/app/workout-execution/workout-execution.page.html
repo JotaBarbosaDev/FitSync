@@ -28,15 +28,15 @@
       <div class="overview-stats">
         <div class="stat-item">
           <ion-icon name="list-outline"></ion-icon>
-          <span>{{ exercises.length }} exercícios</span>
+          <span><b>{{ getTotalExercises() }} exercícios</b></span>
         </div>
         <div class="stat-item">
           <ion-icon name="time-outline"></ion-icon>
-          <span>~{{ exercises.length * 3 }} min</span>
+          <span><b>{{ getFormattedTotalMinutes() }}</b></span>
         </div>
         <div class="stat-item">
           <ion-icon name="flame-outline"></ion-icon>
-          <span>{{ getTotalCalories() }} cal</span>
+          <span><b>{{ getTotalCalories() }} cal</b></span>
         </div>
       </div>
 

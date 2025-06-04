@@ -91,6 +91,10 @@ export class WorkoutManagementPage implements OnInit, OnDestroy {
     return this.weeklyExercises[dayIndex]?.length || 0;
   }
 
+  getActiveDaysCount(): number {
+    return this.weeklyExercises.filter(exercises => exercises && exercises.length > 0).length;
+  }
+
   getPreviewExercises(dayIndex: number): ExerciseLibraryItem[] {
     return this.weeklyExercises[dayIndex]?.slice(0, 3) || [];
   }
@@ -148,6 +152,8 @@ export class WorkoutManagementPage implements OnInit, OnDestroy {
       await toast.present();
       return;
     }
+
+    
 
     // Navigate to workout execution with the day's exercises
     this.router.navigate(['/tabs/workout-execution'], {

@@ -4,7 +4,7 @@
     <div class="header-content">
       <div class="header-left"> 
         <div class="header-title">
-          <h1 class="title-large text-gradient-primary">FitSync Pro</h1>
+          <h1 class="title-large text-gradient-primary">FitSync</h1>
         </div>
       </div>
       <div class="header-actions">
@@ -23,7 +23,7 @@
   <!-- Main content -->
   <div *ngIf="!isLoading" class="main-content">
     <!-- Saudação Personalizada -->
-    <div class="greeting-section">
+    <!-- <div class="greeting-section">
       <div class="greeting-card glass">
         <div class="greeting-content">
           <h1 class="greeting-title">{{ getGreeting() }}, {{ userProfile.name }}!</h1>
@@ -41,17 +41,16 @@
           </div>
         </div>
       </div>
-    </div>
+    </div> -->
 
     <!-- Stats Rápidos -->
-    <div class="quick-stats">
-      <div class="stats-grid">
+    <div class="quick-stats stats-grid">
         <div class="stat-card">
           <div class="stat-icon workout">
             <ion-icon name="fitness"></ion-icon>
           </div>
+          <span class="stat-value">{{ weeklyWorkouts }}</span>
           <div class="stat-info">
-            <span class="stat-value">{{ weeklyWorkouts }}</span>
             <span class="stat-label">Esta Semana</span>
           </div>
         </div>
@@ -60,8 +59,8 @@
           <div class="stat-icon time">
             <ion-icon name="time"></ion-icon>
           </div>
+          <span class="stat-value">{{ totalMinutes }}</span>
           <div class="stat-info">
-            <span class="stat-value">{{ totalMinutes }}</span>
             <span class="stat-label">Minutos</span>
           </div>
         </div>
@@ -70,12 +69,11 @@
           <div class="stat-icon calories">
             <ion-icon name="flame"></ion-icon>
           </div>
+          <span class="stat-value">{{ weeklyCalories }}</span>
           <div class="stat-info">
-            <span class="stat-value">{{ weeklyCalories }}</span>
             <span class="stat-label">Calorias</span>
           </div>
         </div>
-      </div>
     </div>
 
     <!-- Treino do Dia - Card Melhorado -->
@@ -136,7 +134,7 @@
             
             <ion-button expand="block" size="large" (click)="startTodayWorkout()" class="start-workout-btn">
               <ion-icon name="play" slot="start"></ion-icon>
-              COMEÇAR TREINO DE {{ getTodayDayName().toUpperCase() }}
+              COMEÇAR O TREINO
             </ion-button>
           </div>
         </div>
@@ -164,7 +162,7 @@
       </div>
     </div>
 
-    <!-- Conquistas Recentes -->
+    <!-- Conquistas Recentes
     <div class="achievements-section" *ngIf="recentAchievements.length > 0">
       <h3 class="section-title">
         <ion-icon name="trophy"></ion-icon>
@@ -181,7 +179,7 @@
           </div>
         </div>
       </div>
-    </div>
+    </div> -->
 
     <!-- Dica do Dia -->
     <div class="tip-section">

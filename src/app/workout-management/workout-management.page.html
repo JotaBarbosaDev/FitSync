@@ -1,9 +1,13 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-back-button defaultHref="/tabs/home"></ion-back-button>
+      <ion-buttons slot="start">
+      </ion-buttons>
+      <div class="header-title" style="margin-left: 20px;">
+        <h1 class="headline-medium text-gradient-primary">Treinos</h1>
+        <p class="body-medium text-muted">{{ getActiveDaysCount() }} dias com treino</p>
+      </div>
     </ion-buttons>
-    <ion-title>Plano Semanal</ion-title>
   </ion-toolbar>
 </ion-header>
 

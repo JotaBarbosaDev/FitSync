@@ -1,18 +1,16 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-back-button defaultHref="/workout-management" ></ion-back-button>
+      <ion-buttons slot="start">
+      </ion-buttons>
+      <div class="header-title"  style="margin-left: 20px;">
+        <h1 class="headline-medium text-gradient-primary">Progresso</h1>
+      </div>
     </ion-buttons>
-    <ion-title>Progresso</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">Progresso</ion-title>
-    </ion-toolbar>
-  </ion-header>
 
   <!-- Estatísticas Principais -->
   <div class="main-stats" *ngIf="stats">

@@ -5,6 +5,7 @@ ion-menu {
   ion-toolbar {
     --background: var(--ion-color-primary);
     --color: var(--fitsync-text-on-primary);
+    --offset-top: 0;
     
     ion-title {
       font-weight: 700;
