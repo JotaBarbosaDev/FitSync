@@ -16,6 +16,12 @@
       </div>
       
       <div class="header-actions">
+        <!-- Botão para remover duplicatas -->
+        <ion-button fill="clear" class="fitsync-btn icon" (click)="removeDuplicates()">
+          <div class="icon-container icon-container--sm icon-container--warning">
+            <ion-icon name="copy" class="icon icon-sm" style="color: #ffc409;"></ion-icon>
+          </div>
+        </ion-button>
         <!-- Botão temporário para limpar todos os exercícios -->
         <ion-button fill="clear" class="fitsync-btn icon" (click)="clearAllExercises()">
           <div class="icon-container icon-container--sm icon-container--danger">

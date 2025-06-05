@@ -65,29 +65,42 @@ export class ListaPage implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    // Clean up subscription to prevent memory leaks
+    // Limpar todas as subscriptions para prevenir vazamentos de memória
     if (this.exerciseSubscription) {
       this.exerciseSubscription.unsubscribe();
+      this.exerciseSubscription = undefined;
     }
   }
 
   async loadExercises() {
     try {
-      // Unsubscribe from previous subscription to avoid duplicates
+      // Cancelar subscription anterior para evitar duplicatas
       if (this.exerciseSubscription) {
         this.exerciseSubscription.unsubscribe();
+        this.exerciseSubscription = undefined;
       }
 
-      // Subscribe to the exercise library and store the subscription
+      // Criar nova subscription
       this.exerciseSubscription = this.exerciseService.getExerciseLibrary().subscribe(exercises => {
         console.log('ListaPage: Recebidos', exercises.length, 'exercícios');
-        this.exercises = exercises;
-        this.filteredExercises = exercises;
+        
+        // Remover duplicatas adicionais baseadas no ID
+        const uniqueExercises = exercises.filter((exercise, index, self) => 
+          index === self.findIndex(ex => ex.id === exercise.id)
+        );
+        
+        if (uniqueExercises.length !== exercises.length) {
+          console.log('ListaPage: Removidas', exercises.length - uniqueExercises.length, 'duplicatas locais');
+        }
+        
+        this.exercises = uniqueExercises;
+        this.filterExercises();
         this.loading = false;
       });
     } catch (error) {
       console.error('Error loading exercises:', error);
       await this.showToast('Erro ao carregar exercícios', 'danger');
+      this.loading = false;
     }
   }
 
@@ -100,7 +113,12 @@ export class ListaPage implements OnInit, OnDestroy {
   }
 
   filterExercises() {
-    this.filteredExercises = this.exercises.filter(exercise => {
+    // Garantir que não há duplicatas no array de exercícios antes de filtrar
+    const uniqueExercises = this.exercises.filter((exercise, index, self) => 
+      index === self.findIndex(ex => ex.id === exercise.id)
+    );
+    
+    this.filteredExercises = uniqueExercises.filter(exercise => {
       const matchesSearch = exercise.name.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
         (exercise.instructions || '').toLowerCase().includes(this.searchQuery.toLowerCase());
 
@@ -702,18 +720,21 @@ export class ListaPage implements OnInit, OnDestroy {
         description: exerciseData.description
       };
 
+      console.log('ListaPage: Criando exercício:', newExercise.name);
+
       this.exerciseService.addCustomExercise(newExercise).subscribe({
         next: (createdExercise) => {
+          console.log('ListaPage: Exercício criado com sucesso:', createdExercise.id);
           this.showToast(`${emoji} Exercício "${exerciseData.name}" criado com sucesso!`, 'success');
-          // Não precisa chamar loadExercises() - o service já atualiza automaticamente
+          // A lista será atualizada automaticamente via subscription do service
         },
         error: (error) => {
-          console.error('Erro ao criar exercício:', error);
+          console.error('ListaPage: Erro ao criar exercício:', error);
           this.showToast('Erro ao criar exercício', 'danger');
         }
       });
     } catch (error) {
-      console.error('Erro ao salvar exercício:', error);
+      console.error('ListaPage: Erro ao salvar exercício:', error);
       await this.showToast('Erro ao salvar exercício', 'danger');
     }
   }
@@ -797,6 +818,40 @@ export class ListaPage implements OnInit, OnDestroy {
               error: (error) => {
                 console.error('Erro ao limpar exercícios:', error);
                 this.showToast('Erro ao limpar exercícios', 'danger');
+              }
+            });
+          }
+        }
+      ]
+    });
+
+    await alert.present();
+  }
+
+  // Função para remover exercícios duplicados
+  async removeDuplicates() {
+    const alert = await this.alertController.create({
+      header: 'Remover Duplicatas',
+      message: 'Isso irá verificar e remover exercícios duplicados da biblioteca. Deseja continuar?',
+      buttons: [
+        {
+          text: 'Cancelar',
+          role: 'cancel'
+        },
+        {
+          text: 'Sim, Remover Duplicatas',
+          handler: () => {
+            this.exerciseService.removeDuplicates().subscribe({
+              next: (removed) => {
+                if (removed) {
+                  this.showToast('Duplicatas removidas com sucesso!', 'success');
+                } else {
+                  this.showToast('Nenhuma duplicata encontrada', 'medium');
+                }
+              },
+              error: (error) => {
+                console.error('Erro ao remover duplicatas:', error);
+                this.showToast('Erro ao remover duplicatas', 'danger');
               }
             });
           }

@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { Router } from '@angular/router';
 import { Storage } from '@ionic/storage-angular';
 import { ModalController, ToastController } from '@ionic/angular';
@@ -35,7 +35,8 @@ export class WorkoutManagementPage implements OnInit, OnDestroy {
     private storage: Storage,
     private modalController: ModalController,
     private toastController: ToastController,
-    private exerciseService: ExerciseService
+    private exerciseService: ExerciseService,
+    private cd: ChangeDetectorRef
   ) {
     this.initializeWeekDays();
   }
@@ -149,6 +150,9 @@ export class WorkoutManagementPage implements OnInit, OnDestroy {
           color: 'success'
         });
         await toast.present();
+
+        // Auto-reload page data to update UI
+        await this.refreshPageData();
       }
     });
 
@@ -176,6 +180,23 @@ export class WorkoutManagementPage implements OnInit, OnDestroy {
         dayName: this.weekDays[dayIndex].name
       }
     });
+  }
+
+  private async refreshPageData() {
+    console.log('WorkoutManagement: Refreshing page data...');
+    
+    try {
+      // Reload the weekly plan data to update the UI
+      await this.loadWeeklyPlan();
+      
+      // Force change detection to update the cards display
+      // This will ensure cards update from "rest day" to show exercise count
+      this.cd.detectChanges();
+      
+      console.log('WorkoutManagement: Page data refreshed successfully');
+    } catch (error) {
+      console.error('WorkoutManagement: Error refreshing page data:', error);
+    }
   }
 
   ngOnDestroy() {

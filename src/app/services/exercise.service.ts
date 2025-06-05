@@ -54,7 +54,20 @@ export class ExerciseService {
     const data = this.dataService.getCurrentData();
     if (data && data.exerciseLibrary) {
       console.log('ExerciseService: Carregando', data.exerciseLibrary.length, 'exercícios do localStorage');
-      this.exerciseLibrarySubject.next(data.exerciseLibrary);
+      
+      // Remover duplicatas baseadas no ID antes de emitir
+      const uniqueExercises = data.exerciseLibrary.filter((exercise, index, self) => 
+        index === self.findIndex(ex => ex.id === exercise.id)
+      );
+      
+      if (uniqueExercises.length !== data.exerciseLibrary.length) {
+        console.log('ExerciseService: Removidas', data.exerciseLibrary.length - uniqueExercises.length, 'duplicatas');
+        // Atualizar dados para remover duplicatas
+        data.exerciseLibrary = uniqueExercises;
+        this.dataService.saveData(data);
+      }
+      
+      this.exerciseLibrarySubject.next(uniqueExercises);
     } else {
       console.log('ExerciseService: Nenhum exercício encontrado no localStorage');
       this.exerciseLibrarySubject.next([]);
@@ -110,12 +123,24 @@ export class ExerciseService {
         id: this.generateId()
       };
 
+      // Verificar se o exercício já existe para evitar duplicatas
+      const existingExercise = data.exerciseLibrary.find(ex => ex.id === newExercise.id);
+      if (existingExercise) {
+        observer.error(new Error('Exercício já existe'));
+        return;
+      }
+
       data.exerciseLibrary.push(newExercise);
 
       this.dataService.saveData(data).then(() => {
-        // Atualizar lista local
+        // Atualizar lista local apenas se o exercício não existe
         const currentLibrary = this.exerciseLibrarySubject.value;
-        this.exerciseLibrarySubject.next([...currentLibrary, newExercise]);
+        const exerciseExists = currentLibrary.find(ex => ex.id === newExercise.id);
+        
+        if (!exerciseExists) {
+          this.exerciseLibrarySubject.next([...currentLibrary, newExercise]);
+        }
+        
         observer.next(newExercise);
         observer.complete();
       }).catch(error => {
@@ -278,7 +303,31 @@ export class ExerciseService {
   }
 
   private generateId(prefix: string = 'exercise'): string {
-    return prefix + '_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+    let id: string;
+    let attempts = 0;
+    const maxAttempts = 10;
+    
+    do {
+      id = prefix + '_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+      attempts++;
+      
+      // Verificar se o ID já existe
+      const currentExercises = this.exerciseLibrarySubject.value;
+      const exists = currentExercises.some(exercise => exercise.id === id);
+      
+      if (!exists || attempts >= maxAttempts) {
+        break;
+      }
+      
+      // Aguardar 1ms antes de tentar novamente para garantir timestamp diferente
+      const now = Date.now();
+      while (Date.now() === now) {
+        // busy wait por 1ms
+      }
+    } while (attempts < maxAttempts);
+    
+    console.log(`ExerciseService: ID gerado: ${id} (tentativas: ${attempts})`);
+    return id;
   }
 
   // Função para limpar todos os exercícios da biblioteca
@@ -305,6 +354,47 @@ export class ExerciseService {
         observer.next(false);
         observer.complete();
       });
+    });
+  }
+
+  // Método para recarregar a biblioteca de exercícios
+  reloadExerciseLibrary(): void {
+    console.log('ExerciseService: Recarregando biblioteca de exercícios');
+    this.loadExerciseLibrary();
+  }
+
+  // Método para verificar e remover duplicatas
+  removeDuplicates(): Observable<boolean> {
+    return new Observable(observer => {
+      const data = this.dataService.getCurrentData();
+      if (!data || !data.exerciseLibrary) {
+        observer.next(false);
+        observer.complete();
+        return;
+      }
+
+      const originalCount = data.exerciseLibrary.length;
+      const uniqueExercises = data.exerciseLibrary.filter((exercise, index, self) => 
+        index === self.findIndex(ex => ex.id === exercise.id)
+      );
+
+      if (uniqueExercises.length !== originalCount) {
+        console.log(`ExerciseService: Removendo ${originalCount - uniqueExercises.length} duplicatas`);
+        data.exerciseLibrary = uniqueExercises;
+        
+        this.dataService.saveData(data).then(() => {
+          this.exerciseLibrarySubject.next(uniqueExercises);
+          observer.next(true);
+          observer.complete();
+        }).catch(error => {
+          console.error('ExerciseService: Erro ao remover duplicatas:', error);
+          observer.next(false);
+          observer.complete();
+        });
+      } else {
+        observer.next(false);
+        observer.complete();
+      }
     });
   }
 }
