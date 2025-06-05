@@ -113,7 +113,20 @@ export class RegisterPage implements OnInit {
   ngOnInit() {
     console.log('RegisterPage: ngOnInit iniciado - página de registro carregada');
     // Não é necessário verificar autenticação aqui, pois o GuestGuard já faz isso
+    
+    // Debug: verificar estado do storage
+    this.debugAuthState();
+    
     console.log('RegisterPage: ngOnInit concluído');
+  }
+
+  async debugAuthState() {
+    try {
+      const debugInfo = await this.authService.debugStorage();
+      console.log('RegisterPage: Estado da autenticação:', debugInfo);
+    } catch (error) {
+      console.error('RegisterPage: Erro ao fazer debug:', error);
+    }
   }
 
   // Multi-step navigation methods
@@ -206,6 +219,9 @@ export class RegisterPage implements OnInit {
       return;
     }
 
+    console.log('RegisterPage: Iniciando processo de registro');
+    console.log('RegisterPage: Email fornecido:', this.registerData.email);
+
     this.isLoading = true;
     const loading = await this.loadingController.create({
       message: 'Criando sua conta...',
@@ -214,22 +230,38 @@ export class RegisterPage implements OnInit {
     await loading.present();
 
     try {
-      this.authService.register(this.registerData).subscribe({
-        next: () => {
+      // Normalizar email antes de enviar
+      const normalizedData = {
+        ...this.registerData,
+        email: this.registerData.email.toLowerCase().trim()
+      };
+
+      console.log('RegisterPage: Dados normalizados para registro:', {
+        ...normalizedData,
+        password: '***'
+      });
+
+      this.authService.register(normalizedData).subscribe({
+        next: (user) => {
+          console.log('RegisterPage: Registro bem-sucedido para:', user.email);
           this.showToast('Conta criada com sucesso! Bem-vindo ao FitSync!', 'success');
           this.router.navigate(['/tabs/home']);
           this.isLoading = false;
           loading.dismiss();
         },
         error: (error) => {
-          console.error('Erro no registro:', error);
+          console.error('RegisterPage: Erro no registro:', error);
+          
+          // Debug adicional em caso de erro
+          this.debugAuthState();
+          
           this.showAlert('Erro', error.message || 'Ocorreu um erro ao criar sua conta. Tente novamente.');
           this.isLoading = false;
           loading.dismiss();
         }
       });
     } catch (error) {
-      console.error('Erro no registro:', error);
+      console.error('RegisterPage: Erro no registro:', error);
       await this.showAlert('Erro', 'Ocorreu um erro ao criar sua conta. Tente novamente.');
       this.isLoading = false;
       loading.dismiss();

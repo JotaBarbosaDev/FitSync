@@ -184,3 +184,47 @@ ion-content {
     backdrop-filter: blur(20px);
   }
 }
+
+/* ===== DEBUG ALERT STYLES ===== */
+.debug-alert {
+  .alert-message {
+    font-family: 'Courier New', monospace;
+    white-space: pre-line;
+    line-height: 1.6;
+    font-size: 14px;
+    text-align: left;
+    padding: 16px;
+    background: var(--ion-color-light);
+    border-radius: 8px;
+    margin: 8px 0;
+  }
+  
+  .alert-wrapper {
+    max-width: 90vw;
+    max-height: 80vh;
+  }
+  
+  .alert-head {
+    text-align: center;
+    padding-bottom: 16px;
+  }
+  
+  .alert-button-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    
+    .alert-button {
+      margin: 4px 0;
+    }
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  .debug-alert {
+    .alert-message {
+      background: var(--ion-color-dark);
+      color: var(--ion-color-light);
+    }
+  }
+}

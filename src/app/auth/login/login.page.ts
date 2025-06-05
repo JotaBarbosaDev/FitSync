@@ -30,11 +30,26 @@ export class LoginPage implements OnInit {
   ngOnInit() {
     // Não é necessário verificar autenticação aqui, pois o GuestGuard já faz isso
     console.log('LoginPage: Página de login carregada');
+    
+    // Debug: verificar estado do storage
+    this.debugAuthState();
+  }
+
+  async debugAuthState() {
+    try {
+      const debugInfo = await this.authService.debugStorage();
+      console.log('LoginPage: Estado da autenticação:', debugInfo);
+    } catch (error) {
+      console.error('LoginPage: Erro ao fazer debug:', error);
+    }
   }
   async onLogin() {
     if (!this.validateForm()) {
       return;
     }
+
+    console.log('LoginPage: Iniciando processo de login');
+    console.log('LoginPage: Email fornecido:', this.loginData.email);
 
     this.isLoading = true;
     const loading = await this.loadingController.create({
@@ -44,22 +59,30 @@ export class LoginPage implements OnInit {
     await loading.present();
 
     try {
-      this.authService.login(this.loginData.email, this.loginData.password).subscribe({
-        next: () => {
+      // Normalizar dados de entrada
+      const normalizedEmail = this.loginData.email.toLowerCase().trim();
+      
+      this.authService.login(normalizedEmail, this.loginData.password).subscribe({
+        next: (user) => {
+          console.log('LoginPage: Login bem-sucedido para:', user.email);
           this.showToast('Login realizado com sucesso!', 'success');
           this.router.navigate(['/tabs/home']);
           this.isLoading = false;
           loading.dismiss();
         },
         error: (error) => {
-          console.error('Erro no login:', error);
+          console.error('LoginPage: Erro no login:', error);
+          
+          // Debug adicional em caso de erro
+          this.debugAuthState();
+          
           this.showAlert('Erro', error.message || 'Email ou senha incorretos.');
           this.isLoading = false;
           loading.dismiss();
         }
       });
     } catch (error) {
-      console.error('Erro no login:', error);
+      console.error('LoginPage: Erro no login:', error);
       await this.showAlert('Erro', 'Ocorreu um erro ao fazer login. Tente novamente.');
       this.isLoading = false;
       loading.dismiss();
@@ -197,5 +220,85 @@ export class LoginPage implements OnInit {
       this.loginData.password = value;
     }
     console.log(`Campo ${field} atualizado:`, value);
+  }
+
+  // Método para preencher credenciais demo
+  fillDemoCredentials() {
+    this.loginData.email = 'demo@fitsync.app';
+    this.loginData.password = 'demo123';
+    this.showToast('Credenciais demo preenchidas', 'success');
+  }
+
+  // Método para debug - mostrar informações do storage
+  async showDebugInfo() {
+    try {
+      const debugInfo = await this.authService.debugStorage();
+      const users = await this.authService.getAllUsers();
+      
+      // Primeiro, mostrar no console de forma organizada
+      console.group('🔍 DEBUG - Estado do Sistema');
+      console.log('📊 Utilizadores registados:', debugInfo.totalUsers);
+      console.log('💾 Storage inicializado:', debugInfo.storageInitialized ? 'Sim' : 'Não');
+      console.log('👤 Utilizador atual:', debugInfo.currentUser ? debugInfo.currentUser.email : 'Nenhum');
+      console.log('📧 Emails registados:');
+      users.forEach((user, index) => {
+        console.log(`   ${index + 1}. ${user.email} (${user.name})`);
+      });
+      console.groupEnd();
+      
+      // Criar mensagem simples para o alert
+      const userCount = debugInfo.totalUsers;
+      const currentUser = debugInfo.currentUser ? debugInfo.currentUser.email : 'Nenhum';
+      const storageStatus = debugInfo.storageInitialized ? 'Sim' : 'Não';
+      
+      // Usar uma mensagem mais simples
+      const message = `Utilizadores: ${userCount}
+Storage: ${storageStatus}
+Atual: ${currentUser}
+
+Ver console para detalhes completos`;
+      
+      const alert = await this.alertController.create({
+        header: 'Debug - Estado do Sistema',
+        message: message,
+        cssClass: 'debug-alert',
+        buttons: [
+          {
+            text: 'Fechar',
+            role: 'cancel'
+          },
+          {
+            text: 'Ver Detalhes',
+            handler: () => {
+              // Mostrar informações mais detalhadas no console
+              console.table(users.map(u => ({
+                ID: u.id,
+                Email: u.email,
+                Nome: u.name,
+                'Criado em': u.createdAt
+              })));
+              this.showToast('Detalhes no console do navegador (F12)', 'success');
+            }
+          },
+          {
+            text: 'Forçar Demo',
+            handler: async () => {
+              const created = await this.authService.ensureDemoAccount();
+              if (created) {
+                this.showToast('Conta demo criada!', 'success');
+              } else {
+                this.showToast('Conta demo já existe', 'warning');
+              }
+              // Atualizar debug após 1 segundo
+              setTimeout(() => this.showDebugInfo(), 1000);
+            }
+          }
+        ]
+      });
+      await alert.present();
+    } catch (error) {
+      console.error('Erro ao mostrar debug:', error);
+      this.showAlert('Erro', 'Erro ao obter informações de debug');
+    }
   }
 }

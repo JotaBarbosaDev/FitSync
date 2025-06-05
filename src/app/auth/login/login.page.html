@@ -75,12 +75,6 @@
           <span class="ui-element-button" [hidden]="isLoading">Entrar</span>
         </button>
 
-        <button 
-          type="button"
-          class="fitsync-btn fitsync-btn--ghost"
-          (click)="forgotPassword()">
-          <span class="interactive-secondary">Esqueceu a senha?</span>
-        </button>
       </div>
     </form>
 
@@ -115,8 +109,31 @@
             <strong class="emphasis-strong">Email:</strong> demo&#64;fitsync.app<br>
             <strong class="emphasis-strong">Senha:</strong> demo123
           </p>
+          <button 
+            type="button"
+            class="fitsync-btn fitsync-btn--accent fitsync-btn--sm"
+            (click)="fillDemoCredentials()"
+            [disabled]="isLoading">
+            <span class="ui-element-button">Preencher Demo</span>
+          </button>
         </div>
       </div>
+    </div>
+
+    <!-- Seção de Debug (apenas para desenvolvimento) -->
+    <div class="debug-section" style="margin-top: 20px; padding: 16px; border-top: 1px solid var(--ion-color-light-shade);">
+      <div style="display: flex; gap: 8px; justify-content: center;">
+        <button 
+          type="button"
+          class="fitsync-btn fitsync-btn--outline fitsync-btn--sm"
+          (click)="showDebugInfo()"
+          style="font-size: 12px;">
+          <span class="ui-element-button">Debug Storage</span>
+        </button>
+      </div>
+      <p class="modern-caption text-muted fitsync-text-center" style="margin-top: 8px; font-size: 10px;">
+        Ferramentas de desenvolvimento
+      </p>
     </div>
   </div>
 </ion-content>

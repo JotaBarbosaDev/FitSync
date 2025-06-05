@@ -26,11 +26,31 @@ export class AuthService {
     const storage = await this.storage.create();
     this._storage = storage;
     
-    // Garantir que usuário demo existe
-    const data = this.dataService.getCurrentData();
-    if (data) {
-      this.createDemoUserIfNeeded().subscribe();
-    }
+    console.log('AuthService: Storage inicializado');
+    
+    // Garantir que usuário demo existe - aguardar dados carregarem
+    setTimeout(() => {
+      const data = this.dataService.getCurrentData();
+      if (data) {
+        console.log('AuthService: Dados carregados, verificando conta demo');
+        this.createDemoUserIfNeeded().subscribe(created => {
+          if (created) {
+            console.log('AuthService: Conta demo criada com sucesso');
+          } else {
+            console.log('AuthService: Conta demo já existia');
+          }
+        });
+      } else {
+        console.log('AuthService: Dados ainda não carregados, aguardando...');
+        // Tentar novamente após mais tempo
+        setTimeout(() => {
+          const retryData = this.dataService.getCurrentData();
+          if (retryData) {
+            this.createDemoUserIfNeeded().subscribe();
+          }
+        }, 2000);
+      }
+    }, 1000);
     
     // Carregar usuário atual após storage inicializado
     this.loadCurrentUser();
@@ -103,18 +123,32 @@ export class AuthService {
         return;
       }
 
-      // Encontrar usuário por email
-      const user = data.users.find(u => u.email === email);
+      console.log('AuthService: Tentativa de login para:', email);
+      console.log('AuthService: Total de usuários no sistema:', data.users.length);
+
+      // Normalizar email para comparação (remover espaços e converter para minúsculas)
+      const normalizedEmail = email.toLowerCase().trim();
+      
+      // Encontrar usuário por email (normalizado)
+      const user = data.users.find(u => u.email.toLowerCase().trim() === normalizedEmail);
+      
       if (!user) {
-        observer.error(new Error('Email ou password incorretos'));
+        console.log('AuthService: Usuário não encontrado para email:', normalizedEmail);
+        console.log('AuthService: Emails disponíveis:', data.users.map(u => u.email));
+        observer.error(new Error('Email ou senha incorretos'));
         return;
       }
 
+      console.log('AuthService: Usuário encontrado:', user.email);
+
       // Validar password (em produção usar hash/bcrypt)
       if (user.password !== password) {
-        observer.error(new Error('Email ou password incorretos'));
+        console.log('AuthService: Senha incorreta para usuário:', user.email);
+        observer.error(new Error('Email ou senha incorretos'));
         return;
       }
+
+      console.log('AuthService: Login bem-sucedido para:', user.email);
 
       // Guardar sessão de forma assíncrona
       this.saveCurrentUserId(user.id);
@@ -133,9 +167,15 @@ export class AuthService {
         return;
       }
 
-      // Verificar se email já existe
-      const existingUser = data.users.find(u => u.email === userData.email);
+      console.log('AuthService: Tentativa de registro para:', userData.email);
+
+      // Normalizar email para comparação
+      const normalizedEmail = userData.email.toLowerCase().trim();
+
+      // Verificar se email já existe (normalizado)
+      const existingUser = data.users.find(u => u.email.toLowerCase().trim() === normalizedEmail);
       if (existingUser) {
+        console.log('AuthService: Email já registrado:', normalizedEmail);
         observer.error(new Error('Email já está registado'));
         return;
       }
@@ -143,7 +183,7 @@ export class AuthService {
       // Criar novo utilizador
       const newUser: User = {
         id: this.dataService.generateId(),
-        email: userData.email,
+        email: normalizedEmail, // Usar email normalizado
         password: userData.password, // Armazenar password (em produção usar hash)
         name: userData.name,
         height: userData.height,
@@ -153,6 +193,8 @@ export class AuthService {
         createdAt: new Date(),
         updatedAt: new Date()
       };
+
+      console.log('AuthService: Novo usuário criado:', newUser.email);
 
       // Adicionar aos dados
       data.users.push(newUser);
@@ -241,10 +283,56 @@ export class AuthService {
           
           data.users.push(newDemoUser);
           this.dataService.saveData(data);
+          console.log('AuthService: Conta demo criada');
           return true;
         }
+        console.log('AuthService: Conta demo já existe');
         return false;
       })
     );
+  }
+
+  // Métodos de debug para desenvolvimento
+  async debugStorage() {
+    const data = this.dataService.getCurrentData();
+    let currentUserId: string | null = null;
+    
+    if (this._storage) {
+      currentUserId = await this._storage.get('fitsync_current_user');
+    } else {
+      currentUserId = localStorage.getItem('fitsync_current_user');
+    }
+
+    const debugInfo = {
+      totalUsers: data?.users?.length || 0,
+      users: data?.users?.map(u => ({ id: u.id, email: u.email, name: u.name })) || [],
+      currentUserId,
+      currentUser: this.currentUserSubject.value,
+      storageInitialized: !!this._storage
+    };
+
+    console.log('=== DEBUG AUTH SERVICE ===');
+    console.log('Total de usuários:', debugInfo.totalUsers);
+    console.log('Usuários registrados:', debugInfo.users);
+    console.log('ID do usuário atual no storage:', debugInfo.currentUserId);
+    console.log('Usuário atual no subject:', debugInfo.currentUser);
+    console.log('Storage inicializado:', debugInfo.storageInitialized);
+    console.log('=========================');
+
+    return debugInfo;
+  }
+
+  async getAllUsers() {
+    const data = this.dataService.getCurrentData();
+    return data?.users || [];
+  }
+
+  // Método público para forçar criação da conta demo
+  async ensureDemoAccount(): Promise<boolean> {
+    return new Promise((resolve) => {
+      this.createDemoUserIfNeeded().subscribe(created => {
+        resolve(created);
+      });
+    });
   }
 }

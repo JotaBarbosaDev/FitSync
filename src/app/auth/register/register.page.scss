@@ -282,8 +282,37 @@ ion-content {
     
     &.selected {
       border-color: var(--ion-color-primary);
-      background: var(--ion-color-primary-tint);
+      background: rgba(var(--ion-color-primary-rgb), 0.1);
       box-shadow: var(--ion-box-shadow-primary);
+      
+      .level-content {
+        .icon-container {
+          background: var(--ion-color-light) !important;
+          border: 2px solid var(--ion-color-primary) !important;
+          transform: scale(1.1);
+          box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
+          
+          ion-icon {
+            color: var(--ion-color-secondary) !important;
+            transform: scale(1.1);
+          }
+        }
+        
+        h3 {
+          color: #1a1a1a !important;
+          font-weight: 700;
+        }
+        
+        p {
+          color: #333333 !important;
+          font-weight: 500;
+        }
+      }
+      
+      ion-radio {
+        --color-checked: var(--ion-color-primary) !important;
+        transform: scale(1.1);
+      }
     }
     
     ion-radio {
@@ -299,10 +328,26 @@ ion-content {
       align-items: center;
       gap: 16px;
       
+      .icon-container {
+        transition: all 0.3s ease;
+        border-radius: 50%;
+        min-width: 48px;
+        height: 48px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        
+        ion-icon {
+          transition: all 0.3s ease;
+          font-size: 24px;
+        }
+      }
+      
       .level-icon {
         font-size: 32px;
         color: var(--ion-color-primary);
         min-width: 32px;
+        transition: all 0.3s ease;
       }
       
       h3 {
@@ -310,12 +355,42 @@ ion-content {
         font-size: 18px;
         font-weight: 600;
         color: var(--ion-text-color);
+        transition: all 0.3s ease;
       }
       
       p {
         margin: 0;
         font-size: 14px;
         color: var(--ion-text-color-secondary);
+        transition: all 0.3s ease;
+      }
+    }
+  }
+  
+  /* Dark mode adjustments for selected fitness levels */
+  @media (prefers-color-scheme: dark) {
+    .fitness-level-card.selected {
+      background: rgba(var(--ion-color-primary-rgb), 0.15) !important;
+      
+      .level-content {
+        .icon-container {
+          background: var(--ion-color-light) !important;
+          border: 2px solid var(--ion-color-primary) !important;
+          
+          ion-icon {
+            color: var(--ion-color-secondary) !important;
+          }
+        }
+        
+        h3 {
+          color: #ffffff !important;
+          font-weight: 700;
+        }
+        
+        p {
+          color: #e0e0e0 !important;
+          font-weight: 500;
+        }
       }
     }
   }
@@ -393,6 +468,7 @@ ion-content {
     &.fitsync-btn--outline {
       flex: 0 0 auto;
       min-width: 120px;
+      padding: 15px;
     }
   }
 }
@@ -413,6 +489,7 @@ ion-content {
       font-size: inherit;
       font-weight: 600;
       margin-left: 4px;
+      padding: 10px;
     }
   }
 }
