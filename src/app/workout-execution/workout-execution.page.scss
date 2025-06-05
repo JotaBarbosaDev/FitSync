@@ -329,7 +329,7 @@
 /* Execução do Treino */
 .workout-execution {
   min-height: calc(100vh - env(safe-area-inset-top) - env(safe-area-inset-bottom));
-  padding-top: 50px;
+  padding-top: 16px;
   padding-bottom: 140px; /* Espaço para controles fixos */
   display: flex;
   flex-direction: column;
@@ -686,7 +686,7 @@
     span {
       font-size: 16px;
       font-weight: 600;
-      color: #ffffff;
+      color: var(--ion-color-dark);
       flex: 1;
     }
   }
@@ -1552,9 +1552,7 @@ body.dark,
   }
 }
 
-/* Animações suaves para interações */
-.exercise-preview,
-.current-exercise,
-.exercise-controls {
-  transition: all 0.3s ease;
+/* Animações suaves para todas as interações */
+* {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
 }

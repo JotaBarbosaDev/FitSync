@@ -82,13 +82,13 @@ import { ExerciseLibraryItem } from '../services/exercise.service';
     <ion-footer>
       <ion-toolbar>
         <div class="footer-content">
-          <span>{{ getSelectedCount() }} exercícios selecionados</span>
+          <span>{{ getFooterText() }}</span>
           <ion-button 
             (click)="saveSelection()" 
-            [disabled]="getSelectedCount() === 0"
+            [disabled]="false"
             fill="solid" 
-            color="primary">
-            Adicionar {{ getSelectedCount() }} exercício(s)
+            [color]="getSelectedCount() === 0 && hasOriginalExercises() ? 'success' : 'primary'">
+            {{ getButtonText() }}
           </ion-button>
         </div>
       </ion-toolbar>
@@ -193,6 +193,34 @@ export class ExerciseSelectionModalComponent implements OnInit {
         return this.availableExercises.filter(ex => ex.selected).length;
     }
 
+    hasOriginalExercises(): boolean {
+        return this.selectedExercises && this.selectedExercises.length > 0;
+    }
+
+    getFooterText(): string {
+        const selectedCount = this.getSelectedCount();
+        
+        if (selectedCount === 0 && this.hasOriginalExercises()) {
+            return 'Tornar dia de descanso';
+        }
+        
+        return `${selectedCount} exercícios selecionados`;
+    }
+
+    getButtonText(): string {
+        const selectedCount = this.getSelectedCount();
+        
+        if (selectedCount === 0 && this.hasOriginalExercises()) {
+            return 'Salvar';
+        }
+        
+        if (selectedCount === 0) {
+            return 'Cancelar';
+        }
+        
+        return `Adicionar ${selectedCount} exercício(s)`;
+    }
+
     getCategoryName(category: string): string {
         const categoryNames: { [key: string]: string } = {
             'chest': 'Peito',
@@ -208,6 +236,28 @@ export class ExerciseSelectionModalComponent implements OnInit {
 
     async saveSelection() {
         console.log('Saving selection...');
+
+        const selectedCount = this.getSelectedCount();
+
+        // Se não há exercícios selecionados mas havia exercícios originalmente,
+        // confirme se o usuário quer tornar o dia um dia de descanso
+        if (selectedCount === 0 && this.hasOriginalExercises()) {
+            // Salvar lista vazia (transformando em dia de descanso)
+            console.log('Converting to rest day - saving empty exercise list');
+            
+            await this.modalController.dismiss({
+                exercises: [],
+                action: 'save',
+                isRestDay: true
+            });
+            return;
+        }
+
+        // Se não há exercícios selecionados e não havia exercícios originalmente, cancelar
+        if (selectedCount === 0) {
+            await this.modalController.dismiss();
+            return;
+        }
 
         // Get only the selected exercises and create clean copies
         const selectedExercises = this.availableExercises

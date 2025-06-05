@@ -116,7 +116,7 @@ export class WorkoutManagementPage implements OnInit, OnDestroy {
     });
 
     modal.onDidDismiss().then(async (result) => {
-      if (result.data && result.data.exercises) {
+      if (result.data && result.data.exercises !== undefined) {
         // Create clean copies without the selected property to avoid state pollution
         const cleanExercises = result.data.exercises.map((exercise: any) => {
           const { selected, ...cleanExercise } = exercise;
@@ -128,9 +128,18 @@ export class WorkoutManagementPage implements OnInit, OnDestroy {
         const dayKey = `weekly_exercises_day_${dayIndex}`;
         await this.storage.set(dayKey, cleanExercises);
 
-        // Show success toast
+        // Show appropriate success toast
+        let message: string;
+        if (result.data.isRestDay) {
+          message = `${this.weekDays[dayIndex].name} configurado como dia de descanso`;
+        } else if (cleanExercises.length === 0) {
+          message = `Exercícios removidos de ${this.weekDays[dayIndex].name}`;
+        } else {
+          message = `Exercícios atualizados para ${this.weekDays[dayIndex].name}`;
+        }
+
         const toast = await this.toastController.create({
-          message: `Exercícios atualizados para ${this.weekDays[dayIndex].name}`,
+          message: message,
           duration: 2000,
           color: 'success'
         });
