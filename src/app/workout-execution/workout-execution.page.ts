@@ -2,6 +2,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AlertController, ToastController } from '@ionic/angular';
 import { ProgressDataService } from '../services/progress-data.service';
+import { StorageService } from '../services/storage.service';
 
 interface Exercise {
   id: string;
@@ -52,7 +53,8 @@ export class WorkoutExecutionPage implements OnInit, OnDestroy {
     public router: Router,
     private alertController: AlertController,
     private toastController: ToastController,
-    private progressDataService: ProgressDataService
+    private progressDataService: ProgressDataService,
+    private storageService: StorageService
   ) { }
 
   ngOnInit() {
@@ -437,8 +439,11 @@ export class WorkoutExecutionPage implements OnInit, OnDestroy {
       }, 0);
 
       const totalCalories = this.completedExerciseData.reduce((total, exercise) => {
-        return total + (exercise.calories || 0);
+        return total + (exercise.calories || 50); // Default 50 calorias se não especificado
       }, 0);
+
+      // Garantir que a duração seja pelo menos 1 minuto
+      const finalDuration = Math.max(durationMinutes, 1);
 
       // Criar dados da sessão para o ProgressDataService
       const workoutSession = {
@@ -450,7 +455,7 @@ export class WorkoutExecutionPage implements OnInit, OnDestroy {
           totalVolume: exercise.sets.reduce((total: number, set: any) => total + (set.reps * set.weight), 0),
           muscleGroup: exercise.muscleGroup
         })),
-        duration: durationMinutes,
+        duration: finalDuration,
         totalVolume: totalVolume,
         muscleGroups: [...new Set(this.completedExerciseData.map(ex => ex.muscleGroup))],
         notes: `Treino de ${this.dayName} - ${this.completedExercises} exercícios completados`
@@ -458,6 +463,36 @@ export class WorkoutExecutionPage implements OnInit, OnDestroy {
 
       // Salvar usando o ProgressDataService
       await this.progressDataService.addWorkoutSession(workoutSession);
+
+      // TAMBÉM salvar no formato antigo para compatibilidade
+      const legacySession = {
+        id: `session_${Date.now()}`,
+        workoutId: `workout_${this.dayName}`,
+        startTime: this.workoutStartTime.toISOString(),
+        endTime: endTime.toISOString(),
+        duration: finalDuration,
+        caloriesBurned: totalCalories,
+        completedExercises: this.completedExerciseData.map(ex => ex.exerciseId),
+        rating: 5,
+        notes: `Treino de ${this.dayName} completado`,
+        status: 'completed'
+      };
+
+      // Salvar no formato antigo
+      const existingSessions = (await this.storageService.get('workoutSessions')) || [];
+      if (Array.isArray(existingSessions)) {
+        existingSessions.push(legacySession);
+      } else {
+        console.warn('existingSessions não é um array, criando novo array');
+      }
+      await this.storageService.set('workoutSessions', Array.isArray(existingSessions) ? existingSessions : [legacySession]);
+
+      console.log('Sessão salva em ambos os formatos:', {
+        progressDataService: workoutSession,
+        legacy: legacySession,
+        totalCalories,
+        finalDuration
+      });
 
       // Mostrar toast de confirmação
       const toast = await this.toastController.create({

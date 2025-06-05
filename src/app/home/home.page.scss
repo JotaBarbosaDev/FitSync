@@ -348,7 +348,8 @@
   .date-display,
   .workout-card .workout-content,
   .no-workout-card,
-  .quick-actions .action-card {
+  .quick-actions .action-card,
+  .tip-section .tip-card {
     background: var(--ion-color-step-50);
     border: 1px solid var(--ion-color-step-200);
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
@@ -363,6 +364,20 @@
 
     p {
       color: var(--ion-color-medium);
+    }
+  }
+
+  .tip-section .tip-card {
+    background: linear-gradient(135deg, 
+      rgba(var(--ion-color-step-50-rgb), 0.95) 0%, 
+      rgba(var(--ion-color-step-100-rgb), 0.9) 100%) !important;
+    
+    &::before {
+      background: linear-gradient(90deg, var(--fitsync-primary), var(--fitsync-secondary));
+    }
+
+    .tip-content {
+      color: var(--ion-color-medium) !important;
     }
   }
 
@@ -1516,20 +1531,18 @@ ion-fab {
 
 .workout-section {
   /* Rest Day Card - Elegant and relaxing */
-  .rest-day {
+  .rest-day,
+  .no-workout {
     margin-bottom: 1.5rem;
     
     .rest-card {
-      background: linear-gradient(135deg, 
-        rgba(103, 126, 234, 0.9) 0%, 
-        rgba(118, 75, 162, 0.9) 50%,
-        rgba(76, 175, 80, 0.8) 100%);
+      background: linear-gradient(135deg, var(--fitsync-primary), var(--fitsync-secondary));
       border-radius: 24px;
       padding: 2.5rem 2rem;
       text-align: center;
       color: white;
       box-shadow: 
-        0 8px 32px rgba(103, 126, 234, 0.3),
+        0 8px 32px rgba(76, 175, 80, 0.3),
         0 4px 16px rgba(0, 0, 0, 0.1);
       backdrop-filter: blur(10px);
       border: 1px solid rgba(255, 255, 255, 0.1);
@@ -1569,9 +1582,49 @@ ion-fab {
       p {
         font-size: 1.1rem;
         opacity: 0.9;
-        margin: 0;
+        margin: 0 0 1.5rem 0;
         font-weight: 400;
         line-height: 1.4;
+      }
+
+      .rest-suggestions {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        margin-top: 1.5rem;
+
+        .suggestion-item {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 0.5rem;
+          padding: 1rem 0.75rem;
+          background: rgba(255, 255, 255, 0.1);
+          border-radius: 16px;
+          backdrop-filter: blur(10px);
+          border: 1px solid rgba(255, 255, 255, 0.15);
+          transition: all 0.3s ease;
+          flex: 1;
+          max-width: 120px;
+
+          &:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateY(-2px);
+          }
+
+          ion-icon {
+            font-size: 1.5rem;
+            opacity: 0.9;
+          }
+
+          span {
+            font-size: 0.85rem;
+            font-weight: 500;
+            text-align: center;
+            line-height: 1.2;
+            opacity: 0.9;
+          }
+        }
       }
     }
   }
@@ -1987,6 +2040,83 @@ ion-fab {
   }
 }
 
+/* Tip Section - Modern Daily Tip Card */
+.tip-section {
+  margin-bottom: 1.5rem;
+  
+  .tip-card {
+    background: linear-gradient(135deg, 
+      rgba(255, 255, 255, 0.95) 0%, 
+      rgba(247, 250, 252, 0.9) 100%);
+    backdrop-filter: blur(20px);
+    border-radius: 24px;
+    padding: 2rem;
+    box-shadow: 
+      0 8px 32px rgba(76, 175, 80, 0.15),
+      0 4px 16px rgba(0, 0, 0, 0.08);
+    border: 1px solid rgba(76, 175, 80, 0.1);
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+
+    &::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, var(--fitsync-primary), var(--fitsync-secondary));
+      opacity: 0.8;
+    }
+
+    &:hover {
+      transform: translateY(-4px);
+      box-shadow: 
+        0 12px 40px rgba(76, 175, 80, 0.2),
+        0 6px 20px rgba(0, 0, 0, 0.12);
+    }
+
+    .tip-header {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1.25rem;
+
+      .tip-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 16px;
+        background: linear-gradient(135deg, var(--fitsync-primary), var(--fitsync-secondary));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.5rem;
+        box-shadow: 0 4px 16px rgba(76, 175, 80, 0.3);
+        flex-shrink: 0;
+      }
+
+      h4 {
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: var(--fitsync-text-primary);
+        margin: 0;
+        letter-spacing: 0.3px;
+      }
+    }
+
+    .tip-content {
+      font-size: 1rem;
+      line-height: 1.6;
+      color: var(--fitsync-text-secondary);
+      margin: 0;
+      font-weight: 400;
+      text-align: left;
+    }
+  }
+}
+
 /* Enhanced Responsive Design */
 @media (max-width: 768px) {
   .home-content .main-content {
@@ -2242,3 +2372,156 @@ ion-fab {
     }
   }
 }
+
+/* ===== EXERCISE PREVIEW SECTION ===== */
+.workout-preview {
+          margin-top: 1.5rem;
+          
+          .preview-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            
+            h4 {
+              font-size: 1.1rem;
+              font-weight: 700;
+              color: #2d3748;
+              margin: 0;
+            }
+            
+            .exercise-count {
+              background: linear-gradient(135deg, #b9d12e, #579d4f);
+              color: white;
+              padding: 0.25rem 0.75rem;
+              border-radius: 12px;
+              font-size: 0.75rem;
+              font-weight: 600;
+              box-shadow: 0 2px 8px rgba(118, 75, 162, 0.3);
+            }
+          }
+          
+          .exercises-list {
+            .exercise-preview-item {
+              display: flex;
+              align-items: center;
+              justify-content: space-between;
+              padding: 0.75rem 1rem;
+              margin-bottom: 0.5rem;
+              background: linear-gradient(135deg, 
+                rgba(255, 255, 255, 0.8) 0%, 
+                rgba(248, 250, 252, 0.9) 100%);
+              border-radius: 12px;
+              border: 1px solid rgba(118, 75, 162, 0.1);
+              transition: all 0.3s ease;
+              
+              &:hover {
+                transform: translateX(4px);
+                background: linear-gradient(135deg, 
+                  rgba(118, 75, 162, 0.05) 0%, 
+                  rgba(255, 255, 255, 0.95) 100%);
+                border-color: rgba(118, 75, 162, 0.2);
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+              }
+              
+              .exercise-info {
+                display: flex;
+                align-items: center;
+                flex: 1;
+                
+                .exercise-icon {
+                  width: 36px;
+                  height: 36px;
+                  border-radius: 8px;
+                  background: linear-gradient(135deg, var(--fitsync-primary), #71aa6a);
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                  margin-right: 0.75rem;
+                  
+                  ion-icon {
+                    color: white;
+                    font-size: 1.1rem;
+                  }
+                }
+                
+                .exercise-details {
+                  .exercise-name {
+                    display: block;
+                    font-size: 0.95rem;
+                    font-weight: 600;
+                    color: #2d3748;
+                    line-height: 1.3;
+                    margin-bottom: 0.2rem;
+                  }
+                  
+                  .exercise-muscle {
+                    font-size: 0.8rem;
+                    color: #64748b;
+                    font-weight: 500;
+                  }
+                }
+              }
+              
+              .exercise-sets {
+                display: flex;
+                flex-direction: column;
+                align-items: flex-end;
+                
+                .sets-info {
+                  font-size: 0.85rem;
+                  font-weight: 700;
+                  color: #ffffff;
+                  background: rgb(0 0 0 / 53%);
+                  padding: 0.25rem 0.5rem;
+                  border-radius: 6px;
+                  margin-bottom: 0.25rem;
+                }
+                
+                .difficulty {
+                  font-size: 0.7rem;
+                  font-weight: 600;
+                  padding: 0.15rem 0.4rem;
+                  border-radius: 4px;
+                  text-transform: uppercase;
+                  letter-spacing: 0.3px;
+                  
+                  &.difficulty-beginner,
+                  &.difficulty-iniciante {
+                    background: rgba(34, 197, 94, 0.15);
+                    color: #059669;
+                  }
+                  
+                  &.difficulty-intermediate,
+                  &.difficulty-intermediário {
+                    background: rgba(245, 158, 11, 0.15);
+                    color: #d97706;
+                  }
+                  
+                  &.difficulty-advanced,
+                  &.difficulty-avançado {
+                    background: rgba(239, 68, 68, 0.15);
+                    color: #dc2626;
+                  }
+                }
+              }
+            }
+          }
+          
+          .view-all {
+            margin-top: 1rem;
+            text-align: center;
+            
+            .view-all-btn {
+              --color: var(--fitsync-primary);
+              font-size: 0.85rem;
+              font-weight: 600;
+              height: 32px;
+              
+              ion-icon {
+                margin-left: 0.25rem;
+                font-size: 0.9rem;
+              }
+            }
+          }
+        }

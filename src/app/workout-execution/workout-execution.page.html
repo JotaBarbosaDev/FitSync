@@ -41,17 +41,38 @@
       </div>
 
       <div class="exercises-preview">
-        <h3>Exercícios</h3>
+        <h3>
+          <ion-icon name="list-outline"></ion-icon>
+          Principais Exercícios
+        </h3>
         <div class="exercises-list">
           <div class="exercise-preview" *ngFor="let exercise of exercises; let i = index">
             <div class="exercise-number">{{ i + 1 }}</div>
             <div class="exercise-info">
-              <div class="exercise-name">{{ exercise.name }}</div>
+              <div class="exercise-header">
+                <div class="exercise-name">{{ exercise.name }}</div>
+                <span class="exercise-emoji" *ngIf="exercise.emoji">{{ exercise.emoji }}</span>
+              </div>
               <div class="exercise-details">
                 <ion-chip [color]="getDifficultyColor(exercise.difficulty)" size="small">
+                  <ion-icon name="fitness-outline" slot="start"></ion-icon>
                   {{ getDifficultyLabel(exercise.difficulty) }}
                 </ion-chip>
-                <span *ngIf="exercise.emoji">{{ exercise.emoji }}</span>
+                <div class="exercise-stats" *ngIf="exercise.duration || exercise.calories">
+                  <span *ngIf="exercise.duration" class="stat-item">
+                    <ion-icon name="time-outline"></ion-icon>
+                    {{ exercise.duration }}s
+                  </span>
+                  <span *ngIf="exercise.calories" class="stat-item">
+                    <ion-icon name="flame-outline"></ion-icon>
+                    {{ exercise.calories }}cal
+                  </span>
+                </div>
+              </div>
+              <div class="muscle-groups" *ngIf="exercise.muscleGroups?.length">
+                <ion-icon name="body-outline"></ion-icon>
+                <span>{{ exercise.muscleGroups.slice(0, 2).join(', ') }}</span>
+                <span *ngIf="exercise.muscleGroups.length > 2" class="more-groups">+{{ exercise.muscleGroups.length - 2 }}</span>
               </div>
             </div>
           </div>

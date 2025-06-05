@@ -67,6 +67,7 @@ export class HomePage implements OnInit {
   async ngOnInit() {
     await this.storage.create();
     await this.initializeDefaultWorkouts();
+    await this.initializeExampleWorkoutSessions(); // Adicionar dados de exemplo
     await this.loadUserProfile();
     await this.loadQuickStats();
     await this.loadRecentAchievements();
@@ -88,6 +89,49 @@ export class HomePage implements OnInit {
     } catch (error) {
       console.error('Erro ao inicializar treinos padrão:', error);
     }
+  }
+
+  async initializeExampleWorkoutSessions() {
+    try {
+      const existingSessions = await this.storageService.get('workoutSessions') || [];
+      
+      // Se não há sessões, criar dados de exemplo para a semana atual
+      if (!Array.isArray(existingSessions) || existingSessions.length === 0) {
+        const exampleSessions = this.createExampleWorkoutSessions();
+        await this.storageService.set('workoutSessions', exampleSessions);
+        console.log('Sessões de treino de exemplo criadas:', exampleSessions);
+      }
+    } catch (error) {
+      console.error('Erro ao inicializar sessões de exemplo:', error);
+    }
+  }
+
+  createExampleWorkoutSessions() {
+    const now = new Date();
+    const sessions = [];
+
+    // Criar 3 sessões desta semana
+    for (let i = 0; i < 3; i++) {
+      const sessionDate = new Date(now);
+      sessionDate.setDate(now.getDate() - (i * 2)); // Sessões em dias alternados
+      sessionDate.setHours(19, 0, 0, 0); // 19:00
+
+      const session = {
+        id: `session_${Date.now()}_${i}`,
+        workoutId: `workout_${i + 1}`,
+        startTime: sessionDate.toISOString(),
+        endTime: new Date(sessionDate.getTime() + (45 * 60 * 1000)).toISOString(), // 45 min depois
+        duration: 45, // minutos
+        caloriesBurned: 250 + (i * 50), // 250, 300, 350 calorias
+        completedExercises: [`ex_${i}_1`, `ex_${i}_2`, `ex_${i}_3`],
+        rating: 4 + (i % 2), // Rating entre 4 e 5
+        notes: `Treino ${i + 1} - Excelente session!`
+      };
+
+      sessions.push(session);
+    }
+
+    return sessions;
   }
 
   createDefaultWorkouts(): CustomWorkout[] {
@@ -559,22 +603,100 @@ export class HomePage implements OnInit {
       startOfWeek.setDate(now.getDate() - now.getDay());
       startOfWeek.setHours(0, 0, 0, 0);
 
-      const sessions = await this.storageService.get('workoutSessions') || [];
-      const thisWeekSessions = Array.isArray(sessions) ? sessions.filter((session: any) => {
-        const sessionDate = new Date(session.startTime);
-        return sessionDate >= startOfWeek;
-      }) : [];
+      // Ler de ambos os locais para compatibilidade
+      const sessions1 = await this.storageService.get('workoutSessions') || [];
+      const sessions2 = await this.storage.get('workout_sessions') || []; // ProgressDataService format
 
-      this.quickStats.weeklyWorkouts = thisWeekSessions.length;
-      this.quickStats.weeklyMinutes = thisWeekSessions.reduce((total: number, session: any) => {
+      // Garantir que ambos são arrays antes de combinar
+      const validSessions1 = Array.isArray(sessions1) ? sessions1 : [];
+      const validSessions2 = Array.isArray(sessions2) ? sessions2 : [];
+
+      // Combinar as sessões de ambos os formatos
+      const allSessions = [...validSessions1, ...validSessions2];
+
+      // Filtrar sessões desta semana e garantir que são treinos únicos
+      const thisWeekSessions = allSessions.filter((session: any) => {
+        let sessionDate;
+        
+        // Verificar diferentes formatos de data
+        if (session.startTime) {
+          sessionDate = new Date(session.startTime);
+        } else if (session.date) {
+          sessionDate = new Date(session.date);
+        } else {
+          return false;
+        }
+        
+        // Filtrar apenas sessões desta semana e que são treinos completos
+        return sessionDate >= startOfWeek && 
+               (session.status === 'completed' || session.duration > 0);
+      });
+
+      // Remover duplicatas baseadas em data/hora próximas (para evitar contar o mesmo treino duas vezes)
+      const uniqueSessions = thisWeekSessions.filter((session: any, index: number, arr: any[]) => {
+        const sessionTime = new Date(session.startTime || session.date).getTime();
+        
+        // Verificar se há outra sessão num intervalo de 5 minutos
+        return !arr.some((otherSession: any, otherIndex: number) => {
+          if (index >= otherIndex) return false; // Só verificar sessões anteriores
+          
+          const otherTime = new Date(otherSession.startTime || otherSession.date).getTime();
+          const timeDiff = Math.abs(sessionTime - otherTime);
+          
+          // Se a diferença for menor que 5 minutos, considerar duplicata
+          return timeDiff < 5 * 60 * 1000;
+        });
+      });
+
+      // Contar treinos únicos (não exercícios)
+      this.quickStats.weeklyWorkouts = uniqueSessions.length;
+
+      // Somar minutos totais dos treinos
+      this.quickStats.weeklyMinutes = uniqueSessions.reduce((total: number, session: any) => {
         return total + (session.duration || 0);
       }, 0);
-      this.quickStats.weeklyCalories = thisWeekSessions.reduce((total: number, session: any) => {
-        return total + (session.caloriesBurned || 0);
+
+      // Calcular calorias totais dos treinos
+      this.quickStats.weeklyCalories = uniqueSessions.reduce((total: number, session: any) => {
+        // Para o formato legado
+        if (session.caloriesBurned) {
+          return total + session.caloriesBurned;
+        }
+        
+        // Para o formato ProgressDataService - calcular das exercícios
+        if (session.exercises && Array.isArray(session.exercises)) {
+          const sessionCalories = session.exercises.reduce((exerciseTotal: number, exercise: any) => {
+            return exerciseTotal + (exercise.calories || 50); // 50 calorias por exercício por padrão
+          }, 0);
+          return total + sessionCalories;
+        }
+        
+        // Fallback para sessões sem dados de calorias
+        return total + 0;
       }, 0);
+
+      // Atualizar as propriedades usadas no template
+      this.weeklyWorkouts = this.quickStats.weeklyWorkouts;
+      this.totalMinutes = this.quickStats.weeklyMinutes;
+      this.weeklyCalories = this.quickStats.weeklyCalories;
 
       // Calcular progresso semanal (assumindo meta de 4 treinos por semana)
       this.weeklyProgress = Math.min((this.quickStats.weeklyWorkouts / 4) * 100, 100);
+
+      console.log('Estatísticas carregadas (corrigidas):', {
+        totalSessions: allSessions.length,
+        thisWeekSessions: thisWeekSessions.length,
+        uniqueSessions: uniqueSessions.length,
+        weeklyWorkouts: this.weeklyWorkouts,
+        totalMinutes: this.totalMinutes,
+        weeklyCalories: this.weeklyCalories,
+        sessionDetails: uniqueSessions.map(s => ({
+          date: s.startTime || s.date,
+          duration: s.duration,
+          calories: s.caloriesBurned || (s.exercises?.length * 50),
+          exercises: s.exercises?.length || s.completedExercises?.length
+        }))
+      });
     } catch (error) {
       console.error('Erro ao carregar estatísticas rápidas:', error);
     }
@@ -617,6 +739,10 @@ export class HomePage implements OnInit {
     const today = new Date();
     const dayOfYear = Math.floor((today.getTime() - new Date(today.getFullYear(), 0, 0).getTime()) / (1000 * 60 * 60 * 24));
     this.dailyTip = tips[dayOfYear % tips.length];
+  }
+
+  getDailyTip(): string {
+    return this.dailyTip || 'Mantenha-se focado nos seus objetivos fitness!';
   }
 
   getExercisePreview(): string[] {
@@ -701,30 +827,54 @@ export class HomePage implements OnInit {
     return workout.exercises.slice(0, 3).map((exercise: any) => ({
       name: exercise.name,
       sets: exercise.sets?.length || 3,
-      reps: exercise.sets?.[0]?.reps || 12
+      reps: exercise.sets?.[0]?.reps || 12,
+      category: exercise.category,
+      muscleGroup: exercise.muscleGroups?.[0] || exercise.muscleGroup,
+      difficulty: exercise.difficulty
     }));
   }
 
-  createQuickWorkout() {
-    // Navigate to workout creation or start a basic workout
-    this.router.navigate(['/workout-management']);
+  getExerciseIcon(category: string): string {
+    const iconMap: { [key: string]: string } = {
+      'arms': 'barbell-outline',
+      'chest': 'fitness-outline', 
+      'legs': 'walk-outline',
+      'back': 'body-outline',
+      'shoulders': 'triangle-outline',
+      'cardio': 'heart-outline',
+      'core': 'radio-button-on-outline',
+      'fitness': 'fitness-outline'
+    };
+    return iconMap[category?.toLowerCase()] || 'fitness-outline';
   }
 
-  getDailyTip(): string {
-    const tips = [
-      'Mantenha-se hidratado durante o treino!',
-      'Faça o aquecimento antes de começar.',
-      'Escute seu corpo e respeite os limites.',
-      'Consistência é mais importante que intensidade.',
-      'Não esqueça de se alongar após o treino!'
+  getDefaultExerciseName(index: number): string {
+    const defaultNames = [
+      'Flexões de Braço',
+      'Agachamentos',
+      'Prancha Abdominal'
     ];
-    return this.dailyTip || tips[Math.floor(Math.random() * tips.length)];
+    return defaultNames[index] || 'Exercício';
   }
 
-  getUserFirstName(): string {
-    if (this.userProfile?.name) {
-      return this.userProfile.name.split(' ')[0];
-    }
-    return 'Usuário';
+  getDefaultMuscleGroup(index: number): string {
+    const defaultMuscles = [
+      'Peito, Tríceps',
+      'Pernas, Glúteos', 
+      'Core, Abdômen'
+    ];
+    return defaultMuscles[index] || 'Múltiplos grupos';
+  }
+
+  getDifficultyLabel(difficulty: string): string {
+    const difficultyMap: { [key: string]: string } = {
+      'beginner': 'Iniciante',
+      'intermediate': 'Intermediário', 
+      'advanced': 'Avançado',
+      'iniciante': 'Iniciante',
+      'intermediário': 'Intermediário',
+      'avançado': 'Avançado'
+    };
+    return difficultyMap[difficulty?.toLowerCase()] || 'Intermediário';
   }
 }

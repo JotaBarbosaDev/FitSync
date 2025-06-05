@@ -125,10 +125,36 @@
 
           <div class="workout-content">
             <div class="workout-preview">
-              <h4>Principais Exercícios</h4>
-              <div class="exercise-preview" *ngFor="let exercise of getPreviewExercises()">
-                <span class="exercise-name">{{ exercise.name }}</span>
-                <span class="exercise-sets">{{ exercise.sets }}x{{ exercise.reps }}</span>
+              <div class="preview-header">
+                <h4>Principais Exercícios</h4>
+                <span class="exercise-count">{{ getPreviewExercises().length }} de {{ workoutExercisesCount }}</span>
+              </div>
+              
+              <div class="exercises-list">
+                <div class="exercise-preview-item" *ngFor="let exercise of getPreviewExercises(); let i = index">
+                  <div class="exercise-info">
+                    <div class="exercise-icon">
+                      <ion-icon [name]="getExerciseIcon(exercise.category || 'fitness')"></ion-icon>
+                    </div>
+                    <div class="exercise-details">
+                      <span class="exercise-name">{{ exercise.name || getDefaultExerciseName(i) }}</span>
+                      <span class="exercise-muscle">{{ exercise.muscleGroup || getDefaultMuscleGroup(i) }}</span>
+                    </div>
+                  </div>
+                  <div class="exercise-sets">
+                    <span class="sets-info">{{ exercise.sets || 3 }}x{{ exercise.reps || 12 }}</span>
+                    <span class="difficulty" [ngClass]="'difficulty-' + (exercise.difficulty || 'intermediate')">
+                      {{ getDifficultyLabel(exercise.difficulty || 'intermediate') }}
+                    </span>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="view-all" *ngIf="workoutExercisesCount > 3">
+                <ion-button fill="clear" size="small" class="view-all-btn">
+                  <ion-icon name="chevron-down" slot="end"></ion-icon>
+                  Ver todos os {{ workoutExercisesCount }} exercícios
+                </ion-button>
               </div>
             </div>
             
@@ -181,8 +207,7 @@
       </div>
     </div> -->
 
-    <!-- Dica do Dia -->
-    <div class="tip-section">
+    <!-- <div class="tip-section">
       <div class="tip-card">
         <div class="tip-header">
           <ion-icon name="bulb-outline" class="tip-icon"></ion-icon>
@@ -190,7 +215,7 @@
         </div>
         <p class="tip-content">{{ getDailyTip() }}</p>
       </div>
-    </div>
+    </div> -->
 
     <!-- Repeat Today's Workout Section -->
     <!-- <div *ngIf="hasCompletedWorkoutToday" class="repeat-workout-section">
