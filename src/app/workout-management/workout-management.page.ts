@@ -91,8 +91,13 @@ export class WorkoutManagementPage implements OnInit, OnDestroy {
     return this.weeklyExercises[dayIndex]?.length || 0;
   }
 
-  getActiveDaysCount(): number {
-    return this.weeklyExercises.filter(exercises => exercises && exercises.length > 0).length;
+  getActiveDaysCount(): string {
+    const n =this.weeklyExercises.filter(exercises => exercises && exercises.length > 0).length;
+
+    if(n === 0) {
+      return "Nenhum dia";
+    }
+    return n + (n === 1 ? " dia" : " dias");
   }
 
   getPreviewExercises(dayIndex: number): ExerciseLibraryItem[] {
