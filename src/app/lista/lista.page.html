@@ -37,9 +37,6 @@
   <div class="search-filter-section fitsync-card">
     <div class="search-container">
       <div class="search-input-wrapper">
-        <div class="icon-container icon-container--sm icon-container--primary">
-          <ion-icon name="search" class="icon icon-sm"></ion-icon>
-        </div>
         <ion-searchbar 
           [(ngModel)]="searchQuery" 
           placeholder="Pesquisar exercícios..." 
@@ -49,20 +46,20 @@
       </div>
     </div>
     
-    <div class="filter-chips">        <ion-chip 
-          *ngFor="let group of muscleGroups" 
-          [class.active]="selectedMuscleGroup === group.id"
-          class="fitsync-chip"
-          (click)="filterByMuscleGroup(group.id)">
-          <div class="icon-container icon-container--sm" 
-               [class.icon-container--gradient]="selectedMuscleGroup === group.id" 
-               [class.icon-container--light]="selectedMuscleGroup !== group.id">
-            <ion-icon [name]="group.icon" class="icon icon-sm"></ion-icon>
-          </div>
-          <ion-label class="personality-playful">{{ group.name }}</ion-label>
-        </ion-chip>
+    <div class="filter-chips">
+      <ion-chip 
+        *ngFor="let group of muscleGroups" 
+        [class.chip-selected]="selectedMuscleGroup === group.id"
+        class="fitsync-chip"
+        (click)="filterByMuscleGroup(group.id)">
+        <div class="icon-container icon-container--sm" 
+             [class.icon-container--primary]="selectedMuscleGroup === group.id" 
+             [class.icon-container--light]="selectedMuscleGroup !== group.id">
+          <ion-icon [name]="group.icon" class="icon icon-sm"></ion-icon>
+        </div>
+        <ion-label class="personality-playful">{{ group.name }}</ion-label>
+      </ion-chip>
     </div>
-        
   </div>
 
   <!-- Exercise Grid -->
@@ -90,13 +87,7 @@
           </div>
         </div>
         <h3 class="hero-medium">Nenhum exercício encontrado</h3>
-        <p class="personality-friendly">Tente ajustar seus filtros ou termo de busca</p>
-        <button class="fitsync-btn fitsync-btn--outline" (click)="clearFilters()">
-          <div class="icon-container icon-container--sm icon-container--primary">
-            <ion-icon name="refresh" class="icon icon-sm"></ion-icon>
-          </div>
-          <span class="ui-element-button">Limpar Filtros</span>
-        </button>
+        <p class="personality-friendly">Tente ajustar a categoria ou termo de busca</p>
       </div>
     </div>
   </div>

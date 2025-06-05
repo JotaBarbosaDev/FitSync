@@ -78,12 +78,48 @@ ion-header {
     }
   }
   
+}
+
+/* Search and Filter Section */
+.search-filter-section {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(15px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  margin: 15px;
+  padding: 20px;
+  
+  .search-container {
+    margin-bottom: 15px;
+    
+    .search-input-wrapper {
+      .fitsync-searchbar {
+        --background: rgba(255, 255, 255, 0.1);
+        --color: white;
+        --placeholder-color: rgba(255, 255, 255, 0.6);
+        --border-radius: 15px;
+        
+        .searchbar-input {
+          font-size: 1rem;
+        }
+        
+        .searchbar-search-icon {
+          color: rgba(255, 255, 255, 0.6);
+        }
+        
+        .searchbar-clear-button {
+          color: rgba(255, 255, 255, 0.8);
+        }
+      }
+    }
+  }
+  
   .filter-chips {
     display: flex;
     flex-wrap: wrap;
     gap: 8px;
     
-    ion-chip {
+    .fitsync-chip {
       --background: rgba(255, 255, 255, 0.1);
       --color: rgba(255, 255, 255, 0.8);
       border: 1px solid rgba(255, 255, 255, 0.2);
@@ -91,20 +127,35 @@ ion-header {
       cursor: pointer;
       transition: all 0.3s ease;
       
-      &.chip-active {
-        --background: var(--ion-color-primary);
-        --color: white;
-        border-color: var(--ion-color-primary);
+      &.chip-selected {
+        --background: var(--fitsync-primary);
+        --color: var(--fitsync-secondary);
+        border-color: var(--fitsync-primary);
         transform: scale(1.05);
+        
+        ion-label {
+          color: var(--fitsync-secondary) !important;
+          font-weight: 600;
+        }
+        
+        .icon-container--primary ion-icon {
+          color: var(--fitsync-secondary) !important;
+        }
       }
       
-      &:hover {
+      &:hover:not(.chip-selected) {
         --background: rgba(255, 255, 255, 0.2);
         transform: translateY(-2px);
       }
       
-      ion-icon {
+      ion-label {
+        color: rgba(255, 255, 255, 0.8);
+        transition: color 0.3s ease;
+      }
+      
+      .icon-container ion-icon {
         margin-right: 5px;
+        transition: color 0.3s ease;
       }
     }
   }
