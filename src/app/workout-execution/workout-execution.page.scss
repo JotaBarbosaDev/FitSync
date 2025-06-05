@@ -1,7 +1,7 @@
 /* Tela Inicial do Treino */
 .workout-intro {
   padding: 24px;
-  padding-top: 90px;
+  padding-top: 60px;
   padding-bottom: 80px;
   text-align: center;
   min-height: 100vh;
@@ -86,24 +86,30 @@
 .exercises-list {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 16px;
   max-height: 400px;
   overflow-y: auto;
-  padding-right: 4px;
+  padding-right: 8px;
+  padding-bottom: 8px;
 
-  /* Scrollbar personalizada */
+  /* Scrollbar personalizada melhorada */
   &::-webkit-scrollbar {
-    width: 4px;
+    width: 6px;
   }
 
   &::-webkit-scrollbar-track {
     background: var(--ion-color-step-100);
-    border-radius: 2px;
+    border-radius: 3px;
   }
 
   &::-webkit-scrollbar-thumb {
-    background: var(--ion-color-primary);
-    border-radius: 2px;
+    background: linear-gradient(180deg, var(--ion-color-primary), var(--ion-color-primary-shade));
+    border-radius: 3px;
+    transition: background 0.3s ease;
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(180deg, var(--ion-color-primary-shade), var(--ion-color-primary-tint));
   }
 }
 
@@ -111,22 +117,40 @@
   display: flex;
   align-items: flex-start;
   background: var(--ion-color-light);
-  border-radius: 12px;
-  padding: 16px;
+  border-radius: 16px;
+  padding: 20px;
   gap: 16px;
   border: 1px solid var(--ion-color-step-200);
-  transition: all 0.3s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 
-  &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(var(--ion-color-primary-rgb), 0.1);
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--ion-color-primary), var(--ion-color-secondary));
+    opacity: 0;
+    transition: opacity 0.3s ease;
   }
 
-  /* Remove possíveis pseudo-elementos que causam triângulos */
-  &::before,
-  &::after {
-    display: none !important;
-    content: none !important;
+  &:hover {
+    transform: translateY(-4px) scale(1.02);
+    box-shadow: 0 8px 24px rgba(var(--ion-color-primary-rgb), 0.15);
+    border-color: var(--ion-color-primary-tint);
+
+    &::before {
+      opacity: 1;
+    }
+  }
+
+  &:active {
+    transform: translateY(-2px) scale(1.01);
+    transition: all 0.1s ease;
   }
 
   /* Garante que não há borders problemáticas */
@@ -134,87 +158,120 @@
     box-sizing: border-box;
   }
 
-  /* Fix para chips com problemas visuais */
-  ion-chip {
-    &::before,
-    &::after {
-      display: none !important;
-    }
-  }
-
   .exercise-number {
-    width: 32px;
-    height: 32px;
+    width: 40px;
+    height: 40px;
     border-radius: 50%;
-    background: linear-gradient(135deg, var(--ion-color-primary), var(--ion-color-primary-shade));
+    background: linear-gradient(135deg, #58602a, #b1da22);
     color: white;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-weight: 600;
-    font-size: 14px;
-    box-shadow: 0 2px 8px rgba(var(--ion-color-primary-rgb), 0.3);
+    font-weight: 700;
+    font-size: 16px;
+    box-shadow: 0 4px 12px rgba(var(--ion-color-primary-rgb), 0.4);
     flex-shrink: 0;
+    position: relative;
+    transition: all 0.3s ease;
+
+    &::after {
+      content: '';
+      position: absolute;
+      top: -2px;
+      left: -2px;
+      right: -2px;
+      bottom: -2px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--ion-color-primary-tint), var(--ion-color-secondary));
+      z-index: -1;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+  }
+
+  &:hover .exercise-number::after {
+    opacity: 0.3;
   }
 
   .exercise-info {
     flex: 1;
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 12px;
 
     .exercise-header {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 8px;
+      gap: 12px;
 
       .exercise-name {
-        font-size: 16px;
-        font-weight: 600;
+        font-size: 18px;
+        font-weight: 700;
         color: var(--ion-color-dark);
         flex: 1;
         line-height: 1.3;
+        text-transform: capitalize;
+        letter-spacing: -0.5px;
       }
 
       .exercise-emoji {
-        font-size: 20px;
+        font-size: 24px;
         flex-shrink: 0;
+        filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
       }
     }
 
     .exercise-details {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 16px;
       flex-wrap: wrap;
 
       ion-chip {
-        --border-radius: 20px;
-        height: 28px;
-        font-size: 12px;
-        font-weight: 500;
+        --border-radius: 24px;
+        height: 32px;
+        font-size: 13px;
+        font-weight: 600;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
 
         ion-icon {
-          font-size: 14px;
+          font-size: 16px;
+        }
+
+        &:hover {
+          transform: translateY(-1px);
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
         }
       }
 
       .exercise-stats {
         display: flex;
         align-items: center;
-        gap: 12px;
+        gap: 16px;
 
         .stat-item {
           display: flex;
           align-items: center;
-          gap: 4px;
-          font-size: 12px;
+          gap: 6px;
+          font-size: 13px;
           color: var(--ion-color-medium);
-          font-weight: 500;
+          font-weight: 600;
+          background: var(--ion-color-step-50);
+          padding: 6px 12px;
+          border-radius: 16px;
+          border: 1px solid var(--ion-color-step-150);
+          transition: all 0.3s ease;
 
           ion-icon {
-            font-size: 14px;
+            font-size: 16px;
+            color: var(--ion-color-primary);
+          }
+
+          &:hover {
+            background: var(--ion-color-step-100);
+            color: var(--ion-color-dark);
           }
         }
       }
@@ -223,34 +280,43 @@
     .muscle-groups {
       display: flex;
       align-items: center;
-      gap: 6px;
-      font-size: 12px;
+      gap: 8px;
+      font-size: 13px;
       color: var(--ion-color-medium);
-      background: var(--ion-color-step-50);
-      padding: 6px 10px;
-      border-radius: 12px;
+      background: linear-gradient(135deg, var(--ion-color-step-50), var(--ion-color-step-100));
+      padding: 8px 14px;
+      border-radius: 20px;
       border: 1px solid var(--ion-color-step-150);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+      transition: all 0.3s ease;
 
       ion-icon {
-        font-size: 14px;
+        font-size: 16px;
         color: var(--ion-color-primary);
       }
 
       span {
-        font-weight: 500;
+        font-weight: 600;
+        text-transform: capitalize;
       }
 
       .more-groups {
         color: var(--ion-color-primary);
-        font-weight: 600;
-        font-size: 11px;
+        font-weight: 700;
+        font-size: 12px;
+      }
+
+      &:hover {
+        background: linear-gradient(135deg, var(--ion-color-step-100), var(--ion-color-step-150));
+        transform: translateY(-1px);
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
       }
     }
   }
 }
 
 .start-section {
-  margin-top: 32px;
+  margin-top: 8px;
 
   .start-button {
     --border-radius: 16px;
@@ -263,9 +329,10 @@
 /* Execução do Treino */
 .workout-execution {
   min-height: calc(100vh - env(safe-area-inset-top) - env(safe-area-inset-bottom));
-  padding-top: 16px;
-  /* Padding interno, não para safe area */
-  padding-bottom: 16px;
+  padding-top: 50px;
+  padding-bottom: 140px; /* Espaço para controles fixos */
+  display: flex;
+  flex-direction: column;
 }
 
 /* ===== ANDROID SAFE AREA FIXES ===== */
@@ -398,26 +465,192 @@
   }
 }
 
-/* Exercício Atual */
+/* Exercício Atual - Card Principal Melhorado */
 .current-exercise {
   padding: 24px;
+  margin: 16px;
+  background: var(--ion-card-background);
+  border-radius: 24px;
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.12),
+    0 2px 8px rgba(0, 0, 0, 0.08);
+  border: 1px solid var(--ion-color-step-150);
+  position: relative;
+  overflow: hidden;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  flex: 1;
+  overflow-y: auto;
+
+  /* Gradiente decorativo no topo */
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 6px;
+    background: linear-gradient(90deg, 
+      var(--ion-color-primary), 
+      var(--ion-color-secondary), 
+      var(--ion-color-tertiary));
+    border-radius: 24px 24px 0 0;
+  }
+
+  /* Efeito de hover sutil */
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 
+      0 12px 40px rgba(0, 0, 0, 0.15),
+      0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+}
+
+.exercise-container {
+  display: flex;
+  gap: 24px;
+  align-items: flex-start;
+}
+
+.exercise-number-main {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--ion-color-primary), var(--ion-color-primary-shade));
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 24px;
+  box-shadow: 
+    0 8px 24px rgba(var(--ion-color-primary-rgb), 0.4),
+    0 2px 8px rgba(0, 0, 0, 0.1);
+  flex-shrink: 0;
+  position: relative;
+  transition: all 0.3s ease;
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: -3px;
+    left: -3px;
+    right: -3px;
+    bottom: -3px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--ion-color-primary-tint), var(--ion-color-secondary));
+    z-index: -1;
+    opacity: 0.3;
+    animation: pulse 2s ease-in-out infinite;
+  }
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); opacity: 0.3; }
+  50% { transform: scale(1.1); opacity: 0.1; }
+}
+
+.exercise-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
 }
 
 .exercise-header {
-  text-align: center;
-  margin-bottom: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 
   h2 {
-    font-size: 24px;
-    font-weight: 700;
+    font-size: 28px;
+    font-weight: 800;
     color: var(--ion-color-dark);
-    margin: 0 0 8px 0;
+    margin: 0;
+    text-transform: capitalize;
+    letter-spacing: -0.5px;
+    line-height: 1.2;
+    text-align: left;
   }
 
-  .set-info {
-    font-size: 16px;
-    color: var(--ion-color-primary);
-    font-weight: 600;
+  .exercise-meta {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+
+    ion-chip {
+      font-size: 13px;
+      font-weight: 600;
+      --border-radius: 20px;
+      height: 32px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+
+      ion-icon {
+        font-size: 16px;
+      }
+    }
+
+    .exercise-emoji {
+      font-size: 32px;
+      filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+      animation: float 3s ease-in-out infinite;
+    }
+  }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-3px); }
+}
+
+.exercise-emoji {
+  text-align: center;
+  font-size: 64px;
+  margin: 20px 0;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.1));
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-6px); }
+}
+
+.exercise-description {
+  text-align: left;
+  margin-bottom: 20px;
+  background: linear-gradient(135deg, var(--ion-color-step-50), var(--ion-color-step-100));
+  border-radius: 16px;
+  padding: 18px 20px;
+  border: 1px solid var(--ion-color-step-150);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+  position: relative;
+
+  &::before {
+    content: '📖';
+    position: absolute;
+    top: 16px;
+    right: 18px;
+    font-size: 18px;
+    opacity: 0.6;
+  }
+
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    background: linear-gradient(135deg, var(--ion-color-step-100), var(--ion-color-step-150));
+  }
+
+  p {
+    font-size: 15px;
+    color: var(--ion-color-dark);
+    margin: 0;
+    line-height: 1.6;
+    font-weight: 500;
+    letter-spacing: 0.1px;
   }
 }
 
@@ -426,66 +659,130 @@
   flex-direction: column;
   gap: 16px;
   margin-bottom: 32px;
-}
 
-.detail-card {
-  display: flex;
-  align-items: center;
-  background: var(--ion-color-light);
-  border-radius: 12px;
-  padding: 20px;
-  gap: 16px;
+  .detail-item {
+    display: flex;
+    align-items: center;
+    background: linear-gradient(135deg, var(--ion-color-step-50), var(--ion-color-step-100));
+    border-radius: 16px;
+    padding: 16px 20px;
+    gap: 16px;
+    border: 1px solid var(--ion-color-step-150);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
 
-  ion-icon {
-    font-size: 24px;
-    color: var(--ion-color-primary);
-  }
-
-  .detail-content {
-    flex: 1;
-
-    .detail-label {
-      font-size: 14px;
-      color: var(--ion-color-medium);
-      margin-bottom: 4px;
+    &:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      background: linear-gradient(135deg, var(--ion-color-step-100), var(--ion-color-step-150));
     }
 
-    .detail-value {
-      font-size: 18px;
+    ion-icon {
+      font-size: 24px;
+      color: var(--ion-color-primary);
+      flex-shrink: 0;
+    }
+
+    span {
+      font-size: 16px;
       font-weight: 600;
-      color: var(--ion-color-dark);
+      color: #ffffff;
+      flex: 1;
     }
   }
 }
 
 .exercise-instructions {
-  background: var(--ion-color-warning-tint);
-  border-radius: 12px;
+  background: linear-gradient(135deg, var(--ion-color-warning-tint), #fff8e1);
+  border-radius: 16px;
   padding: 20px;
   margin-bottom: 32px;
   border-left: 4px solid var(--ion-color-warning);
+  box-shadow: 0 2px 8px rgba(255, 193, 7, 0.1);
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '💡';
+    position: absolute;
+    top: 16px;
+    right: 20px;
+    font-size: 20px;
+    opacity: 0.7;
+  }
 
   h4 {
     font-size: 16px;
-    font-weight: 600;
+    font-weight: 700;
     color: var(--ion-color-dark);
     margin: 0 0 12px 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    &::before {
+      content: '📋';
+      font-size: 16px;
+    }
   }
 
   p {
     font-size: 14px;
     color: var(--ion-color-dark);
     margin: 0;
-    line-height: 1.5;
+    line-height: 1.6;
+    font-weight: 500;
   }
 }
 
 .action-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 24px;
+
   .complete-set-btn {
     --border-radius: 16px;
     height: 56px;
     font-size: 18px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+    &::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+      transition: left 0.6s ease;
+    }
+
+    &:hover::before {
+      left: 100%;
+    }
+
+    &:active {
+      transform: scale(0.98);
+    }
+  }
+
+  .secondary-btn {
+    --border-radius: 14px;
+    height: 48px;
+    font-size: 16px;
     font-weight: 600;
+    --color: var(--ion-color-medium);
+    --border-color: var(--ion-color-step-300);
+
+    &:hover {
+      --color: var(--ion-color-dark);
+      --border-color: var(--ion-color-step-400);
+    }
   }
 }
 
@@ -629,6 +926,81 @@
   }
 }
 
+/* Controles de Exercício - Layout Horizontal FIXO */
+.exercise-controls {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 20px;
+  padding-bottom: calc(20px + env(safe-area-inset-bottom));
+  background: rgba(var(--ion-background-color-rgb), 0.95);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-top: 1px solid var(--ion-color-step-200);
+  box-shadow: 
+    0 -8px 32px rgba(0, 0, 0, 0.1),
+    0 -2px 8px rgba(0, 0, 0, 0.05);
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+
+  .controls-row {
+    display: flex;
+    gap: 12px;
+    width: 100%;
+
+    .control-btn {
+      flex: 1;
+      --border-radius: 12px;
+      height: 48px;
+      font-size: 16px;
+      font-weight: 600;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      
+      &[disabled] {
+        opacity: 0.5;
+      }
+    }
+  }
+
+  .complete-btn {
+    --border-radius: 12px;
+    height: 56px;
+    font-size: 18px;
+    font-weight: 700;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    
+    &[disabled] {
+      opacity: 0.6;
+    }
+  }
+}
+
+/* Estilos específicos para modo escuro nos controles fixos */
+@media (prefers-color-scheme: dark) {
+  .exercise-controls {
+    background: rgba(var(--ion-color-step-50-rgb), 0.95) !important;
+    border-top-color: var(--ion-color-step-200) !important;
+    box-shadow: 
+      0 -8px 32px rgba(0, 0, 0, 0.4) !important,
+      0 -2px 8px rgba(0, 0, 0, 0.2) !important;
+  }
+}
+
+.dark .exercise-controls,
+body.dark .exercise-controls,
+:host-context(.dark) .exercise-controls {
+  background: rgba(var(--ion-color-step-50-rgb), 0.95) !important;
+  border-top-color: var(--ion-color-step-200) !important;
+  box-shadow: 
+    0 -8px 32px rgba(0, 0, 0, 0.4) !important,
+    0 -2px 8px rgba(0, 0, 0, 0.2) !important;
+}
+
 /* Responsividade */
 @media (min-width: 768px) {
   .exercise-details {
@@ -682,6 +1054,21 @@
 
     .workout-description {
       color: var(--ion-color-medium) !important;
+    }
+  }
+
+  .exercise-description {
+    background: linear-gradient(135deg, var(--ion-color-step-100), var(--ion-color-step-150)) !important;
+    border-color: var(--ion-color-step-200) !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2) !important;
+
+    &:hover {
+      background: linear-gradient(135deg, var(--ion-color-step-150), var(--ion-color-step-200)) !important;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
+    }
+
+    p {
+      color: var(--ion-color-light) !important;
     }
   }
 
@@ -822,6 +1209,21 @@ body.dark,
 
     .workout-description {
       color: var(--ion-color-medium) !important;
+    }
+  }
+
+  .exercise-description {
+    background: linear-gradient(135deg, var(--ion-color-step-100), var(--ion-color-step-150)) !important;
+    border-color: var(--ion-color-step-200) !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2) !important;
+
+    &:hover {
+      background: linear-gradient(135deg, var(--ion-color-step-150), var(--ion-color-step-200)) !important;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
+    }
+
+    p {
+      color: var(--ion-color-light) !important;
     }
   }
 
@@ -1002,51 +1404,157 @@ body.dark,
 /* Responsividade melhorada */
 @media (max-width: 480px) {
   .exercise-preview {
-    padding: 12px;
-    gap: 12px;
+    padding: 16px;
+    gap: 14px;
+    border-radius: 14px;
 
     .exercise-number {
-      width: 28px;
-      height: 28px;
-      font-size: 12px;
+      width: 36px;
+      height: 36px;
+      font-size: 14px;
     }
 
     .exercise-info {
+      gap: 10px;
+
       .exercise-header {
+        gap: 10px;
+
         .exercise-name {
-          font-size: 14px;
+          font-size: 16px;
+          font-weight: 600;
         }
 
         .exercise-emoji {
-          font-size: 18px;
+          font-size: 22px;
         }
       }
 
       .exercise-details {
-        gap: 8px;
+        gap: 12px;
 
         ion-chip {
-          height: 24px;
-          font-size: 11px;
+          height: 28px;
+          font-size: 12px;
+
+          ion-icon {
+            font-size: 14px;
+          }
         }
 
         .exercise-stats {
-          gap: 8px;
+          gap: 12px;
 
           .stat-item {
-            font-size: 11px;
+            font-size: 12px;
+            padding: 5px 10px;
+
+            ion-icon {
+              font-size: 14px;
+            }
           }
         }
       }
 
       .muscle-groups {
-        font-size: 11px;
-        padding: 4px 8px;
+        font-size: 12px;
+        padding: 6px 12px;
+
+        ion-icon {
+          font-size: 14px;
+        }
       }
     }
   }
 
   .exercises-list {
-    gap: 8px;
+    gap: 12px;
+    padding-right: 6px;
   }
+}
+
+/* Estilos melhorados para modo escuro dos cards de exercício */
+@media (prefers-color-scheme: dark) {
+  .exercise-preview {
+    &:hover {
+      box-shadow: 0 8px 24px rgba(var(--ion-color-primary-rgb), 0.3) !important;
+      border-color: var(--ion-color-primary-tint) !important;
+    }
+
+    .exercise-number {
+      box-shadow: 0 4px 12px rgba(var(--ion-color-primary-rgb), 0.6) !important;
+
+      &::after {
+        opacity: 0.5 !important;
+      }
+    }
+
+    .exercise-info {
+      .exercise-details {
+        ion-chip {
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4) !important;
+        }
+
+        .exercise-stats {
+          .stat-item {
+            background: var(--ion-color-step-100) !important;
+            border-color: var(--ion-color-step-200) !important;
+            color: var(--ion-color-medium) !important;
+
+            ion-icon {
+              color: var(--ion-color-primary-tint) !important;
+            }
+
+            &:hover {
+              background: var(--ion-color-step-150) !important;
+              color: var(--ion-color-light) !important;
+              box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2) !important;
+            }
+          }
+        }
+      }
+
+      .muscle-groups {
+        background: linear-gradient(135deg, var(--ion-color-step-100), var(--ion-color-step-150)) !important;
+        border-color: var(--ion-color-step-200) !important;
+        color: var(--ion-color-medium) !important;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2) !important;
+
+        ion-icon {
+          color: var(--ion-color-primary-tint) !important;
+        }
+
+        span {
+          color: var(--ion-color-light) !important;
+        }
+
+        &:hover {
+          background: linear-gradient(135deg, var(--ion-color-step-150), var(--ion-color-step-200)) !important;
+          box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3) !important;
+        }
+      }
+    }
+  }
+
+  .exercises-list {
+    /* Scrollbar melhorada para modo escuro */
+    &::-webkit-scrollbar-track {
+      background: var(--ion-color-step-150) !important;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background: linear-gradient(180deg, var(--ion-color-primary-tint), var(--ion-color-primary)) !important;
+    }
+
+    &::-webkit-scrollbar-thumb:hover {
+      background: linear-gradient(180deg, var(--ion-color-primary), var(--ion-color-primary-shade)) !important;
+    }
+  }
+}
+
+/* Animações suaves para interações */
+.exercise-preview,
+.current-exercise,
+.exercise-controls {
+  transition: all 0.3s ease;
 }

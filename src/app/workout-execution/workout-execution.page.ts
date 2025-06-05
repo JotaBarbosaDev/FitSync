@@ -170,31 +170,7 @@ export class WorkoutExecutionPage implements OnInit, OnDestroy {
     // Salvar sessão de treino no sistema de progresso
     await this.saveWorkoutSession();
 
-    const alert = await this.alertController.create({
-      header: '🎉 Parabéns!',
-      message: `Você completou o treino de ${this.dayName}!\n\nDuração: ${this.formatDuration(this.workoutDuration)}\nExercícios: ${this.completedExercises}/${this.exercises.length}\n\n📊 Dados salvos no seu progresso!`,
-      buttons: [
-        {
-          text: 'Repetir Treino',
-          handler: () => {
-            this.repeatWorkout();
-          }
-        },
-        {
-          text: 'Ver Progresso',
-          handler: () => {
-            this.router.navigate(['/tabs/workout-progress']);
-          }
-        },
-        {
-          text: 'Voltar ao Início',
-          handler: () => {
-            this.router.navigate(['/tabs/home']);
-          }
-        }
-      ]
-    });
-    await alert.present();
+    
   }
 
   async finishWorkout() {
@@ -256,7 +232,8 @@ export class WorkoutExecutionPage implements OnInit, OnDestroy {
 
   get progressPercentage(): number {
     if (this.exercises.length === 0) return 0;
-    return Math.round((this.completedExercises / this.exercises.length) * 100);
+    const currentProgress = this.currentExerciseIndex + 1;
+    return Math.round((currentProgress / this.exercises.length) * 100);
   }
 
   get totalExercises(): number {

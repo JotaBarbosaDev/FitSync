@@ -6,6 +6,8 @@
       "muscleGroup": "Peito",
       "equipment": "Barra",
       "difficulty": "Intermediário",
+      "duration": 4,
+      "calories": 65,
       "instructions": [
         "Deite-se no banco com os pés apoiados no chão",
         "Segure a barra com pegada mais larga que os ombros",
@@ -26,6 +28,8 @@
       "muscleGroup": "Pernas",
       "equipment": "Barra",
       "difficulty": "Intermediário",
+      "duration": 5,
+      "calories": 80,
       "instructions": [
         "Posicione a barra nos ombros",
         "Mantenha os pés na largura dos ombros",
@@ -46,6 +50,8 @@
       "muscleGroup": "Costas",
       "equipment": "Máquina",
       "difficulty": "Iniciante",
+      "duration": 3,
+      "calories": 45,
       "instructions": [
         "Sente-se na máquina e ajuste a almofada das coxas",
         "Segure a barra com pegada larga",
@@ -66,6 +72,8 @@
       "muscleGroup": "Braços",
       "equipment": "Halter",
       "difficulty": "Iniciante",
+      "duration": 3,
+      "calories": 35,
       "instructions": [
         "Fique em pé com os halteres nas mãos",
         "Mantenha os cotovelos fixos ao lado do corpo",
@@ -86,6 +94,8 @@
       "muscleGroup": "Ombros",
       "equipment": "Halter",
       "difficulty": "Intermediário",
+      "duration": 4,
+      "calories": 55,
       "instructions": [
         "Sente-se ou fique em pé com halteres nos ombros",
         "Empurre os halteres acima da cabeça",
@@ -106,6 +116,8 @@
       "muscleGroup": "Abdômen",
       "equipment": "Corpo Livre",
       "difficulty": "Iniciante",
+      "duration": 2,
+      "calories": 25,
       "instructions": [
         "Fique em posição de flexão apoiado nos antebraços",
         "Mantenha o corpo em linha reta",
