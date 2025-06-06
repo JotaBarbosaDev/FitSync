@@ -3,6 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { AlertController, ToastController } from '@ionic/angular';
 import { ProgressDataService } from '../services/progress-data.service';
 import { StorageService } from '../services/storage.service';
+import { CalorieCalculationService, UserData, ExerciseCalorieData } from '../services/calorie-calculation.service';
 
 interface Exercise {
   id: string;
@@ -54,7 +55,8 @@ export class WorkoutExecutionPage implements OnInit, OnDestroy {
     private alertController: AlertController,
     private toastController: ToastController,
     private progressDataService: ProgressDataService,
-    private storageService: StorageService
+    private storageService: StorageService,
+    private calorieCalculationService: CalorieCalculationService
   ) { }
 
   ngOnInit() {
@@ -301,7 +303,79 @@ export class WorkoutExecutionPage implements OnInit, OnDestroy {
 
   // Additional methods referenced in template
   getTotalCalories(): number {
-    return this.exercises.reduce((total, exercise) => total + (exercise.calories || 50), 0);
+    // Obter dados do usuário para o cálculo
+    const userData = this.getUserDataForCalculations();
+    
+    return this.exercises.reduce((total, exercise) => {
+      const caloriesForExercise = this.calculateExerciseCalories(exercise, userData);
+      return total + caloriesForExercise;
+    }, 0);
+  }
+
+  private getUserDataForCalculations(): UserData {
+    // Por enquanto, usar dados padrão. Futuramente, isso virá do perfil do usuário
+    return this.calorieCalculationService.getDefaultUserData();
+  }
+
+  private calculateExerciseCalories(exercise: Exercise, userData: UserData): number {
+    const exerciseData: ExerciseCalorieData = {
+      type: this.mapExerciseTypeFromCategory(exercise.category),
+      intensity: this.mapIntensityFromDifficulty(exercise.difficulty),
+      duration: exercise.duration || 3,
+      muscleGroups: exercise.muscleGroups || ['unknown'],
+      difficulty: this.mapDifficultyLevel(exercise.difficulty),
+      equipment: exercise.equipment
+    };
+
+    return this.calorieCalculationService.calculateExerciseCalories(exerciseData, userData);
+  }
+
+  private mapExerciseTypeFromCategory(category: string): 'strength' | 'cardio' | 'flexibility' | 'mixed' {
+    const categoryLower = category.toLowerCase();
+    
+    if (categoryLower.includes('cardio') || categoryLower.includes('aeróbico')) {
+      return 'cardio';
+    }
+    if (categoryLower.includes('flex') || categoryLower.includes('alongamento') || categoryLower.includes('yoga')) {
+      return 'flexibility';
+    }
+    if (categoryLower.includes('funcional') || categoryLower.includes('circuit') || categoryLower.includes('hiit')) {
+      return 'mixed';
+    }
+    
+    return 'strength'; // padrão para musculação
+  }
+
+  private mapIntensityFromDifficulty(difficulty: string): 'low' | 'moderate' | 'high' | 'very_high' {
+    switch (difficulty?.toLowerCase()) {
+      case 'fácil':
+      case 'easy':
+      case 'beginner':
+        return 'low';
+      case 'médio':
+      case 'medium':
+      case 'intermediate':
+        return 'moderate';
+      case 'difícil':
+      case 'hard':
+      case 'advanced':
+        return 'high';
+      default:
+        return 'moderate';
+    }
+  }
+
+  private mapDifficultyLevel(difficulty: string): 'beginner' | 'intermediate' | 'advanced' {
+    switch (difficulty?.toLowerCase()) {
+      case 'fácil':
+      case 'easy':
+        return 'beginner';
+      case 'difícil':
+      case 'hard':
+        return 'advanced';
+      default:
+        return 'intermediate';
+    }
   }
 
   getTotalMinutes(): number {
@@ -408,16 +482,16 @@ export class WorkoutExecutionPage implements OnInit, OnDestroy {
       const endTime = new Date();
       const durationMinutes = Math.round((endTime.getTime() - this.workoutStartTime.getTime()) / 60000);
 
-      // Calcular volume total e calorias
+      // Calcular volume total
       const totalVolume = this.completedExerciseData.reduce((total, exercise) => {
         return total + exercise.sets.reduce((setTotal: number, set: any) => {
           return setTotal + (set.reps * set.weight);
         }, 0);
       }, 0);
 
-      const totalCalories = this.completedExerciseData.reduce((total, exercise) => {
-        return total + (exercise.calories || 50); // Default 50 calorias se não especificado
-      }, 0);
+      // Calcular calorias usando o CalorieCalculationService
+      const userData = this.getUserDataForCalculations();
+      const totalCalories = this.calculateWorkoutSessionCalories(userData, durationMinutes);
 
       // Garantir que a duração seja pelo menos 1 minuto
       const finalDuration = Math.max(durationMinutes, 1);
@@ -435,7 +509,7 @@ export class WorkoutExecutionPage implements OnInit, OnDestroy {
         duration: finalDuration,
         totalVolume: totalVolume,
         muscleGroups: [...new Set(this.completedExerciseData.map(ex => ex.muscleGroup))],
-        notes: `Treino de ${this.dayName} - ${this.completedExercises} exercícios completados`
+        notes: `Treino de ${this.dayName} - ${this.completedExercises} exercícios completados - ${totalCalories} calorias queimadas`
       };
 
       // Salvar usando o ProgressDataService
@@ -491,5 +565,72 @@ export class WorkoutExecutionPage implements OnInit, OnDestroy {
       });
       await toast.present();
     }
+  }
+
+  private calculateWorkoutSessionCalories(userData: UserData, durationMinutes: number): number {
+    // Criar lista de exercícios realizados com dados para cálculo de calorias
+    const exercisesData: ExerciseCalorieData[] = this.completedExerciseData.map(completedExercise => {
+      // Encontrar o exercício original para obter os dados
+      const originalExercise = this.exercises.find(ex => ex.id === completedExercise.exerciseId);
+      
+      if (!originalExercise) {
+        // Fallback para exercício desconhecido
+        return {
+          type: 'strength',
+          intensity: 'moderate',
+          duration: 3,
+          muscleGroups: ['unknown'],
+          difficulty: 'intermediate'
+        };
+      }
+
+      return {
+        type: this.mapExerciseTypeFromCategory(originalExercise.category),
+        intensity: this.mapIntensityFromDifficulty(originalExercise.difficulty),
+        duration: originalExercise.duration || 3,
+        muscleGroups: originalExercise.muscleGroups || ['unknown'],
+        difficulty: this.mapDifficultyLevel(originalExercise.difficulty),
+        equipment: originalExercise.equipment
+      };
+    });
+
+    // Calcular tempo de descanso estimado (assumindo 60 segundos entre séries)
+    const estimatedRestTime = this.completedExerciseData.reduce((total, exercise) => {
+      const setsCount = exercise.sets.length;
+      return total + (setsCount > 1 ? (setsCount - 1) * 1 : 0); // 1 minuto entre séries
+    }, 0);
+
+    // Criar dados da sessão
+    const sessionData = {
+      exercises: exercisesData,
+      totalDuration: durationMinutes,
+      restTime: estimatedRestTime,
+      intensity: this.determineSessionIntensity(exercisesData)
+    };
+
+    return this.calorieCalculationService.calculateWorkoutSessionCalories(sessionData, userData);
+  }
+
+  private determineSessionIntensity(exercises: ExerciseCalorieData[]): 'low' | 'moderate' | 'high' | 'very_high' {
+    if (exercises.length === 0) return 'moderate';
+
+    // Calcular intensidade média baseada nos exercícios
+    const intensityValues = {
+      'low': 1,
+      'moderate': 2,
+      'high': 3,
+      'very_high': 4
+    };
+
+    const totalIntensity = exercises.reduce((sum, exercise) => {
+      return sum + intensityValues[exercise.intensity];
+    }, 0);
+
+    const averageIntensity = totalIntensity / exercises.length;
+
+    if (averageIntensity >= 3.5) return 'very_high';
+    if (averageIntensity >= 2.5) return 'high';
+    if (averageIntensity >= 1.5) return 'moderate';
+    return 'low';
   }
 }

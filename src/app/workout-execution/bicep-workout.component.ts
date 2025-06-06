@@ -5,6 +5,7 @@ import { IonicModule, ToastController, AlertController } from '@ionic/angular';
 import { Router } from '@angular/router';
 import { WorkoutManagementService } from '../services/workout-management.service';
 import { StorageService } from '../services/storage.service';
+import { CalorieCalculationService, UserData, ExerciseCalorieData } from '../services/calorie-calculation.service';
 import { WorkoutSession } from '../models/workout-system.model';
 
 @Component({
@@ -128,7 +129,8 @@ export class BicepWorkoutComponent implements OnInit {
     private alertController: AlertController,
     private router: Router,
     private workoutService: WorkoutManagementService,
-    private storageService: StorageService
+    private storageService: StorageService,
+    private calorieCalculationService: CalorieCalculationService
   ) { }
 
   ngOnInit() {
@@ -194,7 +196,9 @@ export class BicepWorkoutComponent implements OnInit {
     // Calcular duração do treino
     const endTime = new Date();
     const durationMinutes = Math.round((endTime.getTime() - this.workoutStartTime.getTime()) / 60000);
-    const caloriesBurned = 150; // Estimativa para treino de bíceps
+    
+    // Calcular calorias usando o CalorieCalculationService
+    const caloriesBurned = await this.calculateWorkoutCalories(durationMinutes);
 
     // Salvar dados do treino no storage
     await this.saveWorkoutData(durationMinutes, caloriesBurned);
@@ -235,6 +239,64 @@ export class BicepWorkoutComponent implements OnInit {
     });
 
     await alert.present();
+  }
+
+  /**
+   * Calcula as calorias queimadas durante o treino usando o CalorieCalculationService
+   */
+  private async calculateWorkoutCalories(durationMinutes: number): Promise<number> {
+    try {
+      // Dados do usuário (temporário - será integrado com perfil do usuário posteriormente)
+      const userData: UserData = this.getUserDataForCalculations();
+
+      // Dados do exercício de bíceps
+      const exerciseData: ExerciseCalorieData = {
+        type: 'strength',
+        duration: durationMinutes,
+        intensity: 'moderate',
+        muscleGroups: ['biceps', 'forearms'],
+        difficulty: 'intermediate',
+        equipment: ['barbell']
+      };
+
+      // Calcular calorias do exercício
+      const exerciseCalories = this.calorieCalculationService.calculateExerciseCalories(
+        exerciseData,
+        userData
+      );
+
+      // Para treino de força, adicionar um bônus de 20% para efeito pós-exercício (EPOC)
+      const epocBonus = exerciseCalories * 0.2;
+      const totalCalories = Math.round(exerciseCalories + epocBonus);
+
+      console.log('Cálculo de calorias do treino de bíceps:', {
+        exerciseCalories,
+        epocBonus,
+        totalCalories,
+        durationMinutes
+      });
+
+      return totalCalories;
+
+    } catch (error) {
+      console.error('Erro ao calcular calorias do treino:', error);
+      // Fallback para estimativa básica em caso de erro
+      return Math.max(80, durationMinutes * 4); // ~4 calorias por minuto como mínimo
+    }
+  }
+
+  /**
+   * Obtém dados do usuário para cálculos de calorias
+   * TODO: Integrar com o perfil real do usuário
+   */
+  private getUserDataForCalculations(): UserData {
+    return {
+      weight: 70, // kg
+      age: 30,
+      gender: 'male',
+      height: 175, // cm
+      fitnessLevel: 'intermediate'
+    };
   }
 
   async saveWorkoutData(durationMinutes: number, caloriesBurned: number) {
