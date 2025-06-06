@@ -1,10 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import { StorageService } from '../services/storage.service';
 import { ToastController } from '@ionic/angular';
 import { CustomWorkout } from '../models';
 import { WorkoutManagementService } from '../services/workout-management.service';
 import { Storage } from '@ionic/storage-angular';
+import { Subscription } from 'rxjs';
 
 interface TodayWorkout {
   workout: CustomWorkout | null;
@@ -37,7 +38,7 @@ interface Achievement {
   styleUrls: ['home.page.scss'],
   standalone: false
 })
-export class HomePage implements OnInit {
+export class HomePage implements OnInit, OnDestroy {
   userProfile = {
     name: 'João'
   };
@@ -56,6 +57,10 @@ export class HomePage implements OnInit {
   totalMinutes = 0;
   weeklyCalories = 0;
 
+  // Subscription management
+  private subscriptions: Subscription = new Subscription();
+  private isInitialized = false;
+
   constructor(
     private router: Router,
     private storageService: StorageService,
@@ -65,16 +70,77 @@ export class HomePage implements OnInit {
   ) { }
 
   async ngOnInit() {
+    // Prevenir múltiplas inicializações de forma mais robusta
+    if (this.isInitialized) {
+      console.log('HomePage já foi inicializada, pulando...');
+      return;
+    }
+
+    // Verificar se já está em processo de inicialização
+    if ((this as any)._isInitializing) {
+      console.log('HomePage já está sendo inicializada, aguardando...');
+      return;
+    }
+
+    try {
+      (this as any)._isInitializing = true;
+      this.isInitialized = true;
+      console.log('Iniciando HomePage...');
+
+      // Usar um timeout geral para toda a inicialização
+      const initPromise = this.performInitialization();
+      const timeoutPromise = new Promise<void>((resolve) => {
+        setTimeout(() => {
+          console.warn('Timeout geral na inicialização da HomePage, continuando...');
+          resolve();
+        }, 5000); // 5 segundos de timeout total
+      });
+
+      await Promise.race([initPromise, timeoutPromise]);
+      console.log('HomePage inicializada com sucesso');
+    } catch (error) {
+      console.error('Erro durante inicialização da HomePage:', error);
+    } finally {
+      this.isLoading = false;
+      (this as any)._isInitializing = false;
+    }
+  }
+
+  private async performInitialization() {
     await this.storage.create();
-    await this.initializeDefaultWorkouts();
-    await this.initializeExampleWorkoutSessions(); // Adicionar dados de exemplo
-    await this.loadUserProfile();
-    await this.loadQuickStats();
-    await this.loadRecentAchievements();
-    await this.loadDailyTip();
-    await this.loadTodayWorkout();
-    await this.checkCompletedWorkoutToday();
-    this.isLoading = false;
+    
+    // Executar inicializações em paralelo onde possível
+    const initPromises = [
+      this.initializeDefaultWorkouts().catch((e: any) => console.error('Erro ao inicializar treinos padrão:', e)),
+      this.initializeExampleWorkoutSessions().catch((e: any) => console.error('Erro ao inicializar sessões exemplo:', e)),
+      this.loadUserProfile().catch((e: any) => console.error('Erro ao carregar perfil:', e))
+    ];
+
+    await Promise.all(initPromises);
+
+    // Executar carregamentos que dependem dos dados iniciais
+    const loadPromises = [
+      this.loadQuickStats().catch((e: any) => console.error('Erro ao carregar estatísticas:', e)),
+      this.loadRecentAchievements().catch((e: any) => console.error('Erro ao carregar conquistas:', e)),
+      this.loadTodayWorkout().catch((e: any) => console.error('Erro ao carregar treino do dia:', e)),
+      this.checkCompletedWorkoutToday().catch((e: any) => console.error('Erro ao verificar treino completado:', e))
+    ];
+
+    // Executar métodos síncronos separadamente
+    try {
+      this.loadDailyTip();
+    } catch (e) {
+      console.error('Erro ao carregar dica:', e);
+    }
+
+    await Promise.all(loadPromises);
+  }
+
+  ngOnDestroy() {
+    // Limpar todas as subscriptions para prevenir memory leaks
+    this.subscriptions.unsubscribe();
+    this.isInitialized = false;
+    console.log('HomePage destruída e subscriptions limpas');
   }
 
   async initializeDefaultWorkouts() {
@@ -271,7 +337,7 @@ export class HomePage implements OnInit {
       // Fallback to the existing workout management service
       console.log('Nenhum exercício no plano semanal, usando WorkoutManagementService...');
 
-      this.workoutManagementService.getTodayWorkout().subscribe({
+      const todayWorkoutSub = this.workoutManagementService.getTodayWorkout().subscribe({
         next: (todayWorkout) => {
           this.todayWorkout = todayWorkout;
           console.log('Treino do dia carregado:', todayWorkout);
@@ -282,6 +348,9 @@ export class HomePage implements OnInit {
           this.loadTodayWorkoutFallback();
         }
       });
+
+      // Adicionar subscription ao gerenciador
+      this.subscriptions.add(todayWorkoutSub);
     } catch (error) {
       console.error('Erro ao carregar treino do dia:', error);
       this.loadTodayWorkoutFallback();
@@ -461,46 +530,79 @@ export class HomePage implements OnInit {
 
   async checkCompletedWorkoutToday() {
     try {
+      console.log('Verificando treino completado hoje...');
+      
       const today = new Date();
       const todayDateString = today.toDateString();
 
-      // Check for completed workout sessions today
-      const sessions = await this.storageService.get('workoutSessions') || [];
-      const sessions2 = await this.storageService.get('workoutSessions2') || [];
+      // Timeout protection para operações de storage
+      const checkWorkoutPromise = Promise.race([
+        this.checkWorkoutInternal(todayDateString),
+        new Promise<void>((resolve) => {
+          setTimeout(() => {
+            console.warn('Timeout ao verificar treino completado hoje');
+            resolve();
+          }, 1500);
+        })
+      ]);
 
-      // Ensure both are arrays before combining
-      const sessionsArray = Array.isArray(sessions) ? sessions : [];
-      const sessions2Array = Array.isArray(sessions2) ? sessions2 : [];
-
-      // Combine both session stores for compatibility
-      const allSessions = [...sessionsArray, ...sessions2Array];
-
-      const todayCompletedSessions = allSessions.filter((session: any) => {
-        if (!session.startTime || session.status !== 'completed') return false;
-
-        const sessionDate = new Date(session.startTime);
-        return sessionDate.toDateString() === todayDateString;
-      });
-
-      if (todayCompletedSessions.length > 0) {
-        // Get the most recent completed session
-        const latestSession = todayCompletedSessions.sort((a: any, b: any) =>
-          new Date(b.startTime).getTime() - new Date(a.startTime).getTime()
-        )[0];
-
-        // Extract exercises from the session for repeat functionality
-        const exercises = this.extractExercisesFromSession(latestSession);
-
-        this.completedWorkoutToday = {
-          session: latestSession,
-          exercises: exercises,
-          canRepeat: exercises.length > 0
-        };
-
-        console.log('Treino completado hoje encontrado:', this.completedWorkoutToday);
-      }
+      await checkWorkoutPromise;
     } catch (error) {
       console.error('Erro ao verificar treino completado hoje:', error);
+    }
+  }
+
+  private async checkWorkoutInternal(todayDateString: string) {
+    // Check for completed workout sessions today com limitação de performance
+    const sessionsPromises = [
+      this.storageService.get('workoutSessions').catch(() => []),
+      this.storageService.get('workoutSessions2').catch(() => [])
+    ];
+
+    const [sessions, sessions2] = await Promise.all(sessionsPromises);
+
+    // Ensure both are arrays and limit size for performance
+    const sessionsArray = Array.isArray(sessions) ? sessions.slice(0, 50) : [];
+    const sessions2Array = Array.isArray(sessions2) ? sessions2.slice(0, 50) : [];
+
+    // Combine both session stores for compatibility
+    const allSessions = [...sessionsArray, ...sessions2Array];
+
+    const todayCompletedSessions = allSessions.filter((session: any) => {
+      try {
+        if (!session?.startTime || session.status !== 'completed') return false;
+
+        const sessionDate = new Date(session.startTime);
+        // Validar se a data é válida
+        if (isNaN(sessionDate.getTime())) return false;
+        
+        return sessionDate.toDateString() === todayDateString;
+      } catch (error) {
+        console.warn('Erro ao processar sessão:', error);
+        return false;
+      }
+    });
+
+    if (todayCompletedSessions.length > 0) {
+      // Get the most recent completed session
+      const latestSession = todayCompletedSessions.sort((a: any, b: any) => {
+        try {
+          return new Date(b.startTime).getTime() - new Date(a.startTime).getTime();
+        } catch (error) {
+          return 0;
+        }
+      })[0];
+
+      // Extract exercises from the session for repeat functionality
+      const exercises = this.extractExercisesFromSession(latestSession);
+
+      this.completedWorkoutToday = {
+        session: latestSession,
+        exercises: exercises,
+        canRepeat: exercises.length > 0 && exercises.length <= 20 // Limitar a 20 exercícios
+      };
+
+      console.log('Treino completado hoje encontrado:', this.completedWorkoutToday);
     }
   }
 
@@ -598,108 +700,173 @@ export class HomePage implements OnInit {
 
   async loadQuickStats() {
     try {
+      console.log('Carregando estatísticas rápidas...');
+      const startTime = performance.now();
+      
       const now = new Date();
       const startOfWeek = new Date(now);
       startOfWeek.setDate(now.getDate() - now.getDay());
       startOfWeek.setHours(0, 0, 0, 0);
 
-      // Ler de ambos os locais para compatibilidade
-      const sessions1 = await this.storageService.get('workoutSessions') || [];
-      const sessions2 = await this.storage.get('workout_sessions') || []; // ProgressDataService format
+      // Timeout protection - se demorar mais que 2 segundos, usar valores padrão
+      const loadStatsWithTimeout = new Promise<void>((resolve, reject) => {
+        const timeout = setTimeout(() => {
+          console.warn('Timeout ao carregar estatísticas, usando valores padrão');
+          this.setDefaultQuickStats();
+          resolve();
+        }, 2000);
 
-      // Garantir que ambos são arrays antes de combinar
-      const validSessions1 = Array.isArray(sessions1) ? sessions1 : [];
-      const validSessions2 = Array.isArray(sessions2) ? sessions2 : [];
+        this.loadStatsInternal(startOfWeek).then(() => {
+          clearTimeout(timeout);
+          resolve();
+        }).catch((error) => {
+          clearTimeout(timeout);
+          reject(error);
+        });
+      });
 
-      // Combinar as sessões de ambos os formatos
-      const allSessions = [...validSessions1, ...validSessions2];
+      await loadStatsWithTimeout;
+      
+      const endTime = performance.now();
+      console.log(`Estatísticas carregadas em ${endTime - startTime}ms`);
+    } catch (error) {
+      console.error('Erro ao carregar estatísticas rápidas:', error);
+      this.setDefaultQuickStats();
+    }
+  }
 
-      // Filtrar sessões desta semana e garantir que são treinos únicos
-      const thisWeekSessions = allSessions.filter((session: any) => {
+  private async loadStatsInternal(startOfWeek: Date) {
+    // Ler de ambos os locais para compatibilidade com limitação de performance
+    const sessions1Promise = this.storageService.get('workoutSessions');
+    const sessions2Promise = this.storage.get('workout_sessions');
+
+    const [sessions1, sessions2] = await Promise.all([
+      sessions1Promise.catch(() => []),
+      sessions2Promise.catch(() => [])
+    ]);
+
+    // Garantir que ambos são arrays e limitar quantidade para performance
+    const validSessions1 = Array.isArray(sessions1) ? sessions1.slice(0, 100) : [];
+    const validSessions2 = Array.isArray(sessions2) ? sessions2.slice(0, 100) : [];
+
+    // Combinar as sessões de ambos os formatos
+    const allSessions = [...validSessions1, ...validSessions2];
+
+    // Filtrar sessões desta semana com otimização
+    const thisWeekSessions = allSessions.filter((session: any) => {
+      try {
         let sessionDate;
         
-        // Verificar diferentes formatos de data
-        if (session.startTime) {
+        // Verificar diferentes formatos de data com validação
+        if (session?.startTime) {
           sessionDate = new Date(session.startTime);
-        } else if (session.date) {
+        } else if (session?.date) {
           sessionDate = new Date(session.date);
         } else {
+          return false;
+        }
+        
+        // Verificar se a data é válida
+        if (isNaN(sessionDate.getTime())) {
           return false;
         }
         
         // Filtrar apenas sessões desta semana e que são treinos completos
         return sessionDate >= startOfWeek && 
                (session.status === 'completed' || session.duration > 0);
-      });
+      } catch (error) {
+        console.warn('Erro ao processar sessão:', error);
+        return false;
+      }
+    });
 
-      // Remover duplicatas baseadas em data/hora próximas (para evitar contar o mesmo treino duas vezes)
-      const uniqueSessions = thisWeekSessions.filter((session: any, index: number, arr: any[]) => {
+    // Limitar processamento para performance
+    const limitedSessions = thisWeekSessions.slice(0, 50);
+
+    // Remover duplicatas com algoritmo otimizado
+    const uniqueSessions = this.removeDuplicateSessions(limitedSessions);
+
+    // Calcular estatísticas
+    this.quickStats.weeklyWorkouts = uniqueSessions.length;
+    this.quickStats.weeklyMinutes = this.calculateTotalMinutes(uniqueSessions);
+    this.quickStats.weeklyCalories = this.calculateTotalCalories(uniqueSessions);
+
+    // Atualizar as propriedades usadas no template
+    this.weeklyWorkouts = this.quickStats.weeklyWorkouts;
+    this.totalMinutes = this.quickStats.weeklyMinutes;
+    this.weeklyCalories = this.quickStats.weeklyCalories;
+
+    // Calcular progresso semanal (assumindo meta de 4 treinos por semana)
+    this.weeklyProgress = Math.min((this.quickStats.weeklyWorkouts / 4) * 100, 100);
+
+    console.log('Estatísticas calculadas:', {
+      totalSessions: allSessions.length,
+      thisWeekSessions: thisWeekSessions.length,
+      uniqueSessions: uniqueSessions.length,
+      weeklyWorkouts: this.weeklyWorkouts,
+      totalMinutes: this.totalMinutes,
+      weeklyCalories: this.weeklyCalories
+    });
+  }
+
+  private removeDuplicateSessions(sessions: any[]): any[] {
+    const seen = new Set<string>();
+    return sessions.filter((session: any) => {
+      try {
         const sessionTime = new Date(session.startTime || session.date).getTime();
+        const roundedTime = Math.floor(sessionTime / (5 * 60 * 1000)) * (5 * 60 * 1000); // Arredondar para intervalos de 5 min
+        const key = `${roundedTime}_${session.duration || 0}`;
         
-        // Verificar se há outra sessão num intervalo de 5 minutos
-        return !arr.some((otherSession: any, otherIndex: number) => {
-          if (index >= otherIndex) return false; // Só verificar sessões anteriores
-          
-          const otherTime = new Date(otherSession.startTime || otherSession.date).getTime();
-          const timeDiff = Math.abs(sessionTime - otherTime);
-          
-          // Se a diferença for menor que 5 minutos, considerar duplicata
-          return timeDiff < 5 * 60 * 1000;
-        });
-      });
+        if (seen.has(key)) {
+          return false;
+        }
+        seen.add(key);
+        return true;
+      } catch (error) {
+        return true; // Em caso de erro, manter a sessão
+      }
+    });
+  }
 
-      // Contar treinos únicos (não exercícios)
-      this.quickStats.weeklyWorkouts = uniqueSessions.length;
+  private calculateTotalMinutes(sessions: any[]): number {
+    return sessions.reduce((total: number, session: any) => {
+      const duration = session.duration || 0;
+      return total + (typeof duration === 'number' ? Math.max(0, Math.min(duration, 300)) : 0); // Limitar a 300 min por sessão
+    }, 0);
+  }
 
-      // Somar minutos totais dos treinos
-      this.quickStats.weeklyMinutes = uniqueSessions.reduce((total: number, session: any) => {
-        return total + (session.duration || 0);
-      }, 0);
-
-      // Calcular calorias totais dos treinos
-      this.quickStats.weeklyCalories = uniqueSessions.reduce((total: number, session: any) => {
+  private calculateTotalCalories(sessions: any[]): number {
+    return sessions.reduce((total: number, session: any) => {
+      try {
         // Para o formato legado
-        if (session.caloriesBurned) {
-          return total + session.caloriesBurned;
+        if (session.caloriesBurned && typeof session.caloriesBurned === 'number') {
+          return total + Math.max(0, Math.min(session.caloriesBurned, 2000)); // Limitar a 2000 cal por sessão
         }
         
-        // Para o formato ProgressDataService - calcular das exercícios
+        // Para o formato ProgressDataService - calcular dos exercícios
         if (session.exercises && Array.isArray(session.exercises)) {
-          const sessionCalories = session.exercises.reduce((exerciseTotal: number, exercise: any) => {
-            return exerciseTotal + (exercise.calories || 50); // 50 calorias por exercício por padrão
+          const sessionCalories = session.exercises.slice(0, 20).reduce((exerciseTotal: number, exercise: any) => {
+            const calories = exercise.calories || 50;
+            return exerciseTotal + (typeof calories === 'number' ? Math.max(0, Math.min(calories, 500)) : 50);
           }, 0);
           return total + sessionCalories;
         }
         
-        // Fallback para sessões sem dados de calorias
-        return total + 0;
-      }, 0);
+        // Fallback
+        return total + 150; // Valor padrão razoável
+      } catch (error) {
+        return total + 150;
+      }
+    }, 0);
+  }
 
-      // Atualizar as propriedades usadas no template
-      this.weeklyWorkouts = this.quickStats.weeklyWorkouts;
-      this.totalMinutes = this.quickStats.weeklyMinutes;
-      this.weeklyCalories = this.quickStats.weeklyCalories;
-
-      // Calcular progresso semanal (assumindo meta de 4 treinos por semana)
-      this.weeklyProgress = Math.min((this.quickStats.weeklyWorkouts / 4) * 100, 100);
-
-      console.log('Estatísticas carregadas (corrigidas):', {
-        totalSessions: allSessions.length,
-        thisWeekSessions: thisWeekSessions.length,
-        uniqueSessions: uniqueSessions.length,
-        weeklyWorkouts: this.weeklyWorkouts,
-        totalMinutes: this.totalMinutes,
-        weeklyCalories: this.weeklyCalories,
-        sessionDetails: uniqueSessions.map(s => ({
-          date: s.startTime || s.date,
-          duration: s.duration,
-          calories: s.caloriesBurned || (s.exercises?.length * 50),
-          exercises: s.exercises?.length || s.completedExercises?.length
-        }))
-      });
-    } catch (error) {
-      console.error('Erro ao carregar estatísticas rápidas:', error);
-    }
+  private setDefaultQuickStats() {
+    this.quickStats = { weeklyWorkouts: 0, weeklyMinutes: 0, weeklyCalories: 0 };
+    this.weeklyWorkouts = 0;
+    this.totalMinutes = 0;
+    this.weeklyCalories = 0;
+    this.weeklyProgress = 0;
+    console.log('Estatísticas padrão definidas');
   }
 
   async loadRecentAchievements() {
