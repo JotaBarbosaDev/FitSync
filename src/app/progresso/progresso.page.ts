@@ -142,7 +142,7 @@ export class ProgressoPage implements OnInit, AfterViewInit {
 
   async ngOnInit() {
     await this.deviceControlService.lockToPortrait();
-    await this.loadProgressData();
+    this.loadProgressData();
     await this.loadAchievements();
     await this.loadWorkoutHistory();
     await this.loadPersonalRecords();
@@ -155,6 +155,16 @@ export class ProgressoPage implements OnInit, AfterViewInit {
       this.createWeightChart();
       this.createWorkoutChart();
     }, 100);
+  }
+
+  async onRefresh(event: any) {
+    try {
+      await this.loadProgressData();
+    } catch (error) {
+      console.error('Erro ao atualizar dados de progresso:', error);
+    } finally {
+      event.target.complete();
+    }
   }
 
   async loadProgressData() {

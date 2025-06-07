@@ -12,6 +12,16 @@
 </ion-header>
 
 <ion-content [fullscreen]="true" class="weekly-plan-container">
+  <!-- Pull to refresh -->
+  <ion-refresher slot="fixed" (ionRefresh)="onRefresh($event)" pullFactor="0.5" pullMin="60" pullMax="120">
+    <ion-refresher-content 
+      pullingIcon="chevron-down-circle-outline" 
+      pullingText="Arraste para atualizar..." 
+      refreshingSpinner="circles" 
+      refreshingText="Atualizando treinos...">
+    </ion-refresher-content>
+  </ion-refresher>
+
   <!-- Loading -->
   <div *ngIf="isLoading" class="loading-container">
     <ion-spinner name="dots" color="primary"></ion-spinner>

@@ -65,10 +65,17 @@ export class ListaPage implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    // Limpar todas as subscriptions para prevenir vazamentos de memória
-    if (this.exerciseSubscription) {
-      this.exerciseSubscription.unsubscribe();
-      this.exerciseSubscription = undefined;
+    this.exerciseSubscription?.unsubscribe();
+  }
+
+  async onRefresh(event: any) {
+    try {
+      await this.loadExercises();
+      await this.loadFavorites();
+    } catch (error) {
+      console.error('Erro ao atualizar lista de exercícios:', error);
+    } finally {
+      event.target.complete();
     }
   }
 

@@ -58,7 +58,7 @@ export class HomePage implements OnInit, OnDestroy {
   weeklyCalories = 0;
 
   // Subscription management
-  private subscriptions: Subscription = new Subscription();
+  private subscriptions: Subscription[] = [];
   private isInitialized = false;
 
   constructor(
@@ -308,7 +308,7 @@ export class HomePage implements OnInit, OnDestroy {
     (this as any)._destroyed = true;
     
     // Limpar todas as subscriptions para prevenir memory leaks
-    this.subscriptions.unsubscribe();
+    this.subscriptions.forEach(sub => sub.unsubscribe());
     this.isInitialized = false;
     
     console.log('HomePage destruída e subscriptions limpas');
@@ -521,7 +521,7 @@ export class HomePage implements OnInit, OnDestroy {
       });
 
       // Adicionar subscription ao gerenciador
-      this.subscriptions.add(todayWorkoutSub);
+      this.subscriptions.push(todayWorkoutSub);
     } catch (error) {
       console.error('Erro ao carregar treino do dia:', error);
       this.loadTodayWorkoutFallback();
@@ -1309,7 +1309,11 @@ export class HomePage implements OnInit, OnDestroy {
 
   private async checkCompletedWorkoutMinimal() {
     try {
-      const today = new Date().toDateString();
+      const today = new Date().getDate();
+      const month = new Date().getMonth();
+      const year = new Date().getFullYear();
+      const todayDateString = `${year}-${month + 1}-${today}`; // Formato YYYY-MM-DD
+
       const sessions = await this.storageService.get('workoutSessions').catch(() => []);
       const validSessions = Array.isArray(sessions) ? sessions.slice(0, 30) : [];
 
@@ -1318,7 +1322,7 @@ export class HomePage implements OnInit, OnDestroy {
           if (!session?.startTime || session.status !== 'completed') return false;
           const sessionDate = new Date(session.startTime);
           if (isNaN(sessionDate.getTime())) return false;
-          return sessionDate.toDateString() === today;
+          return sessionDate.toISOString().split('T')[0] === todayDateString;
         } catch {
           return false;
         }
@@ -1334,6 +1338,43 @@ export class HomePage implements OnInit, OnDestroy {
       }
     } catch (error) {
       console.error('Erro na verificação mínima de treino completado:', error);
+    }
+  }
+
+  async onRefresh(event: any) {
+    try {
+      await this.loadHomeData();
+    } catch (error) {
+      console.error('Erro ao atualizar dados da home:', error);
+    } finally {
+      event.target.complete();
+    }
+  }
+
+  private async loadHomeData() {
+    this.isLoading = true;
+    try {
+      // Recarregar dados críticos com timeout estendido
+      await Promise.race([
+        this.performSafeInitialization(),
+        new Promise<void>((resolve) => {
+          setTimeout(() => {
+            console.warn('Timeout ao carregar dados da home, usando valores padrão');
+            this.setDefaultValues();
+            resolve();
+          }, 5000);
+        })
+      ]);
+
+      // Recarregar dados não-críticos em background
+      setTimeout(() => {
+        this.loadNonCriticalData();
+      }, 100);
+    } catch (error) {
+      console.error('Erro ao carregar dados da home:', error);
+      this.setDefaultValues();
+    } finally {
+      this.isLoading = false;
     }
   }
 }

@@ -39,6 +39,15 @@
 </ion-header>
 
 <ion-content [fullscreen]="true" class="exercise-library-content">
+  <!-- Pull to refresh -->
+  <ion-refresher slot="fixed" (ionRefresh)="onRefresh($event)" pullFactor="0.5" pullMin="60" pullMax="120">
+    <ion-refresher-content 
+      pullingIcon="chevron-down-circle-outline" 
+      pullingText="Arraste para atualizar..." 
+      refreshingSpinner="circles" 
+      refreshingText="Atualizando exercícios...">
+    </ion-refresher-content>
+  </ion-refresher>
   <!-- Search and Filter Section -->
   <div class="search-filter-section fitsync-card">
     <div class="search-container">

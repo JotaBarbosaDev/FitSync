@@ -29,6 +29,16 @@ export class DashboardPage implements OnInit, OnDestroy {
     this.subscriptions.forEach(sub => sub.unsubscribe());
   }
 
+  async onRefresh(event: any) {
+    try {
+      this.loadUserData();
+    } catch (error) {
+      console.error('Erro ao atualizar dados do dashboard:', error);
+    } finally {
+      event.target.complete();
+    }
+  }
+
   private loadUserData() {
     const userSub = this.authService.getCurrentUser().subscribe(user => {
       if (user) {

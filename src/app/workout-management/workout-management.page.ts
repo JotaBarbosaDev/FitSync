@@ -200,9 +200,17 @@ export class WorkoutManagementPage implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    // Clean up subscription to prevent memory leaks
-    if (this.exerciseSubscription) {
-      this.exerciseSubscription.unsubscribe();
+    this.exerciseSubscription?.unsubscribe();
+  }
+
+  async onRefresh(event: any) {
+    try {
+      await this.loadWeeklyPlan();
+      await this.loadAvailableExercises();
+    } catch (error) {
+      console.error('Erro ao atualizar plano de treino:', error);
+    } finally {
+      event.target.complete();
     }
   }
 }

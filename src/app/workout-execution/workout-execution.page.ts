@@ -5,6 +5,7 @@ import { ProgressDataService } from '../services/progress-data.service';
 import { StorageService } from '../services/storage.service';
 import { WorkoutEventService } from '../services/workout-event.service';
 import { CalorieCalculationService, UserData, ExerciseCalorieData } from '../services/calorie-calculation.service';
+import { OrientationService } from '../services/orientation.service';
 
 interface Exercise {
   id: string;
@@ -58,16 +59,23 @@ export class WorkoutExecutionPage implements OnInit, OnDestroy {
     private progressDataService: ProgressDataService,
     private storageService: StorageService,
     private calorieCalculationService: CalorieCalculationService,
-    private workoutEventService: WorkoutEventService
+    private workoutEventService: WorkoutEventService,
+    private orientationService: OrientationService
   ) { }
 
   ngOnInit() {
     this.loadExercisesFromUrl();
     this.progressDataService.init();
+    
+    // Bloquear orientação em portrait durante o treino
+    this.lockOrientation();
   }
 
   ngOnDestroy() {
     this.stopTimer();
+    
+    // Desbloquear orientação ao sair da tela
+    this.unlockOrientation();
   }
 
   private loadExercisesFromUrl() {
@@ -649,5 +657,61 @@ export class WorkoutExecutionPage implements OnInit, OnDestroy {
     if (averageIntensity >= 2.5) return 'high';
     if (averageIntensity >= 1.5) return 'moderate';
     return 'low';
+  }
+
+  // Métodos para controle de orientação
+  private async lockOrientation(): Promise<void> {
+    try {
+      await this.orientationService.lockToPortrait();
+      console.log('✅ Orientação bloqueada em portrait durante o treino');
+    } catch (error) {
+      console.error('❌ Erro ao bloquear orientação:', error);
+    }
+  }
+
+  private async unlockOrientation(): Promise<void> {
+    try {
+      await this.orientationService.unlockOrientation();
+      console.log('✅ Orientação desbloqueada ao sair do treino');
+    } catch (error) {
+      console.error('❌ Erro ao desbloquear orientação:', error);
+    }
+  }
+
+  // Método para refresh da página
+  async onRefreshWorkout(): Promise<void> {
+    try {
+      console.log('🔄 Atualizando treino...');
+      
+      // Recarregar dados dos exercícios se necessário
+      this.loadExercisesFromUrl();
+      
+      // Resetar estados se o treino não estiver em andamento
+      if (!this.isWorkoutStarted) {
+        this.currentExerciseIndex = 0;
+        this.completedExercises = 0;
+        this.workoutDuration = 0;
+      }
+      
+      // Mostrar feedback para o usuário
+      const toast = await this.toastController.create({
+        message: '✅ Treino atualizado!',
+        duration: 2000,
+        position: 'top',
+        color: 'success'
+      });
+      await toast.present();
+      
+    } catch (error) {
+      console.error('❌ Erro ao atualizar treino:', error);
+      
+      const toast = await this.toastController.create({
+        message: '❌ Erro ao atualizar. Tente novamente.',
+        duration: 3000,
+        position: 'top',
+        color: 'danger'
+      });
+      await toast.present();
+    }
   }
 }

@@ -25,6 +25,16 @@
 </ion-header>
 
 <ion-content [fullscreen]="true" class="progress-content">
+  <!-- Pull to refresh -->
+  <ion-refresher slot="fixed" (ionRefresh)="onRefresh($event)" pullFactor="0.5" pullMin="60" pullMax="120">
+    <ion-refresher-content 
+      pullingIcon="chevron-down-circle-outline" 
+      pullingText="Arraste para atualizar..." 
+      refreshingSpinner="circles" 
+      refreshingText="Atualizando progresso...">
+    </ion-refresher-content>
+  </ion-refresher>
+
   <div class="content-container">
     <!-- Loading State -->
     <div class="loading-overlay" *ngIf="loading">

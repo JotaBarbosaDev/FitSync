@@ -44,6 +44,16 @@ export class WeeklyPlanPage implements OnInit {
     await this.loadData();
   }
 
+  async onRefresh(event: any) {
+    try {
+      await this.loadData();
+    } catch (error) {
+      console.error('Erro ao atualizar plano semanal:', error);
+    } finally {
+      event.target.complete();
+    }
+  }
+
   async loadData() {
     try {
       this.workoutService.getCurrentWeeklyPlan().subscribe(plan => {
