@@ -301,4 +301,81 @@ Ver console para detalhes completos`;
       this.showAlert('Erro', 'Erro ao obter informações de debug');
     }
   }
+
+  // Método para mostrar TODOS os dados armazenados no console
+  async showAllStoredData() {
+    try {
+      await this.authService.debugAllStoredData();
+      
+      const alert = await this.alertController.create({
+        header: 'Debug - Dados Completos',
+        message: 'Todos os dados armazenados foram exibidos no console do navegador (F12). Verifique a aba Console para ver os detalhes completos.',
+        buttons: [
+          {
+            text: 'Fechar',
+            role: 'cancel'
+          },
+          {
+            text: 'Abrir Console',
+            handler: () => {
+              this.showToast('Use F12 para abrir o console do navegador', 'success');
+            }
+          }
+        ]
+      });
+      await alert.present();
+    } catch (error) {
+      console.error('Erro ao mostrar dados completos:', error);
+      this.showAlert('Erro', 'Erro ao obter dados completos');
+    }
+  }
+
+  // Método para limpar todos os dados exceto credenciais demo
+  async clearAllDataExceptDemo() {
+    try {
+      const alert = await this.alertController.create({
+        header: '⚠️ Confirmação',
+        message: 'Esta ação irá limpar TODOS os dados armazenados, exceto a conta demo. Esta operação não pode ser desfeita. Deseja continuar?',
+        buttons: [
+          {
+            text: 'Cancelar',
+            role: 'cancel'
+          },
+          {
+            text: 'Sim, Limpar',
+            handler: async () => {
+              const loading = await this.loadingController.create({
+                message: 'Limpando dados...',
+                duration: 10000
+              });
+              await loading.present();
+
+              try {
+                const success = await this.authService.clearAllDataExceptDemo();
+                loading.dismiss();
+                
+                if (success) {
+                  this.showToast('Dados limpos com sucesso! Apenas conta demo preservada.', 'success');
+                  // Recarregar a página após limpeza
+                  setTimeout(() => {
+                    window.location.reload();
+                  }, 2000);
+                } else {
+                  this.showAlert('Erro', 'Não foi possível limpar os dados. Verifique o console para detalhes.');
+                }
+              } catch (error) {
+                loading.dismiss();
+                console.error('Erro durante limpeza:', error);
+                this.showAlert('Erro', 'Ocorreu um erro durante a limpeza dos dados.');
+              }
+            }
+          }
+        ]
+      });
+      await alert.present();
+    } catch (error) {
+      console.error('Erro ao configurar limpeza:', error);
+      this.showAlert('Erro', 'Erro ao configurar limpeza de dados');
+    }
+  }
 }

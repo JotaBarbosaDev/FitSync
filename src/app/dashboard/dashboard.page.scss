@@ -1,5 +1,5 @@
 /* ===== DASHBOARD PAGE - MODERN FITSYNC DESIGN ===== */
-@import './dashboard-enhanced.scss';
+@use './dashboard-enhanced.scss';
 
 /* Main Content */
 .dashboard-content {
@@ -576,6 +576,173 @@ ion-header {
           margin: 0;
         }
       }
+    }
+  }
+}
+
+/* User Welcome Section */
+.user-welcome-section {
+  padding: 2rem 1rem;
+  text-align: center;
+  background: linear-gradient(135deg, var(--fitsync-primary) 0%, var(--fitsync-accent) 100%);
+  color: white;
+  margin-bottom: 1.5rem;
+
+  .welcome-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+
+    .user-photo-container {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 0.5rem;
+
+      .user-photo {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.2);
+        border: 3px solid rgba(255, 255, 255, 0.3);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        backdrop-filter: blur(10px);
+        
+        .user-photo-icon {
+          font-size: 2.5rem;
+          color: rgba(255, 255, 255, 0.8);
+        }
+      }
+    }
+
+    .welcome-title {
+      font-size: 1.8rem;
+      font-weight: 700;
+      margin: 0;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+
+    .welcome-subtitle {
+      font-size: 1rem;
+      opacity: 0.9;
+      margin: 0;
+      font-weight: 400;
+    }
+  }
+}
+
+/* Profile Info Section */
+.profile-info-section {
+  padding: 1.5rem;
+  
+  .section-header {
+    margin-bottom: 1.5rem;
+    
+    .section-title {
+      font-size: 1.4rem;
+      font-weight: 600;
+      color: var(--fitsync-text-primary);
+      margin: 0;
+    }
+  }
+
+  .profile-info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+
+    .info-card {
+      background: var(--fitsync-card-background);
+      border-radius: 12px;
+      padding: 1.25rem;
+      border: 1px solid var(--fitsync-border-subtle);
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      transition: all 0.3s ease;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+
+      &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+      }
+
+      .info-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 8px;
+        background: linear-gradient(135deg, var(--fitsync-primary), var(--fitsync-accent));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+
+        ion-icon {
+          font-size: 1.5rem;
+          color: white;
+        }
+      }
+
+      .info-content {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+
+        .info-value {
+          font-size: 1.1rem;
+          font-weight: 600;
+          color: var(--fitsync-text-primary);
+        }
+
+        .info-label {
+          font-size: 0.875rem;
+          color: var(--fitsync-text-secondary);
+          font-weight: 500;
+        }
+      }
+    }
+  }
+
+  .goals-section {
+    .goals-title {
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: var(--fitsync-text-primary);
+      margin: 0 0 1rem 0;
+    }
+
+    .goals-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+
+      ion-chip {
+        --background: var(--fitsync-primary);
+        --color: var(--fitsync-text-on-primary);
+        font-weight: 500;
+        border-radius: 20px;
+        padding: 0.5rem 1rem;
+      }
+    }
+  }
+}
+
+/* Logout Section */
+.logout-section {
+  padding: 1.5rem;
+  
+  ion-button {
+    --border-radius: 12px;
+    --padding-top: 1rem;
+    --padding-bottom: 1rem;
+    font-weight: 600;
+    font-size: 1rem;
+    
+    ion-icon {
+      margin-right: 0.5rem;
     }
   }
 }

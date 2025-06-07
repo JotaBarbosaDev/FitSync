@@ -13,8 +13,7 @@ import { WorkoutProgressPage } from './workout-progress.page';
     CommonModule,
     FormsModule,
     IonicModule,
-    WorkoutProgressPageRoutingModule,
-    WorkoutProgressPage
+    WorkoutProgressPageRoutingModule
   ],
   declarations: []
 })

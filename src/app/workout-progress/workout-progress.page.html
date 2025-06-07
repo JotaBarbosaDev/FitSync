@@ -152,10 +152,11 @@
   <div class="recent-sessions" *ngIf="recentSessions.length > 0">
     <h3>Treinos Recentes</h3>
     <div class="sessions-list">
-      <div class="session-card" *ngFor="let session of recentSessions.slice(0, 5)">
+      <div class="session-card" *ngFor="let session of recentSessions.slice(0, 3)">
         <div class="session-info">
           <div class="session-date">
             {{ session.startTime | date:'dd/MM/yyyy' }}
+            <span class="session-time">{{ session.startTime | date:'HH:mm' }}</span>
           </div>
           <div class="session-details">
             <span class="session-duration">{{ formatDuration((session.duration || 0) * 60) }}</span>
@@ -165,7 +166,7 @@
         <div class="session-stats">
           <div class="session-calories">
             <ion-icon name="flame-outline"></ion-icon>
-            <span>{{ 0 }} cal</span>
+            <span>{{ session.caloriesBurned || 0 }} cal</span>
           </div>
         </div>
       </div>
@@ -200,7 +201,7 @@
       <div class="summary-stats">
         <div class="summary-stat">
           <ion-icon name="time-outline"></ion-icon>
-          <span>{{ formatDuration(recentSessions[0].duration || 0) }}</span>
+          <span>{{ formatDuration((recentSessions[0].duration || 0) * 60) }}</span>
         </div>
         <div class="summary-stat">
           <ion-icon name="fitness-outline"></ion-icon>

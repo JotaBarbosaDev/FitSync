@@ -1,0 +1,257 @@
+/* ===== WORKOUT CARD STYLES ===== */
+
+/* Workout Card */
+.workout-card {
+  background: white;
+  border-radius: 20px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+
+  .workout-header {
+    background: linear-gradient(135deg, var(--fitsync-primary), var(--fitsync-secondary));
+    padding: 1.5rem;
+    color: white;
+    position: relative;
+
+    h3 {
+      font-size: 1.4rem;
+      font-weight: 700;
+      margin: 0 0 1rem 0;
+    }
+
+    .today-badge {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      background: rgba(255, 255, 255, 0.2);
+      padding: 0.3rem 0.8rem;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      backdrop-filter: blur(10px);
+    }
+
+    .workout-stats {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 1rem;
+
+      .stat-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+
+        ion-icon {
+          font-size: 1.1rem;
+        }
+
+        span {
+          font-size: 0.9rem;
+          font-weight: 500;
+        }
+      }
+    }
+  }
+
+  .workout-content {
+    padding: 1.5rem;
+
+    .start-workout-btn {
+      --background: linear-gradient(135deg, var(--fitsync-primary), var(--fitsync-secondary));
+      --border-radius: 20px;
+      --color: #1a1a1a;
+      height: 60px;
+      font-size: 1.1rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      box-shadow: 
+        0 8px 25px rgba(118, 75, 162, 0.4),
+        0 4px 15px rgba(230, 254, 88, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+      margin: 0;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      
+      &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, 
+          transparent, 
+          rgba(255, 255, 255, 0.2), 
+          transparent);
+        transition: left 0.5s;
+      }
+      
+      &:hover {
+        transform: translateY(-2px);
+        box-shadow: 
+          0 12px 35px rgba(118, 75, 162, 0.5),
+          0 6px 20px rgba(230, 254, 88, 0.4),
+          inset 0 1px 0 rgba(255, 255, 255, 0.3);
+          
+        &::before {
+          left: 100%;
+        }
+      }
+      
+      &:active {
+        transform: translateY(0);
+        transition: transform 0.1s;
+      }
+
+      ion-icon {
+        font-size: 1.4rem;
+        margin-right: 8px;
+        filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.2));
+      }
+    }
+  }
+}
+
+/* Rest Day Card */
+.rest-day-card {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 20px;
+  padding: 2rem;
+  text-align: center;
+  color: white;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+
+  ion-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    opacity: 0.9;
+  }
+
+  h3 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin: 0 0 1rem 0;
+  }
+
+  p {
+    font-size: 1rem;
+    opacity: 0.9;
+    margin: 0;
+    line-height: 1.5;
+  }
+}
+
+/* No Workout Card */
+.no-workout-card {
+  background: white;
+  border-radius: 20px;
+  padding: 2rem;
+  text-align: center;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  border: 2px dashed #e0e0e0;
+
+  ion-icon {
+    font-size: 3rem;
+    color: var(--ion-color-medium);
+    margin-bottom: 1rem;
+  }
+
+  h3 {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: var(--fitsync-dark);
+    margin: 0 0 1rem 0;
+  }
+
+  p {
+    color: var(--ion-color-medium);
+    margin: 0 0 1.5rem 0;
+    line-height: 1.5;
+  }
+
+  .create-workout-btn {
+    --background: var(--fitsync-primary);
+    --border-radius: 16px;
+    --color: white;
+    height: 50px;
+    font-weight: 600;
+  }
+}
+
+.workout-badge {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      background: rgba(255, 255, 255, 0.2);
+      padding: 0.3rem 0.8rem;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      backdrop-filter: blur(10px);
+
+      span {
+        color: white;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+      }
+    }
+
+/* Rest Card */
+.rest-card {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 20px;
+  padding: 2rem;
+  text-align: center;
+  color: white;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+
+  .rest-icon {
+    margin-bottom: 1rem;
+
+    ion-icon {
+      font-size: 3rem;
+      opacity: 0.9;
+    }
+  }
+
+  h3 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin: 0 0 1rem 0;
+  }
+
+  p {
+    font-size: 1rem;
+    opacity: 0.9;
+    margin: 0 0 1.5rem 0;
+    line-height: 1.5;
+  }
+
+  .rest-suggestions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-top: 1.5rem;
+
+    .suggestion-item {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.75rem;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      backdrop-filter: blur(10px);
+
+      ion-icon {
+        font-size: 1.2rem;
+        color: rgba(255, 255, 255, 0.9);
+      }
+
+      span {
+        font-size: 0.9rem;
+        font-weight: 500;
+      }
+    }
+  }
+}

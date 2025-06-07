@@ -3,6 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { AlertController, ToastController } from '@ionic/angular';
 import { ProgressDataService } from '../services/progress-data.service';
 import { StorageService } from '../services/storage.service';
+import { WorkoutEventService } from '../services/workout-event.service';
 import { CalorieCalculationService, UserData, ExerciseCalorieData } from '../services/calorie-calculation.service';
 
 interface Exercise {
@@ -56,7 +57,8 @@ export class WorkoutExecutionPage implements OnInit, OnDestroy {
     private toastController: ToastController,
     private progressDataService: ProgressDataService,
     private storageService: StorageService,
-    private calorieCalculationService: CalorieCalculationService
+    private calorieCalculationService: CalorieCalculationService,
+    private workoutEventService: WorkoutEventService
   ) { }
 
   ngOnInit() {
@@ -509,7 +511,7 @@ export class WorkoutExecutionPage implements OnInit, OnDestroy {
         duration: finalDuration,
         totalVolume: totalVolume,
         muscleGroups: [...new Set(this.completedExerciseData.map(ex => ex.muscleGroup))],
-        notes: `Treino de ${this.dayName} - ${this.completedExercises} exercícios completados - ${totalCalories} calorias queimadas`
+        notes: `${this.dayName} - ${this.completedExercises} exercícios completados - ${totalCalories} calorias queimadas`
       };
 
       // Salvar usando o ProgressDataService
@@ -525,7 +527,7 @@ export class WorkoutExecutionPage implements OnInit, OnDestroy {
         caloriesBurned: totalCalories,
         completedExercises: this.completedExerciseData.map(ex => ex.exerciseId),
         rating: 5,
-        notes: `Treino de ${this.dayName} completado`,
+        notes: `${this.dayName} completado`,
         status: 'completed'
       };
 
@@ -553,6 +555,21 @@ export class WorkoutExecutionPage implements OnInit, OnDestroy {
         position: 'top'
       });
       await toast.present();
+
+      // 🎯 EMITIR EVENTO DE TREINO COMPLETADO
+      this.workoutEventService.emitWorkoutCompleted({
+        workoutId: legacySession.workoutId,
+        sessionId: legacySession.id,
+        timestamp: new Date(),
+        duration: finalDuration,
+        caloriesBurned: totalCalories,
+        exercisesCompleted: this.completedExerciseData.length
+      });
+
+      // 📊 EMITIR EVENTO DE SESSÃO SALVA
+      this.workoutEventService.emitSessionSaved(legacySession);
+
+      console.log('🎉 Eventos de treino completado emitidos com sucesso!');
 
     } catch (error) {
       console.error('Erro ao salvar sessão de treino:', error);

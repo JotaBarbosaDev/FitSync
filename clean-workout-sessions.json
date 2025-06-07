@@ -1,0 +1,30 @@
+[
+  {
+    "id": "session-1701234567890",
+    "workoutId": "bicep-workout-default",
+    "userId": "current-user",
+    "startTime": "2024-01-20T10:00:00.000Z",
+    "endTime": "2024-01-20T10:45:00.000Z",
+    "duration": 45,
+    "exercises": [],
+    "caloriesBurned": 320,
+    "notes": "Treino de bíceps completado com sucesso",
+    "rating": 5,
+    "status": "completed",
+    "dayOfWeek": "sábado"
+  },
+  {
+    "id": "session-1701234567892",
+    "workoutId": "chest-workout-default",
+    "userId": "current-user",
+    "startTime": "2024-01-18T10:00:00.000Z",
+    "endTime": "2024-01-18T10:50:00.000Z",
+    "duration": 50,
+    "exercises": [],
+    "caloriesBurned": 400,
+    "notes": "Treino de peito completado",
+    "rating": 5,
+    "status": "completed",
+    "dayOfWeek": "segunda-feira"
+  }
+]

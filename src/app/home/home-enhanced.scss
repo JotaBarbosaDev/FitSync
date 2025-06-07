@@ -273,6 +273,197 @@
   }
 }
 
+/* ===== EXERCISE CARDS STYLES ===== */
+
+/* Workout Preview */
+.workout-preview {
+  margin-top: 1rem;
+
+  .preview-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+
+    h4 {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--fitsync-dark);
+      margin: 0;
+    }
+
+    .exercise-count {
+      font-size: 0.85rem;
+      color: var(--ion-color-medium);
+      font-weight: 500;
+    }
+  }
+
+  .exercises-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+
+    .exercise-preview-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--ion-color-light);
+      border-radius: 12px;
+      padding: 0.75rem;
+      border: 1px solid var(--ion-color-step-150);
+      transition: all 0.2s ease;
+
+      &:hover {
+        background: var(--ion-color-step-50);
+        transform: translateY(-1px);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      }
+
+      .exercise-info {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        flex: 1;
+
+        .exercise-icon {
+          width: 32px;
+          height: 32px;
+          border-radius: 8px;
+          background: linear-gradient(135deg, var(--fitsync-primary), var(--fitsync-secondary));
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          flex-shrink: 0;
+
+          ion-icon {
+            color: white;
+            font-size: 1rem;
+          }
+        }
+
+        .exercise-details {
+          display: flex;
+          flex-direction: column;
+          gap: 0.25rem;
+
+          .exercise-name {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--fitsync-dark);
+            margin: 0;
+            line-height: 1.2;
+          }
+
+          .exercise-muscle {
+            font-size: 0.8rem;
+            color: var(--ion-color-medium);
+            font-weight: 500;
+            text-transform: capitalize;
+          }
+        }
+      }
+
+      .exercise-sets {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 0.25rem;
+        flex-shrink: 0;
+
+        .sets-info {
+          font-size: 0.85rem;
+          font-weight: 600;
+          color: var(--fitsync-dark);
+          background: rgba(var(--fitsync-primary-rgb), 0.1);
+          padding: 0.25rem 0.5rem;
+          border-radius: 6px;
+        }
+
+        .difficulty {
+          font-size: 0.75rem;
+          padding: 0.2rem 0.4rem;
+          border-radius: 4px;
+          font-weight: 500;
+          text-transform: uppercase;
+          letter-spacing: 0.3px;
+
+          &.difficulty-beginner,
+          &.difficulty-iniciante {
+            background: rgba(76, 175, 80, 0.15);
+            color: #4CAF50;
+          }
+
+          &.difficulty-intermediate,
+          &.difficulty-intermediário {
+            background: rgba(255, 152, 0, 0.15);
+            color: #FF9800;
+          }
+
+          &.difficulty-advanced,
+          &.difficulty-avançado {
+            background: rgba(244, 67, 54, 0.15);
+            color: #F44336;
+          }
+        }
+      }
+    }
+  }
+
+  .view-all {
+    text-align: center;
+    margin-top: 0.5rem;
+
+    .view-all-btn {
+      --color: var(--ion-color-medium);
+      --background: transparent;
+      font-size: 0.85rem;
+      font-weight: 500;
+      text-transform: none;
+
+      &:hover {
+        --color: var(--fitsync-primary);
+      }
+    }
+  }
+}
+
+/* Dark mode support for exercise cards */
+.dark .workout-preview,
+body.dark .workout-preview,
+:host-context(.dark) .workout-preview {
+  .preview-header h4 {
+    color: var(--ion-color-light) !important;
+  }
+
+  .exercise-preview-item {
+    background: var(--ion-color-step-50) !important;
+    border-color: var(--ion-color-step-200) !important;
+
+    &:hover {
+      background: var(--ion-color-step-100) !important;
+    }
+
+    .exercise-info .exercise-details {
+      .exercise-name {
+        color: var(--ion-color-light) !important;
+      }
+
+      .exercise-muscle {
+        color: var(--ion-color-medium) !important;
+      }
+    }
+
+    .exercise-sets {
+      .sets-info {
+        color: var(--ion-color-light) !important;
+        background: rgba(var(--fitsync-primary-rgb), 0.2) !important;
+      }
+    }
+  }
+}
+
 /* DARK MODE STYLES */
 @media (prefers-color-scheme: dark) {
   .quick-stats .stat-card,

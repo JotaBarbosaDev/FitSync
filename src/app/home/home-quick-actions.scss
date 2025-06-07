@@ -1,0 +1,47 @@
+/* ===== QUICK ACTIONS STYLES ===== */
+
+/* Quick Actions Grid */
+.quick-actions {
+  margin: 1rem;
+
+  .section-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--fitsync-dark);
+    margin-bottom: 1rem;
+  }
+
+  .actions-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+
+    .action-card {
+      background: white;
+      border-radius: 16px;
+      padding: 1.5rem 1rem;
+      text-align: center;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      cursor: pointer;
+
+      &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+      }
+
+      ion-icon {
+        font-size: 2rem;
+        color: var(--fitsync-primary);
+        margin-bottom: 0.5rem;
+      }
+
+      h4 {
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: var(--fitsync-dark);
+        margin: 0;
+      }
+    }
+  }
+}

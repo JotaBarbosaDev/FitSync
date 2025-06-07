@@ -305,7 +305,7 @@ export class BicepWorkoutComponent implements OnInit {
 
       // Criar dados da sessão de treino
       const workoutSession: Omit<WorkoutSession, 'id'> = {
-        workoutId: 'bicep-workout-default',
+        workoutId: 'bicep-workout-default', // Este será usado para identificar o tipo de treino no gráfico
         userId: 'current-user',
         startTime: this.workoutStartTime,
         endTime: endTime,
@@ -327,7 +327,7 @@ export class BicepWorkoutComponent implements OnInit {
         notes: 'Treino de bíceps completado com sucesso',
         rating: 5,
         status: 'completed',
-        dayOfWeek: new Date().toLocaleDateString('pt-BR', { weekday: 'long' })
+        dayOfWeek: new Date().toLocaleDateString('pt-BR', { weekday: 'long' }) // Apenas para informação
       };
 
       // Salvar usando o serviço de storage

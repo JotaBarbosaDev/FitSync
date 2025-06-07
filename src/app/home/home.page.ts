@@ -87,59 +87,230 @@ export class HomePage implements OnInit, OnDestroy {
       this.isInitialized = true;
       console.log('Iniciando HomePage...');
 
-      // Usar um timeout geral para toda a inicialização
-      const initPromise = this.performInitialization();
+      // Usar um timeout MAIS CURTO para toda a inicialização (3 segundos)
+      const initPromise = this.performSafeInitialization();
       const timeoutPromise = new Promise<void>((resolve) => {
         setTimeout(() => {
-          console.warn('Timeout geral na inicialização da HomePage, continuando...');
+          console.warn('Timeout na inicialização da HomePage (3s), continuando com valores padrão...');
+          this.setDefaultValues();
           resolve();
-        }, 5000); // 5 segundos de timeout total
+        }, 3000); // Reduzido para 3 segundos
       });
 
       await Promise.race([initPromise, timeoutPromise]);
       console.log('HomePage inicializada com sucesso');
     } catch (error) {
       console.error('Erro durante inicialização da HomePage:', error);
+      this.setDefaultValues();
     } finally {
       this.isLoading = false;
       (this as any)._isInitializing = false;
     }
   }
 
-  private async performInitialization() {
-    await this.storage.create();
-    
-    // Executar inicializações em paralelo onde possível
-    const initPromises = [
-      this.initializeDefaultWorkouts().catch((e: any) => console.error('Erro ao inicializar treinos padrão:', e)),
-      this.initializeExampleWorkoutSessions().catch((e: any) => console.error('Erro ao inicializar sessões exemplo:', e)),
-      this.loadUserProfile().catch((e: any) => console.error('Erro ao carregar perfil:', e))
-    ];
+  private async performSafeInitialization() {
+    try {
+      // Criar storage de forma segura
+      await this.safeStorageCreate();
+      
+      // Executar inicializações críticas com timeouts menores
+      const quickInitPromises = [
+        this.safeInitializeDefaults().catch(e => console.error('Erro ao inicializar defaults:', e)),
+        this.safeLoadUserProfile().catch(e => console.error('Erro ao carregar perfil:', e))
+      ];
 
-    await Promise.all(initPromises);
+      // Aguardar inicializações críticas com timeout curto (1.5s)
+      await Promise.race([
+        Promise.all(quickInitPromises),
+        new Promise<void>((resolve) => {
+          setTimeout(() => {
+            console.warn('Timeout nas inicializações críticas');
+            resolve();
+          }, 1500);
+        })
+      ]);
 
-    // Executar carregamentos que dependem dos dados iniciais
+      // Verificar se o componente ainda está ativo antes de continuar
+      if (!this.isComponentActive()) {
+        console.log('Componente não está mais ativo, interrompendo inicialização');
+        return;
+      }
+
+      // Executar carregamentos não-críticos em background
+      setTimeout(() => {
+        if (this.isComponentActive()) {
+          this.loadNonCriticalData();
+        }
+      }, 100);
+
+    } catch (error) {
+      console.error('Erro na inicialização segura:', error);
+      this.setDefaultValues();
+    }
+  }
+
+  private async safeStorageCreate() {
+    try {
+      await Promise.race([
+        this.storage.create(),
+        new Promise<void>((resolve) => {
+          setTimeout(() => {
+            console.warn('Timeout na criação do storage');
+            resolve();
+          }, 1000);
+        })
+      ]);
+    } catch (error) {
+      console.error('Erro ao criar storage:', error);
+    }
+  }
+
+  private async safeInitializeDefaults() {
+    try {
+      // Apenas inicializar workouts se absolutamente necessário
+      const existingWorkouts = await this.storageService.get('workouts').catch(() => null);
+      if (!existingWorkouts || !Array.isArray(existingWorkouts) || existingWorkouts.length === 0) {
+        const defaultWorkouts = this.createMinimalDefaultWorkouts();
+        await this.storageService.set('workouts', defaultWorkouts).catch(() => {});
+      }
+    } catch (error) {
+      console.error('Erro ao inicializar defaults:', error);
+    }
+  }
+
+  private async safeLoadUserProfile() {
+    try {
+      const profile: any = await this.storageService.get('userProfile').catch(() => null);
+      if (profile?.name) {
+        this.userProfile.name = profile.name;
+      }
+    } catch (error) {
+      console.error('Erro ao carregar perfil:', error);
+    }
+  }
+
+  private loadNonCriticalData() {
+    if (!this.isComponentActive()) return;
+
+    // Carregar dados não-críticos com timeouts individuais
     const loadPromises = [
-      this.loadQuickStats().catch((e: any) => console.error('Erro ao carregar estatísticas:', e)),
-      this.loadRecentAchievements().catch((e: any) => console.error('Erro ao carregar conquistas:', e)),
-      this.loadTodayWorkout().catch((e: any) => console.error('Erro ao carregar treino do dia:', e)),
-      this.checkCompletedWorkoutToday().catch((e: any) => console.error('Erro ao verificar treino completado:', e))
+      this.safeLoadQuickStats(),
+      this.safeLoadTodayWorkout(),
+      this.safeCheckCompletedWorkout(),
+      this.safeLoadRecentAchievements()
     ];
 
-    // Executar métodos síncronos separadamente
+    loadPromises.forEach(promise => {
+      promise.catch(error => {
+        console.error('Erro no carregamento não-crítico:', error);
+      });
+    });
+
+    // Carregar dica do dia (síncrono)
     try {
       this.loadDailyTip();
     } catch (e) {
       console.error('Erro ao carregar dica:', e);
     }
+  }
 
-    await Promise.all(loadPromises);
+  private async safeLoadQuickStats() {
+    try {
+      const statsPromise = this.loadQuickStatsMinimal();
+      const timeoutPromise = new Promise<void>((resolve) => {
+        setTimeout(() => {
+          console.warn('Timeout nas estatísticas, usando valores padrão');
+          this.setDefaultQuickStats();
+          resolve();
+        }, 1000);
+      });
+
+      await Promise.race([statsPromise, timeoutPromise]);
+    } catch (error) {
+      console.error('Erro ao carregar estatísticas:', error);
+      this.setDefaultQuickStats();
+    }
+  }
+
+  private async safeLoadTodayWorkout() {
+    try {
+      const workoutPromise = this.loadTodayWorkoutMinimal();
+      const timeoutPromise = new Promise<void>((resolve) => {
+        setTimeout(() => {
+          console.warn('Timeout no treino do dia, usando fallback');
+          this.setDefaultTodayWorkout();
+          resolve();
+        }, 1000);
+      });
+
+      await Promise.race([workoutPromise, timeoutPromise]);
+    } catch (error) {
+      console.error('Erro ao carregar treino do dia:', error);
+      this.setDefaultTodayWorkout();
+    }
+  }
+
+  private async safeCheckCompletedWorkout() {
+    try {
+      const checkPromise = this.checkCompletedWorkoutMinimal();
+      const timeoutPromise = new Promise<void>((resolve) => {
+        setTimeout(() => {
+          console.warn('Timeout na verificação de treino completado');
+          resolve();
+        }, 800);
+      });
+
+      await Promise.race([checkPromise, timeoutPromise]);
+    } catch (error) {
+      console.error('Erro ao verificar treino completado:', error);
+    }
+  }
+
+  private async safeLoadRecentAchievements() {
+    try {
+      const achievements = await this.storageService.get('achievements').catch(() => []);
+      this.recentAchievements = Array.isArray(achievements) ? achievements.slice(0, 3) : [];
+    } catch (error) {
+      console.error('Erro ao carregar conquistas:', error);
+      this.recentAchievements = [];
+    }
+  }
+
+  private isComponentActive(): boolean {
+    return this.isInitialized && !(this as any)._destroyed;
+  }
+
+  private setDefaultValues() {
+    this.setDefaultQuickStats();
+    this.setDefaultTodayWorkout();
+    this.recentAchievements = [];
+    this.dailyTip = 'Mantenha-se focado nos seus objetivos fitness!';
+    this.completedWorkoutToday = null;
+  }
+
+  private setDefaultTodayWorkout() {
+    const today = new Date().getDay();
+    if (today === 0) {
+      this.todayWorkout = { workout: null, isRestDay: true };
+    } else {
+      const basicWorkout = this.createBasicWorkout(today);
+      this.todayWorkout = { workout: basicWorkout, isRestDay: false };
+    }
+  }
+
+  private createMinimalDefaultWorkouts(): CustomWorkout[] {
+    // Criar apenas 3 workouts básicos em vez de 5
+    return [1, 2, 3].map(day => this.createBasicWorkout(day));
   }
 
   ngOnDestroy() {
+    // Marcar componente como destruído
+    (this as any)._destroyed = true;
+    
     // Limpar todas as subscriptions para prevenir memory leaks
     this.subscriptions.unsubscribe();
     this.isInitialized = false;
+    
     console.log('HomePage destruída e subscriptions limpas');
   }
 
@@ -308,7 +479,7 @@ export class HomePage implements OnInit, OnDestroy {
         // Create a virtual workout from weekly plan exercises
         const virtualWorkout: CustomWorkout = {
           id: `weekly-plan-${new Date().toISOString().split('T')[0]}`,
-          name: `Treino de ${this.getTodayDayName()}`,
+          name: `${this.getTodayDayName()}`,
           description: 'Treino do plano semanal',
           difficulty: 'medium',
           muscleGroups: this.extractMuscleGroupsFromExercises(todayExercises),
@@ -430,7 +601,7 @@ export class HomePage implements OnInit, OnDestroy {
 
     return {
       id: `basic-workout-${dayIndex}`,
-      name: `Treino de ${dayName}`,
+      name: `${dayName}`,
       description: `Treino básico para ${dayName}`,
       difficulty: 'medium' as 'easy' | 'medium' | 'hard',
       muscleGroups: ['arms', 'chest', 'legs'],
@@ -1043,5 +1214,126 @@ export class HomePage implements OnInit, OnDestroy {
       'avançado': 'Avançado'
     };
     return difficultyMap[difficulty?.toLowerCase()] || 'Intermediário';
+  }
+
+  // Métodos auxiliares para inicialização segura
+  private async loadQuickStatsMinimal() {
+    try {
+      const now = new Date();
+      const startOfWeek = new Date(now);
+      startOfWeek.setDate(now.getDate() - now.getDay());
+      startOfWeek.setHours(0, 0, 0, 0);
+
+      // Carregar apenas dados essenciais com limitação
+      const sessions = await this.storageService.get('workoutSessions').catch(() => []);
+      const validSessions = Array.isArray(sessions) ? sessions.slice(0, 20) : [];
+
+      const thisWeekSessions = validSessions.filter((session: any) => {
+        try {
+          if (!session?.startTime) return false;
+          const sessionDate = new Date(session.startTime);
+          if (isNaN(sessionDate.getTime())) return false;
+          return sessionDate >= startOfWeek && session.status === 'completed';
+        } catch {
+          return false;
+        }
+      });
+
+      this.quickStats.weeklyWorkouts = thisWeekSessions.length;
+      this.quickStats.weeklyMinutes = thisWeekSessions.reduce((total, session) => {
+        const duration = session.duration || 0;
+        return total + (typeof duration === 'number' ? Math.min(duration, 300) : 0);
+      }, 0);
+      this.quickStats.weeklyCalories = thisWeekSessions.length * 200; // Estimativa simples
+
+      this.weeklyWorkouts = this.quickStats.weeklyWorkouts;
+      this.totalMinutes = this.quickStats.weeklyMinutes;
+      this.weeklyCalories = this.quickStats.weeklyCalories;
+      this.weeklyProgress = Math.min((this.quickStats.weeklyWorkouts / 4) * 100, 100);
+
+    } catch (error) {
+      console.error('Erro no carregamento mínimo de estatísticas:', error);
+      this.setDefaultQuickStats();
+    }
+  }
+
+  private async loadTodayWorkoutMinimal() {
+    try {
+      const today = new Date().getDay();
+      
+      if (today === 0) {
+        this.todayWorkout = { workout: null, isRestDay: true };
+        return;
+      }
+
+      // Tentar carregar exercícios do plano semanal primeiro
+      const todayExercises = await this.getTodayExercisesFromWeeklyPlan().catch(() => []);
+      
+      if (todayExercises && todayExercises.length > 0) {
+        const virtualWorkout: CustomWorkout = {
+          id: `weekly-plan-${new Date().toISOString().split('T')[0]}`,
+          name: this.getTodayDayName(),
+          description: 'Treino do plano semanal',
+          difficulty: 'medium',
+          muscleGroups: ['general'],
+          equipment: [],
+          isTemplate: false,
+          category: 'strength',
+          estimatedDuration: Math.min(todayExercises.length * 5, 60),
+          exercises: todayExercises.slice(0, 10).map((ex: any, index: number) => ({
+            id: `exercise-${index}`,
+            exerciseId: ex.id,
+            order: index + 1,
+            sets: [{ id: `set-${index}-1`, reps: 12, weight: 0, completed: false }],
+            restTime: 60,
+            notes: ''
+          })),
+          createdBy: 'weekly-plan',
+          createdAt: new Date(),
+          updatedAt: new Date()
+        };
+        
+        this.todayWorkout = { workout: virtualWorkout, isRestDay: false };
+        return;
+      }
+
+      // Fallback para treino básico
+      const basicWorkout = this.createBasicWorkout(today);
+      this.todayWorkout = { workout: basicWorkout, isRestDay: false };
+
+    } catch (error) {
+      console.error('Erro no carregamento mínimo do treino do dia:', error);
+      this.setDefaultTodayWorkout();
+    }
+  }
+
+  private async checkCompletedWorkoutMinimal() {
+    try {
+      const today = new Date().toDateString();
+      const sessions = await this.storageService.get('workoutSessions').catch(() => []);
+      const validSessions = Array.isArray(sessions) ? sessions.slice(0, 30) : [];
+
+      const todayCompletedSessions = validSessions.filter((session: any) => {
+        try {
+          if (!session?.startTime || session.status !== 'completed') return false;
+          const sessionDate = new Date(session.startTime);
+          if (isNaN(sessionDate.getTime())) return false;
+          return sessionDate.toDateString() === today;
+        } catch {
+          return false;
+        }
+      });
+
+      if (todayCompletedSessions.length > 0) {
+        const latestSession = todayCompletedSessions[0];
+        this.completedWorkoutToday = {
+          session: latestSession,
+          exercises: [],
+          canRepeat: true
+        };
+      }
+    } catch (error) {
+      console.error('Erro na verificação mínima de treino completado:', error);
+    }
   }
 }

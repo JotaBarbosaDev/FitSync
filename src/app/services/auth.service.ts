@@ -335,4 +335,147 @@ export class AuthService {
       });
     });
   }
+
+  // Método para mostrar TODOS os dados armazenados no console
+  async debugAllStoredData(): Promise<void> {
+    console.group('🔍 DEBUG - TODOS OS DADOS ARMAZENADOS');
+    
+    try {
+      // 1. Dados do DataService (usuários, exercícios, etc.)
+      const appData = this.dataService.getCurrentData();
+      console.log('📊 Dados principais da aplicação:');
+      console.log(appData);
+      
+      // 2. Dados do Ionic Storage
+      if (this._storage) {
+        console.log('💾 Dados do Ionic Storage:');
+        const keys = await this._storage.keys();
+        for (const key of keys) {
+          const value = await this._storage.get(key);
+          console.log(`   ${key}:`, value);
+        }
+      }
+      
+      // 3. Dados do localStorage
+      console.log('💿 Dados do localStorage:');
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key) {
+          try {
+            const value = localStorage.getItem(key);
+            // Tentar parsear JSON para melhor visualização
+            const parsedValue = value ? JSON.parse(value) : value;
+            console.log(`   ${key}:`, parsedValue);
+          } catch {
+            // Se não for JSON, mostrar como string
+            console.log(`   ${key}:`, localStorage.getItem(key));
+          }
+        }
+      }
+      
+      // 4. SessionStorage
+      console.log('🗂️ Dados do sessionStorage:');
+      for (let i = 0; i < sessionStorage.length; i++) {
+        const key = sessionStorage.key(i);
+        if (key) {
+          try {
+            const value = sessionStorage.getItem(key);
+            const parsedValue = value ? JSON.parse(value) : value;
+            console.log(`   ${key}:`, parsedValue);
+          } catch {
+            console.log(`   ${key}:`, sessionStorage.getItem(key));
+          }
+        }
+      }
+      
+      // 5. Estado atual da autenticação
+      console.log('👤 Estado da autenticação:');
+      const authDebug = await this.debugStorage();
+      console.log(authDebug);
+      
+    } catch (error) {
+      console.error('❌ Erro ao obter dados armazenados:', error);
+    }
+    
+    console.groupEnd();
+  }
+
+  // Método para limpar todos os dados exceto credenciais demo
+  async clearAllDataExceptDemo(): Promise<boolean> {
+    try {
+      console.log('🧹 Iniciando limpeza de dados (preservando demo)...');
+      
+      // Salvar dados da conta demo
+      const currentData = this.dataService.getCurrentData();
+      const demoUser = currentData?.users?.find(u => u.email === 'demo@fitsync.app');
+      
+      if (!demoUser) {
+        console.warn('⚠️ Conta demo não encontrada!');
+        return false;
+      }
+      
+      // Fazer logout do usuário atual
+      await this.logout();
+      
+      // Limpar Ionic Storage
+      if (this._storage) {
+        const keys = await this._storage.keys();
+        for (const key of keys) {
+          if (key !== 'fitsync_current_user' && !key.includes('demo')) {
+            await this._storage.remove(key);
+          }
+        }
+        console.log('✅ Ionic Storage limpo (exceto demo)');
+      }
+      
+      // Limpar localStorage (preservando dados específicos)
+      const keysToPreserve = ['fitsync_current_user'];
+      const localStorageKeys: string[] = [];
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key) localStorageKeys.push(key);
+      }
+      
+      for (const key of localStorageKeys) {
+        if (!keysToPreserve.some(preserve => key.includes(preserve)) && 
+            !key.includes('demo') && 
+            !key.includes('theme')) {
+          localStorage.removeItem(key);
+        }
+      }
+      
+      // Limpar sessionStorage
+      sessionStorage.clear();
+      
+      // Recriar dados com apenas usuário demo
+      const newAppData = {
+        version: '1.0.0',
+        lastUpdated: new Date().toISOString(),
+        users: [demoUser],
+        plans: [],
+        days: [],
+        workouts: [],
+        exercises: [],
+        sets: [],
+        workoutSessions: [],
+        exerciseLibrary: [],
+        // Novos dados para sistema de treinos
+        customWorkouts: [],
+        weeklyPlans: [],
+        workoutSessions2: [],
+        workoutProgress: [],
+        dayPlans: []
+      };
+      
+      // Salvar dados limpos
+      await this.dataService.saveData(newAppData);
+      
+      console.log('✅ Limpeza concluída! Apenas conta demo preservada.');
+      return true;
+      
+    } catch (error) {
+      console.error('❌ Erro durante limpeza:', error);
+      return false;
+    }
+  }
 }

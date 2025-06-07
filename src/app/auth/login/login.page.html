@@ -122,13 +122,27 @@
 
     <!-- Seção de Debug (apenas para desenvolvimento) -->
     <div class="debug-section" style="margin-top: 20px; padding: 16px; border-top: 1px solid var(--ion-color-light-shade);">
-      <div style="display: flex; gap: 8px; justify-content: center;">
+      <div style="display: flex; flex-wrap: wrap; gap: 8px; justify-content: center;">
         <button 
           type="button"
           class="fitsync-btn fitsync-btn--outline fitsync-btn--sm"
           (click)="showDebugInfo()"
           style="font-size: 12px;">
           <span class="ui-element-button">Debug Storage</span>
+        </button>
+        <button 
+          type="button"
+          class="fitsync-btn fitsync-btn--outline fitsync-btn--sm"
+          (click)="showAllStoredData()"
+          style="font-size: 12px;">
+          <span class="ui-element-button">Mostrar Tudo</span>
+        </button>
+        <button 
+          type="button"
+          class="fitsync-btn fitsync-btn--danger fitsync-btn--sm"
+          (click)="clearAllDataExceptDemo()"
+          style="font-size: 12px;">
+          <span class="ui-element-button">Limpar Dados</span>
         </button>
       </div>
       <p class="modern-caption text-muted fitsync-text-center" style="margin-top: 8px; font-size: 10px;">
