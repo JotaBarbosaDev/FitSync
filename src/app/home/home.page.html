@@ -86,6 +86,18 @@
         </div>
     </div>
 
+    <!-- Botão de debug temporário -->
+    <div style="margin: 1rem; text-align: center;">
+      <ion-button 
+        fill="outline" 
+        size="small" 
+        (click)="refreshStats()" 
+        color="primary">
+        <ion-icon name="refresh" slot="start"></ion-icon>
+        Atualizar Estatísticas
+      </ion-button>
+    </div>
+
     <!-- Treino do Dia - Card Melhorado -->
     <div class="workout-section">
       <!-- Dia de Descanso -->
@@ -110,7 +122,7 @@
       </div>
 
       <!-- Treino Disponível -->
-      <div *ngIf="currentWorkout" class="today-workout">
+      <div *ngIf="!todayWorkout?.isRestDay && currentWorkout" class="today-workout">
         <div class="workout-card">
           <div class="workout-header">
             <div class="workout-badge">
@@ -177,22 +189,28 @@
       </div>
 
       <!-- Nenhum Treino Planejado -->
-      <div *ngIf="!currentWorkout && !todayWorkout?.isRestDay" class="no-workout">
-        <div class="rest-card">
-          <div class="rest-icon">
-            <ion-icon name="bed-outline"></ion-icon>
+      <div *ngIf="!todayWorkout?.isRestDay && !currentWorkout" class="no-workout">
+        <div class="no-workout-card">
+          <div class="no-workout-icon">
+            <ion-icon name="calendar-outline"></ion-icon>
           </div>
-          <h3>Dia de Descanso</h3>
-          <p>Aproveite para relaxar e se recuperar!</p>
-          <div class="rest-suggestions">
-            <div class="suggestion-item">
-              <ion-icon name="water-outline"></ion-icon>
-              <span>Hidrate-se bem</span>
-            </div>
-            <div class="suggestion-item">
-              <ion-icon name="moon-outline"></ion-icon>
-              <span>Durma pelo menos 7h</span>
-            </div>
+          <h3>Nenhum Treino Planejado</h3>
+          <p>Configure seu plano de treino para hoje!</p>
+          <div class="workout-actions">
+            <ion-button 
+              fill="outline" 
+              (click)="navigateToWorkoutManagement()" 
+              class="action-btn">
+              <ion-icon name="create-outline" slot="start"></ion-icon>
+              Criar Treino
+            </ion-button>
+            <ion-button 
+              fill="clear" 
+              (click)="navigateToWorkoutList()" 
+              class="action-btn secondary">
+              <ion-icon name="list-outline" slot="start"></ion-icon>
+              Ver Disponíveis
+            </ion-button>
           </div>
         </div>
       </div>

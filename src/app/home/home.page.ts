@@ -6,6 +6,8 @@ import { CustomWorkout } from '../models';
 import { WorkoutManagementService } from '../services/workout-management.service';
 import { Storage } from '@ionic/storage-angular';
 import { Subscription } from 'rxjs';
+import { JsonDataService } from '../services/json-data.service';
+import { ExerciseService } from '../services/exercise.service';
 
 interface TodayWorkout {
   workout: CustomWorkout | null;
@@ -66,11 +68,13 @@ export class HomePage implements OnInit, OnDestroy {
     private storageService: StorageService,
     private toastController: ToastController,
     private workoutManagementService: WorkoutManagementService,
-    private storage: Storage
+    private storage: Storage,
+    private jsonDataService: JsonDataService,
+    private exerciseService: ExerciseService
   ) { }
 
   async ngOnInit() {
-    // Prevenir múltiplas inicializações de forma mais robusta
+    // Prevenir múltiplas inicializações
     if (this.isInitialized) {
       console.log('HomePage já foi inicializada, pulando...');
       return;
@@ -87,18 +91,24 @@ export class HomePage implements OnInit, OnDestroy {
       this.isInitialized = true;
       console.log('Iniciando HomePage...');
 
-      // Usar um timeout MAIS CURTO para toda a inicialização (3 segundos)
-      const initPromise = this.performSafeInitialization();
-      const timeoutPromise = new Promise<void>((resolve) => {
-        setTimeout(() => {
-          console.warn('Timeout na inicialização da HomePage (3s), continuando com valores padrão...');
-          this.setDefaultValues();
-          resolve();
-        }, 3000); // Reduzido para 3 segundos
-      });
+      // Criar storage de forma segura
+      await this.safeStorageCreate();
+      
+      // Executar inicializações críticas
+      await this.safeInitializeDefaults();
+      await this.safeLoadUserProfile();
 
-      await Promise.race([initPromise, timeoutPromise]);
+      // Verificar se o componente ainda está ativo antes de continuar
+      if (!this.isComponentActive()) {
+        console.log('Componente não está mais ativo, interrompendo inicialização');
+        return;
+      }
+
+      // Executar carregamentos não-críticos
+      await this.loadNonCriticalData();
+
       console.log('HomePage inicializada com sucesso');
+      
     } catch (error) {
       console.error('Erro durante inicialização da HomePage:', error);
       this.setDefaultValues();
@@ -108,46 +118,7 @@ export class HomePage implements OnInit, OnDestroy {
     }
   }
 
-  private async performSafeInitialization() {
-    try {
-      // Criar storage de forma segura
-      await this.safeStorageCreate();
-      
-      // Executar inicializações críticas com timeouts menores
-      const quickInitPromises = [
-        this.safeInitializeDefaults().catch(e => console.error('Erro ao inicializar defaults:', e)),
-        this.safeLoadUserProfile().catch(e => console.error('Erro ao carregar perfil:', e))
-      ];
 
-      // Aguardar inicializações críticas com timeout curto (1.5s)
-      await Promise.race([
-        Promise.all(quickInitPromises),
-        new Promise<void>((resolve) => {
-          setTimeout(() => {
-            console.warn('Timeout nas inicializações críticas');
-            resolve();
-          }, 1500);
-        })
-      ]);
-
-      // Verificar se o componente ainda está ativo antes de continuar
-      if (!this.isComponentActive()) {
-        console.log('Componente não está mais ativo, interrompendo inicialização');
-        return;
-      }
-
-      // Executar carregamentos não-críticos em background
-      setTimeout(() => {
-        if (this.isComponentActive()) {
-          this.loadNonCriticalData();
-        }
-      }, 100);
-
-    } catch (error) {
-      console.error('Erro na inicialização segura:', error);
-      this.setDefaultValues();
-    }
-  }
 
   private async safeStorageCreate() {
     try {
@@ -173,6 +144,9 @@ export class HomePage implements OnInit, OnDestroy {
         const defaultWorkouts = this.createMinimalDefaultWorkouts();
         await this.storageService.set('workouts', defaultWorkouts).catch(() => {});
       }
+
+      // Inicializar sessões de exemplo para demonstração das estatísticas
+      await this.initializeExampleWorkoutSessions();
     } catch (error) {
       console.error('Erro ao inicializar defaults:', error);
     }
@@ -189,61 +163,50 @@ export class HomePage implements OnInit, OnDestroy {
     }
   }
 
-  private loadNonCriticalData() {
+  private async loadNonCriticalData() {
     if (!this.isComponentActive()) return;
 
-    // Carregar dados não-críticos com timeouts individuais
-    const loadPromises = [
-      this.safeLoadQuickStats(),
-      this.safeLoadTodayWorkout(),
-      this.safeCheckCompletedWorkout(),
-      this.safeLoadRecentAchievements()
-    ];
+    console.log('🔄 Carregando dados não-críticos...');
 
-    loadPromises.forEach(promise => {
-      promise.catch(error => {
-        console.error('Erro no carregamento não-crítico:', error);
-      });
-    });
-
-    // Carregar dica do dia (síncrono)
     try {
+      // Carregar dados de forma sequencial para evitar conflitos
+      await this.safeLoadTodayWorkout();
+      
+      if (!this.isComponentActive()) return;
+      
+      await this.safeLoadQuickStats();
+      
+      if (!this.isComponentActive()) return;
+      
+      await this.safeCheckCompletedWorkout();
+      
+      if (!this.isComponentActive()) return;
+      
+      await this.safeLoadRecentAchievements();
+
+      // Carregar dica do dia (síncrono)
       this.loadDailyTip();
-    } catch (e) {
-      console.error('Erro ao carregar dica:', e);
+
+      console.log('✅ Dados não-críticos carregados com sucesso');
+      
+    } catch (error) {
+      console.error('❌ Erro no carregamento não-crítico:', error);
     }
   }
 
   private async safeLoadQuickStats() {
     try {
-      const statsPromise = this.loadQuickStatsMinimal();
-      const timeoutPromise = new Promise<void>((resolve) => {
-        setTimeout(() => {
-          console.warn('Timeout nas estatísticas, usando valores padrão');
-          this.setDefaultQuickStats();
-          resolve();
-        }, 1000);
-      });
-
-      await Promise.race([statsPromise, timeoutPromise]);
+      await this.loadQuickStatsMinimal();
     } catch (error) {
       console.error('Erro ao carregar estatísticas:', error);
       this.setDefaultQuickStats();
     }
   }
 
+
   private async safeLoadTodayWorkout() {
     try {
-      const workoutPromise = this.loadTodayWorkoutMinimal();
-      const timeoutPromise = new Promise<void>((resolve) => {
-        setTimeout(() => {
-          console.warn('Timeout no treino do dia, usando fallback');
-          this.setDefaultTodayWorkout();
-          resolve();
-        }, 1000);
-      });
-
-      await Promise.race([workoutPromise, timeoutPromise]);
+      await this.loadTodayWorkout(); // Usar o método corrigido
     } catch (error) {
       console.error('Erro ao carregar treino do dia:', error);
       this.setDefaultTodayWorkout();
@@ -252,15 +215,7 @@ export class HomePage implements OnInit, OnDestroy {
 
   private async safeCheckCompletedWorkout() {
     try {
-      const checkPromise = this.checkCompletedWorkoutMinimal();
-      const timeoutPromise = new Promise<void>((resolve) => {
-        setTimeout(() => {
-          console.warn('Timeout na verificação de treino completado');
-          resolve();
-        }, 800);
-      });
-
-      await Promise.race([checkPromise, timeoutPromise]);
+      await this.checkCompletedWorkoutMinimal();
     } catch (error) {
       console.error('Erro ao verificar treino completado:', error);
     }
@@ -290,12 +245,16 @@ export class HomePage implements OnInit, OnDestroy {
 
   private setDefaultTodayWorkout() {
     const today = new Date().getDay();
-    if (today === 0) {
-      this.todayWorkout = { workout: null, isRestDay: true };
-    } else {
-      const basicWorkout = this.createBasicWorkout(today);
-      this.todayWorkout = { workout: basicWorkout, isRestDay: false };
-    }
+    const todayName = this.translateDayName(today);
+    console.log(`🔧 Definindo treino padrão para o dia ${today} (${todayName})`);
+    
+    // CORREÇÃO: Por padrão, se não há plano semanal configurado, considerar como dia de descanso
+    // Isso força o usuário a configurar seu plano semanal na página workout-management
+    this.todayWorkout = { 
+      workout: null, 
+      isRestDay: true 
+    };
+    console.log(`🛌 ${todayName} definido como dia de descanso (sem plano semanal configurado)`);
   }
 
   private createMinimalDefaultWorkouts(): CustomWorkout[] {
@@ -330,13 +289,44 @@ export class HomePage implements OnInit, OnDestroy {
 
   async initializeExampleWorkoutSessions() {
     try {
+      // Sempre verificar e recriar sessões de exemplo para a semana atual
       const existingSessions = await this.storageService.get('workoutSessions') || [];
       
-      // Se não há sessões, criar dados de exemplo para a semana atual
-      if (!Array.isArray(existingSessions) || existingSessions.length === 0) {
+      // Verificar se há sessões desta semana
+      const now = new Date();
+      const startOfWeek = new Date(now);
+      startOfWeek.setDate(now.getDate() - now.getDay());
+      startOfWeek.setHours(0, 0, 0, 0);
+      
+      const thisWeekSessions = Array.isArray(existingSessions) ? existingSessions.filter((session: any) => {
+        try {
+          const sessionDate = new Date(session.startTime || session.date);
+          return !isNaN(sessionDate.getTime()) && sessionDate >= startOfWeek;
+        } catch {
+          return false;
+        }
+      }) : [];
+      
+      console.log(`Sessões encontradas desta semana: ${thisWeekSessions.length}`);
+      
+      // Se há menos de 2 sessões desta semana, criar dados de exemplo atuais
+      if (thisWeekSessions.length < 2) {
+        console.log('Criando sessões de exemplo para demonstrar as estatísticas...');
         const exampleSessions = this.createExampleWorkoutSessions();
-        await this.storageService.set('workoutSessions', exampleSessions);
-        console.log('Sessões de treino de exemplo criadas:', exampleSessions);
+        
+        // Remover sessões antigas desta semana para evitar duplicatas
+        const otherSessions = Array.isArray(existingSessions) ? existingSessions.filter((session: any) => {
+          try {
+            const sessionDate = new Date(session.startTime || session.date);
+            return isNaN(sessionDate.getTime()) || sessionDate < startOfWeek;
+          } catch {
+            return true;
+          }
+        }) : [];
+        
+        const allSessions = [...otherSessions, ...exampleSessions];
+        await this.storageService.set('workoutSessions', allSessions);
+        console.log('Sessões de treino de exemplo criadas para a semana atual:', exampleSessions.length);
       }
     } catch (error) {
       console.error('Erro ao inicializar sessões de exemplo:', error);
@@ -347,26 +337,60 @@ export class HomePage implements OnInit, OnDestroy {
     const now = new Date();
     const sessions = [];
 
-    // Criar 3 sessões desta semana
-    for (let i = 0; i < 3; i++) {
-      const sessionDate = new Date(now);
-      sessionDate.setDate(now.getDate() - (i * 2)); // Sessões em dias alternados
-      sessionDate.setHours(19, 0, 0, 0); // 19:00
+    // Criar 4 sessões desta semana com dados mais realistas
+    const workoutTypes = [
+      { id: 'chest-workout-current', name: 'Treino de Peito', calories: 280 },
+      { id: 'back-workout-current', name: 'Treino de Costas', calories: 320 },
+      { id: 'legs-workout-current', name: 'Treino de Pernas', calories: 380 },
+      { id: 'arms-workout-current', name: 'Treino de Braços', calories: 250 }
+    ];
 
+    for (let i = 0; i < 4; i++) {
+      const sessionDate = new Date(now);
+      // Distribuir ao longo da semana: hoje-1h, ontem, anteontem, 3 dias atrás
+      if (i === 0) {
+        // Sessão de hoje, uma hora atrás
+        sessionDate.setHours(now.getHours() - 1, 30, 0, 0);
+      } else {
+        // Sessões dos dias anteriores
+        sessionDate.setDate(now.getDate() - i);
+        sessionDate.setHours(19 - i, 30, 0, 0);
+      }
+
+      const workoutType = workoutTypes[i];
       const session = {
-        id: `session_${Date.now()}_${i}`,
-        workoutId: `workout_${i + 1}`,
+        id: `session_current_${Date.now()}_${i}`,
+        workoutId: workoutType.id,
+        workoutName: workoutType.name,
         startTime: sessionDate.toISOString(),
-        endTime: new Date(sessionDate.getTime() + (45 * 60 * 1000)).toISOString(), // 45 min depois
-        duration: 45, // minutos
-        caloriesBurned: 250 + (i * 50), // 250, 300, 350 calorias
-        completedExercises: [`ex_${i}_1`, `ex_${i}_2`, `ex_${i}_3`],
-        rating: 4 + (i % 2), // Rating entre 4 e 5
-        notes: `Treino ${i + 1} - Excelente session!`
+        endTime: new Date(sessionDate.getTime() + (45 * 60 * 1000)).toISOString(),
+        duration: 45 + (i * 5), // 45-60 minutos
+        caloriesBurned: workoutType.calories,
+        completedExercises: [
+          { id: `ex_${i}_1`, name: `Exercício ${i + 1}.1`, calories: Math.floor(workoutType.calories * 0.3) },
+          { id: `ex_${i}_2`, name: `Exercício ${i + 1}.2`, calories: Math.floor(workoutType.calories * 0.4) },
+          { id: `ex_${i}_3`, name: `Exercício ${i + 1}.3`, calories: Math.floor(workoutType.calories * 0.3) }
+        ],
+        exercises: [
+          { id: `ex_${i}_1`, name: `Exercício ${i + 1}.1`, calories: Math.floor(workoutType.calories * 0.3) },
+          { id: `ex_${i}_2`, name: `Exercício ${i + 1}.2`, calories: Math.floor(workoutType.calories * 0.4) },
+          { id: `ex_${i}_3`, name: `Exercício ${i + 1}.3`, calories: Math.floor(workoutType.calories * 0.3) }
+        ],
+        rating: 4 + (i % 2),
+        status: 'completed',
+        dayOfWeek: sessionDate.toLocaleDateString('pt-BR', { weekday: 'long' }),
+        notes: `${workoutType.name} - Sessão excelente!`
       };
 
       sessions.push(session);
     }
+
+    console.log('Sessões de exemplo criadas:', sessions.map(s => ({ 
+      name: s.workoutName, 
+      date: new Date(s.startTime).toLocaleDateString('pt-BR'),
+      duration: s.duration,
+      calories: s.caloriesBurned
+    })));
 
     return sessions;
   }
@@ -427,32 +451,27 @@ export class HomePage implements OnInit, OnDestroy {
   }
 
   async startTodayWorkout() {
-    // Try to get today's exercises from weekly plan first
-    const todayExercises = await this.getTodayExercisesFromWeeklyPlan();
+    console.log('🚀 Iniciando treino do dia...');
+    console.log('Estado atual:', {
+      todayWorkout: this.todayWorkout,
+      currentWorkout: this.currentWorkout,
+      isRestDay: this.todayWorkout?.isRestDay
+    });
 
-    if (todayExercises && todayExercises.length > 0) {
-      console.log('Iniciando treino do plano semanal:', todayExercises);
-
-      // Navigate to workout execution with today's exercises from weekly plan
-      this.router.navigate(['/tabs/workout-execution'], {
-        queryParams: {
-          exercises: JSON.stringify(todayExercises),
-          dayName: this.getTodayDayName(),
-          source: 'weekly-plan'
-        }
+    // Verificar se é dia de descanso
+    if (this.todayWorkout?.isRestDay) {
+      const toast = await this.toastController.create({
+        message: '🛌 Hoje é dia de descanso! Aproveite para relaxar.',
+        duration: 3000,
+        position: 'bottom',
+        color: 'secondary'
       });
-    } else if (this.todayWorkout?.workout) {
-      console.log('Iniciando treino padrão:', this.todayWorkout.workout.name);
+      await toast.present();
+      return;
+    }
 
-      // Fallback to default workout system
-      this.router.navigate(['/tabs/workout-execution'], {
-        queryParams: {
-          workoutId: this.todayWorkout.workout.id,
-          workoutName: this.todayWorkout.workout.name,
-          source: 'today'
-        }
-      });
-    } else {
+    // Verificar se há treino disponível
+    if (!this.currentWorkout) {
       const toast = await this.toastController.create({
         message: 'Nenhum treino disponível para hoje. Configure seu plano semanal!',
         duration: 3000,
@@ -461,70 +480,114 @@ export class HomePage implements OnInit, OnDestroy {
       });
       await toast.present();
 
-      // Navigate to workout management to configure weekly plan
-      this.router.navigate(['/workout-management']);
+      // Navegar para configuração do plano semanal
+      this.router.navigate(['/tabs/workout-management']);
+      return;
+    }
+
+    // Buscar exercícios do plano semanal para navegação
+    try {
+      const todayExercises = await this.getTodayExercisesFromWeeklyPlan();
+
+      if (todayExercises && todayExercises.length > 0) {
+        console.log('💪 Iniciando treino do plano semanal:', todayExercises.length, 'exercícios');
+        
+        // Navegar para execução com exercícios do plano semanal
+        this.router.navigate(['/tabs/workout-execution'], {
+          queryParams: {
+            exercises: JSON.stringify(todayExercises),
+            dayName: this.getTodayDayName(),
+            source: 'weekly-plan'
+          }
+        });
+        return;
+      }
+    } catch (error) {
+      console.warn('Erro ao carregar exercícios do plano semanal:', error);
+    }
+
+    // Fallback para treino atual (criado pelo loadTodayWorkout)
+    if (this.currentWorkout && this.currentWorkout.exercises && this.currentWorkout.exercises.length > 0) {
+      console.log('🏃 Iniciando treino atual:', this.currentWorkout.name);
+
+      this.router.navigate(['/tabs/workout-execution'], {
+        queryParams: {
+          exercises: JSON.stringify(this.currentWorkout.exercises),
+          workoutId: this.currentWorkout.id,
+          workoutName: this.currentWorkout.name,
+          source: 'today'
+        }
+      });
     }
   }
 
   async loadTodayWorkout() {
     try {
-      console.log('Carregando treino do dia...');
+      const today = new Date().getDay(); // 0 = Sunday, 1 = Monday, etc.
+      const todayName = this.translateDayName(today);
+      console.log(`🔍 Carregando treino para hoje (${today} = ${todayName})`);
 
-      // First, try to get today's exercises from weekly plan
-      const todayExercises = await this.getTodayExercisesFromWeeklyPlan();
+      // FLUXO CORRIGIDO: Verificar diretamente o plano semanal do workout-management
+      await this.storage.create();
+      const dayKey = `weekly_exercises_day_${today}`;
+      const todayExercises = await this.storage.get(dayKey) || [];
 
-      if (todayExercises && todayExercises.length > 0) {
-        console.log('Encontrou exercícios no plano semanal:', todayExercises);
+      console.log(`📅 Exercícios encontrados para hoje (${todayName}):`, todayExercises);
 
-        // Create a virtual workout from weekly plan exercises
-        const virtualWorkout: CustomWorkout = {
-          id: `weekly-plan-${new Date().toISOString().split('T')[0]}`,
-          name: `${this.getTodayDayName()}`,
-          description: 'Treino do plano semanal',
-          difficulty: 'medium',
-          muscleGroups: this.extractMuscleGroupsFromExercises(todayExercises),
-          equipment: [],
-          isTemplate: false,
-          category: 'strength',
-          estimatedDuration: todayExercises.length * 5, // 5 min per exercise
-          exercises: todayExercises.map((ex: any, index: number) => ({
-            id: `exercise-${index}`,
-            exerciseId: ex.id,
-            order: index + 1,
-            sets: [{ id: `set-${index}-1`, reps: 12, weight: 0, completed: false }],
-            restTime: 60,
-            notes: ''
-          })),
-          createdBy: 'weekly-plan',
-          createdAt: new Date(),
-          updatedAt: new Date()
+      // Se não há exercícios para hoje, é dia de descanso
+      if (!todayExercises || !Array.isArray(todayExercises) || todayExercises.length === 0) {
+        console.log(`🛌 Hoje (${todayName}) é dia de descanso - nenhum exercício planejado`);
+        this.todayWorkout = {
+          workout: null,
+          isRestDay: true
         };
-
-        this.todayWorkout = { workout: virtualWorkout, isRestDay: false };
-        console.log('Treino criado a partir do plano semanal:', virtualWorkout.name);
         return;
       }
 
-      // Fallback to the existing workout management service
-      console.log('Nenhum exercício no plano semanal, usando WorkoutManagementService...');
+      // Se há exercícios planejados, criar treino do dia
+      console.log(`💪 ${todayExercises.length} exercícios encontrados para hoje (${todayName})`);
+      
+      const todayWorkout: CustomWorkout = {
+        id: `today-workout-${today}-${Date.now()}`,
+        name: `Treino de ${todayName}`,
+        description: `Treino planejado para ${todayName}`,
+        difficulty: 'medium' as 'easy' | 'medium' | 'hard',
+        muscleGroups: this.extractMuscleGroupsFromExercises(todayExercises),
+        equipment: ['bodyweight'],
+        isTemplate: false,
+        category: 'strength',
+        estimatedDuration: Math.min(todayExercises.length * 3, 60), // 3 minutos por exercício, max 60min
+        exercises: todayExercises.map((exercise: any, index: number) => ({
+          id: `exercise-${today}-${index}`,
+          exerciseId: exercise.id,
+          order: index + 1,
+          sets: exercise.sets || [
+            { id: `set-${index}-1`, reps: exercise.reps || 12, weight: exercise.weight || 0, completed: false },
+            { id: `set-${index}-2`, reps: exercise.reps || 12, weight: exercise.weight || 0, completed: false },
+            { id: `set-${index}-3`, reps: exercise.reps || 12, weight: exercise.weight || 0, completed: false }
+          ],
+          restTime: exercise.restTime || 60,
+          notes: exercise.notes || ''
+        })),
+        createdBy: 'weekly-plan',
+        createdAt: new Date(),
+        updatedAt: new Date()
+      };
 
-      const todayWorkoutSub = this.workoutManagementService.getTodayWorkout().subscribe({
-        next: (todayWorkout) => {
-          this.todayWorkout = todayWorkout;
-          console.log('Treino do dia carregado:', todayWorkout);
-        },
-        error: (error) => {
-          console.error('Erro ao carregar treino do dia:', error);
-          // Fallback para o método anterior
-          this.loadTodayWorkoutFallback();
-        }
-      });
+      this.todayWorkout = {
+        workout: todayWorkout,
+        isRestDay: false
+      };
 
-      // Adicionar subscription ao gerenciador
-      this.subscriptions.push(todayWorkoutSub);
+      console.log('✅ Treino de hoje criado com sucesso:', todayWorkout.name);
+
     } catch (error) {
-      console.error('Erro ao carregar treino do dia:', error);
-      this.loadTodayWorkoutFallback();
+      console.error('❌ Erro ao carregar treino de hoje:', error);
+      // Em caso de erro, definir como dia de descanso por segurança
+      this.todayWorkout = {
+        workout: null,
+        isRestDay: true
+      };
     }
   }
 
@@ -674,11 +737,12 @@ export class HomePage implements OnInit, OnDestroy {
     try {
       await this.storage.create();
       const today = new Date().getDay(); // 0 = Sunday, 1 = Monday, etc.
+      
       const dayKey = `weekly_exercises_day_${today}`;
       const exercises = await this.storage.get(dayKey) || [];
 
       console.log(`Exercícios do plano semanal para hoje (${today}):`, exercises);
-      return exercises;
+      return Array.isArray(exercises) ? exercises : [];
     } catch (error) {
       console.error('Erro ao carregar exercícios do plano semanal:', error);
       return [];
@@ -907,77 +971,66 @@ export class HomePage implements OnInit, OnDestroy {
   }
 
   private async loadStatsInternal(startOfWeek: Date) {
-    // Ler de ambos os locais para compatibilidade com limitação de performance
-    const sessions1Promise = this.storageService.get('workoutSessions');
-    const sessions2Promise = this.storage.get('workout_sessions');
+    // CORREÇÃO: Unificar fonte de dados para estatísticas - usar apenas workoutSessions
+    console.log('📊 Carregando estatísticas da semana atual...');
+    
+    try {
+      // Carregar apenas a fonte principal de sessões de treino
+      const workoutSessions = await this.storageService.get('workoutSessions') || [];
+      
+      // Garantir que é um array válido
+      const validSessions = Array.isArray(workoutSessions) ? workoutSessions : [];
+      
+      console.log(`📈 Total de sessões encontradas: ${validSessions.length}`);
 
-    const [sessions1, sessions2] = await Promise.all([
-      sessions1Promise.catch(() => []),
-      sessions2Promise.catch(() => [])
-    ]);
-
-    // Garantir que ambos são arrays e limitar quantidade para performance
-    const validSessions1 = Array.isArray(sessions1) ? sessions1.slice(0, 100) : [];
-    const validSessions2 = Array.isArray(sessions2) ? sessions2.slice(0, 100) : [];
-
-    // Combinar as sessões de ambos os formatos
-    const allSessions = [...validSessions1, ...validSessions2];
-
-    // Filtrar sessões desta semana com otimização
-    const thisWeekSessions = allSessions.filter((session: any) => {
-      try {
-        let sessionDate;
-        
-        // Verificar diferentes formatos de data com validação
-        if (session?.startTime) {
-          sessionDate = new Date(session.startTime);
-        } else if (session?.date) {
-          sessionDate = new Date(session.date);
-        } else {
+      // Filtrar sessões desta semana
+      const thisWeekSessions = validSessions.filter((session: any) => {
+        try {
+          if (!session?.startTime && !session?.date) return false;
+          
+          const sessionDate = new Date(session.startTime || session.date);
+          if (isNaN(sessionDate.getTime())) return false;
+          
+          // Verificar se é desta semana e se é treino completado
+          const isThisWeek = sessionDate >= startOfWeek;
+          const isCompleted = session.status === 'completed' || session.completed === true;
+          
+          return isThisWeek && isCompleted;
+        } catch (error) {
+          console.warn('Erro ao processar sessão:', error);
           return false;
         }
-        
-        // Verificar se a data é válida
-        if (isNaN(sessionDate.getTime())) {
-          return false;
-        }
-        
-        // Filtrar apenas sessões desta semana e que são treinos completos
-        return sessionDate >= startOfWeek && 
-               (session.status === 'completed' || session.duration > 0);
-      } catch (error) {
-        console.warn('Erro ao processar sessão:', error);
-        return false;
-      }
-    });
+      });
 
-    // Limitar processamento para performance
-    const limitedSessions = thisWeekSessions.slice(0, 50);
+      console.log(`✅ Sessões desta semana (completadas): ${thisWeekSessions.length}`);
 
-    // Remover duplicatas com algoritmo otimizado
-    const uniqueSessions = this.removeDuplicateSessions(limitedSessions);
+      // Remover duplicatas se necessário
+      const uniqueSessions = this.removeDuplicateSessions(thisWeekSessions);
 
-    // Calcular estatísticas
-    this.quickStats.weeklyWorkouts = uniqueSessions.length;
-    this.quickStats.weeklyMinutes = this.calculateTotalMinutes(uniqueSessions);
-    this.quickStats.weeklyCalories = this.calculateTotalCalories(uniqueSessions);
+      // Calcular estatísticas da semana atual
+      this.quickStats.weeklyWorkouts = uniqueSessions.length;
+      this.quickStats.weeklyMinutes = this.calculateTotalMinutes(uniqueSessions);
+      this.quickStats.weeklyCalories = this.calculateTotalCalories(uniqueSessions);
 
-    // Atualizar as propriedades usadas no template
-    this.weeklyWorkouts = this.quickStats.weeklyWorkouts;
-    this.totalMinutes = this.quickStats.weeklyMinutes;
-    this.weeklyCalories = this.quickStats.weeklyCalories;
+      // Atualizar as propriedades do template
+      this.weeklyWorkouts = this.quickStats.weeklyWorkouts;
+      this.totalMinutes = this.quickStats.weeklyMinutes;
+      this.weeklyCalories = this.quickStats.weeklyCalories;
 
-    // Calcular progresso semanal (assumindo meta de 4 treinos por semana)
-    this.weeklyProgress = Math.min((this.quickStats.weeklyWorkouts / 4) * 100, 100);
+      // Calcular progresso semanal (meta: 4 treinos por semana)
+      this.weeklyProgress = Math.min((this.quickStats.weeklyWorkouts / 4) * 100, 100);
 
-    console.log('Estatísticas calculadas:', {
-      totalSessions: allSessions.length,
-      thisWeekSessions: thisWeekSessions.length,
-      uniqueSessions: uniqueSessions.length,
-      weeklyWorkouts: this.weeklyWorkouts,
-      totalMinutes: this.totalMinutes,
-      weeklyCalories: this.weeklyCalories
-    });
+      console.log('📊 Estatísticas calculadas:', {
+        weeklyWorkouts: this.weeklyWorkouts,
+        totalMinutes: this.totalMinutes,
+        weeklyCalories: this.weeklyCalories,
+        weeklyProgress: this.weeklyProgress
+      });
+
+    } catch (error) {
+      console.error('❌ Erro ao calcular estatísticas:', error);
+      this.setDefaultQuickStats();
+    }
   }
 
   private removeDuplicateSessions(sessions: any[]): any[] {
@@ -1160,16 +1213,88 @@ export class HomePage implements OnInit, OnDestroy {
 
   getPreviewExercises(): any[] {
     const workout = this.currentWorkout || this.todayWorkout?.workout;
-    if (!workout || !workout.exercises) return [];
+    if (!workout || !workout.exercises || workout.exercises.length === 0) {
+      return [];
+    }
     
-    return workout.exercises.slice(0, 3).map((exercise: any) => ({
-      name: exercise.name,
-      sets: exercise.sets?.length || 3,
-      reps: exercise.sets?.[0]?.reps || 12,
-      category: exercise.category,
-      muscleGroup: exercise.muscleGroups?.[0] || exercise.muscleGroup,
-      difficulty: exercise.difficulty
-    }));
+    console.log('Gerando preview de exercícios para o treino:', workout.name);
+    console.log('Exercícios disponíveis:', workout.exercises);
+    
+    // Mapear exercícios reais apenas
+    const realExercises = workout.exercises
+      .filter(exercise => exercise && exercise.exerciseId)
+      .slice(0, 3)
+      .map((exercise: any, index: number) => {
+        console.log(`Processando exercício ${index}:`, exercise);
+        
+        // Buscar o nome do exercício pelo exerciseId
+        let exerciseName = this.getExerciseNameById(exercise.exerciseId);
+        
+        return {
+          name: exerciseName || `Exercício ${index + 1}`,
+          sets: exercise.sets?.length || 3,
+          reps: exercise.sets?.[0]?.reps || 12,
+          category: exercise.category || 'fitness',
+          muscleGroup: exercise.muscleGroups?.[0] || exercise.muscleGroup || 'geral',
+          difficulty: exercise.difficulty || 'intermediate'
+        };
+      });
+    
+    console.log('Exercícios do preview gerados:', realExercises);
+    return realExercises;
+  }
+
+  /**
+   * Busca o nome de um exercício pelo seu ID
+   * Primeiro verifica os exercícios personalizados, depois os exercícios básicos pré-definidos
+   */
+  getExerciseNameById(exerciseId: string): string | null {
+    console.log(`Buscando exercício com ID: ${exerciseId}`);
+    
+    try {
+      // Primeiro, tentar buscar nos exercícios personalizados (ExerciseService)
+      const customExercise = this.exerciseService.getExerciseById(exerciseId);
+      if (customExercise) {
+        console.log(`Exercício personalizado encontrado: ${customExercise.name}`);
+        return customExercise.name;
+      }
+      
+      // Se não encontrar nos exercícios personalizados, tentar buscar nos exercícios básicos pré-definidos
+      const basicExerciseNames: { [key: string]: string } = {
+        'ex-monday-1': 'Flexões',
+        'ex-monday-2': 'Tríceps no banco',
+        'ex-monday-3': 'Supino inclinado',
+        'ex-tuesday-1': 'Pull-ups',
+        'ex-tuesday-2': 'Rosca direta',
+        'ex-tuesday-3': 'Remada curvada',
+        'ex-wednesday-1': 'Agachamento',
+        'ex-wednesday-2': 'Leg press',
+        'ex-wednesday-3': 'Panturrilha',
+        'ex-thursday-1': 'Desenvolvimento militar',
+        'ex-thursday-2': 'Elevação lateral',
+        'ex-thursday-3': 'Elevação frontal',
+        'ex-friday-1': 'Rosca bíceps',
+        'ex-friday-2': 'Tríceps francês',
+        'ex-friday-3': 'Martelo',
+        'ex-saturday-1': 'Corrida',
+        'ex-saturday-2': 'Burpees',
+        'ex-saturday-3': 'Jump squat',
+        'ex-sunday-1': 'Caminhada',
+        'ex-sunday-2': 'Alongamento'
+      };
+      
+      if (basicExerciseNames[exerciseId]) {
+        console.log(`Exercício básico encontrado: ${basicExerciseNames[exerciseId]}`);
+        return basicExerciseNames[exerciseId];
+      }
+      
+      console.log(`Exercício com ID ${exerciseId} não encontrado em nenhuma fonte`);
+      return null;
+      
+    } catch (error) {
+      console.error(`Erro ao buscar exercício ${exerciseId}:`, error);
+      return null;
+    }
   }
 
   getExerciseIcon(category: string): string {
@@ -1224,32 +1349,79 @@ export class HomePage implements OnInit, OnDestroy {
       startOfWeek.setDate(now.getDate() - now.getDay());
       startOfWeek.setHours(0, 0, 0, 0);
 
-      // Carregar apenas dados essenciais com limitação
-      const sessions = await this.storageService.get('workoutSessions').catch(() => []);
-      const validSessions = Array.isArray(sessions) ? sessions.slice(0, 20) : [];
+      console.log('🔍 Carregando estatísticas de múltiplas fontes...');
 
-      const thisWeekSessions = validSessions.filter((session: any) => {
+      // Carregar dados de todas as fontes de armazenamento
+      const [sessions1, sessions2, sessions3, sessions4] = await Promise.all([
+        this.storageService.get('workoutSessions').catch(() => []),
+        this.storageService.get('workoutSessions2').catch(() => []),
+        this.storageService.get('workout_sessions').catch(() => []),
+        this.storageService.get('workout-history').catch(() => [])
+      ]);
+
+      // Validar e combinar todas as sessões
+      const validSessions1 = Array.isArray(sessions1) ? sessions1.slice(0, 50) : [];
+      const validSessions2 = Array.isArray(sessions2) ? sessions2.slice(0, 50) : [];
+      const validSessions3 = Array.isArray(sessions3) ? sessions3.slice(0, 50) : [];
+      const validSessions4 = Array.isArray(sessions4) ? sessions4.slice(0, 50) : [];
+
+      console.log('📊 Dados encontrados:', {
+        workoutSessions: validSessions1.length,
+        workoutSessions2: validSessions2.length,
+        workout_sessions: validSessions3.length,
+        workoutHistory: validSessions4.length
+      });
+
+      // Combinar todas as sessões e remover duplicatas por ID
+      const allSessions = [...validSessions1, ...validSessions2, ...validSessions3, ...validSessions4];
+      const uniqueSessions = this.removeDuplicateSessions(allSessions);
+
+      console.log(`🔄 Total de sessões únicas após combinação: ${uniqueSessions.length}`);
+
+      // Filtrar sessões desta semana
+      const thisWeekSessions = uniqueSessions.filter((session: any) => {
         try {
-          if (!session?.startTime) return false;
-          const sessionDate = new Date(session.startTime);
+          if (!session?.startTime && !session?.date) return false;
+          
+          // Compatibilidade com diferentes formatos de data
+          const sessionDate = new Date(session.startTime || session.date);
           if (isNaN(sessionDate.getTime())) return false;
-          return sessionDate >= startOfWeek && session.status === 'completed';
+          
+          // Verificar status de conclusão (compatibilidade com diferentes formatos)
+          const isCompleted = session.status === 'completed' || session.completed === true;
+          
+          return sessionDate >= startOfWeek && isCompleted;
         } catch {
           return false;
         }
       });
 
+      console.log(`✅ Sessões desta semana encontradas: ${thisWeekSessions.length}`);
+
+      // Calcular estatísticas com dados reais
       this.quickStats.weeklyWorkouts = thisWeekSessions.length;
       this.quickStats.weeklyMinutes = thisWeekSessions.reduce((total, session) => {
-        const duration = session.duration || 0;
+        const duration = session.duration || session.totalDuration || 0;
         return total + (typeof duration === 'number' ? Math.min(duration, 300) : 0);
       }, 0);
-      this.quickStats.weeklyCalories = thisWeekSessions.length * 200; // Estimativa simples
+      
+      // Calcular calorias baseado em dados reais ou estimativa
+      this.quickStats.weeklyCalories = thisWeekSessions.reduce((total, session) => {
+        const calories = session.caloriesBurned || session.totalCalories || (session.duration || 30) * 6.67; // ~200 cal/30min
+        return total + (typeof calories === 'number' ? Math.min(calories, 1000) : 0);
+      }, 0);
 
       this.weeklyWorkouts = this.quickStats.weeklyWorkouts;
       this.totalMinutes = this.quickStats.weeklyMinutes;
-      this.weeklyCalories = this.quickStats.weeklyCalories;
+      this.weeklyCalories = Math.round(this.quickStats.weeklyCalories);
       this.weeklyProgress = Math.min((this.quickStats.weeklyWorkouts / 4) * 100, 100);
+
+      console.log('📈 Estatísticas finais:', {
+        weeklyWorkouts: this.quickStats.weeklyWorkouts,
+        weeklyMinutes: this.quickStats.weeklyMinutes,
+        weeklyCalories: this.quickStats.weeklyCalories,
+        weeklyProgress: this.weeklyProgress
+      });
 
     } catch (error) {
       console.error('Erro no carregamento mínimo de estatísticas:', error);
@@ -1260,46 +1432,68 @@ export class HomePage implements OnInit, OnDestroy {
   private async loadTodayWorkoutMinimal() {
     try {
       const today = new Date().getDay();
+      console.log(`Carregando treino mínimo para o dia ${today} (${this.translateDayName(today)})`);
       
-      if (today === 0) {
+      if (today === 0) { // Domingo - sempre dia de descanso
         this.todayWorkout = { workout: null, isRestDay: true };
+        console.log('Domingo definido como dia de descanso');
         return;
       }
 
-      // Tentar carregar exercícios do plano semanal primeiro
-      const todayExercises = await this.getTodayExercisesFromWeeklyPlan().catch(() => []);
-      
-      if (todayExercises && todayExercises.length > 0) {
-        const virtualWorkout: CustomWorkout = {
-          id: `weekly-plan-${new Date().toISOString().split('T')[0]}`,
-          name: this.getTodayDayName(),
-          description: 'Treino do plano semanal',
-          difficulty: 'medium',
-          muscleGroups: ['general'],
-          equipment: [],
-          isTemplate: false,
-          category: 'strength',
-          estimatedDuration: Math.min(todayExercises.length * 5, 60),
-          exercises: todayExercises.slice(0, 10).map((ex: any, index: number) => ({
-            id: `exercise-${index}`,
-            exerciseId: ex.id,
-            order: index + 1,
-            sets: [{ id: `set-${index}-1`, reps: 12, weight: 0, completed: false }],
-            restTime: 60,
-            notes: ''
-          })),
-          createdBy: 'weekly-plan',
-          createdAt: new Date(),
-          updatedAt: new Date()
-        };
+      // Verificar se hoje é dia de descanso no plano semanal primeiro
+      const isRestDay = await this.checkIfTodayIsRestDay();
+      if (isRestDay) {
+        this.todayWorkout = { workout: null, isRestDay: true };
+        console.log(`${this.translateDayName(today)} configurado como dia de descanso no plano semanal`);
+        return;
+      }
+
+      // Tentar carregar exercícios do plano semanal
+      try {
+        const todayExercises = await this.getTodayExercisesFromWeeklyPlan();
         
-        this.todayWorkout = { workout: virtualWorkout, isRestDay: false };
-        return;
+        if (todayExercises && todayExercises.length > 0) {
+          console.log(`Encontrados ${todayExercises.length} exercícios no plano semanal`);
+          
+          const virtualWorkout: CustomWorkout = {
+            id: `weekly-plan-${new Date().toISOString().split('T')[0]}`,
+            name: this.translateDayName(today),
+            description: 'Treino do plano semanal',
+            difficulty: 'medium',
+            muscleGroups: this.extractMuscleGroupsFromExercises(todayExercises).slice(0, 3),
+            equipment: [],
+            isTemplate: false,
+            category: 'strength',
+            estimatedDuration: Math.min(todayExercises.length * 5, 60),
+            exercises: todayExercises.slice(0, 10).map((ex: any, index: number) => ({
+              id: `exercise-${index}`,
+              exerciseId: ex.id,
+              order: index + 1,
+              sets: [{ id: `set-${index}-1`, reps: 12, weight: 0, completed: false }],
+              restTime: 60,
+              notes: ''
+            })),
+            createdBy: 'weekly-plan',
+            createdAt: new Date(),
+            updatedAt: new Date()
+          };
+          
+          this.todayWorkout = { workout: virtualWorkout, isRestDay: false };
+          console.log('Treino criado a partir do plano semanal:', virtualWorkout.name);
+          return;
+        }
+      } catch (planError) {
+        console.log('Erro ao carregar plano semanal, usando fallback:', planError);
       }
 
-      // Fallback para treino básico
+      // Se chegou até aqui, não há plano semanal configurado ou não há exercícios
+      // Verificar se deveria ser dia de descanso por configuração padrão (sem plano)
+      console.log('Nenhum exercício encontrado no plano semanal e não é dia de descanso configurado');
+      
+      // Fallback para treino básico apenas se não há plano semanal
       const basicWorkout = this.createBasicWorkout(today);
       this.todayWorkout = { workout: basicWorkout, isRestDay: false };
+      console.log(`Treino básico criado para ${this.translateDayName(today)}:`, basicWorkout.name);
 
     } catch (error) {
       console.error('Erro no carregamento mínimo do treino do dia:', error);
@@ -1309,35 +1503,67 @@ export class HomePage implements OnInit, OnDestroy {
 
   private async checkCompletedWorkoutMinimal() {
     try {
-      const today = new Date().getDate();
-      const month = new Date().getMonth();
-      const year = new Date().getFullYear();
-      const todayDateString = `${year}-${month + 1}-${today}`; // Formato YYYY-MM-DD
+      const today = new Date();
+      const todayDateString = today.toISOString().split('T')[0]; // Formato YYYY-MM-DD
 
-      const sessions = await this.storageService.get('workoutSessions').catch(() => []);
-      const validSessions = Array.isArray(sessions) ? sessions.slice(0, 30) : [];
+      console.log('🔍 Verificando treinos completados hoje:', todayDateString);
 
-      const todayCompletedSessions = validSessions.filter((session: any) => {
+      // Carregar dados de múltiplas fontes
+      const [sessions1, sessions2, sessions3] = await Promise.all([
+        this.storageService.get('workoutSessions').catch(() => []),
+        this.storageService.get('workoutSessions2').catch(() => []),
+        this.storageService.get('workout_sessions').catch(() => [])
+      ]);
+
+      // Validar e combinar sessões
+      const validSessions1 = Array.isArray(sessions1) ? sessions1.slice(0, 30) : [];
+      const validSessions2 = Array.isArray(sessions2) ? sessions2.slice(0, 30) : [];
+      const validSessions3 = Array.isArray(sessions3) ? sessions3.slice(0, 30) : [];
+
+      const allSessions = [...validSessions1, ...validSessions2, ...validSessions3];
+      const uniqueSessions = this.removeDuplicateSessions(allSessions);
+
+      // Filtrar sessões de hoje completadas
+      const todayCompletedSessions = uniqueSessions.filter((session: any) => {
         try {
-          if (!session?.startTime || session.status !== 'completed') return false;
-          const sessionDate = new Date(session.startTime);
+          if (!session?.startTime && !session?.date) return false;
+          
+          const sessionDate = new Date(session.startTime || session.date);
           if (isNaN(sessionDate.getTime())) return false;
-          return sessionDate.toISOString().split('T')[0] === todayDateString;
+          
+          const isCompleted = session.status === 'completed' || session.completed === true;
+          const isToday = sessionDate.toISOString().split('T')[0] === todayDateString;
+          
+          return isCompleted && isToday;
         } catch {
           return false;
         }
       });
 
+      console.log(`✅ Treinos completados hoje: ${todayCompletedSessions.length}`);
+
       if (todayCompletedSessions.length > 0) {
-        const latestSession = todayCompletedSessions[0];
+        // Pegar o treino mais recente
+        const latestSession = todayCompletedSessions.sort((a, b) => {
+          const timeA = new Date(a.startTime || a.date).getTime();
+          const timeB = new Date(b.startTime || b.date).getTime();
+          return timeB - timeA;
+        })[0];
+
         this.completedWorkoutToday = {
           session: latestSession,
-          exercises: [],
+          exercises: latestSession.exercises || latestSession.completedExercises || [],
           canRepeat: true
         };
+
+        console.log('🎯 Treino completado hoje encontrado:', latestSession);
+      } else {
+        this.completedWorkoutToday = null;
+        console.log('ℹ️ Nenhum treino completado hoje');
       }
     } catch (error) {
       console.error('Erro na verificação mínima de treino completado:', error);
+      this.completedWorkoutToday = null;
     }
   }
 
@@ -1351,30 +1577,203 @@ export class HomePage implements OnInit, OnDestroy {
     }
   }
 
+  // Método público para forçar atualização das estatísticas
+  async refreshStats() {
+    console.log('Atualizando estatísticas manualmente...');
+    this.isLoading = true;
+    
+    try {
+      // Recriar dados de exemplo se necessário
+      await this.initializeExampleWorkoutSessions();
+      
+      // Forçar recarga das estatísticas
+      await this.forceReloadStats();
+      
+      // Recarregar treino do dia
+      await this.loadTodayWorkoutMinimal();
+      
+      console.log('Estatísticas atualizadas com sucesso');
+    } catch (error) {
+      console.error('Erro ao atualizar estatísticas:', error);
+    } finally {
+      this.isLoading = false;
+    }
+  }
+
+  private async forceReloadStats() {
+    try {
+      console.log('Forçando recarga das estatísticas...');
+      await this.loadQuickStatsMinimal();
+      console.log('Estatísticas recarregadas com sucesso');
+    } catch (error) {
+      console.error('Erro ao forçar recarga das estatísticas:', error);
+    }
+  }
+
   private async loadHomeData() {
     this.isLoading = true;
     try {
-      // Recarregar dados críticos com timeout estendido
-      await Promise.race([
-        this.performSafeInitialization(),
-        new Promise<void>((resolve) => {
-          setTimeout(() => {
-            console.warn('Timeout ao carregar dados da home, usando valores padrão');
-            this.setDefaultValues();
-            resolve();
-          }, 5000);
-        })
-      ]);
-
-      // Recarregar dados não-críticos em background
-      setTimeout(() => {
-        this.loadNonCriticalData();
-      }, 100);
+      // Recarregar dados de forma simples e direta
+      await this.safeLoadTodayWorkout();
+      await this.safeLoadQuickStats();
+      await this.safeCheckCompletedWorkout();
+      await this.safeLoadRecentAchievements();
+      
+      console.log('Dados da home recarregados com sucesso');
     } catch (error) {
       console.error('Erro ao carregar dados da home:', error);
       this.setDefaultValues();
     } finally {
       this.isLoading = false;
+    }
+  }
+
+
+
+  // Método para sincronizar dados entre diferentes sistemas de armazenamento
+  private async synchronizeWorkoutData(): Promise<void> {
+    try {
+      console.log('🔄 Iniciando sincronização de dados...');
+
+      // Carregar dados de todas as fontes
+      const [sessions1, sessions2, sessions3, sessions4] = await Promise.all([
+        this.storageService.get('workoutSessions').catch(() => []),
+        this.storageService.get('workoutSessions2').catch(() => []),
+        this.storageService.get('workout_sessions').catch(() => []),
+        this.storageService.get('workout-history').catch(() => [])
+      ]);
+
+      // Validar arrays
+      const validSessions1 = Array.isArray(sessions1) ? sessions1 : [];
+      const validSessions2 = Array.isArray(sessions2) ? sessions2 : [];
+      const validSessions3 = Array.isArray(sessions3) ? sessions3 : [];
+      const validSessions4 = Array.isArray(sessions4) ? sessions4 : [];
+
+      // Combinar e remover duplicatas
+      const allSessions = [...validSessions1, ...validSessions2, ...validSessions3, ...validSessions4];
+      const uniqueSessions = this.removeDuplicateSessions(allSessions);
+
+      console.log('🔄 Sincronização - dados combinados:', {
+        total: allSessions.length,
+        unique: uniqueSessions.length,
+        sources: {
+          workoutSessions: validSessions1.length,
+          workoutSessions2: validSessions2.length,
+          workout_sessions: validSessions3.length,
+          workoutHistory: validSessions4.length
+        }
+      });
+
+      // Se há dados novos únicos, sincronizar de volta para os sistemas principais
+      if (uniqueSessions.length > Math.max(validSessions1.length, validSessions2.length, validSessions3.length)) {
+        
+        // Normalizar dados para cada formato
+        const normalizedSessions = uniqueSessions.map(session => this.normalizeSessionData(session));
+        
+        // Salvar nos formatos principais (sem sobrescrever se já existem dados mais recentes)
+        const workoutSessionsFormat = normalizedSessions.map(session => ({
+          id: session.id || `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+          workoutId: session.workoutId || 'unknown',
+          startTime: session.startTime || session.date,
+          endTime: session.endTime,
+          duration: session.duration || session.totalDuration || 0,
+          caloriesBurned: session.caloriesBurned || session.totalCalories || 0,
+          status: session.status || (session.completed ? 'completed' : 'in-progress'),
+          exercises: session.exercises || session.completedExercises || [],
+          notes: session.notes || '',
+          rating: session.rating || 5
+        }));
+
+        // Salvar apenas se os dados são mais recentes ou há lacunas
+        if (validSessions1.length < uniqueSessions.length) {
+          await this.storageService.set('workoutSessions', workoutSessionsFormat);
+          console.log('✅ Sincronizado workoutSessions');
+        }
+
+        if (validSessions3.length < uniqueSessions.length) {
+          // Formato para ProgressDataService
+          const progressFormat = normalizedSessions.map(session => ({
+            id: session.id || `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+            date: session.startTime || session.date,
+            exercises: (session.exercises || []).map((ex: any) => ({
+              exerciseId: ex.exerciseId || ex.id || 'unknown',
+              exerciseName: ex.exerciseName || ex.name || 'Exercício',
+              sets: ex.sets || [],
+              totalVolume: ex.totalVolume || 0,
+              muscleGroup: ex.muscleGroup || 'unknown'
+            })),
+            duration: session.duration || session.totalDuration || 0,
+            totalVolume: session.totalVolume || 0,
+            muscleGroups: session.muscleGroups || ['unknown'],
+            notes: session.notes || ''
+          }));
+
+          await this.storageService.set('workout_sessions', progressFormat);
+          console.log('✅ Sincronizado workout_sessions');
+        }
+
+        console.log('🎯 Sincronização concluída com sucesso!');
+      }
+
+    } catch (error) {
+      console.error('❌ Erro na sincronização de dados:', error);
+    }
+  }
+
+  // Método auxiliar para normalizar dados de sessão entre diferentes formatos
+  private normalizeSessionData(session: any): any {
+    if (!session) return null;
+
+    return {
+      id: session.id,
+      workoutId: session.workoutId,
+      startTime: session.startTime || session.date,
+      endTime: session.endTime,
+      duration: session.duration || session.totalDuration || 0,
+      caloriesBurned: session.caloriesBurned || session.totalCalories || 0,
+      status: session.status || (session.completed ? 'completed' : 'in-progress'),
+      exercises: session.exercises || session.completedExercises || [],
+      notes: session.notes || '',
+      rating: session.rating || 5,
+      muscleGroups: session.muscleGroups || [],
+      totalVolume: session.totalVolume || 0,
+      completed: session.completed || session.status === 'completed'
+    };
+  }
+
+  // Method to check if today is configured as rest day in weekly plan
+  private async checkIfTodayIsRestDay(): Promise<boolean> {
+    try {
+      const today = new Date().getDay();
+      const dayNames = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+      const todayDayKey = dayNames[today];
+
+      return new Promise<boolean>((resolve) => {
+        this.workoutManagementService.getActiveWeeklyPlan().subscribe({
+          next: (plan) => {
+            if (!plan) {
+              console.log('Nenhum plano semanal ativo encontrado');
+              resolve(false);
+              return;
+            }
+
+            const todayDayPlan = plan.days[todayDayKey as keyof typeof plan.days];
+            const isRestDay = !todayDayPlan || todayDayPlan.type === 'rest' || todayDayPlan.isRestDay;
+            
+            console.log(`Plano do dia (${todayDayKey}):`, todayDayPlan);
+            console.log(`É dia de descanso: ${isRestDay}`);
+            
+            resolve(isRestDay);
+          },
+          error: (error) => {
+            console.error('Erro ao verificar plano semanal:', error);
+            resolve(false);
+          }
+        });
+      });
+    } catch (error) {
+      console.error('Erro ao verificar se hoje é dia de descanso:', error);
+      return false;
     }
   }
 }

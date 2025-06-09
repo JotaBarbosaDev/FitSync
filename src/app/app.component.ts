@@ -9,6 +9,7 @@ import { ThemeService } from './services/theme.service';
 import { StorageService } from './services/storage.service';
 import { JsonDataService } from './services/json-data.service';
 import { DeviceControlService } from './services/device-control.service';
+import { WorkoutManagementService } from './services/workout-management.service';
 import { User } from './models';
 
 @Component({
@@ -33,7 +34,8 @@ export class AppComponent implements OnInit, OnDestroy {
     private platform: Platform,
     private storageService: StorageService,
     private jsonDataService: JsonDataService,
-    private deviceControlService: DeviceControlService
+    private deviceControlService: DeviceControlService,
+    private workoutManagementService: WorkoutManagementService
   ) {
     this.initializeApp();
   }
@@ -58,6 +60,10 @@ export class AppComponent implements OnInit, OnDestroy {
 
     // Setup orientation listener
     await this.deviceControlService.setupOrientationListener();
+
+    // Synchronize workout data to fix statistics issues
+    console.log('Synchronizing workout data...');
+    await this.workoutManagementService.synchronizeWorkoutData();
 
     console.log('FitSync app initialized successfully');
   }

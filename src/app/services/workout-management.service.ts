@@ -13,6 +13,7 @@ import {
 import { WorkoutSession } from '../models/workout-system.model';
 import { DataService } from './data.service';
 import { AuthService } from './auth.service';
+import { StorageService } from './storage.service';
 
 @Injectable({
   providedIn: 'root'
@@ -32,7 +33,8 @@ export class WorkoutManagementService {
 
   constructor(
     private dataService: DataService,
-    private authService: AuthService
+    private authService: AuthService,
+    private storageService: StorageService
   ) { }
 
   // ===== CRIAÇÃO DE TREINOS =====
@@ -814,5 +816,119 @@ export class WorkoutManagementService {
     } else {
       return `${minutes}:${secs.toString().padStart(2, '0')}`;
     }
+  }
+
+  // ===== SINCRONIZAÇÃO DE DADOS =====
+
+  async synchronizeWorkoutData(): Promise<void> {
+    try {
+      console.log('WorkoutManagementService: Starting data synchronization...');
+      
+      const data = this.dataService.getCurrentData();
+      if (!data) {
+        console.log('WorkoutManagementService: No data available for synchronization');
+        return;
+      }
+
+      // Get all workout sessions from different storage sources
+      const workoutSessions = data.workoutSessions || [];
+      const workoutSessions2 = data.workoutSessions2 || [];
+      
+      // Access additional storage sources
+      let additionalSessions: any[] = [];
+      
+      try {
+        const workout_sessions = (await this.storageService.get('workout_sessions') || []) as any[];
+        const workoutHistory = (await this.storageService.get('workout-history') || []) as any[];
+        additionalSessions = [...workout_sessions, ...workoutHistory];
+      } catch (error) {
+        console.warn('WorkoutManagementService: Could not access additional storage sources:', error);
+      }
+
+      console.log('WorkoutManagementService: Found sessions:', {
+        workoutSessions: workoutSessions.length,
+        workoutSessions2: workoutSessions2.length,
+        additionalSessions: additionalSessions.length
+      });
+
+      // Combine all sessions
+      const allSessions = [
+        ...workoutSessions,
+        ...workoutSessions2,
+        ...additionalSessions
+      ];
+
+      // Remove duplicates based on timestamp, duration, and exercise count
+      const uniqueSessions = this.removeDuplicateSessions(allSessions);
+
+      console.log('WorkoutManagementService: Unique sessions after deduplication:', uniqueSessions.length);
+
+      // Normalize session data to ensure consistent format
+      const normalizedSessions = uniqueSessions.map(session => this.normalizeSessionData(session));
+
+      // Update main storage sources with normalized data
+      data.workoutSessions = normalizedSessions;
+      data.workoutSessions2 = normalizedSessions;
+
+      // Save synchronized data
+      await this.dataService.saveData(data);
+
+      // Update additional storage sources
+      try {
+        await this.storageService.set('workout_sessions', normalizedSessions);
+        await this.storageService.set('workout-history', normalizedSessions);
+      } catch (error) {
+        console.warn('WorkoutManagementService: Could not update additional storage sources:', error);
+      }
+
+      console.log('WorkoutManagementService: Data synchronization completed successfully');
+    } catch (error) {
+      console.error('WorkoutManagementService: Error during data synchronization:', error);
+    }
+  }
+
+  private removeDuplicateSessions(sessions: any[]): any[] {
+    const uniqueMap = new Map();
+    
+    sessions.forEach(session => {
+      // Create a unique key based on timestamp, duration, and exercise count
+      const timestamp = session.startTime || session.date || session.timestamp;
+      const duration = session.duration || 0;
+      const exerciseCount = session.exercises ? session.exercises.length : 0;
+      
+      const key = `${timestamp}_${duration}_${exerciseCount}`;
+      
+      // Keep the most complete session (one with more properties)
+      const existing = uniqueMap.get(key);
+      if (!existing || Object.keys(session).length > Object.keys(existing).length) {
+        uniqueMap.set(key, session);
+      }
+    });
+    
+    return Array.from(uniqueMap.values());
+  }
+
+  private normalizeSessionData(session: any): any {
+    // Normalize session data to ensure consistent format across all storage systems
+    const normalized = {
+      id: session.id || `session-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+      workoutId: session.workoutId || 'unknown-workout',
+      userId: session.userId || 'current-user',
+      startTime: session.startTime || session.date || session.timestamp || new Date(),
+      endTime: session.endTime || session.startTime || session.date || session.timestamp || new Date(),
+      duration: session.duration || 0,
+      exercises: session.exercises || [],
+      caloriesBurned: session.caloriesBurned || session.calories || 0,
+      notes: session.notes || '',
+      rating: session.rating || 0,
+      status: session.status || 'completed',
+      dayOfWeek: session.dayOfWeek || new Date().toLocaleDateString('pt-BR', { weekday: 'long' }),
+      // Additional fields for compatibility
+      date: session.date || session.startTime || session.timestamp,
+      totalVolume: session.totalVolume || 0,
+      muscleGroups: session.muscleGroups || []
+    };
+
+    return normalized;
   }
 }
