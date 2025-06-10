@@ -3,13 +3,18 @@ import { Router, NavigationExtras, ActivatedRoute } from '@angular/router';
 
 type NavigationParams = { [key: string]: string | number | boolean | undefined };
 
+/**
+ * Serviço de navegação com suporte completo a Router e ActivatedRoute
+ * Implementa requisitos 4 e 5: Angular Router e passagem de parâmetros
+ */
 @Injectable({
   providedIn: 'root'
 })
 export class NavigationService {
 
   constructor(
-    private router: Router
+    private router: Router,
+    private activatedRoute: ActivatedRoute
   ) { }
 
   // Navigate to specific page
@@ -189,5 +194,74 @@ export class NavigationService {
   // Get navigation state
   getNavigationState(): Record<string, unknown> | undefined {
     return this.router.getCurrentNavigation()?.extras?.state;
+  }
+
+  /**
+   * Obtém parâmetros da rota atual (Requisito 4 - ActivatedRoute)
+   * @returns Parâmetros da query string da rota atual
+   */
+  getCurrentRouteParams(): Record<string, string | undefined> {
+    return this.activatedRoute.snapshot.queryParams;
+  }
+
+  /**
+   * Obtém um parâmetro específico da rota atual
+   * @param paramName Nome do parâmetro
+   * @returns Valor do parâmetro ou null se não existir
+   */
+  getCurrentRouteParam(paramName: string): string | null {
+    return this.activatedRoute.snapshot.queryParams[paramName] || null;
+  }
+
+  /**
+   * Subscreve a mudanças nos parâmetros da rota (Requisito 4)
+   * @param callback Função executada quando parâmetros mudarem
+   */
+  subscribeToRouteParams(callback: (params: Record<string, string | undefined>) => void): void {
+    this.activatedRoute.queryParams.subscribe(callback);
+  }
+
+  /**
+   * Navega para treino específico com parâmetros (Requisito 5)
+   * @param workoutId ID do treino
+   * @param workoutName Nome do treino  
+   * @param fromPage Página de origem
+   */
+  navigateToWorkoutWithParams(workoutId: string, workoutName: string, fromPage: string): Promise<boolean> {
+    return this.router.navigate(['/tabs/detalhe'], {
+      queryParams: {
+        workoutId: workoutId,
+        workoutName: workoutName,
+        fromPage: fromPage,
+        timestamp: new Date().getTime()
+      }
+    });
+  }
+
+  /**
+   * Navega para progresso com contexto (Requisito 5)
+   * @param fromPage Página de origem
+   * @param workoutCount Número de treinos
+   * @param showStats Se deve mostrar estatísticas
+   */
+  navigateToProgressWithParams(fromPage: string, workoutCount: number, showStats: boolean = true): Promise<boolean> {
+    return this.router.navigate(['/tabs/workout-progress'], {
+      queryParams: {
+        fromPage: fromPage,
+        workoutCount: workoutCount,
+        date: new Date().toISOString(),
+        showStats: showStats.toString()
+      }
+    });
+  }
+
+  /**
+   * Navega de volta usando returnUrl dos parâmetros (Requisito 5)
+   * @param fallbackRoute Rota padrão se não houver returnUrl
+   */
+  navigateBackUsingParams(fallbackRoute: string = '/tabs/home'): Promise<boolean> {
+    const returnUrl = this.getCurrentRouteParam('returnUrl');
+    const targetRoute = returnUrl || fallbackRoute;
+    return this.router.navigate([targetRoute]);
   }
 }

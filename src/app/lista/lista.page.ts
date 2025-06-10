@@ -16,6 +16,22 @@ interface MuscleGroup {
   color: string;
 }
 
+interface ExerciseFormData {
+  name: string;
+  description: string;
+  instructions: string;
+  duration: string;
+  calories: string;
+}
+
+type DifficultyLevel = 'beginner' | 'intermediate' | 'advanced';
+
+interface CompleteExerciseData extends ExerciseFormData {
+  muscleGroup: string;
+  equipment: string;
+  difficulty: DifficultyLevel;
+}
+
 @Component({
   selector: 'app-lista',
   templateUrl: './lista.page.html',
@@ -68,7 +84,7 @@ export class ListaPage implements OnInit, OnDestroy {
     this.exerciseSubscription?.unsubscribe();
   }
 
-  async onRefresh(event: any) {
+  async onRefresh(event: { target: { complete: () => void } }) {
     try {
       await this.loadExercises();
       await this.loadFavorites();
@@ -343,7 +359,7 @@ export class ListaPage implements OnInit, OnDestroy {
     await detailsAlert.present();
   }
 
-  async showEditDifficultySelection(exercise: ExerciseLibraryItem, muscleGroup: string, equipment: string, exerciseData: any) {
+  async showEditDifficultySelection(exercise: ExerciseLibraryItem, muscleGroup: string, equipment: string, exerciseData: ExerciseFormData) {
     const difficultyAlert = await this.alertController.create({
       header: 'Editar Dificuldade',
       message: 'Escolha o nível de dificuldade do exercício:',
@@ -374,9 +390,9 @@ export class ListaPage implements OnInit, OnDestroy {
         { text: 'Voltar', role: 'cancel' },
         {
           text: 'Salvar Alterações',
-          handler: async (difficultyData) => {
+          handler: async (difficultyData: DifficultyLevel) => {
             if (difficultyData) {
-              const completeData = {
+              const completeData: CompleteExerciseData = {
                 ...exerciseData,
                 muscleGroup,
                 equipment,
@@ -396,7 +412,7 @@ export class ListaPage implements OnInit, OnDestroy {
     await difficultyAlert.present();
   }
 
-  private async updateCustomExercise(exerciseId: string, updatedData: any) {
+  private async updateCustomExercise(exerciseId: string, updatedData: CompleteExerciseData) {
     try {
       // Processar instruções para garantir numeração
       const formattedInstructions = this.formatInstructions(updatedData.instructions);
@@ -414,7 +430,7 @@ export class ListaPage implements OnInit, OnDestroy {
       };
 
       this.exerciseService.updateCustomExercise(exerciseId, updates).subscribe({
-        next: (updatedExercise) => {
+        next: () => {
           this.showToast(`Exercício "${updatedData.name}" atualizado com sucesso!`, 'success');
           // Não precisa chamar loadExercises() - o service já atualiza automaticamente
         },
@@ -598,7 +614,7 @@ export class ListaPage implements OnInit, OnDestroy {
   async showExerciseDetailsForm(muscleGroup: string, equipment: string) {
     const detailsAlert = await this.alertController.create({
       header: 'Detalhes do Exercício',
-      message: `Grupo: ${this.getMuscleGroupName(muscleGroup)} | Equipamento: ${this.getEquipmentName(equipment)}<br><br>Preencha os detalhes do exercício:`,
+      message: `Grupo: ${this.getMuscleGroupName(muscleGroup)} | Equipamento: ${this.getEquipmentName(equipment)} Preencha os detalhes do exercício:`,
       inputs: [
         {
           name: 'name',
@@ -624,7 +640,6 @@ export class ListaPage implements OnInit, OnDestroy {
           placeholder: 'Duração em minutos *',
           min: 1,
           max: 120,
-          value: 30
         },
         {
           name: 'calories',
@@ -632,14 +647,13 @@ export class ListaPage implements OnInit, OnDestroy {
           placeholder: 'Calorias estimadas *',
           min: 10,
           max: 1000,
-          value: 100
         }
       ],
       buttons: [
         { text: 'Voltar', role: 'cancel' },
         {
           text: 'Próximo - Selecionar Dificuldade',
-          handler: async (data) => {
+          handler: async (data: ExerciseFormData) => {
             if (data.name && data.description && data.instructions && data.duration && data.calories) {
               await this.showDifficultySelection(muscleGroup, equipment, data);
               return true;
@@ -655,7 +669,7 @@ export class ListaPage implements OnInit, OnDestroy {
     await detailsAlert.present();
   }
 
-  async showDifficultySelection(muscleGroup: string, equipment: string, exerciseData: any) {
+  async showDifficultySelection(muscleGroup: string, equipment: string, exerciseData: ExerciseFormData) {
     const difficultyAlert = await this.alertController.create({
       header: 'Selecionar Dificuldade',
       message: 'Escolha o nível de dificuldade do exercício:',
@@ -684,9 +698,9 @@ export class ListaPage implements OnInit, OnDestroy {
         { text: 'Voltar', role: 'cancel' },
         {
           text: 'Criar Exercício',
-          handler: async (difficultyData) => {
+          handler: async (difficultyData: DifficultyLevel) => {
             if (difficultyData) {
-              const completeData = {
+              const completeData: CompleteExerciseData = {
                 ...exerciseData,
                 muscleGroup,
                 equipment,
@@ -706,7 +720,7 @@ export class ListaPage implements OnInit, OnDestroy {
     await difficultyAlert.present();
   }
 
-  private async saveCustomExercise(exerciseData: any) {
+  private async saveCustomExercise(exerciseData: CompleteExerciseData) {
     try {
       const emoji = this.getMuscleGroupEmoji(exerciseData.muscleGroup);
 

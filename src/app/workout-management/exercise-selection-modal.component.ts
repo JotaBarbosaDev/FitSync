@@ -5,284 +5,292 @@ import { IonicModule, ModalController } from '@ionic/angular';
 import { ExerciseLibraryItem } from '../services/exercise.service';
 
 @Component({
-    selector: 'app-exercise-selection-modal',
-    standalone: true,
-    imports: [CommonModule, FormsModule, IonicModule, SlicePipe],
-    template: `
-    <ion-header>
-      <ion-toolbar>
-        <ion-title>{{ dayName }} - Selecionar Exercícios</ion-title>
-        <ion-buttons slot="end">
-          <ion-button (click)="closeModal()">
-            <ion-icon name="close"></ion-icon>
-          </ion-button>
-        </ion-buttons>
-      </ion-toolbar>
-    </ion-header>
+  selector: 'app-exercise-selection-modal',
+  standalone: true,
+  imports: [CommonModule, FormsModule, IonicModule, SlicePipe],
+  template: `
+  <ion-header>
+    <ion-toolbar>
+    <ion-title>{{ dayName }} - Selecionar Exercícios</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="closeModal()">
+      <ion-icon name="close"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    </ion-toolbar>
+  </ion-header>
 
-    <ion-content>
-      <div class="modal-content">
-        <!-- Search Bar -->
-        <ion-searchbar 
-          [(ngModel)]="searchTerm" 
-          (ionInput)="filterExercises()"
-          placeholder="Pesquisar exercícios...">
-        </ion-searchbar>
+  <ion-content>
+    <div class="modal-content">
+    <!-- Search Bar -->
+    <ion-searchbar 
+      [(ngModel)]="searchTerm" 
+      (ionInput)="filterExercises()"
+      placeholder="Pesquisar exercícios...">
+    </ion-searchbar>
 
-        <!-- Category Filter -->
-        <ion-segment [(ngModel)]="selectedCategory" (ionChange)="filterExercises()">
-          <ion-segment-button value="">
-            <ion-label>Todos</ion-label>
-          </ion-segment-button>
-          <ion-segment-button value="chest">
-            <ion-label>Peito</ion-label>
-          </ion-segment-button>
-          <ion-segment-button value="back">
-            <ion-label>Costas</ion-label>
-          </ion-segment-button>
-          <ion-segment-button value="legs">
-            <ion-label>Pernas</ion-label>
-          </ion-segment-button>
-          <ion-segment-button value="arms">
-            <ion-label>Braços</ion-label>
-          </ion-segment-button>
-          <ion-segment-button value="core">
-            <ion-label>Core</ion-label>
-          </ion-segment-button>
-          <ion-segment-button value="cardio">
-            <ion-label>Cardio</ion-label>
-          </ion-segment-button>
-        </ion-segment>
+    <!-- Category Filter -->
+    <ion-segment [(ngModel)]="selectedCategory" (ionChange)="filterExercises()">
+      <ion-segment-button value="">
+      <ion-label>Todos</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="chest">
+      <ion-label>Peito</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="back">
+      <ion-label>Costas</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="legs">
+      <ion-label>Pernas</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="arms">
+      <ion-label>Braços</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="core">
+      <ion-label>Core</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="cardio">
+      <ion-label>Cardio</ion-label>
+      </ion-segment-button>
+    </ion-segment>
 
-        <!-- Exercise List -->
-        <ion-list>
-          <ion-item *ngFor="let exercise of filteredExercises; trackBy: trackByExercise">
-            <ion-checkbox 
-              [checked]="exercise.selected"
-              (ionChange)="onCheckboxChange(exercise, $event)"
-              slot="start">
-            </ion-checkbox>
-            <ion-label (click)="toggleExercise(exercise)">
-              <h3>{{ exercise.name }}</h3>
-              <p>{{ getCategoryName(exercise.category) }}</p>
-              <p class="exercise-description">{{ exercise.instructions | slice:0:100 }}...</p>
-            </ion-label>
-          </ion-item>
-        </ion-list>
+    <!-- Exercise List -->
+    <ion-list>
+      <ion-item *ngFor="let exercise of filteredExercises; trackBy: trackByExercise">
+      <ion-checkbox 
+        [checked]="exercise.selected"
+        (ionChange)="onCheckboxChange(exercise, $event)"
+        slot="start">
+      </ion-checkbox>
+      <ion-label (click)="toggleExercise(exercise)">
+        <h3>{{ exercise.name }}</h3>
+        <p>{{ getCategoryName(exercise.category) }}</p>
+        <p class="exercise-description">{{ exercise.instructions | slice:0:100 }}...</p>
+      </ion-label>
+      </ion-item>
+    </ion-list>
 
-        <!-- Empty State -->
-        <div *ngIf="filteredExercises.length === 0" class="empty-state">
-          <ion-icon name="fitness-outline"></ion-icon>
-          <h3>Nenhum exercício encontrado</h3>
-          <p>Tente ajustar os filtros de busca</p>
-        </div>
-      </div>
-    </ion-content>
+    <!-- Empty State -->
+    <div *ngIf="filteredExercises.length === 0" class="empty-state">
+      <ion-icon name="fitness-outline"></ion-icon>
+      <h3>Nenhum exercício encontrado</h3>
+      <p>Tente ajustar os filtros de busca</p>
+    </div>
+    </div>
+  </ion-content>
 
-    <ion-footer>
-      <ion-toolbar>
-        <div class="footer-content">
-          <span>{{ getFooterText() }}</span>
-          <ion-button 
-            (click)="saveSelection()" 
-            [disabled]="false"
-            fill="solid" 
-            [color]="getSelectedCount() === 0 && hasOriginalExercises() ? 'success' : 'primary'">
-            {{ getButtonText() }}
-          </ion-button>
-        </div>
-      </ion-toolbar>
-    </ion-footer>
+  <ion-footer>
+    <ion-toolbar>
+    <div class="footer-content">
+      <span>{{ getFooterText() }}</span>
+      <ion-button 
+      (click)="saveSelection()" 
+      [disabled]="false"
+      fill="solid" 
+      [color]="getSelectedCount() === 0 && hasOriginalExercises() ? 'success' : 'primary'">
+      {{ getButtonText() }}
+      </ion-button>
+    </div>
+    </ion-toolbar>
+  </ion-footer>
   `,
-    styles: [`
-    .modal-content {
-      padding: 16px;
-    }
+  styles: [`
+  .modal-content {
+    padding: 16px;
+  }
 
-    .empty-state {
-      text-align: center;
-      padding: 40px 20px;
-      color: var(--ion-color-medium);
-    }
+  .empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--ion-color-medium);
+  }
 
-    .empty-state ion-icon {
-      font-size: 64px;
-      margin-bottom: 16px;
-    }
+  .empty-state ion-icon {
+    font-size: 64px;
+    margin-bottom: 16px;
+  }
 
-    .exercise-description {
-      color: var(--ion-color-medium);
-      font-size: 0.9em;
-    }
+  .exercise-description {
+    color: var(--ion-color-medium);
+    font-size: 0.9em;
+  }
 
-    .footer-content {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 8px 16px;
-      width: 100%;
-    }
+  .footer-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 16px;
+    width: 100%;
+  }
 
-    ion-segment {
-      margin-bottom: 16px;
-    }
+  ion-segment {
+    margin-bottom: 16px;
+    overflow-x: auto;
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE and Edge */
+  }
+
+  ion-segment::-webkit-scrollbar {
+    display: none; /* Chrome, Safari and Opera */
+  }
   `]
 })
 export class ExerciseSelectionModalComponent implements OnInit {
-    availableExercises: ExerciseLibraryItem[] = [];
-    selectedExercises: ExerciseLibraryItem[] = [];
-    filteredExercises: ExerciseLibraryItem[] = [];
-    dayName: string = '';
-    searchTerm: string = '';
-    selectedCategory: string = '';
+  availableExercises: ExerciseLibraryItem[] = [];
+  selectedExercises: ExerciseLibraryItem[] = [];
+  filteredExercises: ExerciseLibraryItem[] = [];
+  dayName: string = '';
+  searchTerm: string = '';
+  selectedCategory: string = '';
 
-    constructor(private modalController: ModalController) { }
+  constructor(private modalController: ModalController) { }
 
-    ngOnInit() {
-        console.log('Modal ngOnInit - availableExercises:', this.availableExercises.length);
-        console.log('Modal ngOnInit - selectedExercises:', this.selectedExercises.length);
+  ngOnInit() {
+    console.log('Modal ngOnInit - availableExercises:', this.availableExercises.length);
+    console.log('Modal ngOnInit - selectedExercises:', this.selectedExercises.length);
 
-        // Ensure we have clean copies and properly mark selected exercises
-        this.initializeSelection();
-        this.filterExercises();
+    // Ensure we have clean copies and properly mark selected exercises
+    this.initializeSelection();
+    this.filterExercises();
+  }
+
+  private initializeSelection() {
+    // Create a Set of selected exercise IDs for fast lookup
+    const selectedIds = new Set(this.selectedExercises.map(ex => ex.id));
+
+    // Mark exercises as selected if they are in the selectedExercises array
+    this.availableExercises.forEach(exercise => {
+      exercise.selected = selectedIds.has(exercise.id);
+    });
+
+    console.log('Initialization complete - selected count:', this.getSelectedCount());
+  }
+
+  filterExercises() {
+    this.filteredExercises = this.availableExercises.filter(exercise => {
+      const matchesSearch = !this.searchTerm ||
+        exercise.name.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
+        exercise.instructions.toLowerCase().includes(this.searchTerm.toLowerCase());
+
+      const matchesCategory = !this.selectedCategory || exercise.category === this.selectedCategory;
+
+      return matchesSearch && matchesCategory;
+    });
+
+    console.log('Filter applied - showing', this.filteredExercises.length, 'of', this.availableExercises.length, 'exercises');
+  }
+
+  onCheckboxChange(exercise: ExerciseLibraryItem, event: { detail: { checked: boolean } }) {
+    console.log('Checkbox change for:', exercise.name, 'checked:', event.detail.checked);
+    exercise.selected = event.detail.checked;
+    console.log('Updated state:', exercise.selected, 'Total selected:', this.getSelectedCount());
+  }
+
+  toggleExercise(exercise: ExerciseLibraryItem) {
+    console.log('Toggling exercise:', exercise.name, 'current state:', exercise.selected);
+    exercise.selected = !exercise.selected;
+    console.log('New state:', exercise.selected, 'Total selected:', this.getSelectedCount());
+  }
+
+  trackByExercise(index: number, exercise: ExerciseLibraryItem): string {
+    return exercise.id;
+  }
+
+  getSelectedCount(): number {
+    return this.availableExercises.filter(ex => ex.selected).length;
+  }
+
+  hasOriginalExercises(): boolean {
+    return this.selectedExercises && this.selectedExercises.length > 0;
+  }
+
+  getFooterText(): string {
+    const selectedCount = this.getSelectedCount();
+    
+    if (selectedCount === 0 && this.hasOriginalExercises()) {
+      return 'Tornar dia de descanso';
+    }
+    
+    return `${selectedCount} exercícios selecionados`;
+  }
+
+  getButtonText(): string {
+    const selectedCount = this.getSelectedCount();
+    
+    if (selectedCount === 0 && this.hasOriginalExercises()) {
+      return 'Salvar';
+    }
+    
+    if (selectedCount === 0) {
+      return 'Cancelar';
+    }
+    
+    return `Adicionar ${selectedCount} exercício(s)`;
+  }
+
+  getCategoryName(category: string): string {
+    const categoryNames: { [key: string]: string } = {
+      'chest': 'Peito',
+      'back': 'Costas',
+      'legs': 'Pernas',
+      'shoulders': 'Ombros',
+      'arms': 'Braços',
+      'core': 'Core',
+      'cardio': 'Cardio'
+    };
+    return categoryNames[category] || category;
+  }
+
+  async saveSelection() {
+    console.log('Saving selection...');
+
+    const selectedCount = this.getSelectedCount();
+
+    // Se não há exercícios selecionados mas havia exercícios originalmente,
+    // confirme se o usuário quer tornar o dia um dia de descanso
+    if (selectedCount === 0 && this.hasOriginalExercises()) {
+      // Salvar lista vazia (transformando em dia de descanso)
+      console.log('Converting to rest day - saving empty exercise list');
+      
+      await this.modalController.dismiss({
+        exercises: [],
+        action: 'save',
+        isRestDay: true
+      });
+      return;
     }
 
-    private initializeSelection() {
-        // Create a Set of selected exercise IDs for fast lookup
-        const selectedIds = new Set(this.selectedExercises.map(ex => ex.id));
-
-        // Mark exercises as selected if they are in the selectedExercises array
-        this.availableExercises.forEach(exercise => {
-            exercise.selected = selectedIds.has(exercise.id);
-        });
-
-        console.log('Initialization complete - selected count:', this.getSelectedCount());
+    // Se não há exercícios selecionados e não havia exercícios originalmente, cancelar
+    if (selectedCount === 0) {
+      await this.modalController.dismiss();
+      return;
     }
 
-    filterExercises() {
-        this.filteredExercises = this.availableExercises.filter(exercise => {
-            const matchesSearch = !this.searchTerm ||
-                exercise.name.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
-                exercise.instructions.toLowerCase().includes(this.searchTerm.toLowerCase());
-
-            const matchesCategory = !this.selectedCategory || exercise.category === this.selectedCategory;
-
-            return matchesSearch && matchesCategory;
-        });
-
-        console.log('Filter applied - showing', this.filteredExercises.length, 'of', this.availableExercises.length, 'exercises');
-    }
-
-    onCheckboxChange(exercise: ExerciseLibraryItem, event: any) {
-        console.log('Checkbox change for:', exercise.name, 'checked:', event.detail.checked);
-        exercise.selected = event.detail.checked;
-        console.log('Updated state:', exercise.selected, 'Total selected:', this.getSelectedCount());
-    }
-
-    toggleExercise(exercise: ExerciseLibraryItem) {
-        console.log('Toggling exercise:', exercise.name, 'current state:', exercise.selected);
-        exercise.selected = !exercise.selected;
-        console.log('New state:', exercise.selected, 'Total selected:', this.getSelectedCount());
-    }
-
-    trackByExercise(index: number, exercise: ExerciseLibraryItem): string {
-        return exercise.id;
-    }
-
-    getSelectedCount(): number {
-        return this.availableExercises.filter(ex => ex.selected).length;
-    }
-
-    hasOriginalExercises(): boolean {
-        return this.selectedExercises && this.selectedExercises.length > 0;
-    }
-
-    getFooterText(): string {
-        const selectedCount = this.getSelectedCount();
-        
-        if (selectedCount === 0 && this.hasOriginalExercises()) {
-            return 'Tornar dia de descanso';
+    // Get only the selected exercises and create clean copies
+    const selectedExercises = this.availableExercises
+      .filter(ex => {
+        const isSelected = ex.selected === true;
+        if (isSelected) {
+          console.log('Selected exercise:', ex.name);
         }
-        
-        return `${selectedCount} exercícios selecionados`;
-    }
+        return isSelected;
+      })
+      .map(exercise => {
+        // Create a clean copy without the selected property
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { selected, ...cleanExercise } = exercise;
+        return cleanExercise as ExerciseLibraryItem;
+      });
 
-    getButtonText(): string {
-        const selectedCount = this.getSelectedCount();
-        
-        if (selectedCount === 0 && this.hasOriginalExercises()) {
-            return 'Salvar';
-        }
-        
-        if (selectedCount === 0) {
-            return 'Cancelar';
-        }
-        
-        return `Adicionar ${selectedCount} exercício(s)`;
-    }
+    console.log('Total exercises being saved:', selectedExercises.length);
 
-    getCategoryName(category: string): string {
-        const categoryNames: { [key: string]: string } = {
-            'chest': 'Peito',
-            'back': 'Costas',
-            'legs': 'Pernas',
-            'shoulders': 'Ombros',
-            'arms': 'Braços',
-            'core': 'Core',
-            'cardio': 'Cardio'
-        };
-        return categoryNames[category] || category;
-    }
+    await this.modalController.dismiss({
+      exercises: selectedExercises,
+      action: 'save'
+    });
+  }
 
-    async saveSelection() {
-        console.log('Saving selection...');
-
-        const selectedCount = this.getSelectedCount();
-
-        // Se não há exercícios selecionados mas havia exercícios originalmente,
-        // confirme se o usuário quer tornar o dia um dia de descanso
-        if (selectedCount === 0 && this.hasOriginalExercises()) {
-            // Salvar lista vazia (transformando em dia de descanso)
-            console.log('Converting to rest day - saving empty exercise list');
-            
-            await this.modalController.dismiss({
-                exercises: [],
-                action: 'save',
-                isRestDay: true
-            });
-            return;
-        }
-
-        // Se não há exercícios selecionados e não havia exercícios originalmente, cancelar
-        if (selectedCount === 0) {
-            await this.modalController.dismiss();
-            return;
-        }
-
-        // Get only the selected exercises and create clean copies
-        const selectedExercises = this.availableExercises
-            .filter(ex => {
-                const isSelected = ex.selected === true;
-                if (isSelected) {
-                    console.log('Selected exercise:', ex.name);
-                }
-                return isSelected;
-            })
-            .map(exercise => {
-                // Create a clean copy without the selected property
-                const { selected, ...cleanExercise } = exercise;
-                return cleanExercise as ExerciseLibraryItem;
-            });
-
-        console.log('Total exercises being saved:', selectedExercises.length);
-
-        await this.modalController.dismiss({
-            exercises: selectedExercises,
-            action: 'save'
-        });
-    }
-
-    async closeModal() {
-        await this.modalController.dismiss();
-    }
+  async closeModal() {
+    await this.modalController.dismiss();
+  }
 }

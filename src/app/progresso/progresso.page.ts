@@ -157,13 +157,13 @@ export class ProgressoPage implements OnInit, AfterViewInit {
     }, 100);
   }
 
-  async onRefresh(event: any) {
+  async onRefresh(event: CustomEvent) {
     try {
       await this.loadProgressData();
     } catch (error) {
       console.error('Erro ao atualizar dados de progresso:', error);
     } finally {
-      event.target.complete();
+      (event.target as HTMLIonRefresherElement).complete();
     }
   }
 

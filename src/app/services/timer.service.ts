@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, Subject, interval, Subscription } from 'rxjs';
-import { takeUntil, map } from 'rxjs/operators';
+import { BehaviorSubject, Subject, interval, Subscription } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 export interface TimerState {
   isRunning: boolean;
@@ -157,7 +157,6 @@ export class TimerService {
       } else {
         // Retomar: ajustar tempo de início
         const now = new Date();
-        const pauseDuration = current.pausedTime || 0;
         
         this.workoutTimerSubject.next({
           ...current,
@@ -237,7 +236,8 @@ export class TimerService {
   playSound(type: 'start' | 'complete' | 'warning' = 'complete'): void {
     // Implementação básica com Web Audio API
     try {
-      const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+      const AudioContextConstructor = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
+      const audioContext = new AudioContextConstructor();
       const oscillator = audioContext.createOscillator();
       const gainNode = audioContext.createGain();
 

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { Workout, Exercise, Day, Set } from '../models';
+import { Workout } from '../models';
 import { DataService } from './data.service';
 import { AuthService } from './auth.service';
 
@@ -18,21 +18,21 @@ export class WorkoutService {
     const data = this.dataService.getCurrentData();
     if (!data) return new Observable(observer => observer.next([]));
     
-    const workouts = data.workouts
-      .filter((w: Workout) => w.dayId === dayId)
-      .sort((a: Workout, b: Workout) => a.order - b.order);
+    const workouts = (data.workouts as Record<string, unknown>[])
+      .filter((w: Record<string, unknown>) => w['dayId'] === dayId)
+      .sort((a: Record<string, unknown>, b: Record<string, unknown>) => (a['order'] as number) - (b['order'] as number));
     
     // Carregar exercícios para cada workout
-    const workoutsWithExercises = workouts.map((workout: Workout) => {
-      const exercises = data.exercises
-        .filter((e: Exercise) => e.workoutId === workout.id)
-        .sort((a: Exercise, b: Exercise) => a.order - b.order);
+    const workoutsWithExercises = workouts.map((workout: Record<string, unknown>) => {
+      const exercises = (data.exercises as Record<string, unknown>[])
+        .filter((e: Record<string, unknown>) => e['workoutId'] === workout['id'])
+        .sort((a: Record<string, unknown>, b: Record<string, unknown>) => (a['order'] as number) - (b['order'] as number));
       
       // Carregar sets para cada exercício
-      const exercisesWithSets = exercises.map((exercise: Exercise) => ({
+      const exercisesWithSets = exercises.map((exercise: Record<string, unknown>) => ({
         ...exercise,
-        sets: data.sets
-          .filter((s: Set) => s.exerciseId === exercise.id)
+        sets: (data.sets as Record<string, unknown>[])
+          .filter((s: Record<string, unknown>) => s['exerciseId'] === exercise['id'])
       }));
 
       return {
@@ -41,9 +41,9 @@ export class WorkoutService {
       };
     });
 
-    this.workoutsSubject.next(workoutsWithExercises);
+    this.workoutsSubject.next(workoutsWithExercises as unknown as Workout[]);
     return new Observable(observer => {
-      observer.next(workoutsWithExercises);
+      observer.next(workoutsWithExercises as unknown as Workout[]);
       observer.complete();
     });
   }  createWorkout(dayId: string, workoutData: Omit<Workout, 'id' | 'dayId' | 'exercises'>): Observable<Workout> {
@@ -55,7 +55,7 @@ export class WorkoutService {
       }
       
       // Verificar se o dia existe
-      const day = data.days.find((d: Day) => d.id === dayId);
+      const day = (data.days as Record<string, unknown>[]).find((d: Record<string, unknown>) => d['id'] === dayId);
       if (!day) {
         observer.error(new Error('Dia não encontrado'));
         return;
@@ -68,7 +68,7 @@ export class WorkoutService {
         exercises: []
       };
 
-      data.workouts.push(newWorkout);
+      (data.workouts as Record<string, unknown>[]).push(newWorkout as unknown as Record<string, unknown>);
       
       this.dataService.saveData(data).then(() => {
         // Atualizar lista local
@@ -76,7 +76,7 @@ export class WorkoutService {
         this.workoutsSubject.next([...currentWorkouts, newWorkout]);
         observer.next(newWorkout);
         observer.complete();
-      }).catch(error => {
+      }).catch(() => {
         observer.error(new Error('Erro ao salvar workout'));
       });
     });

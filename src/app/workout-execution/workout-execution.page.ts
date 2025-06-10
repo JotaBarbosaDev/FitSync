@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AlertController, ToastController } from '@ionic/angular';
-import { ProgressDataService } from '../services/progress-data.service';
+import { ProgressDataService, WorkoutSession } from '../services/progress-data.service';
 import { StorageService } from '../services/storage.service';
 import { WorkoutEventService } from '../services/workout-event.service';
 import { CalorieCalculationService, UserData, ExerciseCalorieData } from '../services/calorie-calculation.service';
@@ -38,9 +38,9 @@ export class WorkoutExecutionPage implements OnInit, OnDestroy {
   isWorkoutStarted: boolean = false;
   isWorkoutCompleted: boolean = false;
   workoutDuration: number = 0;
-  private workoutTimer: any;
+  private workoutTimer: NodeJS.Timeout | null = null;
   private workoutStartTime: Date | null = null;
-  private completedExerciseData: any[] = [];
+  private completedExerciseData: Record<string, unknown>[] = [];
   
   // Getters for template compatibility
   get workoutStarted(): boolean {
@@ -494,8 +494,8 @@ export class WorkoutExecutionPage implements OnInit, OnDestroy {
 
       // Calcular volume total
       const totalVolume = this.completedExerciseData.reduce((total, exercise) => {
-        return total + exercise.sets.reduce((setTotal: number, set: any) => {
-          return setTotal + (set.reps * set.weight);
+        return total + (exercise['sets'] as Record<string, unknown>[]).reduce((setTotal: number, set: Record<string, unknown>) => {
+          return setTotal + ((set['reps'] as number) * (set['weight'] as number));
         }, 0);
       }, 0);
 
@@ -510,20 +510,20 @@ export class WorkoutExecutionPage implements OnInit, OnDestroy {
       const workoutSession = {
         date: this.workoutStartTime.toISOString(),
         exercises: this.completedExerciseData.map(exercise => ({
-          exerciseId: exercise.exerciseId,
-          exerciseName: exercise.exerciseName,
-          sets: exercise.sets,
-          totalVolume: exercise.sets.reduce((total: number, set: any) => total + (set.reps * set.weight), 0),
-          muscleGroup: exercise.muscleGroup
+          exerciseId: exercise['exerciseId'] as string,
+          exerciseName: exercise['exerciseName'] as string,
+          sets: exercise['sets'] as Record<string, unknown>[],
+          totalVolume: (exercise['sets'] as Record<string, unknown>[]).reduce((total: number, set: Record<string, unknown>) => total + ((set['reps'] as number) * (set['weight'] as number)), 0),
+          muscleGroup: exercise['muscleGroup'] as string
         })),
         duration: finalDuration,
         totalVolume: totalVolume,
-        muscleGroups: [...new Set(this.completedExerciseData.map(ex => ex.muscleGroup))],
+        muscleGroups: [...new Set(this.completedExerciseData.map(ex => ex['muscleGroup'] as string))],
         notes: `${this.dayName} - ${this.completedExercises} exercícios completados - ${totalCalories} calorias queimadas`
       };
 
       // Salvar usando o ProgressDataService
-      await this.progressDataService.addWorkoutSession(workoutSession);
+      await this.progressDataService.addWorkoutSession(workoutSession as unknown as Omit<WorkoutSession, 'id'>);
 
       // TAMBÉM salvar no formato antigo para compatibilidade
       const legacySession = {
@@ -533,7 +533,7 @@ export class WorkoutExecutionPage implements OnInit, OnDestroy {
         endTime: endTime.toISOString(),
         duration: finalDuration,
         caloriesBurned: totalCalories,
-        completedExercises: this.completedExerciseData.map(ex => ex.exerciseId),
+        completedExercises: this.completedExerciseData.map(ex => ex['exerciseId'] as string),
         rating: 5,
         notes: `${this.dayName} completado`,
         status: 'completed'
@@ -596,7 +596,7 @@ export class WorkoutExecutionPage implements OnInit, OnDestroy {
     // Criar lista de exercícios realizados com dados para cálculo de calorias
     const exercisesData: ExerciseCalorieData[] = this.completedExerciseData.map(completedExercise => {
       // Encontrar o exercício original para obter os dados
-      const originalExercise = this.exercises.find(ex => ex.id === completedExercise.exerciseId);
+      const originalExercise = this.exercises.find(ex => ex.id === completedExercise['exerciseId'] as string);
       
       if (!originalExercise) {
         // Fallback para exercício desconhecido
@@ -621,7 +621,7 @@ export class WorkoutExecutionPage implements OnInit, OnDestroy {
 
     // Calcular tempo de descanso estimado (assumindo 60 segundos entre séries)
     const estimatedRestTime = this.completedExerciseData.reduce((total, exercise) => {
-      const setsCount = exercise.sets.length;
+      const setsCount = (exercise['sets'] as Record<string, unknown>[]).length;
       return total + (setsCount > 1 ? (setsCount - 1) * 1 : 0); // 1 minuto entre séries
     }, 0);
 

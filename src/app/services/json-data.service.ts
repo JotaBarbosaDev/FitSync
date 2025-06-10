@@ -109,7 +109,7 @@ export class JsonDataService {
       
       return {
         exercises: exercises as unknown as ExerciseData[],
-        achievements: achievements as AchievementData[],
+        achievements: achievements as unknown as AchievementData[],
         workoutPlans,
         muscleGroups,
         tips
@@ -142,7 +142,7 @@ export class JsonDataService {
             muscleGroup: ex.muscleGroup,
             equipment: ex.equipment
           }));
-          await this.storageService.saveExerciseData(exercisesForStorage);
+          await this.storageService.saveExerciseData(exercisesForStorage as unknown as Record<string, unknown>[]);
           
           // Convert AchievementData[] to the format expected by storage
           const achievementsForStorage = data.achievements.map(ach => ({

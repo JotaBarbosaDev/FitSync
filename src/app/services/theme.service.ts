@@ -154,7 +154,7 @@ export class ThemeService {
 
   // Escuta mudanças na preferência do sistema
   listenToSystemPreference(): void {
-    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
       if (this.getCurrentTheme() === 'auto') {
         this.applyTheme('auto');
       }

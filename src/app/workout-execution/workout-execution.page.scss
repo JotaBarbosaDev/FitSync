@@ -86,11 +86,15 @@
 .exercises-list {
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  max-height: 400px;
+  gap: 20px; /* Aumenta espaçamento entre cards */
+  max-height: 450px;
   overflow-y: auto;
+  overflow-x: hidden;
   padding-right: 8px;
   padding-bottom: 8px;
+  width: 100%;
+  box-sizing: border-box;
+  contain: layout; /* Isola o layout da lista */
 
   /* Scrollbar personalizada melhorada */
   &::-webkit-scrollbar {
@@ -114,17 +118,26 @@
 }
 
 .exercise-preview {
-  display: flex;
-  align-items: flex-start;
+  display: grid;
+  grid-template-columns: 50px 1fr;
+  grid-template-rows: 1fr;
+  gap: 18px;
+  align-items: center;
   background: var(--ion-color-light);
   border-radius: 16px;
   padding: 20px;
-  gap: 16px;
   border: 1px solid var(--ion-color-step-200);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
   overflow: hidden;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  width: 100%;
+  box-sizing: border-box;
+  max-width: 100%;
+  min-height: 140px;
+  height: auto;
+  margin-bottom: 16px;
+  contain: layout style;
 
   &::before {
     content: '';
@@ -153,14 +166,15 @@
     transition: all 0.1s ease;
   }
 
-  /* Garante que não há borders problemáticas */
+  /* Garante isolamento completo de cada card */
   * {
     box-sizing: border-box;
   }
 
+  /* Remove regras de visibilidade forçada que podem causar problemas */
   .exercise-number {
-    width: 40px;
-    height: 40px;
+    width: 44px;
+    height: 44px;
     border-radius: 50%;
     background: linear-gradient(135deg, #58602a, #b1da22);
     color: white;
@@ -173,6 +187,7 @@
     flex-shrink: 0;
     position: relative;
     transition: all 0.3s ease;
+    align-self: center;
 
     &::after {
       content: '';
@@ -194,16 +209,27 @@
   }
 
   .exercise-info {
-    flex: 1;
+    grid-column: 2;
+    grid-row: 1;
     display: flex;
     flex-direction: column;
+    justify-content: flex-start;
     gap: 12px;
+    height: 100%;
+    align-self: center;
+
+    /* Garante que todos os elementos fiquem dentro */
+    > * {
+      flex-shrink: 0;
+      overflow: hidden;
+    }
 
     .exercise-header {
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 12px;
+      min-width: 0; /* Permite que o header encolha */
 
       .exercise-name {
         font-size: 18px;
@@ -213,6 +239,11 @@
         line-height: 1.3;
         text-transform: capitalize;
         letter-spacing: -0.5px;
+        word-break: break-word; /* Quebra palavras longas */
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap; /* Mantém o nome em uma linha */
+        min-width: 0; /* Permite que encolha */
       }
 
       .exercise-emoji {
@@ -224,20 +255,27 @@
 
     .exercise-details {
       display: flex;
-      align-items: center;
-      gap: 16px;
+      align-items: flex-start;
+      gap: 10px;
       flex-wrap: wrap;
+      min-width: 0;
+      width: 100%;
+      margin-bottom: 8px;
+      max-height: 70px;
+      overflow: hidden;
 
       ion-chip {
-        --border-radius: 24px;
-        height: 32px;
-        font-size: 13px;
+        --border-radius: 20px;
+        height: 28px;
+        font-size: 12px;
         font-weight: 600;
         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
         transition: all 0.3s ease;
+        flex-shrink: 0;
+        max-width: 120px; /* Reduz largura máxima */
 
         ion-icon {
-          font-size: 16px;
+          font-size: 14px;
         }
 
         &:hover {
@@ -249,20 +287,25 @@
       .exercise-stats {
         display: flex;
         align-items: center;
-        gap: 16px;
+        gap: 8px;
+        flex-wrap: nowrap; /* Previne quebra de linha */
+        min-width: 0;
+        overflow: hidden; /* Corta stats que não cabem */
 
         .stat-item {
           display: flex;
           align-items: center;
-          gap: 6px;
-          font-size: 13px;
+          gap: 4px;
+          font-size: 11px;
           color: var(--ion-color-medium);
           font-weight: 600;
           background: var(--ion-color-step-50);
-          padding: 6px 12px;
-          border-radius: 16px;
+          padding: 4px 8px;
+          border-radius: 12px;
           border: 1px solid var(--ion-color-step-150);
           transition: all 0.3s ease;
+          flex-shrink: 0;
+          white-space: nowrap;
 
           ion-icon {
             font-size: 16px;
@@ -280,30 +323,45 @@
     .muscle-groups {
       display: flex;
       align-items: center;
-      gap: 8px;
-      font-size: 13px;
+      gap: 6px;
+      font-size: 12px;
       color: var(--ion-color-medium);
       background: linear-gradient(135deg, var(--ion-color-step-50), var(--ion-color-step-100));
-      padding: 8px 14px;
-      border-radius: 20px;
+      padding: 6px 12px;
+      border-radius: 16px;
       border: 1px solid var(--ion-color-step-150);
       box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
       transition: all 0.3s ease;
+      max-width: 100%;
+      overflow: hidden;
+      width: fit-content;
+      margin-top: 8px;
+      position: relative;
+      z-index: 1;
+      flex-shrink: 0;
+      align-self: flex-start;
 
       ion-icon {
         font-size: 16px;
         color: var(--ion-color-primary);
+        flex-shrink: 0; /* Impede que o ícone encolha */
       }
 
       span {
         font-weight: 600;
         text-transform: capitalize;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap; /* Previne quebra de linha */
+        min-width: 0; /* Permite que encolha */
       }
 
       .more-groups {
         color: var(--ion-color-primary);
         font-weight: 700;
         font-size: 12px;
+        flex-shrink: 0; /* Impede que o contador encolha */
+        white-space: nowrap;
       }
 
       &:hover {
@@ -1385,89 +1443,63 @@ body.dark,
     content: none !important;
   }
 
-  /* Garante que não há borders problemáticas */
+  /* Garantir que nenhum elemento filho seja escondido */
   * {
-    box-sizing: border-box;
+    visibility: visible !important;
+    opacity: 1 !important;
   }
 
-  /* Fix para chips com problemas visuais */
-  ion-chip {
-    &::before,
-    &::after {
-      display: none !important;
-    }
+  /* Forçar layout adequado para todos os filhos */
+  > * {
+    flex-shrink: 0;
+  }
+
+  .exercise-info > * {
+    margin-bottom: 0;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Garantir que muscle-groups seja sempre visível */
+  .muscle-groups {
+    position: relative !important;
+    display: flex !important;
+    visibility: visible !important;
+    z-index: 2 !important;
   }
 }
 
-/* Responsividade melhorada */
-@media (max-width: 480px) {
+/* Correção adicional para dispositivos pequenos */
+@media (max-width: 380px) {
   .exercise-preview {
-    padding: 16px;
-    gap: 14px;
-    border-radius: 14px;
+    flex-direction: column;
+    text-align: center;
+    min-height: 160px;
 
     .exercise-number {
-      width: 36px;
-      height: 36px;
-      font-size: 14px;
+      align-self: center;
+      margin-bottom: 12px;
     }
 
     .exercise-info {
-      gap: 10px;
+      width: 100%;
 
       .exercise-header {
-        gap: 10px;
-
-        .exercise-name {
-          font-size: 16px;
-          font-weight: 600;
-        }
-
-        .exercise-emoji {
-          font-size: 22px;
-        }
+        justify-content: center;
+        text-align: center;
       }
 
       .exercise-details {
-        gap: 12px;
-
-        ion-chip {
-          height: 28px;
-          font-size: 12px;
-
-          ion-icon {
-            font-size: 14px;
-          }
-        }
-
-        .exercise-stats {
-          gap: 12px;
-
-          .stat-item {
-            font-size: 12px;
-            padding: 5px 10px;
-
-            ion-icon {
-              font-size: 14px;
-            }
-          }
-        }
+        justify-content: center;
+        align-items: center;
       }
 
       .muscle-groups {
-        font-size: 12px;
-        padding: 6px 12px;
-
-        ion-icon {
-          font-size: 14px;
-        }
+        justify-content: center;
+        align-self: center;
+        width: auto;
       }
     }
-  }
-
-  .exercises-list {
-    gap: 12px;
-    padding-right: 6px;
   }
 }
 
@@ -1553,4 +1585,471 @@ body.dark,
 /* Animações suaves para todas as interações */
 * {
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+/* === MOBILE RESPONSIVE IMPROVEMENTS CONSOLIDADAS === */
+@media (max-width: 480px) {
+  .workout-intro {
+    padding: 16px;
+    padding-top: 60px;
+    padding-bottom: 60px;
+
+    .intro-header h1 {
+      font-size: 24px;
+    }
+  }
+
+  .exercises-list {
+    max-height: 350px;
+    gap: 12px;
+    padding-right: 4px;
+  }
+
+  .exercise-preview {
+    padding: 16px;
+    gap: 12px;
+    min-height: 160px; /* Aumenta altura para mobile */
+    margin-bottom: 20px; /* Mais espaçamento entre cards no mobile */
+
+    .exercise-info {
+      min-height: 120px; /* Garante altura suficiente no mobile */
+      max-height: 140px; /* Limita altura máxima */
+      gap: 8px;
+
+      .exercise-header {
+        gap: 8px;
+        flex-wrap: nowrap; /* Previne quebra de linha */
+
+        .exercise-name {
+          font-size: 16px;
+          white-space: nowrap; /* Mantém em uma linha */
+          overflow: hidden;
+          text-overflow: ellipsis; /* Adiciona ... se muito longo */
+          max-width: 180px;
+        }
+
+        .exercise-emoji {
+          font-size: 20px;
+          flex-shrink: 0;
+        }
+      }
+
+      .exercise-details {
+        gap: 6px;
+        flex-direction: row; /* Mantém em linha no mobile */
+        align-items: center;
+        width: 100%;
+        margin-bottom: 0px;
+        max-height: 40px; /* Limita altura dos detalhes */
+        overflow: hidden;
+
+        ion-chip {
+          height: 24px;
+          font-size: 11px;
+          max-width: 100px;
+          padding: 0 8px;
+        }
+
+        .exercise-stats {
+          gap: 4px;
+          max-width: 120px; /* Limita largura dos stats */
+
+          .stat-item {
+            padding: 2px 6px;
+            font-size: 10px;
+            min-width: 35px;
+          }
+        }
+      }
+
+      .muscle-groups {
+        padding: 4px 8px;
+        font-size: 11px;
+        width: fit-content;
+        margin-top: 4px;
+        max-width: 200px;
+        position: absolute; /* Posiciona de forma absoluta */
+        bottom: 8px; /* Fixa na parte inferior do card */
+        left: 60px; /* Deixa espaço para o número do exercício */
+
+        span {
+          max-width: 140px;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
+
+        ion-icon {
+          font-size: 12px;
+          flex-shrink: 0;
+        }
+      }
+    }
+  }
+
+  .overview-stats {
+    padding: 16px;
+    margin-bottom: 16px;
+
+    .stat-item {
+      gap: 6px;
+
+      ion-icon {
+        font-size: 20px;
+      }
+
+      span {
+        font-size: 13px;
+      }
+    }
+  }
+
+  .exercise-preview {
+    padding: 16px;
+    gap: 12px;
+
+    .exercise-number {
+      width: 32px;
+      height: 32px;
+      font-size: 14px;
+    }
+
+    .exercise-info {
+      gap: 10px;
+
+      .exercise-header {
+        gap: 8px;
+
+        .exercise-name {
+          font-size: 16px;
+        }
+
+        .exercise-emoji {
+          font-size: 20px;
+        }
+      }
+
+      .exercise-details {
+        gap: 8px;
+        flex-direction: column;
+        align-items: flex-start;
+
+        ion-chip {
+          height: 28px;
+          font-size: 12px;
+          max-width: 120px;
+        }
+
+        .exercise-stats {
+          gap: 8px;
+          width: 100%;
+          justify-content: flex-start;
+
+          .stat-item {
+            padding: 4px 10px;
+            font-size: 12px;
+          }
+        }
+      }
+
+      .muscle-groups {
+        padding: 6px 12px;
+        font-size: 12px;
+
+        span {
+          max-width: 180px;
+        }
+      }
+    }
+  }
+
+  .overview-stats {
+    padding: 16px;
+    margin-bottom: 16px;
+
+    .stat-item {
+      gap: 6px;
+
+      ion-icon {
+        font-size: 20px;
+      }
+
+      span {
+        font-size: 13px;
+      }
+    }
+  }
+}
+
+/* === TABLET RESPONSIVE IMPROVEMENTS === */
+@media (min-width: 481px) and (max-width: 768px) {
+  .workout-intro {
+    padding: 20px;
+    max-width: 500px;
+    margin: 0 auto;
+  }
+
+  .exercises-list {
+    max-height: 450px;
+  }
+
+  .exercise-preview {
+    padding: 18px;
+
+    .exercise-info {
+      .exercise-details {
+        gap: 10px;
+
+        .exercise-stats {
+          gap: 10px;
+        }
+      }
+    }
+  }
+}
+
+/* === LARGE SCREEN IMPROVEMENTS === */
+@media (min-width: 769px) {
+  .workout-intro {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 32px;
+  }
+
+  .exercises-list {
+    max-height: 500px;
+    padding-right: 12px;
+  }
+
+  .exercise-preview {
+    padding: 24px;
+    gap: 20px;
+
+    .exercise-number {
+      width: 48px;
+      height: 48px;
+      font-size: 18px;
+    }
+
+    .exercise-info {
+      gap: 16px;
+
+      .exercise-header {
+        .exercise-name {
+          font-size: 20px;
+        }
+
+        .exercise-emoji {
+          font-size: 28px;
+        }
+      }
+
+      .exercise-details {
+        gap: 16px;
+
+        ion-chip {
+          height: 36px;
+          font-size: 14px;
+          max-width: 180px;
+        }
+
+        .exercise-stats {
+          gap: 16px;
+
+          .stat-item {
+            padding: 8px 14px;
+            font-size: 14px;
+          }
+        }
+      }
+
+      .muscle-groups {
+        padding: 10px 16px;
+        font-size: 14px;
+      }
+    }
+  }
+}
+
+/* === ESTRUTURA RÍGIDA PARA CARDS DE EXERCÍCIO === */
+.exercise-preview {
+  display: grid;
+  grid-template-columns: 40px 1fr;
+  grid-template-rows: auto;
+  gap: 16px;
+  align-items: start;
+
+  .exercise-number {
+    grid-column: 1;
+    grid-row: 1;
+    align-self: start;
+  }
+
+  .exercise-info {
+    grid-column: 2;
+    grid-row: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+
+    /* Garante que todos os elementos fiquem dentro */
+    > * {
+      flex-shrink: 0;
+      overflow: hidden;
+    }
+  }
+}
+
+/* Correção específica para evitar sobreposição */
+.exercises-list .exercise-preview + .exercise-preview {
+  margin-top: 20px;
+  clear: both;
+}
+
+/* === REFINAMENTO FINAL DOS CARDS DE EXERCÍCIO === */
+.exercise-preview {
+  /* Garante disposição harmoniosa dos elementos */
+  .exercise-number {
+    margin: auto 0; /* Centraliza verticalmente */
+  }
+
+  .exercise-info {
+    /* Layout otimizado para melhor distribuição */
+    .exercise-header {
+      align-items: flex-start;
+      justify-content: center;
+      flex-direction: row;
+      
+      .exercise-name {
+        line-height: 1.4;
+        max-width: 200px;
+      }
+      
+      .exercise-emoji {
+        margin-top: 2px; /* Alinha com o texto */
+      }
+    }
+
+    .exercise-details {
+      /* Organização horizontal com overflow controlado */
+      justify-content: flex-start;
+      align-items: center;
+      
+      ion-chip {
+        margin: 2px 0;
+      }
+      
+      .exercise-stats {
+        margin-left: auto; /* Empurra para a direita */
+        
+        .stat-item {
+          font-size: 10px;
+          padding: 3px 6px;
+        }
+      }
+    }
+
+    .muscle-groups {
+      /* Posicionamento otimizado */
+      margin-top: auto; /* Empurra para baixo */
+      width: auto;
+      max-width: 250px;
+      
+      span {
+        max-width: 150px;
+      }
+    }
+  }
+
+  /* Estados de hover refinados */
+  &:hover {
+    .exercise-number {
+      transform: scale(1.05);
+    }
+    
+    .exercise-info .exercise-name {
+      color: var(--ion-color-primary);
+    }
+  }
+}
+
+/* === CORREÇÕES ESPECÍFICAS PARA MOBILE === */
+@media (max-width: 480px) {
+  .exercise-preview {
+    grid-template-columns: 42px 1fr;
+    padding: 16px;
+    gap: 14px;
+    min-height: 150px;
+
+    .exercise-number {
+      width: 38px;
+      height: 38px;
+      font-size: 14px;
+    }
+
+    .exercise-info {
+      gap: 10px;
+      
+      .exercise-header {
+        .exercise-name {
+          font-size: 15px;
+          max-width: 160px;
+        }
+        
+        .exercise-emoji {
+          font-size: 18px;
+        }
+      }
+
+      .exercise-details {
+        flex-direction: row;
+        gap: 8px;
+        max-height: 50px;
+        
+        ion-chip {
+          height: 24px;
+          font-size: 10px;
+          max-width: 80px;
+        }
+        
+        .exercise-stats {
+          .stat-item {
+            font-size: 9px;
+            padding: 2px 4px;
+          }
+        }
+      }
+
+      .muscle-groups {
+        font-size: 10px;
+        padding: 4px 8px;
+        
+        ion-icon {
+          font-size: 12px;
+        }
+        
+        span {
+          max-width: 120px;
+        }
+      }
+    }
+  }
+}
+
+/* === OTIMIZAÇÕES DE PERFORMANCE === */
+.exercises-list {
+  /* Otimização de scroll para listas longas */
+  will-change: scroll-position;
+  transform: translateZ(0); /* Força aceleração de hardware */
+  
+  .exercise-preview {
+    /* Isolamento de layout para performance */
+    will-change: transform;
+    contain: layout style paint;
+    border: 1px solid #5a5a5a;
+    
+    /* Prevent layout thrashing */
+    transform: translateZ(0);
+  }
 }

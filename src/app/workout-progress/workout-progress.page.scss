@@ -42,13 +42,13 @@ ion-content {
 .stats-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 16px;
+  gap: 10px;
 }
 
 .stat-card {
   background: var(--ion-color-dark-tint);
   border-radius: 16px;
-  padding: 20px;
+  padding: 9px;
   display: flex;
   align-items: center;
   gap: 16px;

@@ -42,6 +42,27 @@
     },
     {
       "files": [
+        "*.spec.ts",
+        "*.test.ts"
+      ],
+      "parser": "@typescript-eslint/parser",
+      "parserOptions": {
+        "project": [
+          "tsconfig.json"
+        ],
+        "createDefaultProgram": true
+      },
+      "plugins": [
+        "@angular-eslint",
+        "@typescript-eslint"
+      ],
+      "rules": {
+        "@typescript-eslint/no-explicit-any": "off",
+        "@typescript-eslint/no-unused-vars": "off"
+      }
+    },
+    {
+      "files": [
         "*.html"
       ],
       "parser": "@angular-eslint/template-parser",

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Subject, Observable } from 'rxjs';
+import { Subject } from 'rxjs';
 
 export interface WorkoutCompletedEvent {
   workoutId: string;
@@ -12,7 +12,7 @@ export interface WorkoutCompletedEvent {
 
 export interface WorkoutProgressUpdateEvent {
   type: 'workout_completed' | 'session_saved' | 'storage_updated';
-  data: any;
+  data: WorkoutCompletedEvent | Record<string, unknown>;
   timestamp: Date;
 }
 
@@ -57,7 +57,7 @@ export class WorkoutEventService {
   /**
    * Emite evento quando uma sessão é salva no storage
    */
-  emitSessionSaved(sessionData: any): void {
+  emitSessionSaved(sessionData: Record<string, unknown>): void {
     console.log('💾 WorkoutEventService: Emitindo evento de sessão salva:', sessionData);
     this.emitProgressUpdate({
       type: 'session_saved',
@@ -69,7 +69,7 @@ export class WorkoutEventService {
   /**
    * Emite evento quando dados são atualizados no storage
    */
-  emitStorageUpdated(storageKey: string, data: any): void {
+  emitStorageUpdated(storageKey: string, data: unknown): void {
     console.log(`🔄 WorkoutEventService: Emitindo evento de storage atualizado [${storageKey}]:`, data);
     this.emitProgressUpdate({
       type: 'storage_updated',

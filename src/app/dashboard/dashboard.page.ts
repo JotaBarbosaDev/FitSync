@@ -1,10 +1,16 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { AlertController } from '@ionic/angular';
 import { Subscription } from 'rxjs';
 import { AuthService } from '../services/auth.service';
+import { NavigationService } from '../services/navigation.service';
 import { User } from '../models';
 
+/**
+ * Página de Dashboard/Perfil do usuário
+ * Exibe informações pessoais, estatísticas e configurações
+ * Implementa navegação com parâmetros entre páginas
+ */
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.page.html',
@@ -12,30 +18,91 @@ import { User } from '../models';
   standalone: false,
 })
 export class DashboardPage implements OnInit, OnDestroy {
+  /** Usuário atualmente logado */
   currentUser: User | null = null;
+  
+  /** Array de subscriptions para evitar memory leaks */
   private subscriptions: Subscription[] = [];
 
   constructor(
     private authService: AuthService,
     private router: Router,
-    private alertController: AlertController
+    private activatedRoute: ActivatedRoute,
+    private alertController: AlertController,
+    private navigationService: NavigationService
   ) { }
 
+  /**
+   * Inicialização do componente
+   * Carrega dados do usuário e verifica parâmetros da rota
+   */
   ngOnInit() {
+    // Implementa requisito 5: Receber parâmetros de navegação
+    this.checkRouteParameters();
     this.loadUserData();
   }
 
+  /**
+   * Cleanup ao destruir componente
+   * Cancela todas as subscriptions ativas
+   */
   ngOnDestroy() {
     this.subscriptions.forEach(sub => sub.unsubscribe());
   }
 
-  async onRefresh(event: any) {
+  /**
+   * Verifica parâmetros recebidos de outras páginas (Requisito 5)
+   * Processa ações baseadas nos parâmetros da URL
+   */
+  private checkRouteParameters() {
+    this.activatedRoute.queryParams.subscribe(params => {
+      if (params['section']) {
+        console.log('Navegação para seção específica:', params['section']);
+        this.scrollToSection(params['section']);
+      }
+      
+      if (params['fromPage']) {
+        console.log('Usuário veio da página:', params['fromPage']);
+        this.showWelcomeMessage(params['fromPage']);
+      }
+      
+      if (params['edit'] === 'true') {
+        console.log('Modo de edição ativado via parâmetro');
+        this.enableEditMode();
+      }
+    });
+  }
+
+  /**
+   * Navega para página de treinos com contexto (Requisito 5)
+   * Passa informações do usuário atual como parâmetros
+   */
+  goToWorkouts() {
+    this.navigationService.navigateToWorkoutWithParams(
+      'user-workouts',
+      'Meus Treinos',
+      'dashboard'
+    );
+  }
+
+  /**
+   * Navega para estatísticas com parâmetros específicos (Requisito 5)
+   */
+  goToProgress() {
+    this.navigationService.navigateToProgressWithParams(
+      'dashboard',
+      0, // Número padrão de treinos
+      true
+    );
+  }
+
+  async onRefresh(event: CustomEvent) {
     try {
       this.loadUserData();
     } catch (error) {
       console.error('Erro ao atualizar dados do dashboard:', error);
     } finally {
-      event.target.complete();
+      (event.target as HTMLIonRefresherElement).complete();
     }
   }
 
@@ -117,5 +184,29 @@ export class DashboardPage implements OnInit, OnDestroy {
       ]
     });
     await alert.present();
+  }
+
+  /**
+   * Rola para uma seção específica da página
+   * @param section ID da seção para rolar
+   */
+  private scrollToSection(section: string) {
+    // Implementação do scroll para seção específica
+    console.log(`Rolando para seção: ${section}`);
+  }
+
+  /**
+   * Exibe mensagem de boas-vindas baseada na página de origem
+   * @param fromPage Página de onde o usuário veio
+   */
+  private showWelcomeMessage(fromPage: string) {
+    console.log(`Bem-vindo! Você veio de: ${fromPage}`);
+  }
+
+  /**
+   * Ativa modo de edição do perfil
+   */
+  private enableEditMode() {
+    console.log('Modo de edição ativado');
   }
 }

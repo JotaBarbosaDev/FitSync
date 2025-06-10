@@ -1,11 +1,11 @@
-<ion-app>
+<ion-app class="safe-area-app">
   <ion-menu side="start" menuId="main-menu" contentId="main" *ngIf="!isTabsPage">
     <ion-header>
       <ion-toolbar color="primary">
         <ion-title>FitSync</ion-title>
       </ion-toolbar>
     </ion-header>
-    <ion-content>
+    <ion-content class="safe-area-content">
       <div class="menu-header" *ngIf="currentUser">
         <ion-avatar class="menu-avatar">
           <img src="/assets/icon/favicon.png" alt="Avatar">
@@ -57,5 +57,5 @@
     </ion-content>
   </ion-menu>
   
-  <ion-router-outlet id="main"></ion-router-outlet>
+  <ion-router-outlet id="main" class="safe-area-router"></ion-router-outlet>
 </ion-app>

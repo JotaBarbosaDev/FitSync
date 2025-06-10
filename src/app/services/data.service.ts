@@ -47,11 +47,11 @@ export class DataService {
         if (data) {
           // Migração: adicionar password a usuários existentes
           const migratedData = this.migrateUserPasswords(data);
-          this.dataSubject.next(migratedData);
+          this.dataSubject.next(migratedData as unknown as AppData);
           
           // Salvar dados migrados se houve mudanças
           if (migratedData !== data) {
-            await this.saveToStorage(migratedData);
+            await this.saveToStorage(migratedData as unknown as AppData);
           }
           return;
         }
@@ -62,10 +62,10 @@ export class DataService {
         const parsedData = JSON.parse(localData);
         // Migração: adicionar password a usuários existentes
         const migratedData = this.migrateUserPasswords(parsedData);
-        this.dataSubject.next(migratedData);
+        this.dataSubject.next(migratedData as unknown as AppData);
         
         if (this._storage) {
-          await this._storage.set('fitSyncData', migratedData);
+          await this._storage.set('fitSyncData', migratedData as unknown as AppData);
         }
       }
     } catch (error) {
@@ -73,15 +73,16 @@ export class DataService {
     }
   }
 
-  private migrateUserPasswords(data: any): any {
-    if (!data || !data.users) return data;
+  private migrateUserPasswords(data: Record<string, unknown>): Record<string, unknown> {
+    if (!data || !data['users']) return data;
     
     let hasChanges = false;
-    const migratedUsers = data.users.map((user: any) => {
-      if (!user.password) {
+    const users = data['users'] as Record<string, unknown>[];
+    const migratedUsers = users.map((user: Record<string, unknown>) => {
+      if (!user['password']) {
         hasChanges = true;
         // Para usuário demo, usar senha demo123, para outros usar senha padrão
-        const defaultPassword = user.email === 'demo@fitsync.app' ? 'demo123' : 'password123';
+        const defaultPassword = user['email'] === 'demo@fitsync.app' ? 'demo123' : 'password123';
         return { ...user, password: defaultPassword };
       }
       return user;

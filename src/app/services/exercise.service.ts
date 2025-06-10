@@ -56,8 +56,8 @@ export class ExerciseService {
       console.log('ExerciseService: Carregando', data.exerciseLibrary.length, 'exercícios do localStorage');
       
       // Remover duplicatas baseadas no ID antes de emitir
-      const uniqueExercises = data.exerciseLibrary.filter((exercise, index, self) => 
-        index === self.findIndex(ex => ex.id === exercise.id)
+      const uniqueExercises = data.exerciseLibrary.filter((exercise: Record<string, unknown>, index: number, self: Record<string, unknown>[]) => 
+        index === self.findIndex((ex: Record<string, unknown>) => ex['id'] === exercise['id'])
       );
       
       if (uniqueExercises.length !== data.exerciseLibrary.length) {
@@ -67,7 +67,7 @@ export class ExerciseService {
         this.dataService.saveData(data);
       }
       
-      this.exerciseLibrarySubject.next(uniqueExercises);
+      this.exerciseLibrarySubject.next(uniqueExercises as unknown as ExerciseLibraryItem[]);
     } else {
       console.log('ExerciseService: Nenhum exercício encontrado no localStorage');
       this.exerciseLibrarySubject.next([]);
@@ -124,13 +124,13 @@ export class ExerciseService {
       };
 
       // Verificar se o exercício já existe para evitar duplicatas
-      const existingExercise = data.exerciseLibrary.find(ex => ex.id === newExercise.id);
+      const existingExercise = data.exerciseLibrary.find((ex: Record<string, unknown>) => ex['id'] === newExercise.id);
       if (existingExercise) {
         observer.error(new Error('Exercício já existe'));
         return;
       }
 
-      data.exerciseLibrary.push(newExercise);
+      (data.exerciseLibrary as unknown as ExerciseLibraryItem[]).push(newExercise);
 
       this.dataService.saveData(data).then(() => {
         // Atualizar lista local apenas se o exercício não existe
@@ -143,7 +143,7 @@ export class ExerciseService {
         
         observer.next(newExercise);
         observer.complete();
-      }).catch(error => {
+      }).catch(() => {
         observer.error(new Error('Erro ao salvar exercício'));
       });
     });
@@ -161,7 +161,7 @@ export class ExerciseService {
         return;
       }
 
-      const exerciseIndex = data.exerciseLibrary.findIndex((e: ExerciseLibraryItem) => e.id === exerciseId);
+      const exerciseIndex = data.exerciseLibrary.findIndex((e: Record<string, unknown>) => e['id'] === exerciseId);
       if (exerciseIndex === -1) {
         observer.error(new Error('Exercício não encontrado'));
         return;
@@ -170,18 +170,18 @@ export class ExerciseService {
       data.exerciseLibrary[exerciseIndex] = {
         ...data.exerciseLibrary[exerciseIndex],
         ...updates
-      };
+      } as Record<string, unknown>;
 
       this.dataService.saveData(data).then(() => {
         // Atualizar lista local
         const currentLibrary = this.exerciseLibrarySubject.value;
         const updatedLibrary = currentLibrary.map((e: ExerciseLibraryItem) =>
-          e.id === exerciseId ? data.exerciseLibrary![exerciseIndex] : e
+          e.id === exerciseId ? data.exerciseLibrary![exerciseIndex] as unknown as ExerciseLibraryItem : e
         );
         this.exerciseLibrarySubject.next(updatedLibrary);
-        observer.next(data.exerciseLibrary[exerciseIndex]);
+        observer.next(data.exerciseLibrary[exerciseIndex] as unknown as ExerciseLibraryItem);
         observer.complete();
-      }).catch(error => {
+      }).catch(() => {
         observer.error(new Error('Erro ao atualizar exercício'));
       });
     });
@@ -199,7 +199,7 @@ export class ExerciseService {
         return;
       }
 
-      data.exerciseLibrary = data.exerciseLibrary.filter((e: ExerciseLibraryItem) => e.id !== exerciseId);
+      data.exerciseLibrary = data.exerciseLibrary.filter((e: Record<string, unknown>) => e['id'] !== exerciseId);
 
       this.dataService.saveData(data).then(() => {
         // Atualizar lista local
@@ -207,7 +207,7 @@ export class ExerciseService {
         this.exerciseLibrarySubject.next(currentLibrary.filter((e: ExerciseLibraryItem) => e.id !== exerciseId));
         observer.next();
         observer.complete();
-      }).catch(error => {
+      }).catch(() => {
         observer.error(new Error('Erro ao deletar exercício'));
       });
     });
@@ -251,7 +251,7 @@ export class ExerciseService {
       }
 
       // Verificar se o workout existe
-      const workout = data.workouts.find((w: any) => w.id === workoutId);
+      const workout = data.workouts.find((w: Record<string, unknown>) => w['id'] === workoutId);
       if (!workout) {
         observer.error(new Error('Workout não encontrado'));
         return;
@@ -268,10 +268,10 @@ export class ExerciseService {
         demonstration: libraryExercise.demonstration,
         equipment: libraryExercise.equipment,
         muscleGroups: libraryExercise.muscleGroups,
-        order: data.exercises.filter((e: any) => e.workoutId === workoutId).length + 1
+        order: data.exercises.filter((e: Record<string, unknown>) => e['workoutId'] === workoutId).length + 1
       };
 
-      data.exercises.push(newExercise);
+      data.exercises.push(newExercise as unknown as Record<string, unknown>);
 
       // Criar as séries
       const newSets: Set[] = sets.map((setData, index) => ({
@@ -281,13 +281,13 @@ export class ExerciseService {
         order: index + 1
       }));
 
-      data.sets.push(...newSets);
+      data.sets.push(...(newSets as unknown as Record<string, unknown>[]));
       newExercise.sets = newSets;
 
       this.dataService.saveData(data).then(() => {
         observer.next(newExercise);
         observer.complete();
-      }).catch(error => {
+      }).catch(() => {
         observer.error(new Error('Erro ao criar exercício'));
       });
     });
@@ -374,8 +374,8 @@ export class ExerciseService {
       }
 
       const originalCount = data.exerciseLibrary.length;
-      const uniqueExercises = data.exerciseLibrary.filter((exercise, index, self) => 
-        index === self.findIndex(ex => ex.id === exercise.id)
+      const uniqueExercises = data.exerciseLibrary.filter((exercise: Record<string, unknown>, index: number, self: Record<string, unknown>[]) => 
+        index === self.findIndex((ex: Record<string, unknown>) => ex['id'] === exercise['id'])
       );
 
       if (uniqueExercises.length !== originalCount) {
@@ -383,7 +383,7 @@ export class ExerciseService {
         data.exerciseLibrary = uniqueExercises;
         
         this.dataService.saveData(data).then(() => {
-          this.exerciseLibrarySubject.next(uniqueExercises);
+          this.exerciseLibrarySubject.next(uniqueExercises as unknown as ExerciseLibraryItem[]);
           observer.next(true);
           observer.complete();
         }).catch(error => {

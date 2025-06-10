@@ -17,20 +17,20 @@ export { WorkoutTimer } from '../services/timer.service';
 export interface AppData {
   version: string;
   lastUpdated: string;
-  users: any[];
-  plans: any[];
-  days: any[];
-  workouts: any[];
-  exercises: any[];
-  sets: any[];
-  workoutSessions: any[];
-  exerciseLibrary: any[];
+  users: Record<string, unknown>[];
+  plans: Record<string, unknown>[];
+  days: Record<string, unknown>[];
+  workouts: Record<string, unknown>[];
+  exercises: Record<string, unknown>[];
+  sets: Record<string, unknown>[];
+  workoutSessions: Record<string, unknown>[];
+  exerciseLibrary: Record<string, unknown>[];
   // Novos dados para sistema de treinos
-  customWorkouts: any[];
-  weeklyPlans: any[];
-  workoutSessions2: any[]; // nova versão das sessões
-  workoutProgress: any[];
-  dayPlans: any[];
+  customWorkouts: Record<string, unknown>[];
+  weeklyPlans: Record<string, unknown>[];
+  workoutSessions2: Record<string, unknown>[]; // nova versão das sessões
+  workoutProgress: Record<string, unknown>[];
+  dayPlans: Record<string, unknown>[];
 }
 
 export interface ExerciseFilters {

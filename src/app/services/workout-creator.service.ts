@@ -318,8 +318,8 @@ export class WorkoutCreatorService {
   }
 
   private async addWorkoutToHistory(session: WorkoutSession): Promise<void> {
-    const history = await this.storageService.get('workout-history') || [];
-    history.push({
+    const history = (await this.storageService.get('workout-history') || []) as unknown[];
+    (history as Record<string, unknown>[]).push({
       id: session.id,
       name: session.workoutPlan.name,
       date: session.startTime,

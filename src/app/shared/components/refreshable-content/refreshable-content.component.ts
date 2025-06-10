@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
+import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
 
@@ -20,7 +20,7 @@ export class RefreshableContentComponent {
   @Input() refreshing: boolean = false;
   @Output() refresh = new EventEmitter<void>();
 
-  async onRefresh(event: any) {
+  async onRefresh(event: Event) {
     console.log('🔄 Pull-to-refresh acionado');
     
     // Emitir evento para o componente pai
@@ -28,7 +28,7 @@ export class RefreshableContentComponent {
     
     // Aguardar um tempo mínimo para UX
     setTimeout(() => {
-      event.target.complete();
+      (event.target as HTMLIonRefresherElement).complete();
     }, 1000);
   }
 }

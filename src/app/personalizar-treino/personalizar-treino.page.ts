@@ -311,7 +311,7 @@ export class PersonalizarTreinoPage implements OnInit {
         exerciciosSugeridos = this.sugerirExerciciosMaratona(nivel, tempo);
         break;
       default:
-        exerciciosSugeridos = this.sugerirExerciciosEquilibrados(nivel, tempo);
+        exerciciosSugeridos = this.sugerirExerciciosEquilibrados(nivel);
     }
 
     // Aplicar sugestões
@@ -381,7 +381,7 @@ export class PersonalizarTreinoPage implements OnInit {
     }));
   }
 
-  private sugerirExerciciosEquilibrados(nivel: string, _tempo: number): ExercicioPersonalizado[] {
+  private sugerirExerciciosEquilibrados(nivel: string): ExercicioPersonalizado[] {
     const exerciciosVariados = this.exerciciosDisponies.filter((ex, index) => index < 6);
     const sets = nivel === 'beginner' ? 3 : 4;
     const reps = 12;

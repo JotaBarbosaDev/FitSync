@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { Router, NavigationEnd } from '@angular/router';
+import { Router, NavigationEnd, ActivatedRoute } from '@angular/router';
 import { MenuController, AlertController, Platform } from '@ionic/angular';
 import { Subscription } from 'rxjs';
 import { filter } from 'rxjs/operators';
@@ -10,8 +10,14 @@ import { StorageService } from './services/storage.service';
 import { JsonDataService } from './services/json-data.service';
 import { DeviceControlService } from './services/device-control.service';
 import { WorkoutManagementService } from './services/workout-management.service';
+import { NavigationService } from './services/navigation.service';
 import { User } from './models';
 
+/**
+ * Componente principal da aplicação FitSync
+ * Gerencia inicialização, navegação, menu e estado global
+ * Coordena todos os serviços principais da aplicação
+ */
 @Component({
   selector: 'app-root',
   templateUrl: 'app.component.html',
@@ -19,9 +25,16 @@ import { User } from './models';
   standalone: false,
 })
 export class AppComponent implements OnInit, OnDestroy {
+  /** Usuário atualmente logado na aplicação */
   currentUser: User | null = null;
+  
+  /** Indica se está na página de tabs (para controle do menu) */
   isTabsPage = false;
+  
+  /** Subscription para dados do usuário autenticado */
   private authSubscription?: Subscription;
+  
+  /** Subscription para mudanças de rota */
   private routerSubscription?: Subscription;
 
   constructor(
@@ -29,43 +42,46 @@ export class AppComponent implements OnInit, OnDestroy {
     private dataService: DataService,
     private themeService: ThemeService,
     private router: Router,
+    private activatedRoute: ActivatedRoute,
     private menuController: MenuController,
     private alertController: AlertController,
     private platform: Platform,
     private storageService: StorageService,
     private jsonDataService: JsonDataService,
     private deviceControlService: DeviceControlService,
-    private workoutManagementService: WorkoutManagementService
+    private workoutManagementService: WorkoutManagementService,
+    private navigationService: NavigationService
   ) {
+    // Inicia inicialização da aplicação
     this.initializeApp();
   }
 
+  /**
+   * Inicializa a aplicação FitSync
+   * Configura storage, dispositivo, dados e sincronização
+   * Garante que todos os serviços estejam prontos antes do uso
+   */
   async initializeApp() {
+    // Aguarda plataforma estar pronta (Ionic/Capacitor)
     await this.platform.ready();
 
-    // Initialize storage first
+    // Inicializa storage primeiro (necessário para outros serviços)
     await this.storageService.init();
 
-    // Initialize device controls early to prevent UI issues
+    // Configura controles do dispositivo (StatusBar, orientação, etc.)
     await this.deviceControlService.initializeDevice();
 
-    // Initialize migrated services with Ionic Storage
-    // Os serviços DataService, AuthService e ThemeService já se inicializam automaticamente
-
-    // Initialize JSON data
+    // Carrega dados JSON da aplicação
     await this.jsonDataService.initializeAppData();
 
-    // Initialize device controls
-    await this.deviceControlService.initializeDevice();
-
-    // Setup orientation listener
+    // Configura listener de orientação do dispositivo
     await this.deviceControlService.setupOrientationListener();
 
-    // Synchronize workout data to fix statistics issues
-    console.log('Synchronizing workout data...');
+    // Sincroniza dados de treino para corrigir estatísticas
+    console.log('🔄 Sincronizando dados de treino...');
     await this.workoutManagementService.synchronizeWorkoutData();
 
-    console.log('FitSync app initialized successfully');
+    console.log('✅ FitSync inicializada com sucesso');
   }
 
   ngOnInit() {

@@ -212,7 +212,7 @@ export class LoginPage implements OnInit {
     }
   }
 
-  updateField(field: string, event: any) {
+  updateField(field: string, event: CustomEvent) {
     const value = typeof event === 'object' && event.detail ? event.detail.value : '';
     if (field === 'email') {
       this.loginData.email = value;
@@ -239,16 +239,16 @@ export class LoginPage implements OnInit {
       console.group('🔍 DEBUG - Estado do Sistema');
       console.log('📊 Utilizadores registados:', debugInfo.totalUsers);
       console.log('💾 Storage inicializado:', debugInfo.storageInitialized ? 'Sim' : 'Não');
-      console.log('👤 Utilizador atual:', debugInfo.currentUser ? debugInfo.currentUser.email : 'Nenhum');
+      console.log('👤 Utilizador atual:', debugInfo.currentUser ? debugInfo.currentUser['email'] : 'Nenhum');
       console.log('📧 Emails registados:');
       users.forEach((user, index) => {
-        console.log(`   ${index + 1}. ${user.email} (${user.name})`);
+        console.log(`   ${index + 1}. ${user['email']} (${user['name']})`);
       });
       console.groupEnd();
       
       // Criar mensagem simples para o alert
       const userCount = debugInfo.totalUsers;
-      const currentUser = debugInfo.currentUser ? debugInfo.currentUser.email : 'Nenhum';
+      const currentUser = debugInfo.currentUser ? debugInfo.currentUser['email'] : 'Nenhum';
       const storageStatus = debugInfo.storageInitialized ? 'Sim' : 'Não';
       
       // Usar uma mensagem mais simples
@@ -271,11 +271,11 @@ Ver console para detalhes completos`;
             text: 'Ver Detalhes',
             handler: () => {
               // Mostrar informações mais detalhadas no console
-              console.table(users.map(u => ({
-                ID: u.id,
-                Email: u.email,
-                Nome: u.name,
-                'Criado em': u.createdAt
+              console.table(users.map((u: Record<string, unknown>) => ({
+                ID: u['id'],
+                Email: u['email'],
+                Nome: u['name'],
+                'Criado em': u['createdAt']
               })));
               this.showToast('Detalhes no console do navegador (F12)', 'success');
             }

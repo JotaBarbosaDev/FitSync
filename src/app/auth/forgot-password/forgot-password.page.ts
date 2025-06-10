@@ -71,7 +71,7 @@ export class ForgotPasswordPage implements OnInit {
         `Para demonstração, use o código: ${this.generatedCode}`
       );
       
-    } catch (error) {
+    } catch {
       await loading.dismiss();
       this.showAlert('Erro', 'Não foi possível enviar o código. Tente novamente.');
     } finally {
@@ -118,7 +118,7 @@ export class ForgotPasswordPage implements OnInit {
       
       this.router.navigate(['/auth/login']);
       
-    } catch (error) {
+    } catch {
       await loading.dismiss();
       this.showAlert('Erro', 'Não foi possível atualizar a senha. Tente novamente.');
     } finally {

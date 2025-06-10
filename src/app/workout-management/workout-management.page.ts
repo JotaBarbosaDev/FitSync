@@ -124,7 +124,8 @@ export class WorkoutManagementPage implements OnInit, OnDestroy {
     modal.onDidDismiss().then(async (result) => {
       if (result.data && result.data.exercises !== undefined) {
         // Create clean copies without the selected property to avoid state pollution
-        const cleanExercises = result.data.exercises.map((exercise: any) => {
+        const cleanExercises = result.data.exercises.map((exercise: Record<string, unknown>) => {
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
           const { selected, ...cleanExercise } = exercise;
           return cleanExercise;
         });
@@ -203,14 +204,14 @@ export class WorkoutManagementPage implements OnInit, OnDestroy {
     this.exerciseSubscription?.unsubscribe();
   }
 
-  async onRefresh(event: any) {
+  async onRefresh(event: CustomEvent) {
     try {
       await this.loadWeeklyPlan();
       await this.loadAvailableExercises();
     } catch (error) {
       console.error('Erro ao atualizar plano de treino:', error);
     } finally {
-      event.target.complete();
+      (event.target as HTMLIonRefresherElement).complete();
     }
   }
 }

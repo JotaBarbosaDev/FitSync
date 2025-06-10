@@ -6,7 +6,7 @@ import { Router } from '@angular/router';
 import { WorkoutManagementService } from '../services/workout-management.service';
 import { StorageService } from '../services/storage.service';
 import { CalorieCalculationService, UserData, ExerciseCalorieData } from '../services/calorie-calculation.service';
-import { WorkoutSession } from '../models/workout-system.model';
+import { WorkoutSession, CompletedSet } from '../models/workout-system.model';
 
 @Component({
   selector: 'app-bicep-workout',
@@ -116,7 +116,7 @@ export class BicepWorkoutComponent implements OnInit {
   currentSet = 1;
   progress = 0;
   workoutStartTime: Date = new Date();
-  completedSets: any[] = [];
+  completedSets: Record<string, unknown>[] = [];
 
   // Image handling properties
   exerciseImageSrc = 'assets/images/exercises/bicep-curl.jpg';
@@ -313,12 +313,12 @@ export class BicepWorkoutComponent implements OnInit {
         exercises: [{
           exerciseId: 'bicep-curl',
           sets: this.completedSets.map(set => ({
-            reps: set.reps,
-            weight: set.weight,
-            completed: set.completed,
-            startTime: set.completedAt,
-            endTime: set.completedAt
-          })),
+            reps: set['reps'] as number,
+            weight: set['weight'] as number,
+            completed: set['completed'] as boolean,
+            startTime: set['completedAt'] as Date,
+            endTime: set['completedAt'] as Date
+          })) as CompletedSet[],
           restTimes: [60, 60], // 60s entre séries
           startTime: this.workoutStartTime,
           endTime: endTime
@@ -377,11 +377,12 @@ export class BicepWorkoutComponent implements OnInit {
     }
   }
 
-  onImageError(event: any) {
+  onImageError(event: Event) {
+    const target = event.target as HTMLImageElement;
     // Prevent infinite loop by checking if error already occurred
     if (this.imageErrorOccurred) {
       // Use default base64 image as final fallback
-      event.target.src = this.defaultImageSrc;
+      target.src = this.defaultImageSrc;
       return;
     }
 
@@ -390,16 +391,16 @@ export class BicepWorkoutComponent implements OnInit {
     // Try fallback image first
     if (this.exerciseImageSrc !== this.fallbackImageSrc) {
       this.exerciseImageSrc = this.fallbackImageSrc;
-      event.target.src = this.fallbackImageSrc;
+      target.src = this.fallbackImageSrc;
     } else {
       // If fallback also fails, use default base64 image
-      event.target.src = this.defaultImageSrc;
+      target.src = this.defaultImageSrc;
     }
 
     console.warn('Exercise image failed to load, using fallback');
   }
 
-  onImageLoad(event: any) {
+  onImageLoad(_event: Event): void {
     // Reset error flag when image loads successfully
     this.imageErrorOccurred = false;
     console.log('Exercise image loaded successfully');

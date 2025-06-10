@@ -58,13 +58,13 @@ export class WorkoutProgressPage implements OnInit, OnDestroy {
   isLoading = true;
   private subscriptions: Subscription[] = [];
   private storage?: Storage;
-  private pendingTimeouts: any[] = [];
+  private pendingTimeouts: NodeJS.Timeout[] = [];
 
   // Cache para evitar recálculos desnecessários e loops infinitos
   private _cachedStreakText: string = '0 dias';
   private _cachedLastWorkoutText: string = 'Nenhum treino realizado';
   private _cachedMetricLabel: string = 'Treinos Realizados';
-  private _cachedAchievements: any[] = [];
+  private _cachedAchievements: Record<string, unknown>[] = [];
   private _lastCacheUpdateData: string = '';
   private _isUpdatingCharts: boolean = false;
 
@@ -493,7 +493,7 @@ export class WorkoutProgressPage implements OnInit, OnDestroy {
     console.log('🔍 DEBUG: Total de sessões combinadas:', allSessions.length);
 
     // Filtrar sessões desta semana com otimização
-    const thisWeekSessions = allSessions.filter((session: any) => {
+    const thisWeekSessions = allSessions.filter((session: WorkoutSession) => {
       try {
         let sessionDate;
         
@@ -549,11 +549,11 @@ export class WorkoutProgressPage implements OnInit, OnDestroy {
     }
 
     // Converter para o formato esperado pela página workout-progress
-    this.recentSessions = uniqueSessions.map((session: any) => ({
-      id: session.id || `session-${Date.now()}-${Math.random()}`,
-      workoutId: session.workoutId || `workout-${session.id}`,
-      userId: session.userId || 'current-user',
-      startTime: new Date(session.startTime || session.date),
+    this.recentSessions = uniqueSessions.map((session: WorkoutSession | Record<string, unknown>) => ({
+      id: (session as Record<string, unknown>)['id'] as string || `session-${Date.now()}-${Math.random()}`,
+      workoutId: (session as Record<string, unknown>)['workoutId'] as string || `workout-${(session as Record<string, unknown>)['id']}`,
+      userId: (session as Record<string, unknown>)['userId'] as string || 'current-user',
+      startTime: new Date((session as Record<string, unknown>)['startTime'] as string || (session as Record<string, unknown>)['date'] as string),
       endTime: session.endTime ? new Date(session.endTime) : new Date(new Date(session.startTime || session.date).getTime() + (session.duration * 60000)),
       duration: session.duration || 0,
       exercises: session.exercises || [],
@@ -614,13 +614,13 @@ export class WorkoutProgressPage implements OnInit, OnDestroy {
   }
 
   // Método para remover duplicatas (mesmo da página home)
-  private removeDuplicateSessions(sessions: any[]): any[] {
+  private removeDuplicateSessions(sessions: Record<string, unknown>[]): Record<string, unknown>[] {
     const seen = new Set<string>();
-    return sessions.filter((session: any) => {
+    return sessions.filter((session: Record<string, unknown>) => {
       try {
-        const sessionTime = new Date(session.startTime || session.date).getTime();
+        const sessionTime = new Date((session['startTime'] as string) || (session['date'] as string)).getTime();
         const roundedTime = Math.floor(sessionTime / (5 * 60 * 1000)) * (5 * 60 * 1000); // Arredondar para intervalos de 5 min
-        const key = `${roundedTime}_${session.duration || 0}`;
+        const key = `${roundedTime}_${(session['duration'] as number) || 0}`;
         
         if (seen.has(key)) {
           return false;
@@ -634,16 +634,16 @@ export class WorkoutProgressPage implements OnInit, OnDestroy {
   }
 
   // Método para calcular minutos totais (mesmo da página home)
-  private calculateTotalMinutes(sessions: any[]): number {
-    return sessions.reduce((total: number, session: any) => {
-      const duration = session.duration || 0;
+  private calculateTotalMinutes(sessions: Record<string, unknown>[]): number {
+    return sessions.reduce((total: number, session: Record<string, unknown>) => {
+      const duration = (session['duration'] as number) || 0;
       return total + (typeof duration === 'number' ? Math.max(0, Math.min(duration, 300)) : 0); // Limitar a 300 min por sessão
     }, 0);
   }
 
   // Método para calcular calorias totais (mesmo da página home)
-  private calculateTotalCalories(sessions: any[]): number {
-    return sessions.reduce((total: number, session: any) => {
+  private calculateTotalCalories(sessions: Record<string, unknown>[]): number {
+    return sessions.reduce((total: number, session: Record<string, unknown>) => {
       try {
         // Para o formato legado
         if (session.caloriesBurned && typeof session.caloriesBurned === 'number') {

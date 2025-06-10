@@ -2,8 +2,8 @@ import { Injectable } from '@angular/core';
 import { DataService } from './data.service';
 import { AuthService } from './auth.service';
 import { WorkoutManagementService } from './workout-management.service';
-import { AppData, User } from '../models';
-import { CustomWorkout, WeeklyPlan, DayPlan, WorkoutExercise } from '../models/workout-system.model';
+import { User } from '../models';
+import { CustomWorkout, WeeklyPlan } from '../models/workout-system.model';
 import { Observable, take } from 'rxjs';
 
 @Injectable({
@@ -75,9 +75,9 @@ export class DemoDataService {
     };
 
     // Verificar se usuário já existe
-    const existingUser = data.users.find(u => u.email === demoUser.email);
+    const existingUser = data.users.find((u: Record<string, unknown>) => u['email'] === demoUser.email);
     if (!existingUser) {
-      data.users.push(demoUser);
+      (data.users as unknown as User[]).push(demoUser);
       await this.dataService.saveData(data);
     }
   }
@@ -87,8 +87,8 @@ export class DemoDataService {
     if (!data) return false;
 
     // Verificar se existem treinos personalizados e plano semanal ativo
-    const hasCustomWorkouts = (data.customWorkouts || []).some(w => w.createdBy === user.id);
-    const hasActivePlan = (data.weeklyPlans || []).some(p => p.userId === user.id && p.isActive);
+    const hasCustomWorkouts = (data.customWorkouts || []).some((w: Record<string, unknown>) => w['createdBy'] === user.id);
+    const hasActivePlan = (data.weeklyPlans || []).some((p: Record<string, unknown>) => p['userId'] === user.id && p['isActive']);
 
     return hasCustomWorkouts && hasActivePlan;
   }
@@ -98,7 +98,7 @@ export class DemoDataService {
 
     try {
       // 1. Criar treinos personalizados
-      const workouts = await this.createDemoCustomWorkouts(user);
+      const workouts = await this.createDemoCustomWorkouts();
       console.log('Treinos criados:', workouts.length);
 
       // 2. Criar plano semanal
@@ -111,7 +111,7 @@ export class DemoDataService {
     }
   }
 
-  private async createDemoCustomWorkouts(user: User): Promise<CustomWorkout[]> {
+  private async createDemoCustomWorkouts(): Promise<CustomWorkout[]> {
     const workouts: Omit<CustomWorkout, 'id' | 'createdAt' | 'updatedAt' | 'createdBy'>[] = [
       {
         name: 'Peito e Tríceps',

@@ -27,6 +27,7 @@ describe('DashboardPage', () => {
   const mockUser: User = {
     id: 'user1',
     email: 'test@example.com',
+    password: 'hashedPassword123',
     name: 'Test User',
     height: 175,
     weight: 70,

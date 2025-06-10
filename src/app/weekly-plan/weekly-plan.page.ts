@@ -44,13 +44,13 @@ export class WeeklyPlanPage implements OnInit {
     await this.loadData();
   }
 
-  async onRefresh(event: any) {
+  async onRefresh(event: CustomEvent) {
     try {
       await this.loadData();
     } catch (error) {
       console.error('Erro ao atualizar plano semanal:', error);
     } finally {
-      event.target.complete();
+      (event.target as HTMLIonRefresherElement).complete();
     }
   }
 

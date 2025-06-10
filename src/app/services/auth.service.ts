@@ -1,32 +1,46 @@
 import { Injectable } from '@angular/core';
 import { Observable, BehaviorSubject, of } from 'rxjs';
-import { map, tap } from 'rxjs/operators';
+import { map } from 'rxjs/operators';
 import { Storage } from '@ionic/storage-angular';
-import { User, RegisterData, LoginData } from '../models';
+import { User, RegisterData } from '../models';
 import { DataService } from './data.service';
 
+/**
+ * Serviço de autenticação da aplicação FitSync
+ * Gerencia login, registro, sessões de usuário e persistência com Ionic Storage
+ * Implementa sistema completo de autenticação local
+ */
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
+  /** Subject que mantém o estado do usuário atual */
   private currentUserSubject = new BehaviorSubject<User | null>(null);
+  
+  /** Observable público para subscrições ao usuário atual */
   public currentUser$ = this.currentUserSubject.asObservable();
   
+  /** Instância privada do Ionic Storage para persistência */
   private _storage: Storage | null = null;
 
   constructor(
     private dataService: DataService,
     private storage: Storage
   ) {
+    // Inicializa o serviço automaticamente
     this.init();
   }
 
+  /**
+   * Inicializa o serviço de autenticação
+   * Configura storage e carrega usuário salvo se existir
+   */
   private async init() {
-    // Inicializar o storage
+    // Inicializar o Ionic Storage
     const storage = await this.storage.create();
     this._storage = storage;
     
-    console.log('AuthService: Storage inicializado');
+    console.log('🔐 AuthService: Storage inicializado');
     
     // Garantir que usuário demo existe - aguardar dados carregarem
     setTimeout(() => {
@@ -56,6 +70,10 @@ export class AuthService {
     this.loadCurrentUser();
   }
 
+  /**
+   * Carrega o usuário atual a partir do storage
+   * Atualiza o estado do usuário no AuthService
+   */
   private async loadCurrentUser(): Promise<void> {
     try {
       let savedUserId: string | null = null;
@@ -70,9 +88,9 @@ export class AuthService {
       if (savedUserId) {
         const data = this.dataService.getCurrentData();
         if (data) {
-          const user = data.users.find(u => u.id === savedUserId);
+          const user = data.users.find((u: Record<string, unknown>) => u['id'] === savedUserId);
           if (user) {
-            this.currentUserSubject.next(user);
+            this.currentUserSubject.next(user as unknown as User);
           }
         }
       }
@@ -81,6 +99,10 @@ export class AuthService {
     }
   }
 
+  /**
+   * Salva o ID do usuário atual no storage
+   * @param userId ID do usuário a ser salvo
+   */
   private async saveCurrentUserId(userId: string): Promise<void> {
     try {
       if (this._storage) {
@@ -98,6 +120,9 @@ export class AuthService {
     }
   }
 
+  /**
+   * Remove o ID do usuário atual do storage
+   */
   private async removeCurrentUserId(): Promise<void> {
     try {
       if (this._storage) {
@@ -115,6 +140,11 @@ export class AuthService {
     }
   }
 
+  /**
+   * Realiza o login de um usuário
+   * @param email Email do usuário
+   * @param password Senha do usuário
+   */
   login(email: string, password: string): Observable<User> {
     return new Observable<User>(observer => {
       const data = this.dataService.getCurrentData();
@@ -130,35 +160,39 @@ export class AuthService {
       const normalizedEmail = email.toLowerCase().trim();
       
       // Encontrar usuário por email (normalizado)
-      const user = data.users.find(u => u.email.toLowerCase().trim() === normalizedEmail);
+      const user = data.users.find((u: Record<string, unknown>) => (u['email'] as string).toLowerCase().trim() === normalizedEmail);
       
       if (!user) {
         console.log('AuthService: Usuário não encontrado para email:', normalizedEmail);
-        console.log('AuthService: Emails disponíveis:', data.users.map(u => u.email));
+        console.log('AuthService: Emails disponíveis:', data.users.map((u: Record<string, unknown>) => u['email']));
         observer.error(new Error('Email ou senha incorretos'));
         return;
       }
 
-      console.log('AuthService: Usuário encontrado:', user.email);
+      console.log('AuthService: Usuário encontrado:', user['email']);
 
       // Validar password (em produção usar hash/bcrypt)
-      if (user.password !== password) {
-        console.log('AuthService: Senha incorreta para usuário:', user.email);
+      if (user['password'] !== password) {
+        console.log('AuthService: Senha incorreta para usuário:', user['email']);
         observer.error(new Error('Email ou senha incorretos'));
         return;
       }
 
-      console.log('AuthService: Login bem-sucedido para:', user.email);
+      console.log('AuthService: Login bem-sucedido para:', user['email']);
 
       // Guardar sessão de forma assíncrona
-      this.saveCurrentUserId(user.id);
-      this.currentUserSubject.next(user);
+      this.saveCurrentUserId(user['id'] as string);
+      this.currentUserSubject.next(user as unknown as User);
       
-      observer.next(user);
+      observer.next(user as unknown as User);
       observer.complete();
     });
   }
 
+  /**
+   * Registra um novo usuário na aplicação
+   * @param userData Dados do usuário a ser registrado
+   */
   register(userData: RegisterData): Observable<User> {
     return new Observable<User>(observer => {
       const data = this.dataService.getCurrentData();
@@ -173,7 +207,7 @@ export class AuthService {
       const normalizedEmail = userData.email.toLowerCase().trim();
 
       // Verificar se email já existe (normalizado)
-      const existingUser = data.users.find(u => u.email.toLowerCase().trim() === normalizedEmail);
+      const existingUser = data.users.find((u: Record<string, unknown>) => (u['email'] as string).toLowerCase().trim() === normalizedEmail);
       if (existingUser) {
         console.log('AuthService: Email já registrado:', normalizedEmail);
         observer.error(new Error('Email já está registado'));
@@ -197,7 +231,7 @@ export class AuthService {
       console.log('AuthService: Novo usuário criado:', newUser.email);
 
       // Adicionar aos dados
-      data.users.push(newUser);
+      (data.users as unknown as User[]).push(newUser);
       this.dataService.saveData(data);
 
       // Fazer login automático usando Ionic Storage
@@ -209,6 +243,9 @@ export class AuthService {
     });
   }
 
+  /**
+   * Realiza o logout do usuário atual
+   */
   logout(): Promise<void> {
     return new Promise(async (resolve) => {
       await this.removeCurrentUserId();
@@ -217,14 +254,24 @@ export class AuthService {
     });
   }
 
+  /**
+   * Retorna o usuário atualmente autenticado
+   */
   getCurrentUser(): Observable<User | null> {
     return this.currentUser$;
   }
 
+  /**
+   * Verifica se um usuário está autenticado
+   */
   isAuthenticated(): boolean {
     return this.currentUserSubject.value !== null;
   }
 
+  /**
+   * Atualiza o perfil do usuário atual
+   * @param userData Dados a serem atualizados no perfil do usuário
+   */
   updateUserProfile(userData: Partial<User>): Observable<User> {
     const currentUser = this.currentUserSubject.value;
     if (!currentUser) {
@@ -238,20 +285,22 @@ export class AuthService {
         return;
       }
 
-      const userIndex = data.users.findIndex(u => u.id === currentUser.id);
+      const userIndex = data.users.findIndex((u: Record<string, unknown>) => u['id'] === currentUser.id);
       if (userIndex === -1) {
         observer.error(new Error('Utilizador não encontrado'));
         return;
       }
 
       // Atualizar dados do utilizador
-      const updatedUser = { 
-        ...data.users[userIndex], 
+      const currentUser = data.users[userIndex] as unknown as User;
+      const updatedUser: User = { 
+        ...currentUser, 
         ...userData, 
+        id: currentUser.id, // Garantir que id não é undefined
         updatedAt: new Date() 
       };
       
-      data.users[userIndex] = updatedUser;
+      (data.users as unknown as User[])[userIndex] = updatedUser;
       this.dataService.saveData(data);
       
       this.currentUserSubject.next(updatedUser);
@@ -266,7 +315,7 @@ export class AuthService {
       map(data => {
         if (!data) return false;
         
-        const demoUser = data.users.find(u => u.email === 'demo@fitsync.app');
+        const demoUser = data.users.find((u: Record<string, unknown>) => u['email'] === 'demo@fitsync.app');
         if (!demoUser) {
           const newDemoUser: User = {
             id: 'user1',
@@ -281,7 +330,7 @@ export class AuthService {
             updatedAt: new Date()
           };
           
-          data.users.push(newDemoUser);
+          (data.users as unknown as User[]).push(newDemoUser);
           this.dataService.saveData(data);
           console.log('AuthService: Conta demo criada');
           return true;
@@ -305,7 +354,11 @@ export class AuthService {
 
     const debugInfo = {
       totalUsers: data?.users?.length || 0,
-      users: data?.users?.map(u => ({ id: u.id, email: u.email, name: u.name })) || [],
+      users: data?.users?.map((u: Record<string, unknown>) => ({ 
+        id: u['id'], 
+        email: u['email'], 
+        name: u['name'] 
+      })) || [],
       currentUserId,
       currentUser: this.currentUserSubject.value,
       storageInitialized: !!this._storage
@@ -407,7 +460,7 @@ export class AuthService {
       
       // Salvar dados da conta demo
       const currentData = this.dataService.getCurrentData();
-      const demoUser = currentData?.users?.find(u => u.email === 'demo@fitsync.app');
+      const demoUser = currentData?.users?.find((u: Record<string, unknown>) => u['email'] === 'demo@fitsync.app');
       
       if (!demoUser) {
         console.warn('⚠️ Conta demo não encontrada!');

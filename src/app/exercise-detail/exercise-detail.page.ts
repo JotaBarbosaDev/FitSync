@@ -26,21 +26,6 @@ interface PersonalRecordData {
   sets: string;
 }
 
-interface WorkoutEntry {
-  exerciseId: string;
-  exerciseName?: string;
-  sets: number;
-  reps: number;
-  weight: number;
-  notes: string;
-  date: Date;
-  completed: boolean;
-}
-
-interface TimerUpdateEvent {
-  detail?: number;
-}
-
 @Component({
   selector: 'app-exercise-detail',
   templateUrl: './exercise-detail.page.html',
@@ -409,7 +394,7 @@ export class ExerciseDetailPage implements OnInit, OnDestroy {
     this.showToast('Funcionalidade de vídeo em desenvolvimento');
   }
 
-  onTimerUpdate(timeData: any) {
+  onTimerUpdate(timeData: { seconds?: number }) {
     // Atualizar dados do timer
     this.timerSeconds = timeData.seconds || 0;
     console.log('⏰ Timer atualizado:', this.timerSeconds);

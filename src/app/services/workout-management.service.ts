@@ -2,10 +2,8 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, map, combineLatest, of, take } from 'rxjs';
 import {
   CustomWorkout,
-  WorkoutExercise,
   WeeklyPlan,
   WorkoutProgress,
-  ExerciseLibraryItem,
   DayPlan,
   SessionExercise,
   CompletedSet
@@ -29,7 +27,7 @@ export class WorkoutManagementService {
   public currentSession$ = this.currentSessionSubject.asObservable();
   public sessionTimer$ = this.sessionTimerSubject.asObservable();
 
-  private timerInterval?: any;
+  private timerInterval?: NodeJS.Timeout;
 
   constructor(
     private dataService: DataService,
@@ -63,12 +61,12 @@ export class WorkoutManagementService {
           };
 
           data.customWorkouts = data.customWorkouts || [];
-          data.customWorkouts.push(newWorkout);
+          data.customWorkouts.push(newWorkout as unknown as Record<string, unknown>);
           
           this.dataService.saveData(data).then(() => {
             observer.next(newWorkout);
             observer.complete();
-          }).catch(error => {
+          }).catch(() => {
             observer.error(new Error('Erro ao salvar treino'));
           });
         },
@@ -94,11 +92,11 @@ export class WorkoutManagementService {
             return;
           }
 
-          const userWorkouts = (data.customWorkouts || []).filter((w: CustomWorkout) => w.createdBy === user.id);
-          observer.next(userWorkouts);
+          const userWorkouts = (data.customWorkouts || []).filter((w: Record<string, unknown>) => w['createdBy'] === user.id);
+          observer.next(userWorkouts as unknown as CustomWorkout[]);
           observer.complete();
         },
-        error: (error) => {
+        error: () => {
           observer.next([]);
           observer.complete();
         }
@@ -114,7 +112,7 @@ export class WorkoutManagementService {
         return;
       }
 
-      const workoutIndex = (data.customWorkouts || []).findIndex((w: CustomWorkout) => w.id === workoutId);
+      const workoutIndex = (data.customWorkouts || []).findIndex((w: Record<string, unknown>) => w['id'] === workoutId);
       if (workoutIndex === -1) {
         observer.error(new Error('Treino não encontrado'));
         return;
@@ -124,14 +122,14 @@ export class WorkoutManagementService {
         ...data.customWorkouts[workoutIndex],
         ...updates,
         updatedAt: new Date()
-      };
+      } as CustomWorkout;
 
-      data.customWorkouts[workoutIndex] = updatedWorkout;
+      data.customWorkouts[workoutIndex] = updatedWorkout as unknown as Record<string, unknown>;
       
       this.dataService.saveData(data).then(() => {
         observer.next(updatedWorkout);
         observer.complete();
-      }).catch(error => {
+      }).catch(() => {
         observer.error(new Error('Erro ao atualizar treino'));
       });
     });
@@ -145,12 +143,12 @@ export class WorkoutManagementService {
         return;
       }
 
-      data.customWorkouts = (data.customWorkouts || []).filter((w: CustomWorkout) => w.id !== workoutId);
+      data.customWorkouts = (data.customWorkouts || []).filter((w: Record<string, unknown>) => w['id'] !== workoutId);
       
       this.dataService.saveData(data).then(() => {
         observer.next(true);
         observer.complete();
-      }).catch(error => {
+      }).catch(() => {
         observer.error(new Error('Erro ao deletar treino'));
       });
     });
@@ -208,17 +206,17 @@ export class WorkoutManagementService {
 
           // Desativar outros planos se este for ativo
           if (newPlan.isActive) {
-            data.weeklyPlans.forEach((p: WeeklyPlan) => {
-              if (p.userId === user.id) p.isActive = false;
+            data.weeklyPlans.forEach((p: Record<string, unknown>) => {
+              if (p['userId'] === user.id) p['isActive'] = false;
             });
           }
 
-          data.weeklyPlans.push(newPlan);
+          data.weeklyPlans.push(newPlan as unknown as Record<string, unknown>);
           
           this.dataService.saveData(data).then(() => {
             observer.next(newPlan);
             observer.complete();
-          }).catch(error => {
+          }).catch(() => {
             observer.error(new Error('Erro ao salvar plano semanal'));
           });
         },
@@ -244,14 +242,14 @@ export class WorkoutManagementService {
             return;
           }
 
-          const activePlan = (data.weeklyPlans || []).find((p: WeeklyPlan) =>
-            p.userId === user.id && p.isActive
+          const activePlan = (data.weeklyPlans || []).find((p: Record<string, unknown>) =>
+            p['userId'] === user.id && p['isActive']
           ) || null;
 
-          observer.next(activePlan);
+          observer.next(activePlan as WeeklyPlan | null);
           observer.complete();
         },
-        error: (error) => {
+        error: () => {
           observer.next(null);
           observer.complete();
         }
@@ -276,11 +274,11 @@ export class WorkoutManagementService {
             return;
           }
 
-          const userPlans = (data.weeklyPlans || []).filter((p: WeeklyPlan) => p.userId === user.id);
-          observer.next(userPlans);
+          const userPlans = (data.weeklyPlans || []).filter((p: Record<string, unknown>) => p['userId'] === user.id);
+          observer.next(userPlans as unknown as WeeklyPlan[]);
           observer.complete();
         },
-        error: (error) => {
+        error: () => {
           observer.next([]);
           observer.complete();
         }
@@ -321,7 +319,7 @@ export class WorkoutManagementService {
   getAllWorkouts(): Observable<CustomWorkout[]> {
     const data = this.dataService.getCurrentData();
     if (!data) return of([]);
-    return of(data.customWorkouts || []);
+    return of((data.customWorkouts || []) as unknown as CustomWorkout[]);
   }
 
   getCurrentWeeklyPlan(): Observable<WeeklyPlan | null> {
@@ -336,22 +334,25 @@ export class WorkoutManagementService {
         return;
       }
 
-      const planIndex = (data.weeklyPlans || []).findIndex((p: WeeklyPlan) => p.id === planId);
+      const planIndex = (data.weeklyPlans || []).findIndex((p: Record<string, unknown>) => p['id'] === planId);
       if (planIndex === -1) {
         observer.error(new Error('Plano não encontrado'));
         return;
       }
 
       const plan = data.weeklyPlans[planIndex];
-      plan.days[day] = dayPlan;
-      plan.updatedAt = new Date();
+      (plan as Record<string, unknown>)['days'] = {
+        ...(plan['days'] as Record<string, unknown>),
+        [day]: dayPlan
+      };
+      plan['updatedAt'] = new Date();
 
       data.weeklyPlans[planIndex] = plan;
       
       this.dataService.saveData(data).then(() => {
-        observer.next(plan);
+        observer.next(plan as unknown as WeeklyPlan);
         observer.complete();
-      }).catch(error => {
+      }).catch(() => {
         observer.error(new Error('Erro ao salvar plano'));
       });
     });
@@ -360,8 +361,8 @@ export class WorkoutManagementService {
   getWorkoutById(workoutId: string): Observable<CustomWorkout | null> {
     const data = this.dataService.getCurrentData();
     if (!data) return of(null);
-    const workout = (data.customWorkouts || []).find((w: CustomWorkout) => w.id === workoutId) || null;
-    return of(workout);
+    const workout = (data.customWorkouts || []).find((w: Record<string, unknown>) => w['id'] === workoutId) || null;
+    return of(workout as CustomWorkout | null);
   }
 
   // ===== EXECUÇÃO DE TREINOS =====
@@ -395,14 +396,14 @@ export class WorkoutManagementService {
           };
 
           data.workoutSessions2 = data.workoutSessions2 || [];
-          data.workoutSessions2.push(session);
+          data.workoutSessions2.push(session as unknown as Record<string, unknown>);
           
           this.dataService.saveData(data).then(() => {
             this.currentSessionSubject.next(session);
             this.startSessionTimer();
             observer.next(session);
             observer.complete();
-          }).catch(error => {
+          }).catch(() => {
             observer.error(new Error('Erro ao salvar sessão'));
           });
         },
@@ -425,7 +426,7 @@ export class WorkoutManagementService {
         return;
       }
 
-      const sessionIndex = (data.workoutSessions2 || []).findIndex((s: WorkoutSession) => s.id === currentSession.id);
+      const sessionIndex = (data.workoutSessions2 || []).findIndex((s: Record<string, unknown>) => s['id'] === currentSession.id);
       if (sessionIndex === -1) {
         observer.error(new Error('Sessão não encontrada'));
         return;
@@ -434,13 +435,13 @@ export class WorkoutManagementService {
       const session = data.workoutSessions2[sessionIndex];
 
       // Atualizar ou adicionar exercício
-      const exerciseIndex = session.exercises.findIndex((e: SessionExercise) => e.exerciseId === exerciseId);
+      const exerciseIndex = (session['exercises'] as SessionExercise[]).findIndex((e: SessionExercise) => e.exerciseId === exerciseId);
 
       if (exerciseIndex >= 0) {
-        session.exercises[exerciseIndex].sets = sets;
-        session.exercises[exerciseIndex].endTime = new Date();
+        (session['exercises'] as SessionExercise[])[exerciseIndex].sets = sets;
+        (session['exercises'] as SessionExercise[])[exerciseIndex].endTime = new Date();
       } else {
-        session.exercises.push({
+        (session['exercises'] as SessionExercise[]).push({
           exerciseId,
           sets,
           restTimes: [],
@@ -452,10 +453,10 @@ export class WorkoutManagementService {
       data.workoutSessions2[sessionIndex] = session;
       
       this.dataService.saveData(data).then(() => {
-        this.currentSessionSubject.next(session);
-        observer.next(session);
+        this.currentSessionSubject.next(session as unknown as WorkoutSession);
+        observer.next(session as unknown as WorkoutSession);
         observer.complete();
-      }).catch(error => {
+      }).catch(() => {
         observer.error(new Error('Erro ao salvar sessão'));
       });
     });
@@ -469,7 +470,7 @@ export class WorkoutManagementService {
         return;
       }
 
-      const sessionIndex = (data.workoutSessions2 || []).findIndex((s: WorkoutSession) => s.id === sessionId);
+      const sessionIndex = (data.workoutSessions2 || []).findIndex((s: Record<string, unknown>) => s['id'] === sessionId);
       if (sessionIndex === -1) {
         observer.error(new Error('Sessão não encontrada'));
         return;
@@ -478,13 +479,13 @@ export class WorkoutManagementService {
       const session = data.workoutSessions2[sessionIndex];
 
       // Garantir que o exercício existe
-      if (!session.exercises[exerciseIndex]) {
+      if (!(session['exercises'] as SessionExercise[])[exerciseIndex]) {
         observer.error(new Error('Exercício não encontrado na sessão'));
         return;
       }
 
       // Adicionar o set completado
-      session.exercises[exerciseIndex].sets.push({
+      (session['exercises'] as SessionExercise[])[exerciseIndex].sets.push({
         ...completedSet,
         completed: true,
         startTime: new Date(),
@@ -494,10 +495,10 @@ export class WorkoutManagementService {
       data.workoutSessions2[sessionIndex] = session;
       
       this.dataService.saveData(data).then(() => {
-        this.currentSessionSubject.next(session);
-        observer.next(session);
+        this.currentSessionSubject.next(session as unknown as WorkoutSession);
+        observer.next(session as unknown as WorkoutSession);
         observer.complete();
-      }).catch(error => {
+      }).catch(() => {
         observer.error(new Error('Erro ao salvar sessão'));
       });
     });
@@ -517,7 +518,7 @@ export class WorkoutManagementService {
         return;
       }
 
-      const sessionIndex = (data.workoutSessions2 || []).findIndex((s: WorkoutSession) => s.id === currentSession.id);
+      const sessionIndex = (data.workoutSessions2 || []).findIndex((s: Record<string, unknown>) => s['id'] === currentSession.id);
       if (sessionIndex === -1) {
         observer.error(new Error('Sessão não encontrada'));
         return;
@@ -536,7 +537,7 @@ export class WorkoutManagementService {
         status: 'completed'
       };
 
-      data.workoutSessions2[sessionIndex] = completedSession;
+      data.workoutSessions2[sessionIndex] = completedSession as unknown as Record<string, unknown>;
       
       this.dataService.saveData(data).then(() => {
         this.stopSessionTimer();
@@ -547,7 +548,7 @@ export class WorkoutManagementService {
 
         observer.next(completedSession);
         observer.complete();
-      }).catch(error => {
+      }).catch(() => {
         observer.error(new Error('Erro ao salvar sessão'));
       });
     });
@@ -567,21 +568,21 @@ export class WorkoutManagementService {
         return;
       }
 
-      const sessionIndex = (data.workoutSessions2 || []).findIndex((s: WorkoutSession) => s.id === currentSession.id);
+      const sessionIndex = (data.workoutSessions2 || []).findIndex((s: Record<string, unknown>) => s['id'] === currentSession.id);
       if (sessionIndex === -1) {
         observer.error(new Error('Sessão não encontrada'));
         return;
       }
 
       const pausedSession = { ...currentSession, status: 'paused' as const };
-      data.workoutSessions2[sessionIndex] = pausedSession;
+      data.workoutSessions2[sessionIndex] = pausedSession as unknown as Record<string, unknown>;
       
       this.dataService.saveData(data).then(() => {
         this.stopSessionTimer();
         this.currentSessionSubject.next(pausedSession);
         observer.next(pausedSession);
         observer.complete();
-      }).catch(error => {
+      }).catch(() => {
         observer.error(new Error('Erro ao salvar sessão'));
       });
     });
@@ -601,21 +602,21 @@ export class WorkoutManagementService {
         return;
       }
 
-      const sessionIndex = (data.workoutSessions2 || []).findIndex((s: WorkoutSession) => s.id === currentSession.id);
+      const sessionIndex = (data.workoutSessions2 || []).findIndex((s: Record<string, unknown>) => s['id'] === currentSession.id);
       if (sessionIndex === -1) {
         observer.error(new Error('Sessão não encontrada'));
         return;
       }
 
       const resumedSession = { ...currentSession, status: 'in-progress' as const };
-      data.workoutSessions2[sessionIndex] = resumedSession;
+      data.workoutSessions2[sessionIndex] = resumedSession as unknown as Record<string, unknown>;
       
       this.dataService.saveData(data).then(() => {
         this.startSessionTimer();
         this.currentSessionSubject.next(resumedSession);
         observer.next(resumedSession);
         observer.complete();
-      }).catch(error => {
+      }).catch(() => {
         observer.error(new Error('Erro ao salvar sessão'));
       });
     });
@@ -678,15 +679,15 @@ export class WorkoutManagementService {
           }
 
           const sessions = (data.workoutSessions2 || [])
-            .filter((s: WorkoutSession) => s.userId === user.id && s.status === 'completed')
-            .sort((a: WorkoutSession, b: WorkoutSession) =>
-              new Date(b.startTime).getTime() - new Date(a.startTime).getTime()
+            .filter((s: Record<string, unknown>) => s['userId'] === user.id && s['status'] === 'completed')
+            .sort((a: Record<string, unknown>, b: Record<string, unknown>) =>
+              new Date(b['startTime'] as Date).getTime() - new Date(a['startTime'] as Date).getTime()
             );
 
-          observer.next(sessions);
+          observer.next(sessions as unknown as WorkoutSession[]);
           observer.complete();
         },
-        error: (error) => {
+        error: () => {
           observer.next([]);
           observer.complete();
         }
@@ -712,15 +713,15 @@ export class WorkoutManagementService {
           }
 
           const progress = (data.workoutProgress || [])
-            .filter((p: WorkoutProgress) => p.exerciseId === exerciseId)
-            .sort((a: WorkoutProgress, b: WorkoutProgress) =>
-              new Date(b.date).getTime() - new Date(a.date).getTime()
+            .filter((p: Record<string, unknown>) => p['exerciseId'] === exerciseId)
+            .sort((a: Record<string, unknown>, b: Record<string, unknown>) =>
+              new Date(b['date'] as Date).getTime() - new Date(a['date'] as Date).getTime()
             );
 
-          observer.next(progress);
+          observer.next(progress as unknown as WorkoutProgress[]);
           observer.complete();
         },
-        error: (error) => {
+        error: () => {
           observer.next([]);
           observer.complete();
         }
@@ -760,7 +761,7 @@ export class WorkoutManagementService {
         personalRecord: false
       };
 
-      data.workoutProgress.push(progress);
+      data.workoutProgress.push(progress as unknown as Record<string, unknown>);
     });
 
     this.dataService.saveData(data);
@@ -835,11 +836,11 @@ export class WorkoutManagementService {
       const workoutSessions2 = data.workoutSessions2 || [];
       
       // Access additional storage sources
-      let additionalSessions: any[] = [];
+      let additionalSessions: Record<string, unknown>[] = [];
       
       try {
-        const workout_sessions = (await this.storageService.get('workout_sessions') || []) as any[];
-        const workoutHistory = (await this.storageService.get('workout-history') || []) as any[];
+        const workout_sessions = (await this.storageService.get('workout_sessions') || []) as Record<string, unknown>[];
+        const workoutHistory = (await this.storageService.get('workout-history') || []) as Record<string, unknown>[];
         additionalSessions = [...workout_sessions, ...workoutHistory];
       } catch (error) {
         console.warn('WorkoutManagementService: Could not access additional storage sources:', error);
@@ -887,14 +888,14 @@ export class WorkoutManagementService {
     }
   }
 
-  private removeDuplicateSessions(sessions: any[]): any[] {
+  private removeDuplicateSessions(sessions: Record<string, unknown>[]): Record<string, unknown>[] {
     const uniqueMap = new Map();
     
-    sessions.forEach(session => {
+    sessions.forEach((session: Record<string, unknown>) => {
       // Create a unique key based on timestamp, duration, and exercise count
-      const timestamp = session.startTime || session.date || session.timestamp;
-      const duration = session.duration || 0;
-      const exerciseCount = session.exercises ? session.exercises.length : 0;
+      const timestamp = session['startTime'] || session['date'] || session['timestamp'];
+      const duration = session['duration'] || 0;
+      const exerciseCount = session['exercises'] ? (session['exercises'] as Record<string, unknown>[]).length : 0;
       
       const key = `${timestamp}_${duration}_${exerciseCount}`;
       
@@ -908,25 +909,25 @@ export class WorkoutManagementService {
     return Array.from(uniqueMap.values());
   }
 
-  private normalizeSessionData(session: any): any {
+  private normalizeSessionData(session: Record<string, unknown>): Record<string, unknown> {
     // Normalize session data to ensure consistent format across all storage systems
     const normalized = {
-      id: session.id || `session-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-      workoutId: session.workoutId || 'unknown-workout',
-      userId: session.userId || 'current-user',
-      startTime: session.startTime || session.date || session.timestamp || new Date(),
-      endTime: session.endTime || session.startTime || session.date || session.timestamp || new Date(),
-      duration: session.duration || 0,
-      exercises: session.exercises || [],
-      caloriesBurned: session.caloriesBurned || session.calories || 0,
-      notes: session.notes || '',
-      rating: session.rating || 0,
-      status: session.status || 'completed',
-      dayOfWeek: session.dayOfWeek || new Date().toLocaleDateString('pt-BR', { weekday: 'long' }),
+      id: session['id'] || `session-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+      workoutId: session['workoutId'] || 'unknown-workout',
+      userId: session['userId'] || 'current-user',
+      startTime: session['startTime'] || session['date'] || session['timestamp'] || new Date(),
+      endTime: session['endTime'] || session['startTime'] || session['date'] || session['timestamp'] || new Date(),
+      duration: session['duration'] || 0,
+      exercises: session['exercises'] || [],
+      caloriesBurned: session['caloriesBurned'] || session['calories'] || 0,
+      notes: session['notes'] || '',
+      rating: session['rating'] || 0,
+      status: session['status'] || 'completed',
+      dayOfWeek: session['dayOfWeek'] || new Date().toLocaleDateString('pt-BR', { weekday: 'long' }),
       // Additional fields for compatibility
-      date: session.date || session.startTime || session.timestamp,
-      totalVolume: session.totalVolume || 0,
-      muscleGroups: session.muscleGroups || []
+      date: session['date'] || session['startTime'] || session['timestamp'],
+      totalVolume: session['totalVolume'] || 0,
+      muscleGroups: session['muscleGroups'] || []
     };
 
     return normalized;
