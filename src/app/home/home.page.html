@@ -164,7 +164,7 @@
                     </div>
                   </div>
                   <div class="exercise-sets">
-                    <span class="sets-info">{{ exercise.sets || 3 }}x{{ exercise.reps || 12 }}</span>
+                    <span class="sets-info">{{ getExerciseSetsDisplay(exercise) }}</span>
                     <span class="difficulty" [ngClass]="'difficulty-' + (exercise.difficulty || 'intermediate')">
                       {{ getDifficultyLabel(exercise.difficulty || 'intermediate') }}
                     </span>

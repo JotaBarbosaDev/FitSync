@@ -1387,6 +1387,29 @@ export class HomePage implements OnInit, OnDestroy {
     return labels[difficulty] || 'Médio';
   }
 
+  getExerciseSetsDisplay(exercise: any): string {
+    // Se o exercício tem um array de sets (estrutura WorkoutExercise)
+    if (exercise.sets && Array.isArray(exercise.sets) && exercise.sets.length > 0) {
+      const setsCount = exercise.sets.length;
+      const firstSet = exercise.sets[0];
+      if (firstSet.reps) {
+        return `${setsCount}x${firstSet.reps}`;
+      }
+      if (firstSet.duration) {
+        return `${setsCount}x${firstSet.duration}s`;
+      }
+      return `${setsCount} séries`;
+    }
+    
+    // Se o exercício tem propriedades diretas sets/reps (estrutura legacy ou default)
+    if (exercise.sets && exercise.reps) {
+      return `${exercise.sets}x${exercise.reps}`;
+    }
+    
+    // Fallback para valores padrão
+    return '3x12';
+  }
+
   navigateToWorkoutList() {
     this.router.navigate(['/workout-management']);
   }
