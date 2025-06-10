@@ -118,6 +118,52 @@ export class HomePage implements OnInit, OnDestroy {
     }
   }
 
+  async ionViewWillEnter() {
+    // Recarregar dados quando o usuário retornar à página
+    console.log('🔄 ionViewWillEnter - Recarregando dados da home...');
+    
+    try {
+      // IMPORTANTE: Força atualização completa do cache do storage
+      await this.storage.create();
+      
+      // Força recarregamento do treino de hoje com dados frescos
+      await this.safeLoadTodayWorkout();
+      
+      // Força recarregamento das estatísticas
+      await this.safeLoadQuickStats();
+      
+      console.log('✅ Dados da home atualizados com sucesso');
+    } catch (error) {
+      console.error('❌ Erro ao atualizar dados da home:', error);
+    }
+  }
+
+  /**
+   * Força atualização de todos os dados da página home
+   * Útil quando há mudanças no workout-management
+   */
+  public async forceRefreshData(): Promise<void> {
+    console.log('🔄 Forçando atualização completa dos dados da home...');
+    
+    try {
+      // Recarregar treino de hoje
+      await this.safeLoadTodayWorkout();
+      
+      // Recarregar estatísticas
+      await this.safeLoadQuickStats();
+      
+      // Verificar treino completado hoje
+      await this.safeCheckCompletedWorkout();
+      
+      // Recarregar conquistas recentes
+      await this.safeLoadRecentAchievements();
+      
+      console.log('✅ Atualização completa finalizada com sucesso');
+    } catch (error) {
+      console.error('❌ Erro durante atualização completa:', error);
+    }
+  }
+
 
 
   private async safeStorageCreate() {
@@ -470,7 +516,28 @@ export class HomePage implements OnInit, OnDestroy {
       return;
     }
 
-    // Verificar se há treino disponível
+    // CORREÇÃO: Sempre buscar os exercícios mais recentes diretamente do storage
+    try {
+      const todayExercises = await this.getTodayExercisesFromWeeklyPlan();
+
+      if (todayExercises && todayExercises.length > 0) {
+        console.log('💪 Iniciando treino com exercícios atualizados:', todayExercises.length, 'exercícios');
+        
+        // Navegar para execução com exercícios atualizados do plano semanal
+        this.router.navigate(['/tabs/workout-execution'], {
+          queryParams: {
+            exercises: JSON.stringify(todayExercises),
+            dayName: this.getTodayDayName(),
+            source: 'weekly-plan'
+          }
+        });
+        return;
+      }
+    } catch (error) {
+      console.warn('Erro ao carregar exercícios do plano semanal:', error);
+    }
+
+    // Se não há exercícios no plano semanal, verificar se há treino configurado
     if (!this.currentWorkout) {
       const toast = await this.toastController.create({
         message: 'Nenhum treino disponível para hoje. Configure seu plano semanal!',
@@ -485,39 +552,42 @@ export class HomePage implements OnInit, OnDestroy {
       return;
     }
 
-    // Buscar exercícios do plano semanal para navegação
-    try {
-      const todayExercises = await this.getTodayExercisesFromWeeklyPlan();
-
-      if (todayExercises && todayExercises.length > 0) {
-        console.log('💪 Iniciando treino do plano semanal:', todayExercises.length, 'exercícios');
-        
-        // Navegar para execução com exercícios do plano semanal
-        this.router.navigate(['/tabs/workout-execution'], {
-          queryParams: {
-            exercises: JSON.stringify(todayExercises),
-            dayName: this.getTodayDayName(),
-            source: 'weekly-plan'
-          }
-        });
-        return;
-      }
-    } catch (error) {
-      console.warn('Erro ao carregar exercícios do plano semanal:', error);
-    }
-
-    // Fallback para treino atual (criado pelo loadTodayWorkout)
-    if (this.currentWorkout && this.currentWorkout.exercises && this.currentWorkout.exercises.length > 0) {
-      console.log('🏃 Iniciando treino atual:', this.currentWorkout.name);
-
+    // Fallback: se chegou até aqui é porque não há exercícios atualizados
+    // Forçar atualização do treino antes de iniciar
+    console.log('⚠️ Forçando atualização do treino antes de iniciar...');
+    await this.safeLoadTodayWorkout();
+    
+    // Tentar novamente com dados atualizados
+    const refreshedExercises = await this.getTodayExercisesFromWeeklyPlan();
+    if (refreshedExercises && refreshedExercises.length > 0) {
+      console.log('✅ Treino atualizado com sucesso, iniciando...');
       this.router.navigate(['/tabs/workout-execution'], {
         queryParams: {
-          exercises: JSON.stringify(this.currentWorkout.exercises),
-          workoutId: this.currentWorkout.id,
-          workoutName: this.currentWorkout.name,
-          source: 'today'
+          exercises: JSON.stringify(refreshedExercises),
+          dayName: this.getTodayDayName(),
+          source: 'weekly-plan-refreshed'
         }
       });
+    } else {
+      // Último recurso: usar o treino atual mas avisa o usuário
+      const toast = await this.toastController.create({
+        message: '⚠️ Usando versão anterior do treino. Atualize o plano se necessário.',
+        duration: 3000,
+        position: 'bottom',
+        color: 'warning'
+      });
+      await toast.present();
+
+      if (this.currentWorkout && this.currentWorkout.exercises && this.currentWorkout.exercises.length > 0) {
+        this.router.navigate(['/tabs/workout-execution'], {
+          queryParams: {
+            exercises: JSON.stringify(this.currentWorkout.exercises),
+            workoutId: this.currentWorkout.id,
+            workoutName: this.currentWorkout.name,
+            source: 'fallback'
+          }
+        });
+      }
     }
   }
 
@@ -741,10 +811,14 @@ export class HomePage implements OnInit, OnDestroy {
       const dayKey = `weekly_exercises_day_${today}`;
       const exercises = await this.storage.get(dayKey) || [];
 
-      console.log(`Exercícios do plano semanal para hoje (${today}):`, exercises);
+      console.log(`🔍 Buscando exercícios para hoje (${today} - ${this.translateDayName(today)}):`);
+      console.log(`📊 Storage key: ${dayKey}`);
+      console.log(`📋 Exercícios encontrados:`, exercises);
+      console.log(`🔢 Total de exercícios: ${Array.isArray(exercises) ? exercises.length : 0}`);
+
       return Array.isArray(exercises) ? exercises : [];
     } catch (error) {
-      console.error('Erro ao carregar exercícios do plano semanal:', error);
+      console.error('❌ Erro ao carregar exercícios do plano semanal:', error);
       return [];
     }
   }
