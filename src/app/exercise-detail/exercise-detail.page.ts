@@ -67,12 +67,12 @@ export class ExerciseDetailPage implements OnInit, OnDestroy {
     private alertController: AlertController,
     private toastController: ToastController,
     private actionSheetController: ActionSheetController
-  ) {}
+  ) { }
 
   async ngOnInit() {
     // Lock orientation for this page
     await this.deviceControlService.lockToPortrait();
-    
+
     // Get exercise ID from route parameters
     this.route.paramMap.subscribe(params => {
       this.exerciseId = params.get('id') || '';
@@ -95,17 +95,17 @@ export class ExerciseDetailPage implements OnInit, OnDestroy {
     try {
       this.loading = true;
       this.isLoading = true;
-      
+
       console.log('🔍 Buscando exercício com ID:', this.exerciseId);
-      
+
       // Primeiro, tentar buscar no JsonDataService (exercícios padrão)
       this.exercise = await this.jsonDataService.getExercise(this.exerciseId);
-      
+
       // Se não encontrar, buscar no ExerciseService (exercícios personalizados)
       if (!this.exercise) {
         console.log('⚠️ Exercício não encontrado no JsonDataService, buscando no ExerciseService...');
         const customExercise = this.exerciseService.getExerciseById(this.exerciseId);
-        
+
         if (customExercise) {
           console.log('✅ Exercício personalizado encontrado:', customExercise.name);
           // Converter ExerciseLibraryItem para ExerciseData
@@ -114,21 +114,21 @@ export class ExerciseDetailPage implements OnInit, OnDestroy {
       } else {
         console.log('✅ Exercício padrão encontrado:', this.exercise.name);
       }
-      
+
       if (this.exercise) {
         // Load related exercises from same muscle group
         this.relatedExercises = await this.jsonDataService.getExercisesByMuscleGroup(
           this.exercise.muscleGroup
         );
-        
+
         // Remove current exercise from related
         this.relatedExercises = this.relatedExercises.filter(ex => ex.id !== this.exerciseId);
-        
+
         console.log('📋 Exercícios relacionados carregados:', this.relatedExercises.length);
       } else {
         console.error('❌ Exercício não encontrado em nenhum service');
       }
-      
+
     } catch (error) {
       console.error('Error loading exercise data:', error);
       await this.showErrorToast('Erro ao carregar dados do exercício');
@@ -150,7 +150,7 @@ export class ExerciseDetailPage implements OnInit, OnDestroy {
   async toggleFavorite() {
     try {
       const favorites = await this.storageService.get<string[]>('favoriteExercises') || [];
-      
+
       if (this.isFavorite) {
         // Remove from favorites
         const index = favorites.indexOf(this.exerciseId);
@@ -165,9 +165,9 @@ export class ExerciseDetailPage implements OnInit, OnDestroy {
         this.isFavorite = true;
         await this.showToast('Adicionado aos favoritos');
       }
-      
+
       await this.storageService.set('favoriteExercises', favorites);
-      
+
     } catch (error) {
       console.error('Error toggling favorite:', error);
       await this.showErrorToast('Erro ao atualizar favoritos');
@@ -196,7 +196,7 @@ export class ExerciseDetailPage implements OnInit, OnDestroy {
   async loadPersonalRecords() {
     try {
       const allRecords = await this.storageService.get<PersonalRecord[]>('personalRecords') || [];
-      this.personalRecords = allRecords.filter((record: PersonalRecord) => 
+      this.personalRecords = allRecords.filter((record: PersonalRecord) =>
         record.exerciseId === this.exerciseId
       );
     } catch (error) {
@@ -249,7 +249,7 @@ export class ExerciseDetailPage implements OnInit, OnDestroy {
   async savePersonalRecord(data: PersonalRecordData) {
     try {
       const allRecords = await this.storageService.get<PersonalRecord[]>('personalRecords') || [];
-      
+
       const newRecord: PersonalRecord = {
         id: Date.now().toString(),
         exerciseId: this.exerciseId,
@@ -260,13 +260,13 @@ export class ExerciseDetailPage implements OnInit, OnDestroy {
         date: new Date(),
         oneRepMax: this.calculateOneRepMax(parseFloat(data.weight), parseInt(data.reps))
       };
-      
+
       allRecords.push(newRecord);
       await this.storageService.set('personalRecords', allRecords);
-      
+
       await this.loadPersonalRecords();
       await this.showToast('Recorde pessoal salvo!');
-      
+
     } catch (error) {
       console.error('Error saving personal record:', error);
       await this.showErrorToast('Erro ao salvar recorde');
@@ -394,9 +394,10 @@ export class ExerciseDetailPage implements OnInit, OnDestroy {
     this.showToast('Funcionalidade de vídeo em desenvolvimento');
   }
 
-  onTimerUpdate(timeData: { seconds?: number }) {
+  onTimerUpdate(event: { seconds: number } | number) {
+    const seconds = typeof event === 'number' ? event : event.seconds;
     // Atualizar dados do timer
-    this.timerSeconds = timeData.seconds || 0;
+    this.timerSeconds = seconds;
     console.log('⏰ Timer atualizado:', this.timerSeconds);
   }
 

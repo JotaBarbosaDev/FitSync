@@ -54,11 +54,11 @@ export class WorkoutProgressPage implements OnInit, OnDestroy {
 
   selectedPeriod: 'week' | 'month' | 'year' = 'month';
   selectedMetric: 'frequency' | 'duration' | 'calories' = 'frequency';
-  
+
   isLoading = true;
   private subscriptions: Subscription[] = [];
   private storage?: Storage;
-  private pendingTimeouts: NodeJS.Timeout[] = [];
+  private pendingTimeouts: any[] = [];
 
   // Cache para evitar recálculos desnecessários e loops infinitos
   private _cachedStreakText: string = '0 dias';
@@ -72,7 +72,7 @@ export class WorkoutProgressPage implements OnInit, OnDestroy {
     private workoutService: WorkoutManagementService,
     private progressDataService: ProgressDataService,
     private workoutEventService: WorkoutEventService
-  ) { 
+  ) {
     this.initStorage();
   }
 
@@ -85,11 +85,11 @@ export class WorkoutProgressPage implements OnInit, OnDestroy {
     try {
       this.isLoading = true;
       console.log('🚀 WorkoutProgressPage ngOnInit iniciado...');
-      
+
       // Implementar timeout para prevenir travamento
       const initPromise = Promise.race([
         this.performInitialization(),
-        new Promise((_, reject) => 
+        new Promise((_, reject) =>
           setTimeout(() => reject(new Error('Timeout na inicialização')), 8000)
         )
       ]);
@@ -108,7 +108,7 @@ export class WorkoutProgressPage implements OnInit, OnDestroy {
     // Carregar dados de forma assíncrona mas com timeout
     const loadDataPromise = Promise.race([
       this.loadData(),
-      new Promise((_, reject) => 
+      new Promise((_, reject) =>
         setTimeout(() => reject(new Error('Timeout no carregamento de dados')), 5000)
       )
     ]);
@@ -126,27 +126,27 @@ export class WorkoutProgressPage implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     console.log('💀 ngOnDestroy: Iniciando destruição completa...');
-    
+
     try {
       // Para todas as operações em andamento
       this.isLoading = true;
       this._isUpdatingCharts = false;
-      
+
       // Limpar todos os timeouts pendentes primeiro
       this.clearPendingTimeouts();
-      
+
       // Destruir gráficos com proteção
       this.safeDestroyCharts();
-      
+
       // Unsubscribe de todos os observables com proteção
       this.safeUnsubscribeAll();
-      
+
       // Limpar dados da memória
       this.clearAllMemoryData();
-      
+
       // Limpar cache completamente
       this.clearAllCache();
-      
+
       console.log('🗑️ ngOnDestroy: Destruição completa finalizada');
     } catch (error) {
       console.error('Erro durante ngOnDestroy:', error);
@@ -199,7 +199,7 @@ export class WorkoutProgressPage implements OnInit, OnDestroy {
    */
   private setupEventListeners(): void {
     console.log('🎯 Configurando listeners de eventos de treino...');
-    
+
     // Listener para treino completado
     const workoutCompletedSub = this.workoutEventService.workoutCompleted$.subscribe(
       (event: WorkoutCompletedEvent) => {
@@ -224,7 +224,7 @@ export class WorkoutProgressPage implements OnInit, OnDestroy {
    */
   private async handleWorkoutCompleted(event: WorkoutCompletedEvent): Promise<void> {
     console.log('🔄 Processando treino completado, recarregando dados...');
-    
+
     // Aguarda um breve momento para garantir que os dados foram persistidos
     this.safeSetTimeout(async () => {
       if (!this.isLoading) { // Só executa se a página ainda está ativa
@@ -240,7 +240,7 @@ export class WorkoutProgressPage implements OnInit, OnDestroy {
   private async handleProgressUpdate(event: WorkoutProgressUpdateEvent): Promise<void> {
     if (event.type === 'session_saved' || event.type === 'storage_updated') {
       console.log('💾 Dados de sessão atualizados, recarregando...');
-      
+
       // Aguarda um momento antes de recarregar para garantir consistência
       this.safeSetTimeout(async () => {
         if (!this.isLoading) { // Só executa se a página ainda está ativa
@@ -269,7 +269,7 @@ export class WorkoutProgressPage implements OnInit, OnDestroy {
     // Sempre recarregar dados quando a página for visitada para capturar novos treinos
     console.log('🔄 ionViewDidEnter: Recarregando dados...');
     await this.loadData();
-    
+
     if (!this.isLoading && this.stats) {
       this.safeSetTimeout(() => {
         if (!this.isLoading && this.stats) { // Dupla verificação
@@ -281,17 +281,17 @@ export class WorkoutProgressPage implements OnInit, OnDestroy {
 
   ionViewWillLeave() {
     console.log('🚪 ionViewWillLeave: Iniciando limpeza da página...');
-    
+
     // Para todas as operações pendentes
     this.isLoading = true;
     this._isUpdatingCharts = false;
-    
+
     // Limpar todos os timers/timeouts pendentes
     this.clearPendingTimeouts();
-    
+
     // Destruir gráficos imediatamente
     this.destroyCharts();
-    
+
     // Unsubscribe de todos os observables
     this.subscriptions.forEach(sub => {
       if (sub && !sub.closed) {
@@ -299,19 +299,19 @@ export class WorkoutProgressPage implements OnInit, OnDestroy {
       }
     });
     this.subscriptions = [];
-    
+
     // Limpar dados grandes da memória
     this.recentSessions = [];
     this.progressData = [];
     this.stats = null;
-    
+
     // Limpar cache
     this._lastCacheUpdateData = '';
     this._cachedStreakText = '0 dias';
     this._cachedLastWorkoutText = 'Nenhum treino realizado';
     this._cachedMetricLabel = 'Treinos Realizados';
     this._cachedAchievements = [];
-    
+
     console.log('🧹 ionViewWillLeave: Limpeza completa realizada');
   }
 
@@ -326,7 +326,7 @@ export class WorkoutProgressPage implements OnInit, OnDestroy {
     console.log('Metric changed to:', this.selectedMetric);
     this._lastCacheUpdateData = ''; // Invalidar cache
     this.updateCache(); // Atualizar cache
-    
+
     // Atualizar apenas o gráfico de progresso (que depende da métrica)
     if (!this._isUpdatingCharts) {
       this._isUpdatingCharts = true;
@@ -339,28 +339,28 @@ export class WorkoutProgressPage implements OnInit, OnDestroy {
           }
           this.progressChart = null;
         }
-        
+
         setTimeout(() => {
           this.createProgressChart();
           this._isUpdatingCharts = false;
         }, 100);
       }, 100);
     }
-  }  async loadData() {
+  } async loadData() {
     try {
       this.isLoading = true;
       console.log('LoadData: Starting to load data using home page logic...');
-      
+
       // Usar prioritariamente a lógica da página home
       await this.loadDataFromHomePageLogic();
-      
+
       // Se não há dados, tentar carregar do ProgressDataService como fallback
       if (!this.stats || this.recentSessions.length === 0) {
         console.log('LoadData: No data from home logic, trying ProgressDataService...');
         await this.progressDataService.init();
         await this.loadDataFromProgressService();
       }
-      
+
       // Se ainda não há dados, tentar WorkoutManagementService como segundo fallback
       if (!this.stats || this.recentSessions.length === 0) {
         console.log('LoadData: No data from ProgressDataService, trying WorkoutManagementService...');
@@ -380,7 +380,7 @@ export class WorkoutProgressPage implements OnInit, OnDestroy {
       console.log('LoadData: Final progressData length:', this.progressData.length);
 
       this.isLoading = false;
-      
+
       // Criar gráficos após carregar dados
       this.safeSetTimeout(() => {
         if (this.stats && !this.isLoading) {
@@ -395,7 +395,7 @@ export class WorkoutProgressPage implements OnInit, OnDestroy {
       this.setDefaultStats();
       this.updateCache();
       this.isLoading = false;
-      
+
       this.safeSetTimeout(() => {
         if (!this.isLoading) {
           this.createCharts();
@@ -409,7 +409,7 @@ export class WorkoutProgressPage implements OnInit, OnDestroy {
     try {
       console.log('Carregando dados usando lógica da página home...');
       const startTime = performance.now();
-      
+
       const now = new Date();
       const startOfWeek = new Date(now);
       startOfWeek.setDate(now.getDate() - now.getDay());
@@ -433,7 +433,7 @@ export class WorkoutProgressPage implements OnInit, OnDestroy {
       });
 
       await loadStatsWithTimeout;
-      
+
       const endTime = performance.now();
       console.log(`Estatísticas carregadas em ${endTime - startTime}ms`);
     } catch (error) {
@@ -468,7 +468,7 @@ export class WorkoutProgressPage implements OnInit, OnDestroy {
     console.log('🔍 DEBUG: workout_sessions encontradas:', sessions2?.length || 0);
     console.log('🔍 DEBUG: workoutSessions2 encontradas:', sessions3?.length || 0);
     console.log('🔍 DEBUG: workout-history encontradas:', sessions4?.length || 0);
-    
+
     if (sessions1?.length > 0) {
       console.log('🔍 DEBUG: Primeira sessão de workoutSessions:', sessions1[0]);
     }
@@ -496,24 +496,22 @@ export class WorkoutProgressPage implements OnInit, OnDestroy {
     const thisWeekSessions = allSessions.filter((session: WorkoutSession) => {
       try {
         let sessionDate;
-        
+
         // Verificar diferentes formatos de data com validação
         if (session?.startTime) {
           sessionDate = new Date(session.startTime);
-        } else if (session?.date) {
-          sessionDate = new Date(session.date);
         } else {
           return false;
         }
-        
+
         // Verificar se a data é válida
         if (isNaN(sessionDate.getTime())) {
           return false;
         }
-        
+
         // Filtrar apenas sessões desta semana e que são treinos completos
-        return sessionDate >= startOfWeek && 
-               (session.status === 'completed' || session.duration > 0);
+        return sessionDate >= startOfWeek &&
+          (session.status === 'completed' || (session.duration && session.duration > 0));
       } catch (error) {
         console.warn('Erro ao processar sessão:', error);
         return false;
@@ -539,12 +537,12 @@ export class WorkoutProgressPage implements OnInit, OnDestroy {
 
     console.log('🔍 DEBUG: Sessões únicas após remoção de duplicatas:', uniqueSessions.length);
     if (uniqueSessions.length > 0) {
-      console.log('🔍 DEBUG: Sessões únicas:', uniqueSessions.map(s => ({
-        id: s.id,
-        workoutId: s.workoutId,
-        startTime: s.startTime,
-        duration: s.duration,
-        caloriesBurned: s.caloriesBurned
+      console.log('🔍 DEBUG: Sessões únicas:', uniqueSessions.map((s: Record<string, unknown>) => ({
+        id: s['id'],
+        workoutId: s['workoutId'],
+        startTime: s['startTime'],
+        duration: s['duration'],
+        caloriesBurned: s['caloriesBurned']
       })));
     }
 
@@ -553,14 +551,14 @@ export class WorkoutProgressPage implements OnInit, OnDestroy {
       id: (session as Record<string, unknown>)['id'] as string || `session-${Date.now()}-${Math.random()}`,
       workoutId: (session as Record<string, unknown>)['workoutId'] as string || `workout-${(session as Record<string, unknown>)['id']}`,
       userId: (session as Record<string, unknown>)['userId'] as string || 'current-user',
-      startTime: new Date((session as Record<string, unknown>)['startTime'] as string || (session as Record<string, unknown>)['date'] as string),
-      endTime: session.endTime ? new Date(session.endTime) : new Date(new Date(session.startTime || session.date).getTime() + (session.duration * 60000)),
-      duration: session.duration || 0,
-      exercises: session.exercises || [],
-      status: session.status || 'completed',
-      caloriesBurned: session.caloriesBurned || 0,
-      dayOfWeek: session.dayOfWeek || new Date(session.startTime || session.date).toLocaleDateString('pt-BR', { weekday: 'long' })
-    }));
+      startTime: new Date((session as Record<string, unknown>)['startTime'] as string),
+      endTime: (session as Record<string, unknown>)['endTime'] ? new Date((session as Record<string, unknown>)['endTime'] as string) : new Date(new Date((session as Record<string, unknown>)['startTime'] as string).getTime() + (((session as Record<string, unknown>)['duration'] as number) || 0) * 60000),
+      duration: ((session as Record<string, unknown>)['duration'] as number) || 0,
+      exercises: ((session as Record<string, unknown>)['exercises'] as any[]) || [],
+      status: (((session as Record<string, unknown>)['status'] as string) || 'completed') as 'in-progress' | 'completed' | 'paused' | 'cancelled',
+      caloriesBurned: ((session as Record<string, unknown>)['caloriesBurned'] as number) || 0,
+      dayOfWeek: ((session as Record<string, unknown>)['dayOfWeek'] as string) || new Date((session as Record<string, unknown>)['startTime'] as string).toLocaleDateString('pt-BR', { weekday: 'long' })
+    })) as WorkoutSession[];
 
     console.log('🔍 DEBUG: recentSessions final:', this.recentSessions.length);
     if (this.recentSessions.length > 0) {
@@ -621,7 +619,7 @@ export class WorkoutProgressPage implements OnInit, OnDestroy {
         const sessionTime = new Date((session['startTime'] as string) || (session['date'] as string)).getTime();
         const roundedTime = Math.floor(sessionTime / (5 * 60 * 1000)) * (5 * 60 * 1000); // Arredondar para intervalos de 5 min
         const key = `${roundedTime}_${(session['duration'] as number) || 0}`;
-        
+
         if (seen.has(key)) {
           return false;
         }
@@ -646,19 +644,19 @@ export class WorkoutProgressPage implements OnInit, OnDestroy {
     return sessions.reduce((total: number, session: Record<string, unknown>) => {
       try {
         // Para o formato legado
-        if (session.caloriesBurned && typeof session.caloriesBurned === 'number') {
-          return total + Math.max(0, Math.min(session.caloriesBurned, 2000)); // Limitar a 2000 cal por sessão
+        if (session['caloriesBurned'] && typeof session['caloriesBurned'] === 'number') {
+          return total + Math.max(0, Math.min(session['caloriesBurned'], 2000)); // Limitar a 2000 cal por sessão
         }
-        
+
         // Para o formato ProgressDataService - calcular dos exercícios
-        if (session.exercises && Array.isArray(session.exercises)) {
-          const sessionCalories = session.exercises.slice(0, 20).reduce((exerciseTotal: number, exercise: any) => {
+        if (session['exercises'] && Array.isArray(session['exercises'])) {
+          const sessionCalories = (session['exercises'] as any[]).slice(0, 20).reduce((exerciseTotal: number, exercise: any) => {
             const calories = exercise.calories || 50;
             return exerciseTotal + (typeof calories === 'number' ? Math.max(0, Math.min(calories, 500)) : 50);
           }, 0);
           return total + sessionCalories;
         }
-        
+
         // Fallback
         return total + 150; // Valor padrão razoável
       } catch (error) {
@@ -688,11 +686,11 @@ export class WorkoutProgressPage implements OnInit, OnDestroy {
   // Método para gerar dados de progresso baseados nas sessões
   private generateProgressDataFromSessions(sessions: any[]) {
     const progressMap = new Map<string, ProgressDataPoint>();
-    
+
     sessions.forEach(session => {
       const sessionDate = new Date(session.startTime || session.date);
       const dateKey = sessionDate.toISOString().split('T')[0]; // YYYY-MM-DD
-      
+
       if (!progressMap.has(dateKey)) {
         progressMap.set(dateKey, {
           date: sessionDate,
@@ -701,13 +699,13 @@ export class WorkoutProgressPage implements OnInit, OnDestroy {
           totalCalories: 0
         });
       }
-      
+
       const progressPoint = progressMap.get(dateKey)!;
       progressPoint.workoutsCompleted += 1;
       progressPoint.totalDuration += session.duration || 0;
       progressPoint.totalCalories += session.caloriesBurned || this.calculateSessionCalories(session);
     });
-    
+
     this.progressData = Array.from(progressMap.values()).sort((a, b) => a.date.getTime() - b.date.getTime());
   }
 
@@ -754,17 +752,17 @@ export class WorkoutProgressPage implements OnInit, OnDestroy {
             rating: 5,
             dayOfWeek: new Date(session.date).toLocaleDateString('pt-BR', { weekday: 'long' })
           }))
-          .sort((a, b) => new Date(b.startTime).getTime() - new Date(a.startTime).getTime())
-          .slice(0, 10);
+            .sort((a, b) => new Date(b.startTime).getTime() - new Date(a.startTime).getTime())
+            .slice(0, 10);
 
           // Gerar dados de progresso
           this.progressData = this.generateProgressDataFromProgressService(sessions);
-          
+
           // Invalidar cache para forçar recálculo
           this._lastCacheUpdateData = '';
         }
       });
-      
+
       this.subscriptions.push(sessionsSubscription);
 
       // Carregar estatísticas do ProgressDataService com subscription gerenciada
@@ -792,7 +790,7 @@ export class WorkoutProgressPage implements OnInit, OnDestroy {
             weeklyWorkouts: weeklySessions.length,
             weeklyDuration: weeklySessions.reduce((sum, s) => sum + (s.duration || 0), 0)
           };
-          
+
           // Invalidar cache para forçar recálculo
           this._lastCacheUpdateData = '';
         }
@@ -830,7 +828,7 @@ export class WorkoutProgressPage implements OnInit, OnDestroy {
               weeklyWorkouts: weeklySessions.length,
               weeklyDuration: weeklySessions.reduce((sum, s) => sum + (s.duration || 0), 0)
             };
-            
+
             // Invalidar cache para forçar recálculo
             this._lastCacheUpdateData = '';
           });
@@ -841,7 +839,7 @@ export class WorkoutProgressPage implements OnInit, OnDestroy {
         if (this.progressData.length === 0) {
           this.progressData = this.generateProgressData(this.recentSessions);
         }
-        
+
         // Invalidar cache para forçar recálculo
         this._lastCacheUpdateData = '';
       });
@@ -886,11 +884,11 @@ export class WorkoutProgressPage implements OnInit, OnDestroy {
   // Método para adicionar dados mockados quando não há dados reais
   private addMockData() {
     console.log('Adding mock data for demonstration...', 'Period:', this.selectedPeriod);
-    
+
     // Mock stats baseado no período selecionado
-    const multiplier = this.selectedPeriod === 'week' ? 1 : 
-                      this.selectedPeriod === 'month' ? 4 : 
-                      48; // year (52 weeks ≈ 48 for simplicity)
+    const multiplier = this.selectedPeriod === 'week' ? 1 :
+      this.selectedPeriod === 'month' ? 4 :
+        48; // year (52 weeks ≈ 48 for simplicity)
 
     this.stats = {
       totalWorkouts: 15 * multiplier,
@@ -907,13 +905,13 @@ export class WorkoutProgressPage implements OnInit, OnDestroy {
     // Mock recent sessions baseado no período
     const now = new Date();
     this.recentSessions = [];
-    const sessionCount = this.selectedPeriod === 'week' ? 10 : 
-                        this.selectedPeriod === 'month' ? 30 : 
-                        90; // 3 meses de dados para year
-    
+    const sessionCount = this.selectedPeriod === 'week' ? 10 :
+      this.selectedPeriod === 'month' ? 30 :
+        90; // 3 meses de dados para year
+
     for (let i = 0; i < sessionCount; i++) {
       const sessionDate = new Date(now);
-      
+
       if (this.selectedPeriod === 'week') {
         sessionDate.setDate(sessionDate.getDate() - i);
       } else if (this.selectedPeriod === 'month') {
@@ -921,11 +919,11 @@ export class WorkoutProgressPage implements OnInit, OnDestroy {
       } else { // year
         sessionDate.setDate(sessionDate.getDate() - (i * 4)); // espaçar mais os dados
       }
-      
+
       // Variação realística nas durações e calorias
       const duration = 30 + Math.floor(Math.random() * 60); // 30-90 min
       const calories = 150 + Math.floor(Math.random() * 400); // 150-550 calories
-      
+
       // Array de IDs de workout mais realístico - alguns se repetem para simular uso real
       const workoutIds = [
         'chest-workout-default',    // Mais popular
@@ -947,7 +945,7 @@ export class WorkoutProgressPage implements OnInit, OnDestroy {
         'back-wor',
         'full-body-workout-complete'
       ];
-      
+
       this.recentSessions.push({
         id: `mock-session-${i}`,
         workoutId: workoutIds[i % workoutIds.length], // Ciclar através dos IDs (mais realístico)
@@ -966,7 +964,7 @@ export class WorkoutProgressPage implements OnInit, OnDestroy {
 
     // Gerar dados de progresso mais realísticos baseados no período
     this.generateMockProgressData(now);
-    
+
     console.log('Mock data added:', {
       stats: this.stats,
       sessions: this.recentSessions.length,
@@ -1000,42 +998,42 @@ export class WorkoutProgressPage implements OnInit, OnDestroy {
 
     for (let i = 0; i < periodDays; i++) {
       const date = new Date(now);
-      
+
       if (this.selectedPeriod === 'year') {
         date.setDate(date.getDate() - (i * dateIncrement));
       } else {
         date.setDate(date.getDate() - i);
       }
-      
+
       // Gerar dados mais realísticos baseados no dia da semana
       const dayOfWeek = date.getDay();
       const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
-      
+
       // Menos treinos nos finais de semana
       const workoutProbability = isWeekend ? 0.3 : 0.7;
       const hasWorkout = Math.random() < workoutProbability;
-      
+
       let workoutsCompleted = 0;
       let totalDuration = 0;
       let totalCalories = 0;
 
       if (hasWorkout) {
         // Para período anual, pode ter mais de um treino por "ponto" (semana)
-        const maxWorkouts = this.selectedPeriod === 'year' ? 
+        const maxWorkouts = this.selectedPeriod === 'year' ?
           Math.floor(Math.random() * 5) + 1 : // 1-5 treinos por semana
           Math.floor(Math.random() * 2) + 1;   // 1-2 treinos por dia
 
         workoutsCompleted = maxWorkouts;
-        
+
         for (let w = 0; w < workoutsCompleted; w++) {
           const workoutDuration = 30 + Math.floor(Math.random() * 60); // 30-90 min
           const workoutCalories = 150 + Math.floor(Math.random() * 400); // 150-550 cal
-          
+
           totalDuration += workoutDuration;
           totalCalories += workoutCalories;
         }
       }
-      
+
       this.progressData.push({
         date: date,
         workoutsCompleted: workoutsCompleted,
@@ -1109,7 +1107,7 @@ export class WorkoutProgressPage implements OnInit, OnDestroy {
 
   private createCharts() {
     console.log('CreateCharts: Starting chart creation...');
-    
+
     // Prevent creation if already updating
     if (this._isUpdatingCharts) {
       console.log('CreateCharts: Already updating, skipping...');
@@ -1144,9 +1142,9 @@ export class WorkoutProgressPage implements OnInit, OnDestroy {
     // Wait for destruction to complete before creating new charts
     this.safeSetTimeout(() => {
       if (this.isLoading) return; // Página foi destruída
-      
+
       console.log('CreateCharts: Creating individual charts...');
-      
+
       try {
         this.createWeeklyChart();
         this.createWorkoutDistributionChart();
@@ -1249,7 +1247,7 @@ export class WorkoutProgressPage implements OnInit, OnDestroy {
     console.log('workoutDistributionRef exists:', !!this.workoutDistributionRef);
     console.log('Stats available:', !!this.stats);
     console.log('Recent sessions count:', this.recentSessions.length);
-    
+
     if (!this.workoutDistributionRef) {
       console.log('DistributionChart: Chart ref not available');
       return;
@@ -1339,12 +1337,12 @@ export class WorkoutProgressPage implements OnInit, OnDestroy {
       console.log('ProgressChart: Chart ref not available');
       return;
     }
-    
+
     // Always try to get chart data, even if progressData is empty
     const chartData = this.getProgressChartData();
-    
+
     console.log('ProgressChart: Creating chart with data:', chartData);
-    
+
     // Destroy existing chart if it exists
     if (this.progressChart) {
       try {
@@ -1427,7 +1425,7 @@ export class WorkoutProgressPage implements OnInit, OnDestroy {
   private updateCharts() {
     // Evitar loops infinitos durante atualização
     if (this._isUpdatingCharts) return;
-    
+
     this.destroyCharts();
     this.safeSetTimeout(() => {
       if (!this.isLoading) {
@@ -1439,7 +1437,7 @@ export class WorkoutProgressPage implements OnInit, OnDestroy {
   private updateChartsWithCache() {
     // Método otimizado que usa cache e evita loops
     if (this._isUpdatingCharts) return;
-    
+
     this.destroyCharts();
     this.safeSetTimeout(() => {
       if (this.stats && !this._isUpdatingCharts && !this.isLoading) {
@@ -1450,7 +1448,7 @@ export class WorkoutProgressPage implements OnInit, OnDestroy {
 
   private destroyCharts() {
     console.log('DestroyCharts: Destroying existing charts...');
-    
+
     try {
       // Destroy charts with proper error handling
       if (this.progressChart) {
@@ -1462,7 +1460,7 @@ export class WorkoutProgressPage implements OnInit, OnDestroy {
         }
         this.progressChart = null;
       }
-      
+
       if (this.workoutDistributionChart) {
         try {
           this.workoutDistributionChart.destroy();
@@ -1472,7 +1470,7 @@ export class WorkoutProgressPage implements OnInit, OnDestroy {
         }
         this.workoutDistributionChart = null;
       }
-      
+
       if (this.weeklyChart) {
         try {
           this.weeklyChart.destroy();
@@ -1484,7 +1482,7 @@ export class WorkoutProgressPage implements OnInit, OnDestroy {
       }
 
       console.log('DestroyCharts: All charts destroyed');
-      
+
     } catch (error) {
       console.warn('DestroyCharts: Error during destruction:', error);
       // Force clear the charts even if destruction fails
@@ -1550,7 +1548,7 @@ export class WorkoutProgressPage implements OnInit, OnDestroy {
         if (index > -1) {
           this.pendingTimeouts.splice(index, 1);
         }
-        
+
         // Executa callback se a página ainda existe
         if (!this.isLoading || this.stats) {
           callback();
@@ -1559,7 +1557,7 @@ export class WorkoutProgressPage implements OnInit, OnDestroy {
         console.warn('Erro no callback de timeout:', error);
       }
     }, delay);
-    
+
     this.pendingTimeouts.push(timeout);
     return timeout;
   }
@@ -1588,7 +1586,7 @@ export class WorkoutProgressPage implements OnInit, OnDestroy {
     });
 
     console.log('Weekly data calculated:', weekData);
-    
+
     // Se não há dados reais, retornar dados mock para demonstração
     if (weekData.every(val => val === 0)) {
       console.log('No weekly data found, returning mock data');
@@ -1604,7 +1602,7 @@ export class WorkoutProgressPage implements OnInit, OnDestroy {
     console.log('=== DEBUG: getWorkoutTypeDistribution ===');
     console.log('Processing workout sessions for distribution:', this.recentSessions.length, 'sessions');
     console.log('Recent sessions structure (first 3):', this.recentSessions.slice(0, 3));
-    
+
     // Log ALL sessions to identify where strange IDs come from
     console.log('=== ALL SESSIONS DETAILED ANALYSIS ===');
     this.recentSessions.forEach((session, index) => {
@@ -1616,7 +1614,7 @@ export class WorkoutProgressPage implements OnInit, OnDestroy {
         duration: session.duration,
         fullSessionData: session // Show complete session object
       });
-      
+
       // Check if the ID looks like a random generated ID
       if (session.workoutId && typeof session.workoutId === 'string') {
         if (session.workoutId.length > 20 && /[0-9a-z]{15,}/.test(session.workoutId)) {
@@ -1624,23 +1622,23 @@ export class WorkoutProgressPage implements OnInit, OnDestroy {
           console.error('   Session details:', session);
         }
       }
-      
+
       // Verificar se workoutId existe e não é undefined
       if (!session.workoutId) {
         console.warn(`Session ${index + 1} has no workoutId:`, session);
         return;
       }
-      
+
       // IMPORTANT: Use ONLY workoutId, never dayOfWeek for workout type distribution
       const workoutType = session.workoutId;
-      
+
       // Enhanced validation that we're not accidentally using dayOfWeek data
       const dayOfWeekPatterns = [
         'feira', 'domingo', 'sábado', 'sabado',
         'segunda', 'terça', 'quarta', 'quinta', 'sexta',
         'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'
       ];
-      
+
       if (typeof workoutType === 'string') {
         const lowerCaseType = workoutType.toLowerCase();
         for (const pattern of dayOfWeekPatterns) {
@@ -1650,15 +1648,15 @@ export class WorkoutProgressPage implements OnInit, OnDestroy {
           }
         }
       }
-      
+
       // ADDITIONAL VALIDATION: Skip suspicious random IDs
       if (typeof workoutType === 'string' && workoutType.length > 20 && /[0-9a-z]{15,}/.test(workoutType)) {
         console.error(`SKIPPING SUSPICIOUS ID: "${workoutType}" - This appears to be a generated ID, not a workout type`);
         return;
       }
-      
+
       distribution[workoutType] = (distribution[workoutType] || 0) + 1;
-      
+
       console.log(`  -> Mapped "${workoutType}" to count: ${distribution[workoutType]}`);
     });
 
@@ -1675,7 +1673,7 @@ export class WorkoutProgressPage implements OnInit, OnDestroy {
 
     // Converter os IDs dos treinos para nomes simples
     const simplifiedDistribution: { [key: string]: number } = {};
-    
+
     Object.keys(distribution).forEach(workoutId => {
       console.log(`Processing workoutId: "${workoutId}"`);
       const simplifiedName = this.simplifyWorkoutTypeName(workoutId);
@@ -1695,7 +1693,7 @@ export class WorkoutProgressPage implements OnInit, OnDestroy {
 
   private simplifyWorkoutTypeName(workoutId: string): string {
     console.log(`Simplifying workout name: "${workoutId}"`);
-    
+
     // CRITICAL: Enhanced validation to ensure we're not processing dayOfWeek data
     // Check for all possible day names in Portuguese
     const dayOfWeekPatterns = [
@@ -1710,13 +1708,13 @@ export class WorkoutProgressPage implements OnInit, OnDestroy {
       'sabado',     // sabado (without accent)
       'Monday',     // English days
       'Tuesday',
-      'Wednesday', 
+      'Wednesday',
       'Thursday',
       'Friday',
       'Saturday',
       'Sunday'
     ];
-    
+
     if (typeof workoutId === 'string') {
       const lowerCaseId = workoutId.toLowerCase();
       for (const pattern of dayOfWeekPatterns) {
@@ -1726,7 +1724,7 @@ export class WorkoutProgressPage implements OnInit, OnDestroy {
         }
       }
     }
-    
+
     // Mapeamento de IDs de treino para nomes simples (incluindo IDs completos)
     const workoutNameMap: { [key: string]: string } = {
       // IDs exatos conhecidos - Patterns with chest
@@ -1736,20 +1734,20 @@ export class WorkoutProgressPage implements OnInit, OnDestroy {
       'chest': 'Peito',
       'Workout-chest-intermediate': 'Peito',
       'Workout_chest_intermediate': 'Peito',
-      
+
       // Patterns with legs
       'legs-workout-default': 'Pernas',
       'legs-workout': 'Pernas',
       'legs-wor': 'Pernas',
       'legs-w': 'Pernas',
       'legs': 'Pernas',
-      
+
       // Patterns with back
       'back-workout-default': 'Costas',
       'back-workout': 'Costas',
       'back-wor': 'Costas',
       'back': 'Costas',
-      
+
       // Patterns with bicep
       'bicep-workout-default': 'Bíceps',
       'bicep-workout': 'Bíceps',
@@ -1757,37 +1755,37 @@ export class WorkoutProgressPage implements OnInit, OnDestroy {
       'bicep': 'Bíceps',
       'Workout_bicep_advanced': 'Bíceps',
       'Workout-bicep-advanced': 'Bíceps',
-      
+
       // Patterns with shoulders
       'shoulders-workout-default': 'Ombros',
       'shoulders-workout': 'Ombros',
       'shoulders': 'Ombros',
       'shoulder': 'Ombros',
-      
+
       // Patterns with tricep
       'tricep-workout-default': 'Tríceps',
       'tricep-workout': 'Tríceps',
       'tricep-w': 'Tríceps',
       'tricep': 'Tríceps',
-      
+
       // Patterns with core
       'core-workout-default': 'Core',
       'core-workout': 'Core',
       'core-wor': 'Core',
       'core': 'Core',
-      
+
       // Patterns with cardio
       'cardio-workout-default': 'Cardio',
       'cardio-workout': 'Cardio',
       'cardio-w': 'Cardio',
       'cardio': 'Cardio',
       'cardio-workout-intense': 'Cardio',
-      
+
       // Full body patterns
       'full-body': 'Corpo Inteiro',
       'full-body-workout': 'Corpo Inteiro',
       'full-body-workout-complete': 'Corpo Inteiro',
-      
+
       // Strength patterns
       'strength': 'Força',
       'strength-workout': 'Força'
@@ -1802,7 +1800,7 @@ export class WorkoutProgressPage implements OnInit, OnDestroy {
 
     // Limpar e normalizar o nome
     let cleanName = workoutId.toLowerCase();
-    
+
     // Remover prefixos "Workout_" e "Workout-" (case-insensitive)
     if (cleanName.startsWith('workout_')) {
       cleanName = cleanName.substring(8); // Remove "workout_"
@@ -1822,7 +1820,7 @@ export class WorkoutProgressPage implements OnInit, OnDestroy {
       '-intense', '_intense', '-basic', '_basic',
       '-wo', '_wo', '-wor', '_wor', '-w', '_w'
     ];
-    
+
     suffixesToRemove.forEach(suffix => {
       if (cleanName.endsWith(suffix)) {
         cleanName = cleanName.slice(0, -suffix.length);
@@ -1899,7 +1897,7 @@ export class WorkoutProgressPage implements OnInit, OnDestroy {
 
   private getProgressChartData() {
     console.log('Getting progress chart data for:', this.selectedMetric, 'period:', this.selectedPeriod);
-    
+
     const labels: string[] = [];
     const data: number[] = [];
 
@@ -1925,7 +1923,7 @@ export class WorkoutProgressPage implements OnInit, OnDestroy {
           weekday: 'short'
         });
       }
-      
+
       labels.push(label);
 
       // Selecionar dados baseado na métrica
@@ -1942,9 +1940,9 @@ export class WorkoutProgressPage implements OnInit, OnDestroy {
       }
     });
 
-    console.log('Progress chart data generated:', { 
-      labels: labels.length, 
-      data: data.length, 
+    console.log('Progress chart data generated:', {
+      labels: labels.length,
+      data: data.length,
       metric: this.selectedMetric,
       period: this.selectedPeriod,
       sampleData: data.slice(0, 5)
@@ -1962,7 +1960,7 @@ export class WorkoutProgressPage implements OnInit, OnDestroy {
   private getFilteredProgressData(): ProgressDataPoint[] {
     const now = new Date();
     let cutoffDate: Date;
-    
+
     switch (this.selectedPeriod) {
       case 'week':
         cutoffDate = new Date(now);
@@ -1988,11 +1986,11 @@ export class WorkoutProgressPage implements OnInit, OnDestroy {
 
   private generateMockChartData() {
     console.log('Generating mock chart data for period:', this.selectedPeriod, 'metric:', this.selectedMetric);
-    
+
     const mockLabels: string[] = [];
     const mockData: number[] = [];
     let dataPoints: number;
-    
+
     switch (this.selectedPeriod) {
       case 'week':
         dataPoints = 7;
@@ -2006,10 +2004,10 @@ export class WorkoutProgressPage implements OnInit, OnDestroy {
       default:
         dataPoints = 7;
     }
-    
+
     for (let i = dataPoints - 1; i >= 0; i--) {
       const date = new Date();
-      
+
       // Ajustar data baseado no período
       if (this.selectedPeriod === 'year') {
         date.setMonth(date.getMonth() - i);
@@ -2029,7 +2027,7 @@ export class WorkoutProgressPage implements OnInit, OnDestroy {
           weekday: 'short'
         }));
       }
-      
+
       // Gerar dados baseado na métrica e período
       let value: number;
       switch (this.selectedMetric) {
@@ -2063,17 +2061,17 @@ export class WorkoutProgressPage implements OnInit, OnDestroy {
         default:
           value = Math.floor(Math.random() * 10);
       }
-      
+
       mockData.push(value);
     }
-    
-    console.log('Generated mock chart data:', { 
-      labels: mockLabels.length, 
+
+    console.log('Generated mock chart data:', {
+      labels: mockLabels.length,
       data: mockData.length,
       sampleLabels: mockLabels.slice(0, 3),
       sampleData: mockData.slice(0, 3)
     });
-    
+
     return { labels: mockLabels, data: mockData };
   }
 

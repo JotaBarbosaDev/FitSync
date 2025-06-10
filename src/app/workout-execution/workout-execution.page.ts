@@ -38,15 +38,15 @@ export class WorkoutExecutionPage implements OnInit, OnDestroy {
   isWorkoutStarted: boolean = false;
   isWorkoutCompleted: boolean = false;
   workoutDuration: number = 0;
-  private workoutTimer: NodeJS.Timeout | null = null;
+  private workoutTimer: any = null;
   private workoutStartTime: Date | null = null;
   private completedExerciseData: Record<string, unknown>[] = [];
-  
+
   // Getters for template compatibility
   get workoutStarted(): boolean {
     return this.isWorkoutStarted;
   }
-  
+
   get workoutCompleted(): boolean {
     return this.isWorkoutCompleted;
   }
@@ -66,14 +66,14 @@ export class WorkoutExecutionPage implements OnInit, OnDestroy {
   ngOnInit() {
     this.loadExercisesFromUrl();
     this.progressDataService.init();
-    
+
     // Bloquear orientação em portrait durante o treino
     this.lockOrientation();
   }
 
   ngOnDestroy() {
     this.stopTimer();
-    
+
     // Desbloquear orientação ao sair da tela
     this.unlockOrientation();
   }
@@ -182,7 +182,7 @@ export class WorkoutExecutionPage implements OnInit, OnDestroy {
     // Salvar sessão de treino no sistema de progresso
     await this.saveWorkoutSession();
 
-    
+
   }
 
   async finishWorkout() {
@@ -315,7 +315,7 @@ export class WorkoutExecutionPage implements OnInit, OnDestroy {
   getTotalCalories(): number {
     // Obter dados do usuário para o cálculo
     const userData = this.getUserDataForCalculations();
-    
+
     return this.exercises.reduce((total, exercise) => {
       const caloriesForExercise = this.calculateExerciseCalories(exercise, userData);
       return total + caloriesForExercise;
@@ -342,7 +342,7 @@ export class WorkoutExecutionPage implements OnInit, OnDestroy {
 
   private mapExerciseTypeFromCategory(category: string): 'strength' | 'cardio' | 'flexibility' | 'mixed' {
     const categoryLower = category.toLowerCase();
-    
+
     if (categoryLower.includes('cardio') || categoryLower.includes('aeróbico')) {
       return 'cardio';
     }
@@ -352,7 +352,7 @@ export class WorkoutExecutionPage implements OnInit, OnDestroy {
     if (categoryLower.includes('funcional') || categoryLower.includes('circuit') || categoryLower.includes('hiit')) {
       return 'mixed';
     }
-    
+
     return 'strength'; // padrão para musculação
   }
 
@@ -394,7 +394,7 @@ export class WorkoutExecutionPage implements OnInit, OnDestroy {
 
   getFormattedTotalMinutes(): string {
     const totalMinutes = this.getTotalMinutes();
-    
+
     if (totalMinutes >= 60) {
       const hours = Math.floor(totalMinutes / 60);
       const minutes = totalMinutes % 60;
@@ -597,7 +597,7 @@ export class WorkoutExecutionPage implements OnInit, OnDestroy {
     const exercisesData: ExerciseCalorieData[] = this.completedExerciseData.map(completedExercise => {
       // Encontrar o exercício original para obter os dados
       const originalExercise = this.exercises.find(ex => ex.id === completedExercise['exerciseId'] as string);
-      
+
       if (!originalExercise) {
         // Fallback para exercício desconhecido
         return {
@@ -682,17 +682,17 @@ export class WorkoutExecutionPage implements OnInit, OnDestroy {
   async onRefreshWorkout(): Promise<void> {
     try {
       console.log('🔄 Atualizando treino...');
-      
+
       // Recarregar dados dos exercícios se necessário
       this.loadExercisesFromUrl();
-      
+
       // Resetar estados se o treino não estiver em andamento
       if (!this.isWorkoutStarted) {
         this.currentExerciseIndex = 0;
         this.completedExercises = 0;
         this.workoutDuration = 0;
       }
-      
+
       // Mostrar feedback para o usuário
       const toast = await this.toastController.create({
         message: '✅ Treino atualizado!',
@@ -701,10 +701,10 @@ export class WorkoutExecutionPage implements OnInit, OnDestroy {
         color: 'success'
       });
       await toast.present();
-      
+
     } catch (error) {
       console.error('❌ Erro ao atualizar treino:', error);
-      
+
       const toast = await this.toastController.create({
         message: '❌ Erro ao atualizar. Tente novamente.',
         duration: 3000,

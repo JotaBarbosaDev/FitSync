@@ -62,7 +62,7 @@ export class HomePage implements OnInit, OnDestroy {
   // Subscription management
   private subscriptions: Subscription[] = [];
   private isInitialized = false;
-  
+
   // Estado interno para controle de inicialização
   private _isInitializing = false;
   private _destroyed = false;
@@ -109,7 +109,7 @@ export class HomePage implements OnInit, OnDestroy {
 
       // Criar storage de forma segura
       await this.safeStorageCreate();
-      
+
       // Executar inicializações críticas
       await this.safeInitializeDefaults();
       await this.safeLoadUserProfile();
@@ -124,7 +124,7 @@ export class HomePage implements OnInit, OnDestroy {
       await this.loadNonCriticalData();
 
       console.log('HomePage inicializada com sucesso');
-      
+
     } catch (error) {
       console.error('Erro durante inicialização da HomePage:', error);
       this.setDefaultValues();
@@ -137,17 +137,17 @@ export class HomePage implements OnInit, OnDestroy {
   async ionViewWillEnter() {
     // Recarregar dados quando o usuário retornar à página
     console.log('🔄 ionViewWillEnter - Recarregando dados da home...');
-    
+
     try {
       // IMPORTANTE: Força atualização completa do cache do storage
       await this.storage.create();
-      
+
       // Força recarregamento do treino de hoje com dados frescos
       await this.safeLoadTodayWorkout();
-      
+
       // Força recarregamento das estatísticas
       await this.safeLoadQuickStats();
-      
+
       console.log('✅ Dados da home atualizados com sucesso');
     } catch (error) {
       console.error('❌ Erro ao atualizar dados da home:', error);
@@ -160,20 +160,20 @@ export class HomePage implements OnInit, OnDestroy {
    */
   public async forceRefreshData(): Promise<void> {
     console.log('🔄 Forçando atualização completa dos dados da home...');
-    
+
     try {
       // Recarregar treino de hoje
       await this.safeLoadTodayWorkout();
-      
+
       // Recarregar estatísticas
       await this.safeLoadQuickStats();
-      
+
       // Verificar treino completado hoje
       await this.safeCheckCompletedWorkout();
-      
+
       // Recarregar conquistas recentes
       await this.safeLoadRecentAchievements();
-      
+
       console.log('✅ Atualização completa finalizada com sucesso');
     } catch (error) {
       console.error('❌ Erro durante atualização completa:', error);
@@ -204,7 +204,7 @@ export class HomePage implements OnInit, OnDestroy {
       const existingWorkouts = await this.storageService.get('workouts').catch(() => null);
       if (!existingWorkouts || !Array.isArray(existingWorkouts) || existingWorkouts.length === 0) {
         const defaultWorkouts = this.createMinimalDefaultWorkouts();
-        await this.storageService.set('workouts', defaultWorkouts).catch(() => {});
+        await this.storageService.set('workouts', defaultWorkouts).catch(() => { });
       }
 
       // Inicializar sessões de exemplo para demonstração das estatísticas
@@ -233,24 +233,24 @@ export class HomePage implements OnInit, OnDestroy {
     try {
       // Carregar dados de forma sequencial para evitar conflitos
       await this.safeLoadTodayWorkout();
-      
+
       if (!this.isComponentActive()) return;
-      
+
       await this.safeLoadQuickStats();
-      
+
       if (!this.isComponentActive()) return;
-      
+
       await this.safeCheckCompletedWorkout();
-      
+
       if (!this.isComponentActive()) return;
-      
+
       await this.safeLoadRecentAchievements();
 
       // Carregar dica do dia (síncrono)
       this.loadDailyTip();
 
       console.log('✅ Dados não-críticos carregados com sucesso');
-      
+
     } catch (error) {
       console.error('❌ Erro no carregamento não-crítico:', error);
     }
@@ -309,12 +309,12 @@ export class HomePage implements OnInit, OnDestroy {
     const today = new Date().getDay();
     const todayName = this.translateDayName(today);
     console.log(`🔧 Definindo treino padrão para o dia ${today} (${todayName})`);
-    
+
     // CORREÇÃO: Por padrão, se não há plano semanal configurado, considerar como dia de descanso
     // Isso força o usuário a configurar seu plano semanal na página workout-management
-    this.todayWorkout = { 
-      workout: null, 
-      isRestDay: true 
+    this.todayWorkout = {
+      workout: null,
+      isRestDay: true
     };
     console.log(`🛌 ${todayName} definido como dia de descanso (sem plano semanal configurado)`);
   }
@@ -327,11 +327,11 @@ export class HomePage implements OnInit, OnDestroy {
   ngOnDestroy() {
     // Marcar componente como destruído
     this._destroyed = true;
-    
+
     // Limpar todas as subscriptions para prevenir memory leaks
     this.subscriptions.forEach(sub => sub.unsubscribe());
     this.isInitialized = false;
-    
+
     console.log('HomePage destruída e subscriptions limpas');
   }
 
@@ -353,13 +353,13 @@ export class HomePage implements OnInit, OnDestroy {
     try {
       // Sempre verificar e recriar sessões de exemplo para a semana atual
       const existingSessions = await this.storageService.get('workoutSessions') || [];
-      
+
       // Verificar se há sessões desta semana
       const now = new Date();
       const startOfWeek = new Date(now);
       startOfWeek.setDate(now.getDate() - now.getDay());
       startOfWeek.setHours(0, 0, 0, 0);
-      
+
       const thisWeekSessions = Array.isArray(existingSessions) ? existingSessions.filter((session: unknown) => {
         try {
           const sessionObj = session as Record<string, unknown>;
@@ -369,14 +369,14 @@ export class HomePage implements OnInit, OnDestroy {
           return false;
         }
       }) : [];
-      
+
       console.log(`Sessões encontradas desta semana: ${thisWeekSessions.length}`);
-      
+
       // Se há menos de 2 sessões desta semana, criar dados de exemplo atuais
       if (thisWeekSessions.length < 2) {
         console.log('Criando sessões de exemplo para demonstrar as estatísticas...');
         const exampleSessions = this.createExampleWorkoutSessions();
-        
+
         // Remover sessões antigas desta semana para evitar duplicatas
         const otherSessions = Array.isArray(existingSessions) ? existingSessions.filter((session: unknown) => {
           try {
@@ -387,7 +387,7 @@ export class HomePage implements OnInit, OnDestroy {
             return true;
           }
         }) : [];
-        
+
         const allSessions = [...otherSessions, ...exampleSessions];
         await this.storageService.set('workoutSessions', allSessions);
         console.log('Sessões de treino de exemplo criadas para a semana atual:', exampleSessions.length);
@@ -449,8 +449,8 @@ export class HomePage implements OnInit, OnDestroy {
       sessions.push(session);
     }
 
-    console.log('Sessões de exemplo criadas:', sessions.map(s => ({ 
-      name: s.workoutName, 
+    console.log('Sessões de exemplo criadas:', sessions.map(s => ({
+      name: s.workoutName,
       date: new Date(s.startTime).toLocaleDateString('pt-BR'),
       duration: s.duration,
       calories: s.caloriesBurned
@@ -540,7 +540,7 @@ export class HomePage implements OnInit, OnDestroy {
 
       if (todayExercises && todayExercises.length > 0) {
         console.log('💪 Iniciando treino com exercícios atualizados:', todayExercises.length, 'exercícios');
-        
+
         // Navegar para execução com exercícios atualizados do plano semanal
         this.router.navigate(['/tabs/workout-execution'], {
           queryParams: {
@@ -574,7 +574,7 @@ export class HomePage implements OnInit, OnDestroy {
     // Forçar atualização do treino antes de iniciar
     console.log('⚠️ Forçando atualização do treino antes de iniciar...');
     await this.safeLoadTodayWorkout();
-    
+
     // Tentar novamente com dados atualizados
     const refreshedExercises = await this.getTodayExercisesFromWeeklyPlan();
     if (refreshedExercises && refreshedExercises.length > 0) {
@@ -634,7 +634,7 @@ export class HomePage implements OnInit, OnDestroy {
 
       // Se há exercícios planejados, criar treino do dia
       console.log(`💪 ${todayExercises.length} exercícios encontrados para hoje (${todayName})`);
-      
+
       const todayWorkout: CustomWorkout = {
         id: `today-workout-${today}-${Date.now()}`,
         name: `Treino de ${todayName}`,
@@ -825,7 +825,7 @@ export class HomePage implements OnInit, OnDestroy {
     try {
       await this.storage.create();
       const today = new Date().getDay(); // 0 = Sunday, 1 = Monday, etc.
-      
+
       const dayKey = `weekly_exercises_day_${today}`;
       const exercises = await this.storage.get(dayKey) || [];
 
@@ -859,7 +859,7 @@ export class HomePage implements OnInit, OnDestroy {
   async checkCompletedWorkoutToday() {
     try {
       console.log('Verificando treino completado hoje...');
-      
+
       const today = new Date();
       const todayDateString = today.toDateString();
 
@@ -903,7 +903,7 @@ export class HomePage implements OnInit, OnDestroy {
         const sessionDate = new Date(session['startTime'] as string);
         // Validar se a data é válida
         if (isNaN(sessionDate.getTime())) return false;
-        
+
         return sessionDate.toDateString() === todayDateString;
       } catch {
         console.warn('Erro ao processar sessão:', session);
@@ -1028,7 +1028,7 @@ export class HomePage implements OnInit, OnDestroy {
     try {
       console.log('Carregando estatísticas rápidas...');
       const startTime = performance.now();
-      
+
       const now = new Date();
       const startOfWeek = new Date(now);
       startOfWeek.setDate(now.getDate() - now.getDay());
@@ -1052,7 +1052,7 @@ export class HomePage implements OnInit, OnDestroy {
       });
 
       await loadStatsWithTimeout;
-      
+
       const endTime = performance.now();
       console.log(`Estatísticas carregadas em ${endTime - startTime}ms`);
     } catch (error) {
@@ -1064,28 +1064,28 @@ export class HomePage implements OnInit, OnDestroy {
   private async loadStatsInternal(startOfWeek: Date) {
     // CORREÇÃO: Unificar fonte de dados para estatísticas - usar apenas workoutSessions
     console.log('📊 Carregando estatísticas da semana atual...');
-    
+
     try {
       // Carregar apenas a fonte principal de sessões de treino
       const workoutSessions = await this.storageService.get('workoutSessions') || [];
-      
+
       // Garantir que é um array válido
       const validSessions = Array.isArray(workoutSessions) ? workoutSessions : [];
-      
+
       console.log(`📈 Total de sessões encontradas: ${validSessions.length}`);
 
       // Filtrar sessões desta semana
       const thisWeekSessions = validSessions.filter((session: Record<string, unknown>) => {
         try {
           if (!session?.['startTime'] && !session?.['date']) return false;
-          
+
           const sessionDate = new Date(session['startTime'] as string || session['date'] as string);
           if (isNaN(sessionDate.getTime())) return false;
-          
+
           // Verificar se é desta semana e se é treino completado
           const isThisWeek = sessionDate >= startOfWeek;
           const isCompleted = session['status'] === 'completed' || session['completed'] === true;
-          
+
           return isThisWeek && isCompleted;
         } catch {
           console.warn('Erro ao processar sessão:', session);
@@ -1131,7 +1131,7 @@ export class HomePage implements OnInit, OnDestroy {
         const sessionTime = new Date(session['startTime'] as string || session['date'] as string).getTime();
         const roundedTime = Math.floor(sessionTime / (5 * 60 * 1000)) * (5 * 60 * 1000); // Arredondar para intervalos de 5 min
         const key = `${roundedTime}_${session['duration'] || 0}`;
-        
+
         if (seen.has(key)) {
           return false;
         }
@@ -1158,7 +1158,7 @@ export class HomePage implements OnInit, OnDestroy {
         if (caloriesBurned && typeof caloriesBurned === 'number') {
           return total + Math.max(0, Math.min(caloriesBurned, 2000)); // Limitar a 2000 cal por sessão
         }
-        
+
         // Para o formato ProgressDataService - calcular dos exercícios
         const exercises = session['exercises'] as Array<Record<string, unknown>>;
         if (exercises && Array.isArray(exercises)) {
@@ -1168,7 +1168,7 @@ export class HomePage implements OnInit, OnDestroy {
           }, 0);
           return total + sessionCalories;
         }
-        
+
         // Fallback
         return total + 150; // Valor padrão razoável
       } catch {
@@ -1191,7 +1191,7 @@ export class HomePage implements OnInit, OnDestroy {
       const achievements = await this.storageService.get('achievements') || [];
       // Pegar as 3 conquistas mais recentes
       this.recentAchievements = Array.isArray(achievements) ? achievements
-        .sort((a: Record<string, unknown>, b: Record<string, unknown>) => 
+        .sort((a: Record<string, unknown>, b: Record<string, unknown>) =>
           new Date(b['earnedAt'] as string).getTime() - new Date(a['earnedAt'] as string).getTime())
         .slice(0, 3)
         .map((achievement: Record<string, unknown>) => ({
@@ -1220,7 +1220,7 @@ export class HomePage implements OnInit, OnDestroy {
       'Escute seu corpo e descanse quando necessário.',
       'Celebre pequenas vitórias no seu progresso fitness.'
     ];
-    
+
     const today = new Date();
     const dayOfYear = Math.floor((today.getTime() - new Date(today.getFullYear(), 0, 0).getTime()) / (1000 * 60 * 60 * 24));
     this.dailyTip = tips[dayOfYear % tips.length];
@@ -1233,7 +1233,7 @@ export class HomePage implements OnInit, OnDestroy {
   getExercisePreview(): string[] {
     const workout = this.currentWorkout;
     if (!workout || !workout.exercises) return [];
-    
+
     return workout.exercises
       .slice(0, 3)
       .map((ex: WorkoutExercise) => {
@@ -1255,7 +1255,7 @@ export class HomePage implements OnInit, OnDestroy {
   getMuscleGroups(): string[] {
     const workout = this.currentWorkout;
     if (!workout || !workout.muscleGroups) return [];
-    
+
     const muscleGroupNames: { [key: string]: string } = {
       'chest': 'Peito',
       'legs': 'Pernas',
@@ -1265,7 +1265,7 @@ export class HomePage implements OnInit, OnDestroy {
       'core': 'Core',
       'glutes': 'Glúteos'
     };
-    
+
     return workout.muscleGroups.map((mg: string) => muscleGroupNames[mg] || mg);
   }
 
@@ -1273,12 +1273,12 @@ export class HomePage implements OnInit, OnDestroy {
    * Navegar para página de progresso com parâmetros
    */
   navigateToProgress() {
-    this.router.navigate(['/tabs/workout-progress'], { 
-      queryParams: { 
+    this.router.navigate(['/tabs/workout-progress'], {
+      queryParams: {
         fromHome: 'true',
         date: new Date().toISOString(),
-        workoutCount: this.weeklyWorkouts 
-      } 
+        workoutCount: this.weeklyWorkouts
+      }
     });
   }
 
@@ -1286,13 +1286,13 @@ export class HomePage implements OnInit, OnDestroy {
    * Navegar para detalhes do treino com parâmetros
    */
   navigateToWorkoutDetails(workout: CustomWorkout | null) {
-    this.router.navigate(['/tabs/detalhe'], { 
-      queryParams: { 
+    this.router.navigate(['/tabs/detalhe'], {
+      queryParams: {
         workoutId: workout?.id || 'today-workout',
         workoutName: workout?.name || 'Treino do Dia',
         fromPage: 'home',
         muscleGroups: workout?.muscleGroups?.join(',') || ''
-      } 
+      }
     });
   }
 
@@ -1300,12 +1300,12 @@ export class HomePage implements OnInit, OnDestroy {
    * Navegar para criação de treino com parâmetros
    */
   navigateToWorkoutCreation() {
-    this.router.navigate(['/workout-creation'], { 
-      queryParams: { 
+    this.router.navigate(['/workout-creation'], {
+      queryParams: {
         source: 'home',
         suggestedType: 'full-body',
         returnUrl: '/tabs/home'
-      } 
+      }
     });
   }
 
@@ -1315,5 +1315,88 @@ export class HomePage implements OnInit, OnDestroy {
   private showWorkoutCompletedMessage() {
     // Implementação da mensagem de sucesso
     console.log('Treino completado! Parabéns!');
+  }
+
+  async onRefresh(event: any) {
+    try {
+      await this.loadTodayWorkout();
+      await this.loadQuickStats();
+      await this.loadRecentAchievements();
+      await this.getDailyTip();
+    } catch (error) {
+      console.error('Error refreshing data:', error);
+    } finally {
+      event.target.complete();
+    }
+  }
+
+  async refreshStats() {
+    await this.loadQuickStats();
+  }
+
+  getWorkoutMuscleGroups(): string {
+    const muscleGroups = this.getMuscleGroups();
+    return muscleGroups.slice(0, 2).join(', ') + (muscleGroups.length > 2 ? ' +' : '');
+  }
+
+  getPreviewExercises(): any[] {
+    if (!this.currentWorkout?.exercises) {
+      return this.getDefaultPreviewExercises();
+    }
+    return this.currentWorkout.exercises.slice(0, 3);
+  }
+
+  private getDefaultPreviewExercises(): any[] {
+    return [
+      { name: 'Flexão', muscleGroup: 'Peito', category: 'strength', sets: 3, reps: 12, difficulty: 'medium' },
+      { name: 'Agachamento', muscleGroup: 'Pernas', category: 'strength', sets: 3, reps: 15, difficulty: 'medium' },
+      { name: 'Prancha', muscleGroup: 'Core', category: 'stability', sets: 3, reps: '30s', difficulty: 'medium' }
+    ];
+  }
+
+  getExerciseIcon(category: string): string {
+    const iconMap: { [key: string]: string } = {
+      'strength': 'barbell-outline',
+      'cardio': 'heart-outline',
+      'flexibility': 'body-outline',
+      'stability': 'fitness-outline',
+      'bodyweight': 'person-outline'
+    };
+    return iconMap[category] || 'fitness-outline';
+  }
+
+  getDefaultExerciseName(index: number): string {
+    const defaultNames = ['Exercício 1', 'Exercício 2', 'Exercício 3'];
+    return defaultNames[index] || `Exercício ${index + 1}`;
+  }
+
+  getDefaultMuscleGroup(index: number): string {
+    const defaultGroups = ['Peito', 'Pernas', 'Core'];
+    return defaultGroups[index] || 'Geral';
+  }
+
+  getDifficultyLabel(difficulty: string): string {
+    const labels: { [key: string]: string } = {
+      'easy': 'Fácil',
+      'medium': 'Médio',
+      'hard': 'Difícil',
+      'beginner': 'Iniciante',
+      'intermediate': 'Intermediário',
+      'advanced': 'Avançado'
+    };
+    return labels[difficulty] || 'Médio';
+  }
+
+  navigateToWorkoutList() {
+    this.router.navigate(['/workout-management']);
+  }
+
+  private async showToast(message: string) {
+    const toast = await this.toastController.create({
+      message,
+      duration: 2000,
+      position: 'bottom'
+    });
+    await toast.present();
   }
 }

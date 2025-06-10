@@ -27,7 +27,7 @@ export class WorkoutManagementService {
   public currentSession$ = this.currentSessionSubject.asObservable();
   public sessionTimer$ = this.sessionTimerSubject.asObservable();
 
-  private timerInterval?: NodeJS.Timeout;
+  private timerInterval?: ReturnType<typeof setInterval>;
 
   constructor(
     private dataService: DataService,
@@ -62,7 +62,7 @@ export class WorkoutManagementService {
 
           data.customWorkouts = data.customWorkouts || [];
           data.customWorkouts.push(newWorkout as unknown as Record<string, unknown>);
-          
+
           this.dataService.saveData(data).then(() => {
             observer.next(newWorkout);
             observer.complete();
@@ -125,7 +125,7 @@ export class WorkoutManagementService {
       } as CustomWorkout;
 
       data.customWorkouts[workoutIndex] = updatedWorkout as unknown as Record<string, unknown>;
-      
+
       this.dataService.saveData(data).then(() => {
         observer.next(updatedWorkout);
         observer.complete();
@@ -144,7 +144,7 @@ export class WorkoutManagementService {
       }
 
       data.customWorkouts = (data.customWorkouts || []).filter((w: Record<string, unknown>) => w['id'] !== workoutId);
-      
+
       this.dataService.saveData(data).then(() => {
         observer.next(true);
         observer.complete();
@@ -212,7 +212,7 @@ export class WorkoutManagementService {
           }
 
           data.weeklyPlans.push(newPlan as unknown as Record<string, unknown>);
-          
+
           this.dataService.saveData(data).then(() => {
             observer.next(newPlan);
             observer.complete();
@@ -348,7 +348,7 @@ export class WorkoutManagementService {
       plan['updatedAt'] = new Date();
 
       data.weeklyPlans[planIndex] = plan;
-      
+
       this.dataService.saveData(data).then(() => {
         observer.next(plan as unknown as WeeklyPlan);
         observer.complete();
@@ -397,7 +397,7 @@ export class WorkoutManagementService {
 
           data.workoutSessions2 = data.workoutSessions2 || [];
           data.workoutSessions2.push(session as unknown as Record<string, unknown>);
-          
+
           this.dataService.saveData(data).then(() => {
             this.currentSessionSubject.next(session);
             this.startSessionTimer();
@@ -451,7 +451,7 @@ export class WorkoutManagementService {
       }
 
       data.workoutSessions2[sessionIndex] = session;
-      
+
       this.dataService.saveData(data).then(() => {
         this.currentSessionSubject.next(session as unknown as WorkoutSession);
         observer.next(session as unknown as WorkoutSession);
@@ -493,7 +493,7 @@ export class WorkoutManagementService {
       });
 
       data.workoutSessions2[sessionIndex] = session;
-      
+
       this.dataService.saveData(data).then(() => {
         this.currentSessionSubject.next(session as unknown as WorkoutSession);
         observer.next(session as unknown as WorkoutSession);
@@ -538,7 +538,7 @@ export class WorkoutManagementService {
       };
 
       data.workoutSessions2[sessionIndex] = completedSession as unknown as Record<string, unknown>;
-      
+
       this.dataService.saveData(data).then(() => {
         this.stopSessionTimer();
         this.currentSessionSubject.next(null);
@@ -576,7 +576,7 @@ export class WorkoutManagementService {
 
       const pausedSession = { ...currentSession, status: 'paused' as const };
       data.workoutSessions2[sessionIndex] = pausedSession as unknown as Record<string, unknown>;
-      
+
       this.dataService.saveData(data).then(() => {
         this.stopSessionTimer();
         this.currentSessionSubject.next(pausedSession);
@@ -610,7 +610,7 @@ export class WorkoutManagementService {
 
       const resumedSession = { ...currentSession, status: 'in-progress' as const };
       data.workoutSessions2[sessionIndex] = resumedSession as unknown as Record<string, unknown>;
-      
+
       this.dataService.saveData(data).then(() => {
         this.startSessionTimer();
         this.currentSessionSubject.next(resumedSession);
@@ -824,7 +824,7 @@ export class WorkoutManagementService {
   async synchronizeWorkoutData(): Promise<void> {
     try {
       console.log('WorkoutManagementService: Starting data synchronization...');
-      
+
       const data = this.dataService.getCurrentData();
       if (!data) {
         console.log('WorkoutManagementService: No data available for synchronization');
@@ -834,10 +834,10 @@ export class WorkoutManagementService {
       // Get all workout sessions from different storage sources
       const workoutSessions = data.workoutSessions || [];
       const workoutSessions2 = data.workoutSessions2 || [];
-      
+
       // Access additional storage sources
       let additionalSessions: Record<string, unknown>[] = [];
-      
+
       try {
         const workout_sessions = (await this.storageService.get('workout_sessions') || []) as Record<string, unknown>[];
         const workoutHistory = (await this.storageService.get('workout-history') || []) as Record<string, unknown>[];
@@ -890,22 +890,22 @@ export class WorkoutManagementService {
 
   private removeDuplicateSessions(sessions: Record<string, unknown>[]): Record<string, unknown>[] {
     const uniqueMap = new Map();
-    
+
     sessions.forEach((session: Record<string, unknown>) => {
       // Create a unique key based on timestamp, duration, and exercise count
       const timestamp = session['startTime'] || session['date'] || session['timestamp'];
       const duration = session['duration'] || 0;
       const exerciseCount = session['exercises'] ? (session['exercises'] as Record<string, unknown>[]).length : 0;
-      
+
       const key = `${timestamp}_${duration}_${exerciseCount}`;
-      
+
       // Keep the most complete session (one with more properties)
       const existing = uniqueMap.get(key);
       if (!existing || Object.keys(session).length > Object.keys(existing).length) {
         uniqueMap.set(key, session);
       }
     });
-    
+
     return Array.from(uniqueMap.values());
   }
 

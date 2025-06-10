@@ -86,7 +86,7 @@ export class JsonDataService {
   constructor(
     private http: HttpClient,
     private storageService: StorageService
-  ) {}
+  ) { }
 
   // Load JSON data from assets
   loadFitnessData(): Observable<FitnessData> {
@@ -98,7 +98,7 @@ export class JsonDataService {
     if (this.fitnessData) {
       return this.fitnessData;
     }
-    
+
     // Try to load from storage if not in memory
     try {
       const exercises = await this.storageService.getExerciseData();
@@ -106,7 +106,7 @@ export class JsonDataService {
       const workoutPlans = await this.storageService.get<WorkoutPlan[]>('workoutPlans') || [];
       const muscleGroups = await this.storageService.get<MuscleGroup[]>('muscleGroups') || [];
       const tips = await this.storageService.get<Tip[]>('tips') || [];
-      
+
       return {
         exercises: exercises as unknown as ExerciseData[],
         achievements: achievements as unknown as AchievementData[],
@@ -125,25 +125,29 @@ export class JsonDataService {
     try {
       // Check if data already exists in storage
       const existingData = await this.storageService.get('appInitialized');
-      
+
       if (!existingData) {
         // Load JSON data and save to storage
         this.loadFitnessData().subscribe(async (data) => {
           this.fitnessData = data;
-          
+
           // Save to storage with type conversion
           // Convert ExerciseData[] to Exercise[] for storage compatibility
           const exercisesForStorage = data.exercises.map(ex => ({
             id: ex.id,
             name: ex.name,
-            sets: 3, // default value
-            reps: 10, // default value
-            weight: 0, // default value
-            muscleGroup: ex.muscleGroup,
-            equipment: ex.equipment
+            category: ex.muscleGroup as any, // cast to satisfy interface
+            muscleGroups: ex.muscleGroups || [ex.muscleGroup],
+            equipment: ex.equipment ? [ex.equipment] : [],
+            instructions: ex.instructions.join('; '),
+            difficulty: ex.difficulty,
+            description: ex.description || '',
+            imageUrl: ex.imageUrl || '',
+            duration: ex.duration || 0,
+            calories: ex.calories || 0
           }));
-          await this.storageService.saveExerciseData(exercisesForStorage as unknown as Record<string, unknown>[]);
-          
+          await this.storageService.saveExerciseData(exercisesForStorage as any);
+
           // Convert AchievementData[] to the format expected by storage
           const achievementsForStorage = data.achievements.map(ach => ({
             ...ach,
@@ -155,7 +159,7 @@ export class JsonDataService {
           await this.storageService.set('muscleGroups', data.muscleGroups);
           await this.storageService.set('tips', data.tips);
           await this.storageService.set('appInitialized', true);
-          
+
           console.log('App data initialized from JSON');
         });
       } else {
@@ -218,8 +222,8 @@ export class JsonDataService {
   async searchExercises(query: string): Promise<ExerciseData[]> {
     const exercises = await this.getExercises();
     const lowercaseQuery = query.toLowerCase();
-    
-    return exercises.filter(exercise => 
+
+    return exercises.filter(exercise =>
       exercise.name.toLowerCase().includes(lowercaseQuery) ||
       exercise.muscleGroup.toLowerCase().includes(lowercaseQuery) ||
       exercise.equipment.toLowerCase().includes(lowercaseQuery)

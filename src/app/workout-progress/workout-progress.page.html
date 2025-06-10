@@ -3,7 +3,7 @@
     <ion-buttons slot="start">
       <ion-buttons slot="start">
       </ion-buttons>
-      <div class="header-title"  style="margin-left: 20px;">
+      <div class="header-title" style="margin-left: 20px;">
         <h1 class="headline-medium text-gradient-primary">Progresso</h1>
       </div>
     </ion-buttons>
@@ -178,13 +178,13 @@
     <h3>🏆 Conquistas</h3>
     <div class="achievements-grid">
       <div class="achievement-card" *ngFor="let achievement of getAchievements()"
-        [class]="'achievement-' + achievement.color">
+        [class]="'achievement-' + achievement['color']">
         <div class="achievement-icon">
-          <ion-icon [name]="achievement.icon"></ion-icon>
+          <ion-icon [name]="achievement['icon']"></ion-icon>
         </div>
         <div class="achievement-content">
-          <div class="achievement-title">{{ achievement.title }}</div>
-          <div class="achievement-description">{{ achievement.description }}</div>
+          <div class="achievement-title">{{ achievement['title'] }}</div>
+          <div class="achievement-description">{{ achievement['description'] }}</div>
         </div>
       </div>
     </div>
