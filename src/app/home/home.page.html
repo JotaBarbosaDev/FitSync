@@ -1,5 +1,5 @@
 <!-- Header -->
-<ion-header [translucent]="true" class="ion-safe-area-top">
+<ion-header [translucent]="true" class="ion-safe-area-top-minimal">
   <ion-toolbar>
     <div class="header-content">
       <div class="header-left"> 
@@ -13,7 +13,7 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content class="home-content ion-safe-area-bottom">
+<ion-content class="home-content ion-safe-area-bottom-minimal">
   <!-- Pull to refresh -->
   <ion-refresher slot="fixed" (ionRefresh)="onRefresh($event)" pullFactor="0.5" pullMin="60" pullMax="120">
     <ion-refresher-content 

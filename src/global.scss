@@ -15,45 +15,123 @@
 /* Core CSS required for Ionic components to work properly */
 @import "@ionic/angular/css/core.css";
 
-/* SafeArea Support for Android System Bars */
+/* SafeArea Support for Android System Bars - Optimized */
 :root {
-  // CSS Environment Variables for SafeArea support
+  // CSS Environment Variables for SafeArea support with smart limits
   --safe-area-inset-top: env(safe-area-inset-top, 0);
   --safe-area-inset-bottom: env(safe-area-inset-bottom, 0);
   --safe-area-inset-left: env(safe-area-inset-left, 0);
   --safe-area-inset-right: env(safe-area-inset-right, 0);
+  
+  // Smart safe area values with maximum limits to prevent excessive spacing
+  --safe-area-top-limited: min(var(--safe-area-inset-top), 44px);
+  --safe-area-bottom-limited: min(var(--safe-area-inset-bottom), 34px);
+  --safe-area-left-limited: min(var(--safe-area-inset-left), 44px);
+  --safe-area-right-limited: min(var(--safe-area-inset-right), 44px);
 }
 
-// Global SafeArea classes for consistent application
+// Global SafeArea classes with optimized spacing
 .ion-safe-area-top {
-  padding-top: var(--safe-area-inset-top) !important;
+  padding-top: var(--safe-area-top-limited) !important;
 }
 
 .ion-safe-area-bottom {
-  padding-bottom: var(--safe-area-inset-bottom) !important;
+  padding-bottom: var(--safe-area-bottom-limited) !important;
 }
 
 .ion-safe-area-left {
-  padding-left: var(--safe-area-inset-left) !important;
+  padding-left: var(--safe-area-left-limited) !important;
 }
 
 .ion-safe-area-right {
-  padding-right: var(--safe-area-inset-right) !important;
+  padding-right: var(--safe-area-right-limited) !important;
 }
 
 .ion-safe-area-all {
-  padding-top: var(--safe-area-inset-top) !important;
-  padding-bottom: var(--safe-area-inset-bottom) !important;
-  padding-left: var(--safe-area-inset-left) !important;
-  padding-right: var(--safe-area-inset-right) !important;
+  padding-top: var(--safe-area-top-limited) !important;
+  padding-bottom: var(--safe-area-bottom-limited) !important;
+  padding-left: var(--safe-area-left-limited) !important;
+  padding-right: var(--safe-area-right-limited) !important;
 }
 
-// Override for Android status bar behavior
+// Override for Android status bar behavior with limited values
 ion-app {
-  --ion-safe-area-top: var(--safe-area-inset-top);
-  --ion-safe-area-bottom: var(--safe-area-inset-bottom);
-  --ion-safe-area-left: var(--safe-area-inset-left);
-  --ion-safe-area-right: var(--safe-area-inset-right);
+  --ion-safe-area-top: var(--safe-area-top-limited);
+  --ion-safe-area-bottom: var(--safe-area-bottom-limited);
+  --ion-safe-area-left: var(--safe-area-left-limited);
+  --ion-safe-area-right: var(--safe-area-right-limited);
+}
+
+// Minimal safe area classes for cases where we want even less spacing
+.ion-safe-area-top-minimal {
+  padding-top: min(var(--safe-area-inset-top), 24px) !important;
+}
+
+.ion-safe-area-bottom-minimal {
+  padding-bottom: min(var(--safe-area-inset-bottom), 16px) !important;
+}
+
+// Header-specific optimizations
+ion-header.ion-safe-area-top {
+  padding-top: min(var(--safe-area-inset-top), 24px) !important;
+}
+
+// Content-specific optimizations  
+ion-content.ion-safe-area-bottom {
+  padding-bottom: min(var(--safe-area-inset-bottom), 16px) !important;
+}
+
+// Android-specific optimizations
+.platform-android {
+  // Reduce excessive safe area padding on Android devices
+  ion-header.ion-safe-area-top,
+  ion-header.ion-safe-area-top-minimal {
+    padding-top: min(var(--safe-area-inset-top), 20px) !important;
+  }
+  
+  ion-content.ion-safe-area-bottom,
+  ion-content.ion-safe-area-bottom-minimal {
+    padding-bottom: min(var(--safe-area-inset-bottom), 12px) !important;
+  }
+  
+  ion-tabs.ion-safe-area-bottom,
+  ion-tab-bar.ion-safe-area-bottom-minimal {
+    padding-bottom: min(var(--safe-area-inset-bottom), 8px) !important;
+  }
+}
+
+// iOS-specific optimizations (maintain better spacing for notched devices)
+.platform-ios {
+  ion-header.ion-safe-area-top,
+  ion-header.ion-safe-area-top-minimal {
+    padding-top: min(var(--safe-area-inset-top), 44px) !important;
+  }
+  
+  ion-content.ion-safe-area-bottom,
+  ion-content.ion-safe-area-bottom-minimal {
+    padding-bottom: min(var(--safe-area-inset-bottom), 34px) !important;
+  }
+}
+
+// Emergency override for excessive safe areas (fallback protection)
+@media screen {
+  .ion-safe-area-top,
+  .ion-safe-area-top-minimal {
+    // Never allow more than 50px of top padding
+    padding-top: min(var(--safe-area-inset-top, 0px), 50px) !important;
+  }
+  
+  .ion-safe-area-bottom,
+  .ion-safe-area-bottom-minimal {
+    // Never allow more than 40px of bottom padding
+    padding-bottom: min(var(--safe-area-inset-bottom, 0px), 40px) !important;
+  }
+}
+
+// Ultra-minimal variant for extreme cases
+.ion-safe-area-minimal {
+  padding-top: min(var(--safe-area-inset-top, 0px), 16px) !important;
+  padding-bottom: min(var(--safe-area-inset-bottom, 0px), 12px) !important;
 }
 
 /* Basic CSS for apps built with Ionic */

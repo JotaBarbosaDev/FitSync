@@ -637,7 +637,7 @@ export class HomePage implements OnInit, OnDestroy {
 
       const todayWorkout: CustomWorkout = {
         id: `today-workout-${today}-${Date.now()}`,
-        name: `Treino de ${todayName}`,
+        name: `${todayName}`,
         description: `Treino planejado para ${todayName}`,
         difficulty: 'medium' as 'easy' | 'medium' | 'hard',
         muscleGroups: this.extractMuscleGroupsFromExercises(todayExercises),
