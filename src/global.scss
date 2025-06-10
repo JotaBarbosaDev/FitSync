@@ -134,6 +134,40 @@ ion-content.ion-safe-area-bottom {
   padding-bottom: min(var(--safe-area-inset-bottom, 0px), 12px) !important;
 }
 
+// Tab bar and content scroll fixes
+ion-tab-bar {
+  height: 60px; // Define altura fixa para cálculo de espaço
+  position: fixed;
+  bottom: 0;
+  z-index: 1000;
+}
+
+// Garante que conteúdo não fique escondido atrás das tabs
+ion-content {
+  // Espaçamento padrão para páginas com tabs
+  --padding-bottom: 80px;
+  
+  &.home-content {
+    --padding-bottom: 120px; // Mais espaço para página home
+  }
+}
+
+// Configurações específicas para header reduzido
+ion-header {
+  &.ion-safe-area-top-minimal {
+    padding-top: min(var(--safe-area-inset-top, 0px), 12px) !important;
+  }
+  
+  ion-toolbar {
+    --min-height: 50px; // Reduz altura mínima do toolbar
+    
+    .header-content {
+      min-height: 44px;
+      padding: 0.25rem 1rem; // Padding reduzido
+    }
+  }
+}
+
 /* Basic CSS for apps built with Ionic */
 @import "@ionic/angular/css/normalize.css";
 @import "@ionic/angular/css/structure.css";

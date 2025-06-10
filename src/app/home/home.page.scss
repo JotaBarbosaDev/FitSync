@@ -5,16 +5,18 @@
 
 .home-content {
   --padding-top: 0;
-  --padding-bottom: 80px;
+  --padding-bottom: 120px; // Espaço suficiente para o menu inferior
   background: var(--fitsync-background-subtle);
   min-height: 100vh;
   display: flex;
   justify-content: center;
+  overflow-y: auto; // Garante scroll vertical
   
   .main-content {
     width: 100%;
     max-width: 600px;
-    padding: 1rem;
+    padding: 0.5rem 1rem 2rem 1rem; // Reduzido padding superior
+    padding-bottom: 120px; // Espaço extra para evitar sobreposição com menu
   }
 }
 
@@ -165,6 +167,68 @@
         justify-content: center;
       }
     }
+  }
+}
+
+/* ===== CORREÇÕES DE ESPAÇAMENTO E SCROLL ===== */
+
+// Reduz espaçamento excessivo do header
+ion-header {
+  &.ion-safe-area-top-minimal {
+    padding-top: min(var(--safe-area-inset-top, 0px), 16px) !important;
+  }
+  
+  ion-toolbar {
+    --padding-top: 0;
+    --padding-bottom: 0;
+    --min-height: 56px;
+    
+    .header-content {
+      padding: 0.5rem 1rem; // Reduzido de 1rem para 0.5rem
+      min-height: 48px;
+    }
+  }
+}
+
+// Garante scroll adequado e espaçamento para menu inferior
+ion-content.home-content {
+  --padding-bottom: 0; // Remove padding padrão
+  scroll-behavior: smooth;
+  overflow-y: auto;
+  
+  // Garante que o conteúdo não fique escondido atrás do menu
+  &::part(scroll) {
+    padding-bottom: 140px !important; // Espaço maior para garantir que botões sejam visíveis
+  }
+}
+
+// Ajustes específicos para dispositivos móveis
+@media (max-height: 700px) {
+  .home-content .main-content {
+    padding-top: 0.25rem; // Ainda menos espaço em telas pequenas
+    padding-bottom: 160px; // Mais espaço para menu em telas pequenas
+  }
+}
+
+// Garante que botões ficam acessíveis mesmo com menu fixo
+.start-workout-btn, 
+.action-btn {
+  margin-bottom: 1.5rem;
+}
+
+.workout-actions {
+  margin-bottom: 3rem; // Espaço extra para botões de ação
+  padding-bottom: 1rem;
+}
+
+// Garante scroll suave e visibilidade do último conteúdo
+.workout-section,
+.no-workout {
+  margin-bottom: 2rem;
+  
+  .workout-card,
+  .no-workout-card {
+    margin-bottom: 1rem;
   }
 }
 
